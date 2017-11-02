@@ -1,0 +1,65 @@
+package space.util.sync.awaitable;
+
+import space.util.baseobject.BaseObject;
+import space.util.string.toStringHelper.ToStringHelperCollection;
+import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelper.objects.TSHObjects.TSHObjectsInstance;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * The {@link LockLikeSignalable} allows you to "lock" with the signal()-Method and "unlock" with the reset()-Method.
+ * Only when the amount of "locks" is zero, it is signaled and Threads in await()-Methods return
+ */
+public class LockLikeSignalable implements BaseObject, IResetable {
+	
+	static {
+		BaseObject.initClass(LockLikeSignalable.class, LockLikeSignalable::new, d -> new LockLikeSignalable());
+	}
+	
+	public int holderCnt;
+	
+	@Override
+	public synchronized void signal() {
+		holderCnt++;
+	}
+	
+	@Override
+	public synchronized void reset() {
+		holderCnt--;
+		doNotify();
+	}
+	
+	protected void doNotify() {
+		notifyAll();
+	}
+	
+	@Override
+	public synchronized boolean isSignaled() {
+		return holderCnt <= 0;
+	}
+	
+	@Override
+	public synchronized void await() throws InterruptedException {
+		while (!isSignaled())
+			wait();
+	}
+	
+	@Override
+	public synchronized void await(long time, TimeUnit unit) throws InterruptedException {
+		while (!isSignaled())
+			wait(unit.toMillis(time));
+	}
+	
+	@Override
+	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
+		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		tsh.add("holderCnt", this.holderCnt);
+		return tsh;
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+}
