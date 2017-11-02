@@ -3,8 +3,8 @@ package space.util.delegate.indexmap;
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.indexmap.IndexMap;
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 import java.util.Collection;
 import java.util.function.Supplier;

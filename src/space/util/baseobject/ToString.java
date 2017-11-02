@@ -1,8 +1,8 @@
 package space.util.baseobject;
 
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelper;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 import java.util.HashMap;
 import java.util.Map;

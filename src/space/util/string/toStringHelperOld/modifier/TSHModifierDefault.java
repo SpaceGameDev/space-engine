@@ -1,6 +1,6 @@
-package space.util.string.toStringHelper.modifier;
+package space.util.string.toStringHelperOld.modifier;
 
-import space.util.string.toStringHelper.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
 
 public class TSHModifierDefault extends AbstractTSHModifier {
 	

@@ -1,7 +1,7 @@
 package space.util.baseobject;
 
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;

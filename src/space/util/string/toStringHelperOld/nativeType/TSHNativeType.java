@@ -1,6 +1,6 @@
-package space.util.string.toStringHelper.nativeType;
+package space.util.string.toStringHelperOld.nativeType;
 
-import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelperOld.ToStringHelper;
 
 public interface TSHNativeType extends ToStringHelper {
 	

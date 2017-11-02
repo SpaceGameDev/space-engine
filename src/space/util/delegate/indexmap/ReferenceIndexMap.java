@@ -6,9 +6,9 @@ import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.indexmap.IndexMap;
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
-import space.util.string.toStringHelper.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
 
 import java.lang.ref.Reference;
 import java.util.Objects;

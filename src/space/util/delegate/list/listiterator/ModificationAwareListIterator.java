@@ -2,9 +2,9 @@ package space.util.delegate.list.listiterator;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
-import space.util.string.toStringHelper.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
 
 import java.util.ListIterator;
 

@@ -1,9 +1,9 @@
-package space.util.string.toStringHelper;
+package space.util.string.toStringHelperOld;
 
-import space.util.string.toStringHelper.array.TSHArray;
-import space.util.string.toStringHelper.modifier.TSHModifier;
-import space.util.string.toStringHelper.nativeType.TSHNativeType;
-import space.util.string.toStringHelper.objects.TSHObjects;
+import space.util.string.toStringHelperOld.array.TSHArray;
+import space.util.string.toStringHelperOld.modifier.TSHModifier;
+import space.util.string.toStringHelperOld.nativeType.TSHNativeType;
+import space.util.string.toStringHelperOld.objects.TSHObjects;
 
 public class ToStringHelperCollectionImpl implements ToStringHelperCollection {
 	

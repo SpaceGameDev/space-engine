@@ -1,7 +1,7 @@
-package space.util.string.toStringHelper.modifier;
+package space.util.string.toStringHelperOld.modifier;
 
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelper;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 public interface TSHModifier extends ToStringHelper {
 	

@@ -1,4 +1,4 @@
-package space.util.string.toStringHelper.array;
+package space.util.string.toStringHelperOld.array;
 
 import space.util.string.builder.CharBufferBuilder1D;
 

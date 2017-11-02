@@ -1,9 +1,9 @@
-package space.util.string.toStringHelper.objects;
+package space.util.string.toStringHelperOld.objects;
 
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelper;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 public interface TSHObjects extends ToStringHelper {
 	

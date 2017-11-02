@@ -1,4 +1,4 @@
-package space.util.string.toStringHelper.modifier;
+package space.util.string.toStringHelperOld.modifier;
 
 public abstract class AbstractTSHModifier implements TSHModifier {
 	

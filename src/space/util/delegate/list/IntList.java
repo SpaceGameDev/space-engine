@@ -3,8 +3,8 @@ package space.util.delegate.list;
 import space.util.ArrayUtils;
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.gui.monofont.MonofontGuiElement;
-import space.util.string.toStringHelper.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 import java.util.Arrays;
 
@@ -125,8 +125,8 @@ public class IntList implements BaseObject {
 	}
 	
 	@Override
-	public MonofontGuiElement toTSH(ToStringHelperCollection api) {
-		return api.to(array, 0, size);
+	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
+		return api.getArray().toString(array, 0, size);
 	}
 	
 	@Override

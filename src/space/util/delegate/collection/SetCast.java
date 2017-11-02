@@ -1,7 +1,7 @@
 package space.util.delegate.collection;
 
-import space.util.string.toStringHelper.ToStringHelperCollection;
-import space.util.string.toStringHelper.ToStringHelperInstance;
+import space.util.string.toStringHelperOld.ToStringHelperCollection;
+import space.util.string.toStringHelperOld.ToStringHelperInstance;
 
 import java.util.Collection;
 import java.util.Set;

@@ -1,8 +1,9 @@
-package space.util.string.toStringHelper.objects;
+package space.util.string.toStringHelperOld.objects;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.StringUtil;
 import space.util.string.builder.CharBufferBuilder1D;
+import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 
 import java.util.ListIterator;
 
@@ -12,7 +13,7 @@ public class TSHObjectsDefault extends AbstractTSHObjects {
 	
 	@Override
 	public TSHObjectsInstance getInstance(Object obj) {
-		return new AbstractTSHObjectsInstance() {
+		return new AbstractToStringHelperObjectsInstance() {
 			@Override
 			public String toString() {
 				CharBufferBuilder1D b = new CharBufferBuilder1D();
