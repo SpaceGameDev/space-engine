@@ -1,7 +1,6 @@
 package space.util.delegate.collection;
 
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
 import java.util.Set;
@@ -17,7 +16,7 @@ public class SetCast<E> extends DelegatingCollection<E> implements Set<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("cast(Set)", coll);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("cast(Set)", coll);
 	}
 }

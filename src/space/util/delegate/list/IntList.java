@@ -3,8 +3,7 @@ package space.util.delegate.list;
 import space.util.ArrayUtils;
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Arrays;
 
@@ -125,8 +124,8 @@ public class IntList implements BaseObject {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getArray().toString(array, 0, size);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.toString(array, 0, size);
 	}
 	
 	@Override

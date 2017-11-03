@@ -3,8 +3,7 @@ package space.util.delegate.collection;
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.UnmodifiableIterator;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,7 +61,7 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("unmodifiable", coll);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("unmodifiable", coll);
 	}
 }

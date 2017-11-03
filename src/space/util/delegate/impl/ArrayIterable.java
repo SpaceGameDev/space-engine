@@ -3,9 +3,8 @@ package space.util.delegate.impl;
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,10 +100,10 @@ public class ArrayIterable<E> implements BaseObject, Collection<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("array", this.array);
-		return tsh;
+		return tsh.build();
 	}
 	
 	@Override
@@ -144,12 +143,12 @@ public class ArrayIterable<E> implements BaseObject, Collection<E> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("array", this.array);
 			tsh.add("index", this.index);
 			tsh.add("end", this.end);
-			return tsh;
+			return tsh.build();
 		}
 		
 		@Override

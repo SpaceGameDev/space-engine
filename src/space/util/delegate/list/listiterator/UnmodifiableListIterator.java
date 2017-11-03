@@ -2,8 +2,7 @@ package space.util.delegate.list.listiterator;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.ListIterator;
 
@@ -34,7 +33,7 @@ public class UnmodifiableListIterator<E> extends DelegatingListIterator<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("unmodifiable", iterator);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("unmodifiable", iterator);
 	}
 }

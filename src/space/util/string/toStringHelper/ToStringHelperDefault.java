@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public class ToStringHelperDefault implements ToStringHelper<String> {
 	
+	public static final ToStringHelperDefault INSTANCE = new ToStringHelperDefault();
+	
 	@Override
 	public String toString(byte b) {
 		return Byte.toString(b);
@@ -185,7 +187,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 				
 				ListIterator<Entry<String>> iter = list.listIterator();
 				for (Entry<String> entry : Iteratorable.toIteratorable(iter)) {
-					b.append(entry.value);
+					b.append(entry.name).append(": ").append(entry.value);
 					if (iter.hasNext())
 						b.append(", ");
 				}

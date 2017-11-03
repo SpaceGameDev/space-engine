@@ -4,8 +4,7 @@ import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -170,7 +169,7 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("synchronized", indexMap);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("synchronized", indexMap);
 	}
 }

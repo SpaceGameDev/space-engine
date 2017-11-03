@@ -3,7 +3,21 @@ package space.util.string.toStringHelper;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 
+import java.util.function.Supplier;
+
 public interface ToStringHelper<T> {
+	
+	static ToStringHelper<?> getDefault() {
+		return ToStringHelperGetter.DEFAULT.get();
+	}
+	
+	static void setDefault(Supplier<ToStringHelper<?>> tsh) {
+		ToStringHelperGetter.DEFAULT = tsh;
+	}
+	
+	static void setDefault(ToStringHelper<?> tsh) {
+		ToStringHelperGetter.DEFAULT = () -> tsh;
+	}
 	
 	//native
 	T toString(byte b);

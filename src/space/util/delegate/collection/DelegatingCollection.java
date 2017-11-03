@@ -2,8 +2,7 @@ package space.util.delegate.collection;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -151,8 +150,8 @@ public class DelegatingCollection<E> implements BaseObject, Collection<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("delegate", coll);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("delegate", coll);
 	}
 	
 	@Override

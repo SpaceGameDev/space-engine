@@ -2,9 +2,8 @@ package space.util.delegate.map;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.interfaces.ICache;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -55,11 +54,11 @@ public class CachingMap<K, V> extends DefaultingMap<K, V> implements ICache {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		tsh.add("def", this.def);
 		tsh.add("iterateOverDef", this.iterateOverDef);
-		return tsh;
+		return tsh.build();
 	}
 }

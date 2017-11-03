@@ -4,9 +4,8 @@ import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.delegate.list.listiterator.ModificationAwareListIterator;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -164,10 +163,10 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);
 		tsh.add("onModification", this.onModification);
-		return tsh;
+		return tsh.build();
 	}
 }

@@ -164,7 +164,7 @@ public class ConflictingLock implements IKeyLock<IKey<?>> {
 			try {
 				await.await();
 			} catch (InterruptedException ignore) {
-			
+
 			}
 		}
 	}
@@ -185,7 +185,7 @@ public class ConflictingLock implements IKeyLock<IKey<?>> {
 			try {
 				await.await(time, unit);
 			} catch (InterruptedException ignore) {
-			
+
 			}
 		}
 	}

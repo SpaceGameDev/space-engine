@@ -1,8 +1,6 @@
 package space.util.baseobject;
 
-import space.util.string.toStringHelperOld.ToStringHelper;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,28 +8,29 @@ import java.util.function.BiFunction;
 
 public interface ToString {
 	
-	Map<Class<?>, BiFunction<ToStringHelperCollection, Object, ToStringHelperCollection>> MAP = new HashMap<>();
+	Map<Class<?>, BiFunction<ToStringHelper<?>, Object, Object>> MAP = new HashMap<>();
 	
 	//putFunction
 	@SuppressWarnings("unchecked")
-	static <OBJ> void putToTSHFunction(Class<OBJ> clazz, BiFunction<ToStringHelperCollection, OBJ, ToStringHelperCollection> function) {
-		MAP.put(clazz, (BiFunction<ToStringHelperCollection, Object, ToStringHelperCollection>) function);
+	static <OBJ> void putToTSHFunction(Class<OBJ> clazz, BiFunction<ToStringHelper<?>, OBJ, Object> function) {
+		MAP.put(clazz, (BiFunction<ToStringHelper<?>, Object, Object>) function);
 	}
 	
-	static Object toTSH(ToStringHelperCollection api, Object obj) {
+	static <T> T toTSH(ToStringHelper<T> api, Object obj) {
 		if (obj instanceof ToString)
-			return ((ToString) obj).toTSH();
-		BiFunction<ToStringHelperCollection, Object, ToStringHelperCollection> func = MAP.get(obj.getClass());
+			return ((ToString) obj).toTSH(api);
+		//noinspection unchecked
+		BiFunction<ToStringHelper<T>, Object, T> func = (BiFunction<ToStringHelper<T>, Object, T>) (Object) MAP.get(obj.getClass());
 		if (func != null)
 			return func.apply(api, obj);
-		return api.getObjectPhaser().getInstance(obj);
+		return api.createObjectInstance(obj).build();
 	}
 	
 	//non-static
-	ToStringHelperInstance toTSH(ToStringHelperCollection api);
+	<T> T toTSH(ToStringHelper<T> api);
 	
-	default ToStringHelperInstance toTSH() {
-		return toTSH(ToStringHelper.get());
+	default Object toTSH() {
+		return toTSH(ToStringHelper.getDefault());
 	}
 	
 	default String toString0() {

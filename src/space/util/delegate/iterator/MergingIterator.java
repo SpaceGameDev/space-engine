@@ -2,9 +2,8 @@ package space.util.delegate.iterator;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -105,12 +104,12 @@ public class MergingIterator<T> implements BaseObject, Iteratorable<T> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iterators", this.iterators);
 		tsh.add("currIter", this.currIter);
 		tsh.add("next", this.next);
-		return tsh;
+		return tsh.build();
 	}
 	
 	@Override

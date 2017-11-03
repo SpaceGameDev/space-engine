@@ -4,9 +4,8 @@ import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.collection.MergingCollection;
 import space.util.delegate.iterator.Iteratorable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -122,12 +121,12 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		tsh.add("def", this.def);
 		tsh.add("iterateOverDef", this.iterateOverDef);
-		return tsh;
+		return tsh.build();
 	}
 	
 	//DefaultFunctionWithIteration
@@ -254,10 +253,10 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("map", DefaultingMap.this.map);
-			return tsh;
+			return tsh.build();
 		}
 		
 		@Override
@@ -383,10 +382,10 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("map", DefaultingMap.this.map);
-			return tsh;
+			return tsh.build();
 		}
 	}
 	
@@ -438,11 +437,11 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("k", this.k);
 			tsh.add("v", this.v);
-			return tsh;
+			return tsh.build();
 		}
 		
 		@Override

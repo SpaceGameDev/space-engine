@@ -1,7 +1,6 @@
 package space.util.baseobject;
 
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -22,12 +21,12 @@ public interface BaseObject extends Makeable, Copyable, ToString {
 		Copyable.putCopyFunction(clazz, copy);
 	}
 	
-	static <OBJ> void initClassAll(Class<OBJ> clazz, Supplier<OBJ> make, UnaryOperator<OBJ> copy, BiFunction<ToStringHelperCollection, OBJ, ToStringHelperCollection> toTSH) {
+	static <OBJ> void initClassAll(Class<OBJ> clazz, Supplier<OBJ> make, UnaryOperator<OBJ> copy, BiFunction<ToStringHelper<?>, OBJ, Object> toTSH) {
 		Makeable.putMakeFunction(clazz, make);
 		Copyable.putCopyFunction(clazz, copy);
 		ToString.putToTSHFunction(clazz, toTSH);
 	}
 	
 	@Override
-	ToStringHelperInstance toTSH(ToStringHelperCollection api);
+	<T> T toTSH(ToStringHelper<T> api);
 }

@@ -1,9 +1,8 @@
 package space.util.sync.awaitable;
 
 import space.util.baseobject.BaseObject;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,10 +50,10 @@ public class BooleanSignalable implements BaseObject, IResetable {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("signaled", this.signaled);
-		return tsh;
+		return tsh.build();
 	}
 	
 	@Override

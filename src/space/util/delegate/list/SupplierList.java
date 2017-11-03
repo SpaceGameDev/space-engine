@@ -2,8 +2,7 @@ package space.util.delegate.list;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -193,8 +192,8 @@ public class SupplierList<E> implements BaseObject, List<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("supplier", this.list);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("supplier", this.list);
 	}
 	
 	@Override

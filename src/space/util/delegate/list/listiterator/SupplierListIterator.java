@@ -2,8 +2,7 @@ package space.util.delegate.list.listiterator;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.ListIterator;
 import java.util.function.Consumer;
@@ -84,8 +83,8 @@ public class SupplierListIterator<E> implements BaseObject, ListIterator<E> {
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		return api.getModifier().getInstance("supplier", iterator);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier("supplier", iterator);
 	}
 	
 	@Override

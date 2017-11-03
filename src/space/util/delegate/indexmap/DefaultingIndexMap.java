@@ -5,9 +5,8 @@ import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
@@ -232,12 +231,12 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	}
 	
 	@Override
-	public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-		TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("def", this.def);
 		tsh.add("iterateOverDef", this.iterateOverDef);
-		return tsh;
+		return tsh.build();
 	}
 	
 	@Override

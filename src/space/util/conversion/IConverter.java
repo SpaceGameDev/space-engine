@@ -2,9 +2,8 @@ package space.util.conversion;
 
 import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
-import space.util.string.toStringHelperOld.ToStringHelperCollection;
-import space.util.string.toStringHelperOld.ToStringHelperInstance;
-import space.util.string.toStringHelperOld.objects.TSHObjects.TSHObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 public interface IConverter<FROM, TO> {
 	
@@ -78,11 +77,11 @@ public interface IConverter<FROM, TO> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("th", this.th);
 			tsh.add("next", this.next);
-			return tsh;
+			return tsh.build();
 		}
 		
 		@Override
@@ -122,11 +121,11 @@ public interface IConverter<FROM, TO> {
 		}
 		
 		@Override
-		public ToStringHelperInstance toTSH(ToStringHelperCollection api) {
-			TSHObjectsInstance tsh = api.getObjectPhaser().getInstance(this);
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("before", this.before);
 			tsh.add("th", this.th);
-			return tsh;
+			return tsh.build();
 		}
 		
 		@Override
