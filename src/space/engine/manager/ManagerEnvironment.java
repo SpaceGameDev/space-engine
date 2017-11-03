@@ -8,6 +8,6 @@ public class ManagerEnvironment extends Environment {
 	public ClassCollection classCollection;
 	
 	public ManagerEnvironment() {
-	
+
 	}
 }
