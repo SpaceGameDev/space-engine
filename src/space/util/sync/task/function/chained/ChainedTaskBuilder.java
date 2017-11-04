@@ -8,7 +8,6 @@ import space.util.sync.task.basic.MultiTask;
 import space.util.sync.task.function.TypeHandlerTaskCreator;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node.NodeTask;
-import space.util.sync.task.function.creator.IFunctionTaskCreator;
 import space.util.sync.task.function.typehandler.ITypeHandler;
 
 import java.util.ArrayList;
@@ -87,7 +86,8 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		multithread = null;
 	}
 	
-	public static class ChainedTaskSinglethreaded<FUNCTION> implements IFunctionTaskCreator<FUNCTION> {
+	//for some reason javac does not like there to be imports
+	public static class ChainedTaskSinglethreaded<FUNCTION> implements space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task;
 		
@@ -110,7 +110,8 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		}
 	}
 	
-	public static class ChainedTaskMultithreaded<FUNCTION> implements IFunctionTaskCreator<FUNCTION> {
+	//for some reason javac does not like there to be imports
+	public static class ChainedTaskMultithreaded<FUNCTION> implements space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
 		
 		public List<Node> allNodes = new ArrayList<>();
 		public List<Node> firstNodes = new ArrayList<>();
