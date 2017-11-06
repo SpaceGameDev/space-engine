@@ -1,28 +1,28 @@
 package space.util.gui.monofont;
 
-import space.util.conversion.ToObject;
 import space.util.gui.elements.direction.GuiColumn;
 import space.util.gui.elements.direction.GuiDirectional;
 import space.util.gui.elements.direction.GuiRow;
 import space.util.gui.elements.direction.GuiTable;
-import space.util.gui.elements.objects.GuiArray;
-import space.util.gui.elements.objects.GuiVariable;
 import space.util.gui.elements.text.GuiText1D;
 import space.util.gui.elements.text.GuiText2D;
+import space.util.gui.elements.tsh.GuiArray;
+import space.util.gui.elements.tsh.GuiModifier;
+import space.util.gui.elements.tsh.GuiVariable;
 import space.util.gui.monofont.elements.direction.MonofontColumn;
 import space.util.gui.monofont.elements.direction.MonofontDirectional;
 import space.util.gui.monofont.elements.direction.MonofontRow;
 import space.util.gui.monofont.elements.direction.MonofontTable;
-import space.util.gui.monofont.elements.objects.MonofontArray;
-import space.util.gui.monofont.elements.objects.MonofontVariable;
 import space.util.gui.monofont.elements.text.MonofontText1D;
 import space.util.gui.monofont.elements.text.MonofontText2D;
+import space.util.gui.monofont.elements.tsh.MonofontArray;
+import space.util.gui.monofont.elements.tsh.MonofontModifier;
+import space.util.gui.monofont.elements.tsh.MonofontVariable;
 import space.util.gui.simple.SimpleGuiApi;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
+import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.ToStringHelper;
-
-import java.util.Arrays;
 
 public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements ToStringHelper<MonofontGuiElement> {
 	
@@ -37,9 +37,10 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 		//text
 		addElements(MonofontText1D::new, MonofontText1D.class, GuiText1D.class);
 		addElements(MonofontText2D::new, MonofontText2D.class, GuiText2D.class);
-		//object
-		addElements(MonofontVariable::new, MonofontVariable.class, GuiVariable.class);
+		//tsh
 		addElements(MonofontArray::new, MonofontArray.class, GuiArray.class);
+		addElements(MonofontArray::new, MonofontModifier.class, GuiModifier.class);
+		addElements(MonofontVariable::new, MonofontVariable.class, GuiVariable.class);
 //		new SimpleGuiElementSearcher<>(this, false).run();
 	}
 	
@@ -159,10 +160,12 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	public MonofontGuiElement toString(Object obj) {
 		if (obj instanceof MonofontGuiElement)
 			return (MonofontGuiElement) obj;
-//		if (obj instanceof CharSequence)
-//			return toString((CharSequence) obj);
-//		if (obj instanceof CharSequence2D)
-//			return toString((CharSequence2D) obj);
+		if (obj instanceof String)
+			return toString((String) obj);
+		if (obj instanceof CharSequence2D)
+			return toString((CharSequence2D) obj);
+		if (obj instanceof CharSequence)
+			return toString((CharSequence) obj);
 		if (obj instanceof Object[])
 			return toString((Object[]) obj);
 		return create(MonofontText1D.class).setCharSequence(obj.toString());
@@ -174,6 +177,44 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
 		return list;
+	}
+	
+	//String
+	@Override
+	public MonofontGuiElement toString(CharSequence str) {
+		return create(MonofontText1D.class).setCharSequence(str);
+	}
+	
+	@Override
+	public MonofontGuiElement toString(String str) {
+		return create(MonofontText1D.class).setCharSequence(str);
+	}
+	
+	@Override
+	public MonofontGuiElement toString(CharSequence2D str) {
+		return create(MonofontText2D.class).setCharSequence(str);
+	}
+	
+	@Override
+	public MonofontGuiElement toString(String2D str) {
+		return create(MonofontText2D.class).setCharSequence(str);
+	}
+	
+	//modifier
+	@Override
+	public MonofontGuiElement createModifier(String modifier, Object value) {
+		return new MonofontModifier(modifier, value);
+	}
+	
+	//objects
+	@Override
+	public ToStringHelperObjectsInstance<MonofontGuiElement> createObjectInstance(Object obj) {
+		return new AbstractToStringHelperObjectsInstance<MonofontGuiElement>(this) {
+			@Override
+			public MonofontGuiElement build() {
+				return null;
+			}
+		};
 	}
 	
 //	//to extra

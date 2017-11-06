@@ -21,10 +21,10 @@ public abstract class MonofontGuiElementCaching extends MonofontGuiElement imple
 	}
 	
 	public void rebuild() {
-		if (!isBuild) {
-			buffer = rebuild0();
-			isBuild = true;
-		}
+		if (isBuild)
+			return;
+		buffer = rebuild0();
+		isBuild = true;
 	}
 	
 	public abstract CharSequence2D rebuild0();
@@ -41,7 +41,13 @@ public abstract class MonofontGuiElementCaching extends MonofontGuiElement imple
 	
 	@Override
 	public void clear() {
-		modification();
 		buffer = null;
+		modification();
+	}
+	
+	@Override
+	public void setParent(MonofontGuiElement parent) {
+		super.setParent(parent);
+		modification();
 	}
 }

@@ -1,6 +1,6 @@
-package space.util.gui.monofont.elements.objects;
+package space.util.gui.monofont.elements.tsh;
 
-import space.util.gui.elements.objects.GuiArray;
+import space.util.gui.elements.tsh.GuiArray;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.elements.direction.MonofontElementList;
 import space.util.gui.monofont.tableCreator.MonofontTableCreatorArray;

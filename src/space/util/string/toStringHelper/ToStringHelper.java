@@ -95,6 +95,15 @@ public interface ToStringHelper<T> {
 	
 	T toString(Object[] obj, int from, int to);
 	
+	//String
+	T toString(CharSequence str);
+	
+	T toString(String str);
+	
+	T toString(CharSequence2D str);
+	
+	T toString(String2D str);
+	
 	//modifier
 	T createModifier(String modifier, Object value);
 	

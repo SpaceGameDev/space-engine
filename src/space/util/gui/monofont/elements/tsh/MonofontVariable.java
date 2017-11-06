@@ -1,6 +1,6 @@
-package space.util.gui.monofont.elements.objects;
+package space.util.gui.monofont.elements.tsh;
 
-import space.util.gui.elements.objects.GuiVariable;
+import space.util.gui.elements.tsh.GuiVariable;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;

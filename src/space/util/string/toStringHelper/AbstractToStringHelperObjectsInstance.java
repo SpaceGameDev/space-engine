@@ -7,10 +7,12 @@ import java.util.List;
 
 public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStringHelperObjectsInstance<T> {
 	
+	public Object object;
 	public ToStringHelper<T> helper;
 	public List<Entry<T>> list = new ArrayList<>();
 	
-	public AbstractToStringHelperObjectsInstance(ToStringHelper<T> helper) {
+	public AbstractToStringHelperObjectsInstance(Object object, ToStringHelper<T> helper) {
+		this.object = object;
 		this.helper = helper;
 	}
 	

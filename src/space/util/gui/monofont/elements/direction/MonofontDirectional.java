@@ -12,22 +12,28 @@ public class MonofontDirectional extends MonofontElementList implements GuiDirec
 		MonofontTableCreatorIncludingTable.toIncludeList.add(MonofontDirectional.class);
 	}
 	
-	//I'd like to cache this value, but either it could break some stuff or the overhead isn't really worth it
-	@SuppressWarnings({"SimplifiableIfStatement", "RedundantIfStatement"})
+	protected boolean isRowLike;
+	
 	public boolean isRowLike() {
+		rebuild();
+		return isRowLike;
+	}
+	
+	protected void calcIsRowLike() {
 		if (parent == null)
-			return true;
+			isRowLike = true;
 		if (parent instanceof MonofontDirectional)
-			return !((MonofontDirectional) parent).isRowLike();
+			isRowLike = !((MonofontDirectional) parent).isRowLike();
 		if (parent instanceof MonofontColumn)
-			return true;
+			isRowLike = true;
 		if (parent instanceof MonofontRow)
-			return false;
-		return true;
+			isRowLike = false;
+		isRowLike = true;
 	}
 	
 	@Override
 	public CharSequence2D rebuild0() {
+		calcIsRowLike();
 		return style.makeTable(this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, isRowLike() ? 0 : 1));
 	}
 }

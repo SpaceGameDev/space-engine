@@ -1,4 +1,4 @@
-package space.util.gui.elements.objects;
+package space.util.gui.elements.tsh;
 
 import space.util.gui.GuiElement;
 import space.util.gui.elements.direction.GuiDirectional;
