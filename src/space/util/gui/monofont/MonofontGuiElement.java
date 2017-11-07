@@ -33,4 +33,9 @@ public abstract class MonofontGuiElement implements GuiElement<MonofontGuiElemen
 	
 	//build
 	public abstract CharSequence2D build();
+	
+	@Override
+	public String toString() {
+		return build().toString();
+	}
 }

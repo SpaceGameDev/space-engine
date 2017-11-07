@@ -14,10 +14,10 @@ import java.util.ListIterator;
 /**
  * makes a table with full borders out of single characters
  */
-public class MonofontObjectsCreatorImpl implements IMonofontObjectsCreator {
+public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 	
 	@SuppressWarnings("unused")
-	public static IMonofontObjectsCreator DEFAULT = new MonofontObjectsCreatorImpl('|', '-', '+', ": ");
+	public static MonofontObjectsCreator INSTANCE = new MonofontObjectsCreatorImpl('|', '-', '+', ": ");
 	
 	public char fillChar;
 	public char lineUpDown;

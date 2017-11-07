@@ -17,6 +17,7 @@ import space.util.gui.monofont.elements.text.MonofontText1D;
 import space.util.gui.monofont.elements.text.MonofontText2D;
 import space.util.gui.monofont.elements.tsh.MonofontArray;
 import space.util.gui.monofont.elements.tsh.MonofontModifier;
+import space.util.gui.monofont.elements.tsh.MonofontObjects;
 import space.util.gui.monofont.elements.tsh.MonofontVariable;
 import space.util.gui.simple.SimpleGuiApi;
 import space.util.string.CharSequence2D;
@@ -209,14 +210,14 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	//objects
 	@Override
 	public ToStringHelperObjectsInstance<MonofontGuiElement> createObjectInstance(Object obj) {
-		return new AbstractToStringHelperObjectsInstance<MonofontGuiElement>(this) {
+		return new AbstractToStringHelperObjectsInstance<MonofontGuiElement>(obj, this) {
 			@Override
 			public MonofontGuiElement build() {
-				return null;
+				return new MonofontObjects(this);
 			}
 		};
 	}
-	
+
 //	//to extra
 //	@Override
 //	public MonofontGuiElement toString(CharSequence obj) {
