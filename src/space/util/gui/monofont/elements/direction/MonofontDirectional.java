@@ -2,14 +2,14 @@ package space.util.gui.monofont.elements.direction;
 
 import space.util.gui.elements.direction.GuiDirectional;
 import space.util.gui.monofont.MonofontGuiElement;
-import space.util.gui.monofont.tableCreator.MonofontTableCreatorIncludingTable;
+import space.util.gui.monofont.MonofontIncluding;
 import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
 import space.util.string.CharSequence2D;
 
 public class MonofontDirectional extends MonofontElementList implements GuiDirectional<MonofontGuiElement> {
 	
 	static {
-		MonofontTableCreatorIncludingTable.toIncludeList.add(MonofontDirectional.class);
+		MonofontIncluding.toIncludeList.add(MonofontDirectional.class);
 	}
 	
 	protected boolean isRowLike;

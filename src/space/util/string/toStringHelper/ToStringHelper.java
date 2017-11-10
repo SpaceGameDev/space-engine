@@ -40,35 +40,35 @@ public interface ToStringHelper<T> {
 	
 	//array
 	default T toString(byte[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(short[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(int[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(long[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(float[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(double[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(boolean[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	default T toString(char[] obj) {
-		return toString(obj, 0, obj.length);
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	//array from to
@@ -104,6 +104,9 @@ public interface ToStringHelper<T> {
 	
 	T toString(String2D str);
 	
+	//null
+	T toStringNull();
+	
 	//modifier
 	T createModifier(String modifier, Object value);
 	
@@ -131,35 +134,59 @@ public interface ToStringHelper<T> {
 		
 		//array
 		default void add(String name, byte[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, short[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, int[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, long[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, float[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, double[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, boolean[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		default void add(String name, char[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		//array from to
@@ -182,8 +209,13 @@ public interface ToStringHelper<T> {
 		//object
 		void add(String name, Object obj);
 		
+		void addNull(String name);
+		
 		default void add(String name, Object[] obj) {
-			add(name, obj, 0, obj.length);
+			if (obj == null)
+				addNull(name);
+			else
+				add(name, obj, 0, obj.length);
 		}
 		
 		void add(String name, Object[] obj, int from, int to);

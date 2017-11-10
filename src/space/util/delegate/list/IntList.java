@@ -10,7 +10,8 @@ import java.util.Arrays;
 public class IntList implements BaseObject {
 	
 	static {
-		BaseObject.initClass(IntList.class, IntList::new, d -> new IntList(Copyable.copy(d.array)));
+		//noinspection RedundantTypeArguments
+		BaseObject.<IntList>initClass(IntList.class, IntList::new, d -> new IntList(Copyable.copy(d.array)));
 	}
 	
 	public static final IntList EMPTY = new IntList(0);

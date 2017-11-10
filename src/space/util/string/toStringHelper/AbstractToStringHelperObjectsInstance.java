@@ -21,7 +21,7 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 		return build().toString();
 	}
 	
-	//add
+	//native
 	@Override
 	public void add(String name, byte obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
@@ -62,6 +62,7 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
+	//array
 	@Override
 	public void add(String name, byte[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
@@ -102,6 +103,7 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
+	//object
 	@Override
 	public void add(String name, Object obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
@@ -110,6 +112,11 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 	@Override
 	public void add(String name, Object[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
+	}
+	
+	@Override
+	public void addNull(String name) {
+		list.add(new Entry<>(name, helper.toStringNull()));
 	}
 	
 	public static class Entry<T> {

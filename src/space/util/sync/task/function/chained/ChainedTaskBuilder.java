@@ -1,7 +1,10 @@
 package space.util.sync.task.function.chained;
 
+import space.util.baseobject.BaseObject;
 import space.util.baseobject.interfaces.ICache;
 import space.util.dependency.IDependency;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.sync.task.basic.AbstractRunnableTask;
 import space.util.sync.task.basic.ITask;
 import space.util.sync.task.basic.MultiTask;
@@ -17,7 +20,12 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements ICache {
+public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements BaseObject, ICache {
+	
+	static {
+		//noinspection RedundantTypeArguments
+		BaseObject.<ChainedTaskBuilder>initClass(ChainedTaskBuilder.class, ChainedTaskBuilder::new);
+	}
 	
 	//boolean fields
 	/**
@@ -86,8 +94,25 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		multithread = null;
 	}
 	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("singlethreadedOnly", this.singlethreadedOnly);
+		tsh.add("keepMultithreaded", this.keepMultithreaded);
+		tsh.add("optimizeExecutionPriority", this.optimizeExecutionPriority);
+		tsh.add("list", this.list);
+		tsh.add("singlethread", this.singlethread);
+		tsh.add("multithread", this.multithread);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
 	//for some reason javac does not like there to be imports
-	public static class ChainedTaskSinglethreaded<FUNCTION> implements space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskSinglethreaded<FUNCTION> implements BaseObject, space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task;
 		
@@ -108,10 +133,22 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				}
 			};
 		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("task", this.task);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
+		}
 	}
 	
 	//for some reason javac does not like there to be imports
-	public static class ChainedTaskMultithreaded<FUNCTION> implements space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskMultithreaded<FUNCTION> implements BaseObject, space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
 		
 		public List<Node> allNodes = new ArrayList<>();
 		public List<Node> firstNodes = new ArrayList<>();
@@ -157,7 +194,20 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			return new ChainedTaskMultithreadedTask(handler);
 		}
 		
-		public class Node extends TypeHandlerTaskCreator<FUNCTION> {
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("allNodes", this.allNodes);
+			tsh.add("firstNodes", this.firstNodes);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
+		}
+		
+		public class Node extends TypeHandlerTaskCreator<FUNCTION> implements BaseObject {
 			
 			public IDependency dep;
 			public int depCnt;
@@ -178,7 +228,22 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				return new NodeTask(handler);
 			}
 			
-			public class NodeTask extends TypeHandlerTask {
+			@Override
+			public <T> T toTSH(ToStringHelper<T> api) {
+				ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+				tsh.add("func", this.func);
+				tsh.add("dep", this.dep);
+				tsh.add("depCnt", this.depCnt);
+				tsh.add("next", this.next);
+				return tsh.build();
+			}
+			
+			@Override
+			public String toString() {
+				return toString0();
+			}
+			
+			public class NodeTask extends TypeHandlerTask implements BaseObject {
 				
 				public ChainedTaskMultithreadedTask exec;
 				public AtomicInteger callCnt;
@@ -205,18 +270,24 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				}
 				
 				@Override
-				public String toString() {
-					return dep.uuid() + ": " + callCnt.get();
+				public <T> T toTSH(ToStringHelper<T> api) {
+					ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+					tsh.add("executionStarted", this.executionStarted);
+					tsh.add("result", this.result);
+					tsh.add("exception", this.exception);
+					tsh.add("handler", this.handler);
+					tsh.add("callCnt", this.callCnt);
+					return tsh.build();
 				}
-			}
-			
-			@Override
-			public String toString() {
-				return dep.uuid();
+				
+				@Override
+				public String toString() {
+					return toString0();
+				}
 			}
 		}
 		
-		public class ChainedTaskMultithreadedTask extends MultiTask {
+		public class ChainedTaskMultithreadedTask extends MultiTask implements BaseObject {
 			
 			public ITypeHandler<FUNCTION> handler;
 			public Executor executor;
@@ -241,6 +312,24 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			
 			public void runNode(Node node) {
 				map.get(node).call();
+			}
+			
+			@Override
+			public <T> T toTSH(ToStringHelper<T> api) {
+				ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+				tsh.add("executionStarted", this.executionStarted);
+				tsh.add("result", this.result);
+				tsh.add("subTasks", this.subTasks);
+				tsh.add("callCnt", this.callCnt);
+				tsh.add("exception", this.exception);
+				tsh.add("handler", this.handler);
+				tsh.add("executor", this.executor);
+				return tsh.build();
+			}
+			
+			@Override
+			public String toString() {
+				return toString0();
 			}
 		}
 	}

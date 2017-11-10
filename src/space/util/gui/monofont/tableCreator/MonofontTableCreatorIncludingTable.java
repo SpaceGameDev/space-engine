@@ -1,15 +1,13 @@
 package space.util.gui.monofont.tableCreator;
 
 import space.util.gui.monofont.MonofontGuiElement;
+import space.util.gui.monofont.MonofontIncluding;
 import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder2D;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static space.util.ArrayUtils.getSafeO;
 
@@ -20,7 +18,6 @@ public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSing
 	
 	@SuppressWarnings("unused")
 	public static IMonofontTableCreator DEFAULT = new MonofontTableCreatorIncludingTable('|', '-', '+');
-	public static List<Class<?>> toIncludeList = new ArrayList<>();
 	
 	public boolean allowIncluding = true;
 	
@@ -38,10 +35,10 @@ public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSing
 	
 	@Override
 	public CharSequence2D makeTable(MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
-		return (allowIncluding && guiElement.parent != null && toIncludeList.contains(guiElement.parent.getClass())) ? makeTableNoBorder(guiElement, valueTable) : super.makeTable(guiElement, valueTable);
+		return (allowIncluding && guiElement.parent != null && MonofontIncluding.toIncludeList.contains(guiElement.parent.getClass())) ? makeTableNoBorder(valueTable) : super.makeTable(guiElement, valueTable);
 	}
 	
-	public CharSequence2D makeTableNoBorder(MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
+	public CharSequence2D makeTableNoBorder(IndexMultiMap<CharSequence2D> valueTable) {
 		//axis size
 		int[] size = new int[] {valueTable.size(), valueTable.maxSize(1)};
 		IndexAxisMapInt axis = new IndexAxisMapInt(); //content index

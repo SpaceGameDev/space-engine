@@ -5,9 +5,9 @@ import space.util.gui.elements.direction.GuiTable;
 import space.util.gui.monofont.IMonofontWithStyle;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
+import space.util.gui.monofont.MonofontIncluding;
 import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
 import space.util.gui.monofont.tableCreator.MonofontTableCreatorDefault;
-import space.util.gui.monofont.tableCreator.MonofontTableCreatorIncludingTable;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.util.indexmap.multi.IndexMultiMap2D;
@@ -16,7 +16,7 @@ import space.util.string.CharSequence2D;
 public class MonofontTable extends MonofontGuiElementCaching implements GuiTable<MonofontGuiElement>, IMonofontWithStyle {
 	
 	static {
-		MonofontTableCreatorIncludingTable.toIncludeList.add(MonofontTable.class);
+		MonofontIncluding.toIncludeList.add(MonofontTable.class);
 	}
 	
 	public IMonofontTableCreator style = MonofontTableCreatorDefault.STYLE_DEFAULT;

@@ -1,8 +1,9 @@
 package space.util.sync.task.function.chained;
 
+import space.util.baseobject.ToStringInitializationOfBasicObjects;
 import space.util.delegate.list.IntList;
-import space.util.sync.task.basic.ITask;
-import space.util.sync.task.function.typehandler.TypeConsumer;
+import space.util.gui.monofont.MonofontGuiApi;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,6 +20,8 @@ public class ChainedTest {
 	public static final boolean workCheckInterrupt = true;
 	
 	public static void main(String[] args) throws Exception {
+		ToStringHelper.setDefault(MonofontGuiApi.INSTANCE);
+		ToStringInitializationOfBasicObjects.init();
 		try {
 			if (prestart)
 				pool.prestartAllCoreThreads();
@@ -38,20 +41,23 @@ public class ChainedTest {
 			builder.addTask("no6", integer -> doWork("no6", integer, ChainedTest::actualWork));
 			builder.addTask("no42", integer -> doWork("no42", integer, ChainedTest::actualWork));
 			builder.addTask("requiredByPri", null, new String[] {"priority"}, integer -> doWork("requiredByPri", integer, ChainedTest::actualWork));
+
+			builder.getMultithread();
+			System.out.println(builder);
 			
-			ITask task = builder.execute(pool, new TypeConsumer<>(42));
-			
-			if (doCancel) {
-				Thread.sleep(2250);
-				System.out.println("--- CANCEL!");
-				task.cancel(true);
-			}
-			
-			task.await();
-			System.out.println("--- DONE!");
-			Throwable th = task.getException();
-			if (th != null)
-				th.printStackTrace();
+//			ITask task = builder.execute(pool, new TypeConsumer<>(42));
+//
+//			if (doCancel) {
+//				Thread.sleep(2250);
+//				System.out.println("--- CANCEL!");
+//				task.cancel(true);
+//			}
+//
+//			task.await();
+//			System.out.println("--- DONE!");
+//			Throwable th = task.getException();
+//			if (th != null)
+//				th.printStackTrace();
 		} finally {
 			pool.shutdown();
 		}

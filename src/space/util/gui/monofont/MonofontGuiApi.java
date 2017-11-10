@@ -1,5 +1,6 @@
 package space.util.gui.monofont;
 
+import space.util.baseobject.ToString;
 import space.util.gui.elements.direction.GuiColumn;
 import space.util.gui.elements.direction.GuiDirectional;
 import space.util.gui.elements.direction.GuiRow;
@@ -24,6 +25,8 @@ import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.ToStringHelper;
+
+import java.util.function.BiFunction;
 
 public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements ToStringHelper<MonofontGuiElement> {
 	
@@ -94,6 +97,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	//array
 	@Override
 	public MonofontGuiElement toString(byte[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -102,6 +107,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(short[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -110,6 +117,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(int[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -118,6 +127,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(long[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -126,6 +137,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(float[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -134,6 +147,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(double[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -142,6 +157,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(boolean[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -150,6 +167,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	
 	@Override
 	public MonofontGuiElement toString(char[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -161,6 +180,8 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	public MonofontGuiElement toString(Object obj) {
 		if (obj instanceof MonofontGuiElement)
 			return (MonofontGuiElement) obj;
+		if (obj instanceof ToString)
+			return ((ToString) obj).toTSH(this);
 		if (obj instanceof String)
 			return toString((String) obj);
 		if (obj instanceof CharSequence2D)
@@ -169,11 +190,18 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 			return toString((CharSequence) obj);
 		if (obj instanceof Object[])
 			return toString((Object[]) obj);
+		if (obj == null)
+			return toStringNull();
+		BiFunction<ToStringHelper<MonofontGuiElement>, Object, MonofontGuiElement> func = ToString.get(obj.getClass());
+		if (func != null)
+			return func.apply(this, obj);
 		return create(MonofontText1D.class).setCharSequence(obj.toString());
 	}
 	
 	@Override
 	public MonofontGuiElement toString(Object[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		MonofontArray list = create(MonofontArray.class);
 		for (int i = from; i < to; i++)
 			list.add(toString(obj[i]));
@@ -183,28 +211,34 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	//String
 	@Override
 	public MonofontGuiElement toString(CharSequence str) {
-		return create(MonofontText1D.class).setCharSequence(str);
+		return str == null ? toStringNull() : create(MonofontText1D.class).setCharSequence(str);
 	}
 	
 	@Override
 	public MonofontGuiElement toString(String str) {
-		return create(MonofontText1D.class).setCharSequence(str);
+		return str == null ? toStringNull() : create(MonofontText1D.class).setCharSequence(str);
 	}
 	
 	@Override
 	public MonofontGuiElement toString(CharSequence2D str) {
-		return create(MonofontText2D.class).setCharSequence(str);
+		return str == null ? toStringNull() : create(MonofontText2D.class).setCharSequence(str);
 	}
 	
 	@Override
 	public MonofontGuiElement toString(String2D str) {
-		return create(MonofontText2D.class).setCharSequence(str);
+		return str == null ? toStringNull() : create(MonofontText2D.class).setCharSequence(str);
+	}
+	
+	//null
+	@Override
+	public MonofontGuiElement toStringNull() {
+		return create(MonofontText1D.class).setCharSequence("null");
 	}
 	
 	//modifier
 	@Override
 	public MonofontGuiElement createModifier(String modifier, Object value) {
-		return new MonofontModifier(modifier, value);
+		return new MonofontModifier(modifier, toString(value));
 	}
 	
 	//objects
@@ -217,45 +251,4 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 			}
 		};
 	}
-
-//	//to extra
-//	@Override
-//	public MonofontGuiElement toString(CharSequence obj) {
-//		return create(MonofontText1D.class).setCharSequence("\"" + obj + "\"");
-//	}
-//
-//	@Override
-//	public MonofontGuiElement toString(CharSequence2D obj) {
-//		char[][] chars = obj.getChars();
-//		int height = obj.height();
-//
-//		char[][] nchars = new char[height][];
-//		int nmaxLength = obj.maxLength() + 2;
-//
-//		//first
-//		{
-//			char[] c = chars[0];
-//			char[] nc = new char[nmaxLength];
-//			System.arraycopy(c, 0, nc, 1, c.length);
-//			Arrays.fill(nc, c.length + 1, nc.length - 1, ' ');
-//			nc[0] = '"';
-//			nc[nc.length - 1] = '"';
-//			nchars[0] = nc;
-//		}
-//
-//		//rest
-//		for (int i = 1; i < height; i++) {
-//			char[] c = chars[height];
-//			char[] nc = new char[c.length + 1];
-//			System.arraycopy(c, 0, nc, 1, c.length);
-//			nc[0] = ' ';
-//			nchars[i] = nc;
-//		}
-//
-//		return create(MonofontText2D.class).setCharSequence(new String2D(nchars, nmaxLength));
-//	}
-//
-//	public MonofontGuiElement toString(MonofontGuiElement obj) {
-//		return obj;
-//	}
 }

@@ -1,12 +1,10 @@
 package space.util.string;
 
-import space.util.baseobject.ToString2D;
-
 /**
  * height: dimension[0]
  * length: dimension[1]
  */
-public interface CharSequence2D extends ToString2D {
+public interface CharSequence2D {
 	
 	//size
 	int height();
@@ -40,10 +38,5 @@ public interface CharSequence2D extends ToString2D {
 		}
 		
 		return new String(ret);
-	}
-	
-	@Override
-	default String2D toString2D() {
-		return new String2D(this);
 	}
 }

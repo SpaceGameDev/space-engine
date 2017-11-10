@@ -61,6 +61,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//array
 	@Override
 	public String toString(byte[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -74,6 +76,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(short[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -87,6 +91,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(int[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -100,6 +106,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(long[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -113,6 +121,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(float[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -126,6 +136,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(double[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -139,6 +151,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(boolean[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -152,6 +166,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	@Override
 	public String toString(char[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -166,6 +182,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//array object
 	@Override
 	public String toString(Object[] obj, int from, int to) {
+		if (obj == null)
+			return toStringNull();
 		CharBufferBuilder1D b = new CharBufferBuilder1D();
 		b.append('[');
 		for (int i = from; i < to; i++) {
@@ -180,22 +198,28 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//String
 	@Override
 	public String toString(CharSequence str) {
-		return str.toString();
+		return str == null ? toStringNull() : str.toString();
 	}
 	
 	@Override
 	public String toString(String str) {
-		return str;
+		return str == null ? toStringNull() : str;
 	}
 	
 	@Override
 	public String toString(CharSequence2D str) {
-		return str.toString();
+		return str == null ? toStringNull() : str.toString();
 	}
 	
 	@Override
 	public String toString(String2D str) {
-		return str.toString();
+		return str == null ? toStringNull() : str.toString();
+	}
+	
+	//null
+	@Override
+	public String toStringNull() {
+		return "null";
 	}
 	
 	//modifier
