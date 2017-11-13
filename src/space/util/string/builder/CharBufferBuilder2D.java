@@ -2,6 +2,7 @@ package space.util.string.builder;
 
 import space.util.ArrayUtils;
 import space.util.annotation.Self;
+import space.util.string.String2D;
 
 import java.util.Arrays;
 
@@ -380,6 +381,10 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		char[] n = new char[l];
 		System.arraycopy(old, 0, n, 0, l);
 		buffer[h] = n;
+	}
+	
+	public String2D toString2D() {
+		return new String2D(getChars(), maxX);
 	}
 	
 	@Override

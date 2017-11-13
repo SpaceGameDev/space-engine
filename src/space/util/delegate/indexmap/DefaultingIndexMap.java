@@ -20,8 +20,8 @@ import java.util.function.Supplier;
 public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements BaseObject {
 	
 	static {
-		//noinspection unchecked
-		BaseObject.initClass(DefaultingIndexMap.class, d -> new DefaultingIndexMap(Copyable.copy(d.indexMap), Copyable.copy(d.def), d.iterateOverDef));
+		//noinspection unchecked,RedundantTypeArguments
+		BaseObject.<DefaultingIndexMap>initClass(DefaultingIndexMap.class, d -> new DefaultingIndexMap(Copyable.copy(d.indexMap), Copyable.copy(d.def), d.iterateOverDef));
 	}
 	
 	public DefaultFunction<VALUE> def;

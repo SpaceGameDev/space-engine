@@ -11,6 +11,7 @@ import space.util.sync.task.basic.MultiTask;
 import space.util.sync.task.function.TypeHandlerTaskCreator;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node.NodeTask;
+import space.util.sync.task.function.creator.IFunctionTaskCreator;
 import space.util.sync.task.function.typehandler.ITypeHandler;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		//noinspection RedundantTypeArguments
 		BaseObject.<ChainedTaskBuilder>initClass(ChainedTaskBuilder.class, ChainedTaskBuilder::new);
 	}
+	
+	public static boolean hideCacheValues = true;
 	
 	//boolean fields
 	/**
@@ -101,8 +104,21 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		tsh.add("keepMultithreaded", this.keepMultithreaded);
 		tsh.add("optimizeExecutionPriority", this.optimizeExecutionPriority);
 		tsh.add("list", this.list);
-		tsh.add("singlethread", this.singlethread);
-		tsh.add("multithread", this.multithread);
+		
+		if (hideCacheValues) {
+			if (this.singlethread == null)
+				tsh.addNull("singlethread");
+			else {
+				tsh.add("singlethread", "exists");
+			}
+			if (this.multithread == null)
+				tsh.addNull("multithread");
+			else
+				tsh.add("multithread", "exists");
+		} else {
+			tsh.add("singlethread", this.singlethread);
+			tsh.add("multithread", this.multithread);
+		}
 		return tsh.build();
 	}
 	
@@ -111,8 +127,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		return toString0();
 	}
 	
-	//for some reason javac does not like there to be imports
-	public static class ChainedTaskSinglethreaded<FUNCTION> implements BaseObject, space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskSinglethreaded<FUNCTION> implements BaseObject, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task;
 		
@@ -147,8 +162,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		}
 	}
 	
-	//for some reason javac does not like there to be imports
-	public static class ChainedTaskMultithreaded<FUNCTION> implements BaseObject, space.util.sync.task.function.creator.IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskMultithreaded<FUNCTION> implements BaseObject, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<Node> allNodes = new ArrayList<>();
 		public List<Node> firstNodes = new ArrayList<>();
@@ -245,7 +259,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			
 			public class NodeTask extends TypeHandlerTask implements BaseObject {
 				
-				public ChainedTaskMultithreadedTask exec;
+				public ChainedTaskMultithreadedExecutor exec;
 				public AtomicInteger callCnt;
 				
 				public NodeTask(ITypeHandler<FUNCTION> handler) {
@@ -253,20 +267,20 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 					callCnt = new AtomicInteger(depCnt);
 				}
 				
-				public NodeTask init(ChainedTaskMultithreadedTask exec) {
+				public NodeTask init(ChainedTaskMultithreadedExecutor exec) {
 					this.exec = exec;
 					return this;
 				}
 				
 				public void call() {
 					if (callCnt.decrementAndGet() == 0)
-						exec.executor.execute(this);
+						exec.execute(this);
 				}
 				
 				@Override
 				protected synchronized void runHooks() {
 					super.runHooks();
-					next.forEach(exec::runNode);
+					exec.runNodes(next);
 				}
 				
 				@Override
@@ -287,7 +301,15 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			}
 		}
 		
-		public class ChainedTaskMultithreadedTask extends MultiTask implements BaseObject {
+		public interface ChainedTaskMultithreadedExecutor<FUNCTION> extends Executor {
+			
+			@Override
+			void execute(Runnable command);
+			
+			void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> node);
+		}
+		
+		public class ChainedTaskMultithreadedTask extends MultiTask implements ChainedTaskMultithreadedExecutor<FUNCTION>, BaseObject {
 			
 			public ITypeHandler<FUNCTION> handler;
 			public Executor executor;
@@ -306,12 +328,18 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			public synchronized void submit(Executor executor) {
 				startExecution();
 				this.executor = executor;
-				for (Node node : firstNodes)
-					runNode(node);
+				runNodes(firstNodes);
 			}
 			
-			public void runNode(Node node) {
-				map.get(node).call();
+			@Override
+			public void execute(Runnable command) {
+				executor.execute(command);
+			}
+			
+			@Override
+			public void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> nodes) {
+				for (ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node node : nodes)
+					map.get(node).call();
 			}
 			
 			@Override
@@ -331,6 +359,10 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			public String toString() {
 				return toString0();
 			}
+		}
+		
+		public class ToSinglethreadedTask {
+		
 		}
 	}
 }

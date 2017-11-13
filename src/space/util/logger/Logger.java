@@ -4,7 +4,11 @@ import space.util.string.CharSequence2D;
 
 public interface Logger {
 	
-	void print(LogLevel level, String str);
+	//log
+	void log(LogLevel level, String str);
 	
-	void print(LogLevel level, CharSequence2D str);
+	void log(LogLevel level, CharSequence2D str);
+	
+	//subLogger
+	Logger subLogger(String name);
 }

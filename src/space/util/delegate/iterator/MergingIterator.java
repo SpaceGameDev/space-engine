@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 public class MergingIterator<T> implements BaseObject, Iteratorable<T> {
 	
 	static {
-		//noinspection unchecked
-		BaseObject.initClass(MergingIterator.class, d -> new MergingIterator(Copyable.copy(d.iterators)));
+		//noinspection unchecked,RedundantTypeArguments
+		BaseObject.<MergingIterator>initClass(MergingIterator.class, d -> new MergingIterator(Copyable.copy(d.iterators)));
 	}
 	
 	public Iterator<T>[] iterators;

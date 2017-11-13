@@ -41,10 +41,9 @@ public class ChainedTest {
 			builder.addTask("no6", integer -> doWork("no6", integer, ChainedTest::actualWork));
 			builder.addTask("no42", integer -> doWork("no42", integer, ChainedTest::actualWork));
 			builder.addTask("requiredByPri", null, new String[] {"priority"}, integer -> doWork("requiredByPri", integer, ChainedTest::actualWork));
-
-			builder.getMultithread();
-			System.out.println(builder);
 			
+			System.out.println(builder);
+
 //			ITask task = builder.execute(pool, new TypeConsumer<>(42));
 //
 //			if (doCancel) {

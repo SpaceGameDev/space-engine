@@ -20,12 +20,12 @@ import java.util.function.Function;
 public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	
 	static {
-		//noinspection unchecked
-		BaseObject.initClass(DefaultingMap.class, d -> new DefaultingMap(Copyable.copy(d.map), Copyable.copy(d.def), d.iterateOverDef));
-		//noinspection unchecked
-		BaseObject.initClass(DefaultingMap.KeySet.class, d -> d);
-		//noinspection unchecked
-		BaseObject.initClass(DefaultingMap.EntrySet.class, d -> d);
+		//noinspection unchecked,RedundantTypeArguments
+		BaseObject.<DefaultingMap>initClass(DefaultingMap.class, d -> new DefaultingMap(Copyable.copy(d.map), Copyable.copy(d.def), d.iterateOverDef));
+		//noinspection unchecked,RedundantTypeArguments
+		BaseObject.<DefaultingMap.KeySet>initClass(DefaultingMap.KeySet.class, d -> d);
+		//noinspection unchecked,RedundantTypeArguments
+		BaseObject.<DefaultingMap.EntrySet>initClass(DefaultingMap.EntrySet.class, d -> d);
 	}
 	
 	public Function<K, V> def;

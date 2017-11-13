@@ -6,19 +6,24 @@ public abstract class AbstractLogger implements Logger {
 	
 	public LogLevel minLevel;
 	
+	public void setMinLevel(LogLevel minLevel) {
+		this.minLevel = minLevel;
+	}
+	
+	//log
 	@Override
-	public void print(LogLevel level, String str) {
+	public void log(LogLevel level, String str) {
 		if (minLevel.allowLog(level))
-			print0(str);
+			log0(level, str);
 	}
 	
 	@Override
-	public void print(LogLevel level, CharSequence2D str) {
+	public void log(LogLevel level, CharSequence2D str) {
 		if (minLevel.allowLog(level))
-			print0(str);
+			log0(level, str);
 	}
 	
-	protected abstract void print0(String str);
+	protected abstract void log0(LogLevel level, String str);
 	
-	protected abstract void print0(CharSequence2D str);
+	protected abstract void log0(LogLevel level, CharSequence2D str);
 }
