@@ -21,8 +21,8 @@ import java.util.function.BiConsumer;
 
 public class BaseLogger extends LoggerImpl {
 	
-	ChainedTaskBuilder<Prefix> handler = new ChainedTaskBuilder<>(true, true, false);
-	ChainedTaskBuilder<BiConsumer<LogMessage, CharSequence2D>> printers = new ChainedTaskBuilder<>(true, true, false);
+	ChainedTaskBuilder<Prefix> handler = new ChainedTaskBuilder<>(true);
+	ChainedTaskBuilder<BiConsumer<LogMessage, CharSequence2D>> printers = new ChainedTaskBuilder<>(true);
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {

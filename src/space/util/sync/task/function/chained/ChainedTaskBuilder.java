@@ -20,12 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements BaseObject, ICache {
 	
 	static {
 		//noinspection RedundantTypeArguments
-		BaseObject.<ChainedTaskBuilder>initClass(ChainedTaskBuilder.class, ChainedTaskBuilder::new);
+		BaseObject.<ChainedTaskBuilder>initClass(ChainedTaskBuilder.class, (Supplier<ChainedTaskBuilder>) ChainedTaskBuilder::new);
 	}
 	
 	public static boolean hideCacheValues = true;
@@ -53,16 +54,21 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 	
 	//const
 	public ChainedTaskBuilder() {
-		this(false, false);
+		this(false, false, false);
 	}
 	
-	public ChainedTaskBuilder(boolean singlethreadedOnly, boolean preferSinglethreaded, boolean preferMultithreaded) {
-		this(singlethreadedOnly, preferSinglethreaded & preferMultithreaded);
+	public ChainedTaskBuilder(boolean singlethreadedOnly) {
+		this(singlethreadedOnly, false, false);
 	}
 	
-	public ChainedTaskBuilder(boolean singlethreadedOnly, boolean keepMultithreaded) {
+	public ChainedTaskBuilder(boolean preferSinglethreaded, boolean preferMultithreaded) {
+		this(preferSinglethreaded && !preferMultithreaded, preferSinglethreaded && preferMultithreaded, false);
+	}
+	
+	public ChainedTaskBuilder(boolean singlethreadedOnly, boolean keepMultithreaded, boolean optimizeExecutionPriority) {
 		this.singlethreadedOnly = singlethreadedOnly;
 		this.keepMultithreaded = keepMultithreaded;
+		this.optimizeExecutionPriority = optimizeExecutionPriority;
 	}
 	
 	public ChainedTaskBuilder setSinglethreadedOnly(boolean singlethreadedOnly) {
@@ -223,6 +229,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		
 		public class Node extends TypeHandlerTaskCreator<FUNCTION> implements BaseObject {
 			
+			public FUNCTION func;
 			public IDependency dep;
 			public int depCnt;
 			public List<Node> next = new ArrayList<>();
@@ -301,10 +308,9 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			}
 		}
 		
-		public interface ChainedTaskMultithreadedExecutor<FUNCTION> extends Executor {
+		public interface ChainedTaskMultithreadedExecutor<FUNCTION> {
 			
-			@Override
-			void execute(Runnable command);
+			void execute(ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node.NodeTask node);
 			
 			void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> node);
 		}
@@ -332,13 +338,13 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			}
 			
 			@Override
-			public void execute(Runnable command) {
-				executor.execute(command);
+			public void execute(NodeTask node) {
+				executor.execute(node);
 			}
 			
 			@Override
-			public void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> nodes) {
-				for (ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node node : nodes)
+			public void runNodes(Iterable<Node> nodes) {
+				for (Node node : nodes)
 					map.get(node).call();
 			}
 			
@@ -361,8 +367,17 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			}
 		}
 		
-		public class ToSinglethreadedTask {
-		
+		public class ToSinglethreadedTask implements ChainedTaskMultithreadedExecutor<FUNCTION> {
+			
+			@Override
+			public void execute(NodeTask node) {
+			
+			}
+			
+			@Override
+			public void runNodes(Iterable<Node> node) {
+			
+			}
 		}
 	}
 }
