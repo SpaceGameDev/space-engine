@@ -2,7 +2,6 @@ package space.engine.number;
 
 import space.engine.number.base.INumberBase;
 import space.engine.number.exception.NumberException;
-import space.util.conversion.IConverterSearchable;
 import space.util.conversion.smart.ConverterSmart;
 import space.util.conversion.smart.ConverterSmartCaching;
 import space.util.conversion.smart.ConverterSmartSameCheck;
