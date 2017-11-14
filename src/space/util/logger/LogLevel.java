@@ -6,6 +6,7 @@ package space.util.logger;
  * level = 0 are {@link LogLevel} INFO
  * level > 0 are any kind of warning or error
  */
+@SuppressWarnings("unused")
 public enum LogLevel {
 	
 	DIE(3),

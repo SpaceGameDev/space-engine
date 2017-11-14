@@ -13,6 +13,6 @@ public class LogLevelPrefix extends AbstractPrefix {
 	
 	@Override
 	public void accept(LogMessage logMessage) {
-		logMessage.prefix.append(start).append(logMessage.level).append(end);
+		logMessage.prefix.append(startChar).append(logMessage.level).append(endChar);
 	}
 }

@@ -2,21 +2,21 @@ package space.util.conversion.smart;
 
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
+import space.util.logger.Logger;
 import space.util.string.builder.IStringBuilder;
-import spaceOld.engine.logger.Logger;
 import spaceOld.util.string.builder.LayeredToString;
 
 public interface IConverterSmart<MIN> extends ConverterMap<MIN, MIN> {
 	
 	//convert
-	@Override
-	MIN convertNew(MIN from) throws UnsupportedOperationException;
-	
-	@Override
-	<LTO extends MIN> LTO convertInstance(MIN from, LTO ret);
-	
-	@Override
-	MIN convertType(MIN from, Class<? extends MIN> type);
+//	@Override
+//	MIN convertNew(MIN from) throws UnsupportedOperationException;
+//
+//	@Override
+//	<LTO extends MIN> LTO convertInstance(MIN from, LTO ret);
+//
+//	@Override
+//	MIN convertType(MIN from, Class<? extends MIN> type);
 	
 	//set
 	void setDefaultConversionMethod(ConverterSmartDefaultConversionMethod method);
