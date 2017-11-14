@@ -1,7 +1,7 @@
 package space.util.conversion.smart;
 
 import space.util.GetClass;
-import space.util.conversion.IConverter;
+import space.util.conversion.Converter;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.builder.IStringBuilder;
 
@@ -103,19 +103,19 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, IConverter<LFROM, LTO> conv, int weight) {
+	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, Converter<LFROM, LTO> conv, int weight) {
 		putConverter(classFrom, classTo, new ConverterSmartPriorityConverterWrapper<>(conv, weight));
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
 		return defConvMethod.getConverter(this, classFrom, classTo);
 	}
 	
 	//smart
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
 		Logger subLogger;
 		if (resolveSmartLogger != null) {
 			subLogger = new SubLogger(resolveSmartLogger, classFrom.getSimpleName() + " -> " + classTo.getSimpleName());
@@ -257,7 +257,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 			return (ConverterSmartPriorityConverter<CLAZZ, NODE>) mapConvertFrom.get(clazz);
 		}
 		
-		public <CLAZZ extends MIN> IConverter<? extends MIN, NODE> putConvertFrom(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<CLAZZ, NODE> node) {
+		public <CLAZZ extends MIN> Converter<? extends MIN, NODE> putConvertFrom(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<CLAZZ, NODE> node) {
 			return mapConvertFrom.put(clazz, node);
 		}
 		
@@ -266,7 +266,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 			return (ConverterSmartPriorityConverter<NODE, CLAZZ>) mapConvertTo.get(clazz);
 		}
 		
-		public <CLAZZ extends MIN> IConverter<NODE, ? extends MIN> putConvertTo(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<NODE, CLAZZ> node) {
+		public <CLAZZ extends MIN> Converter<NODE, ? extends MIN> putConvertTo(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<NODE, CLAZZ> node) {
 			return mapConvertTo.put(clazz, node);
 		}
 		
@@ -282,7 +282,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		int currWeight;
 		
 		ConverterSmartSmartStorage0<?, SUPER> superNode;
-		IConverter<SUPER, NODE> superConverter;
+		Converter<SUPER, NODE> superConverter;
 		
 		public ConverterSmartSmartStorage0() {
 		}
@@ -295,7 +295,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 			this.currWeight = currWeight;
 		}
 		
-		public ConverterSmartSmartStorage0(ConverterSmartNode<NODE> currNode, int currWeight, ConverterSmartSmartStorage0<?, SUPER> superNode, IConverter<SUPER, NODE> superConverter) {
+		public ConverterSmartSmartStorage0(ConverterSmartNode<NODE> currNode, int currWeight, ConverterSmartSmartStorage0<?, SUPER> superNode, Converter<SUPER, NODE> superConverter) {
 			this.currNode = currNode;
 			this.currWeight = currWeight;
 			this.superNode = superNode;
@@ -307,14 +307,14 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		}
 		
 		@SuppressWarnings("unchecked")
-		public <LFROM> IConverter<LFROM, NODE> resolve() {
+		public <LFROM> Converter<LFROM, NODE> resolve() {
 			if (hasSuper())
 				return resolve0();
 			return null;
 		}
 		
 		@SuppressWarnings("unchecked")
-		protected IConverter resolve0() {
+		protected Converter resolve0() {
 			if (!superNode.hasSuper())
 				return superConverter;
 			return superNode.resolve0().andThen(superConverter);

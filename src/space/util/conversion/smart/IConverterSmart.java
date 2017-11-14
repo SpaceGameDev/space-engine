@@ -1,11 +1,12 @@
 package space.util.conversion.smart;
 
-import space.util.conversion.IConverter;
+import space.util.conversion.Converter;
+import space.util.conversion.ConverterMap;
 import space.util.string.builder.IStringBuilder;
 import spaceOld.engine.logger.Logger;
 import spaceOld.util.string.builder.LayeredToString;
 
-public interface IConverterSmart<MIN> extends IConverter<MIN, MIN> {
+public interface IConverterSmart<MIN> extends ConverterMap<MIN, MIN> {
 	
 	//convert
 	@Override
@@ -29,14 +30,14 @@ public interface IConverterSmart<MIN> extends IConverter<MIN, MIN> {
 	
 	<LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, ConverterSmart.ConverterSmartPriorityConverter<LFROM, LTO> conv);
 	
-	<LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, IConverter<LFROM, LTO> conv, int weight);
+	<LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, Converter<LFROM, LTO> conv, int weight);
 	
-	<LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo);
+	<LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo);
 	
 	/**
 	 * @throws IllegalStateException when two ways have the same weight (if enabled)
 	 */
-	<LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException;
+	<LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException;
 	
 	void clearCache();
 	
@@ -44,32 +45,32 @@ public interface IConverterSmart<MIN> extends IConverter<MIN, MIN> {
 		
 		NormalGet {
 			@Override
-			public <MIN, LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo) {
+			public <MIN, LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo) {
 				return conv.getConverter(classFrom, classTo);
 			}
 		},
 		Smart {
 			@Override
-			public <MIN, LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo) {
+			public <MIN, LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo) {
 				return conv.getSmart(classFrom, classTo);
 			}
 		};
 		
-		public abstract <MIN, LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo);
+		public abstract <MIN, LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverter(ConverterSmart<MIN> conv, Class<LFROM> classFrom, Class<LTO> classTo);
 		
 	}
 	
-	interface ConverterSmartPriorityConverter<FROM, TO> extends IConverter<FROM, TO> {
+	interface ConverterSmartPriorityConverter<FROM, TO> extends Converter<FROM, TO> {
 		
 		int getWeight();
 	}
 	
 	class ConverterSmartPriorityConverterWrapper<FROM, TO> implements ConverterSmartPriorityConverter<FROM, TO>, LayeredToString {
 		
-		public IConverter<FROM, TO> conv;
+		public Converter<FROM, TO> conv;
 		public int weight;
 		
-		public ConverterSmartPriorityConverterWrapper(IConverter<FROM, TO> conv, int weight) {
+		public ConverterSmartPriorityConverterWrapper(Converter<FROM, TO> conv, int weight) {
 			this.conv = conv;
 			this.weight = weight;
 		}

@@ -1,6 +1,6 @@
 package space.util.conversion.smart;
 
-import space.util.conversion.IConverter;
+import space.util.conversion.Converter;
 import spaceOld.engine.logger.Logger;
 
 public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
@@ -60,17 +60,17 @@ public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, IConverter<LFROM, LTO> conv, int weight) {
+	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, Converter<LFROM, LTO> conv, int weight) {
 		converterSmart.putConverter(classFrom, classTo, conv, weight);
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
 		return converterSmart.getConverterDefaultMethod(classFrom, classTo);
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
 		return converterSmart.getSmart(classFrom, classTo);
 	}
 	

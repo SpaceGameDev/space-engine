@@ -1,6 +1,6 @@
 package space.util.conversion.smart;
 
-import space.util.conversion.IConverter;
+import space.util.conversion.Converter;
 import spaceOld.engine.logger.BaseLoggerNormal;
 import spaceOld.engine.logger.LogLevel;
 import spaceOld.engine.logger.Logger;
@@ -86,7 +86,7 @@ public class ConverterSmartTest {
 		public int x;
 	}
 	
-	public static class ConverterObjectFloatToObjectInt implements IConverter.IConverterSimple<ObjectFloat, ObjectInt> {
+	public static class ConverterObjectFloatToObjectInt implements Converter.IConverterSimple<ObjectFloat, ObjectInt> {
 		
 		@Override
 		public ObjectInt convertNew(ObjectFloat obj) throws UnsupportedOperationException {
@@ -106,7 +106,7 @@ public class ConverterSmartTest {
 		public short x;
 	}
 	
-	public static class ConverterObjectIntToObjectShort implements IConverter.IConverterSimple<ObjectInt, ObjectShort> {
+	public static class ConverterObjectIntToObjectShort implements Converter.IConverterSimple<ObjectInt, ObjectShort> {
 		
 		@Override
 		public ObjectShort convertNew(ObjectInt obj) throws UnsupportedOperationException {
@@ -126,7 +126,7 @@ public class ConverterSmartTest {
 		public int x;
 	}
 	
-	public static class ConverterObjectFloatToObjectInt0 implements IConverter.IConverterSimple<ObjectFloat, ObjectInt0> {
+	public static class ConverterObjectFloatToObjectInt0 implements Converter.IConverterSimple<ObjectFloat, ObjectInt0> {
 		
 		@Override
 		public ObjectInt0 convertNew(ObjectFloat obj) throws UnsupportedOperationException {
@@ -140,7 +140,7 @@ public class ConverterSmartTest {
 		}
 	}
 	
-	public static class ConverterObjectInt0ToObjectInt implements IConverter.IConverterSimple<ObjectInt0, ObjectInt> {
+	public static class ConverterObjectInt0ToObjectInt implements Converter.IConverterSimple<ObjectInt0, ObjectInt> {
 		
 		@Override
 		public ObjectInt convertNew(ObjectInt0 obj) throws UnsupportedOperationException {

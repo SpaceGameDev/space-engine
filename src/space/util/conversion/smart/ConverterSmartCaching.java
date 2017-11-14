@@ -1,13 +1,13 @@
 package space.util.conversion.smart;
 
-import space.util.conversion.ConverterMap;
-import space.util.conversion.IConverter;
+import space.util.conversion.impl.ConverterMapImpl;
+import space.util.conversion.Converter;
 import spaceOld.engine.logger.Logger;
 
 public class ConverterSmartCaching<MIN> implements IConverterSmart<MIN> {
 	
 	public ConverterSmart<MIN> converterSmart;
-	public ConverterMap<MIN, MIN> convCache = new ConverterMap<>();
+	public ConverterMapImpl<MIN, MIN> convCache = new ConverterMapImpl<>();
 	
 	public ConverterSmartCaching() {
 	}
@@ -61,19 +61,19 @@ public class ConverterSmartCaching<MIN> implements IConverterSmart<MIN> {
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, IConverter<LFROM, LTO> conv, int weight) {
+	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, Converter<LFROM, LTO> conv, int weight) {
 		converterSmart.putConverter(classFrom, classTo, conv, weight);
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getConverterDefaultMethod(Class<LFROM> classFrom, Class<LTO> classTo) {
 		return converterSmart.getConverterDefaultMethod(classFrom, classTo);
 	}
 	
 	//implement
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> IConverter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
-		IConverter<LFROM, LTO> conv = convCache.get(classFrom, classTo);
+	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
+		Converter<LFROM, LTO> conv = convCache.get(classFrom, classTo);
 		if (conv != null)
 			return conv;
 		

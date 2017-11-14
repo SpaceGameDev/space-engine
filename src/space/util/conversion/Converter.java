@@ -5,7 +5,7 @@ import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public interface IConverter<FROM, TO> {
+public interface Converter<FROM, TO> {
 	
 	/**
 	 * converts FROM to TO, making a new Instance of FROM
@@ -27,36 +27,25 @@ public interface IConverter<FROM, TO> {
 	 */
 	<LTO extends TO> LTO convertInstance(FROM from, LTO ret);
 	
-	/**
-	 * converts FROM to LTO, using creating an instance of supplied class and returning it.
-	 * It is not required that the returned instance is an instance of the supplied class.
-	 * By default it will call convertNew() and ignore the class argument.
-	 *
-	 * @throws space.util.conversion.exception.InvalidConversionException when the conversion is not allowed
-	 */
-	default TO convertType(FROM from, Class<? extends TO> type) {
-		return convertNew(from);
+	default <LTO> Converter<FROM, LTO> andThen(Converter<TO, LTO> next) {
+		return new ConverterAndThen<>(this, next);
 	}
 	
-	default <LTO> IConverter<FROM, LTO> andThen(IConverter<TO, LTO> next) {
-		return new IConverterAndThen<>(this, next);
+	default <LFROM> Converter<LFROM, TO> before(Converter<LFROM, FROM> before) {
+		return new ConverterBefore<>(before, this);
 	}
 	
-	default <LFROM> IConverter<LFROM, TO> before(IConverter<LFROM, FROM> before) {
-		return new IConverterBefore<>(before, this);
-	}
-	
-	class IConverterAndThen<FROM, MIDDLE, TO> implements IConverter<FROM, TO>, BaseObject {
+	class ConverterAndThen<FROM, MIDDLE, TO> implements Converter<FROM, TO>, BaseObject {
 		
 		static {
 			//noinspection unchecked
-			BaseObject.initClass(IConverterAndThen.class, d -> new IConverterAndThen(Copyable.copy(d.th), Copyable.copy(d.next)));
+			BaseObject.initClass(ConverterAndThen.class, d -> new ConverterAndThen(Copyable.copy(d.th), Copyable.copy(d.next)));
 		}
 		
-		public IConverter<FROM, MIDDLE> th;
-		public IConverter<MIDDLE, TO> next;
+		public Converter<FROM, MIDDLE> th;
+		public Converter<MIDDLE, TO> next;
 		
-		public IConverterAndThen(IConverter<FROM, MIDDLE> th, IConverter<MIDDLE, TO> next) {
+		public ConverterAndThen(Converter<FROM, MIDDLE> th, Converter<MIDDLE, TO> next) {
 			this.th = th;
 			this.next = next;
 		}
@@ -69,11 +58,6 @@ public interface IConverter<FROM, TO> {
 		@Override
 		public <LTO extends TO> LTO convertInstance(FROM from, LTO ret) {
 			return next.convertInstance(th.convertNew(from), ret);
-		}
-		
-		@Override
-		public TO convertType(FROM from, Class<? extends TO> type) {
-			return convertNew(from);
 		}
 		
 		@Override
@@ -90,17 +74,17 @@ public interface IConverter<FROM, TO> {
 		}
 	}
 	
-	class IConverterBefore<FROM, MIDDLE, TO> implements IConverter<FROM, TO>, BaseObject {
+	class ConverterBefore<FROM, MIDDLE, TO> implements Converter<FROM, TO>, BaseObject {
 		
 		static {
 			//noinspection unchecked
-			BaseObject.initClass(IConverterBefore.class, d -> new IConverterBefore(Copyable.copy(d.before), Copyable.copy(d.th)));
+			BaseObject.initClass(ConverterBefore.class, d -> new ConverterBefore(Copyable.copy(d.before), Copyable.copy(d.th)));
 		}
 		
-		public IConverter<FROM, MIDDLE> before;
-		public IConverter<MIDDLE, TO> th;
+		public Converter<FROM, MIDDLE> before;
+		public Converter<MIDDLE, TO> th;
 		
-		public IConverterBefore(IConverter<FROM, MIDDLE> before, IConverter<MIDDLE, TO> th) {
+		public ConverterBefore(Converter<FROM, MIDDLE> before, Converter<MIDDLE, TO> th) {
 			this.before = before;
 			this.th = th;
 		}
@@ -113,11 +97,6 @@ public interface IConverter<FROM, TO> {
 		@Override
 		public <LTO extends TO> LTO convertInstance(FROM from, LTO ret) {
 			return th.convertInstance(before.convertNew(from), ret);
-		}
-		
-		@Override
-		public TO convertType(FROM from, Class<? extends TO> type) {
-			return convertNew(from);
 		}
 		
 		@Override
