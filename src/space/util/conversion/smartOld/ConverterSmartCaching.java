@@ -1,19 +1,23 @@
-package space.util.conversion.smart;
+package space.util.conversion.smartOld;
 
+import space.util.conversion.impl.ConverterMapImpl;
 import space.util.conversion.Converter;
+import space.util.conversion.smart.IConverterSmart;
 import spaceOld.engine.logger.Logger;
 
-public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
+public class ConverterSmartCaching<MIN> implements IConverterSmart<MIN> {
 	
-	public IConverterSmart<MIN> converterSmart;
+	public ConverterSmart<MIN> converterSmart;
+	public ConverterMapImpl<MIN, MIN> convCache = new ConverterMapImpl<>();
 	
-	public ConverterSmartSameCheck() {
+	public ConverterSmartCaching() {
 	}
 	
-	public ConverterSmartSameCheck(IConverterSmart<MIN> converterSmart) {
+	public ConverterSmartCaching(ConverterSmart<MIN> converterSmart) {
 		this.converterSmart = converterSmart;
 	}
 	
+	//delegate
 	//convert
 	@Override
 	public MIN convertNew(MIN from) throws UnsupportedOperationException {
@@ -27,8 +31,6 @@ public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
 	
 	@Override
 	public MIN convertType(MIN from, Class<? extends MIN> type) {
-		if (type == from.getClass())
-			return from;
 		return converterSmart.convertType(from, type);
 	}
 	
@@ -50,12 +52,12 @@ public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
 	
 	//converters
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> ConverterSmartPriorityConverter<LFROM, LTO> getConverter(Class<LFROM> classFrom, Class<LTO> classTo) {
+	public <LFROM extends MIN, LTO extends MIN> ConverterSmart.ConverterSmartPriorityConverter<LFROM, LTO> getConverter(Class<LFROM> classFrom, Class<LTO> classTo) {
 		return converterSmart.getConverter(classFrom, classTo);
 	}
 	
 	@Override
-	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, ConverterSmartPriorityConverter<LFROM, LTO> conv) {
+	public <LFROM extends MIN, LTO extends MIN> void putConverter(Class<LFROM> classFrom, Class<LTO> classTo, ConverterSmart.ConverterSmartPriorityConverter<LFROM, LTO> conv) {
 		converterSmart.putConverter(classFrom, classTo, conv);
 	}
 	
@@ -69,13 +71,21 @@ public class ConverterSmartSameCheck<MIN> implements IConverterSmart<MIN> {
 		return converterSmart.getConverterDefaultMethod(classFrom, classTo);
 	}
 	
+	//implement
 	@Override
 	public <LFROM extends MIN, LTO extends MIN> Converter<LFROM, LTO> getSmart(Class<LFROM> classFrom, Class<LTO> classTo) throws IllegalStateException {
-		return converterSmart.getSmart(classFrom, classTo);
+		Converter<LFROM, LTO> conv = convCache.get(classFrom, classTo);
+		if (conv != null)
+			return conv;
+		
+		conv = converterSmart.getSmart(classFrom, classTo);
+		convCache.put(classFrom, classTo, conv);
+		return conv;
 	}
 	
 	@Override
 	public void clearCache() {
+		convCache.clear();
 		converterSmart.clearCache();
 	}
 }

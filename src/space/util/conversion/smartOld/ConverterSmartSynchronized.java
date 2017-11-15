@@ -1,6 +1,7 @@
-package space.util.conversion.smart;
+package space.util.conversion.smartOld;
 
 import space.util.conversion.Converter;
+import space.util.conversion.smart.IConverterSmart;
 import spaceOld.engine.logger.Logger;
 
 public class ConverterSmartSynchronized<MIN> implements IConverterSmart<MIN> {

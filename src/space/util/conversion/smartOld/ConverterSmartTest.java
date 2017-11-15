@@ -1,4 +1,4 @@
-package space.util.conversion.smart;
+package space.util.conversion.smartOld;
 
 import space.util.conversion.Converter;
 import spaceOld.engine.logger.BaseLoggerNormal;
