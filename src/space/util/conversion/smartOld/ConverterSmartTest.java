@@ -1,9 +1,9 @@
 package space.util.conversion.smartOld;
 
 import space.util.conversion.Converter;
+import space.util.logger.LogLevel;
+import space.util.logger.Logger;
 import spaceOld.engine.logger.BaseLoggerNormal;
-import spaceOld.engine.logger.LogLevel;
-import spaceOld.engine.logger.Logger;
 import spaceOld.engine.logger.SubLogger;
 
 public class ConverterSmartTest {
@@ -15,63 +15,63 @@ public class ConverterSmartTest {
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test1", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test1", "-------------------------------"});
 		conv.putConverter(ObjectFloat.class, ObjectInt.class, new ConverterObjectFloatToObjectInt(), 1000);
 		
 		//valid
-		logger.print(LogLevel.INFO, conv.getConverter(ObjectFloat.class, ObjectInt.class));
+		logger.log(LogLevel.INFO, conv.getConverter(ObjectFloat.class, ObjectInt.class));
 		//same (invalid)
-		logger.print(LogLevel.INFO, conv.getConverter(ObjectInt.class, ObjectInt.class));
+		logger.log(LogLevel.INFO, conv.getConverter(ObjectInt.class, ObjectInt.class));
 		//invalid
-		logger.print(LogLevel.INFO, conv.getConverter(ObjectInt.class, ObjectFloat.class));
+		logger.log(LogLevel.INFO, conv.getConverter(ObjectInt.class, ObjectFloat.class));
 		
 		//smart
-		logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectInt.class));
+		logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectInt.class));
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test2", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test2", "-------------------------------"});
 		conv.putConverter(ObjectInt.class, ObjectShort.class, new ConverterObjectIntToObjectShort(), 1000);
 		
 		//invalid, needs 1 hop in between
-		logger.print(LogLevel.INFO, conv.getConverter(ObjectFloat.class, ObjectShort.class));
+		logger.log(LogLevel.INFO, conv.getConverter(ObjectFloat.class, ObjectShort.class));
 		//valid, should find the hop
-		logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
+		logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test3", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test3", "-------------------------------"});
 		conv.putConverter(ObjectFloat.class, ObjectInt0.class, new ConverterObjectFloatToObjectInt0(), 200);
 		conv.putConverter(ObjectInt0.class, ObjectInt.class, new ConverterObjectInt0ToObjectInt(), 200);
 		
 		//valid, should find 1 hop with less weight (1000 -> 400)
-		logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectInt.class));
+		logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectInt.class));
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test4", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test4", "-------------------------------"});
 		
 		//valid, should find 2 hop with less weight (2000 -> 1400), but also use a node twice (ObjectInt)
-		logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
+		logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test5", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test5", "-------------------------------"});
 		conv.putConverter(ObjectInt0.class, ObjectInt.class, new ConverterObjectInt0ToObjectInt(), 1000);
 		
 		//should now use the direct hops
-		logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
+		logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
 		
 		
 		
-		logger.printlns(LogLevel.INFO, new String[] {"-------------------------------", "Test6", "-------------------------------"});
+		logger.log(LogLevel.INFO, new String[] {"-------------------------------", "Test6", "-------------------------------"});
 		conv.putConverter(ObjectInt0.class, ObjectInt.class, new ConverterObjectInt0ToObjectInt(), 800);
 		
 		//invalid, two ways with the same weight (1000)
 		try {
-			logger.print(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
+			logger.log(LogLevel.INFO, conv.getSmart(ObjectFloat.class, ObjectShort.class));
 		} catch (IllegalStateException e) {
-			logger.print(LogLevel.INFO, "IllegalStateException thrown, same weight on multiple ways detection working!");
+			logger.log(LogLevel.INFO, "IllegalStateException thrown, same weight on multiple ways detection working!");
 		}
 	}
 	

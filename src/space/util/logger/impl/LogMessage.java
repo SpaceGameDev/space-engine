@@ -10,7 +10,7 @@ public class LogMessage {
 	public LogLevel level;
 	public CharSequence2D msg;
 	
-	public CharBufferBuilder1D prefix = new CharBufferBuilder1D();
+	public CharBufferBuilder1D<?> prefix = new CharBufferBuilder1D<>();
 	
 	public LogMessage(LoggerImpl logger, LogLevel level, CharSequence2D msg) {
 		this.logger = logger;

@@ -68,9 +68,9 @@ public class BaseLogger extends LoggerImpl {
 	 */
 	public static BaseLogger defaultHandler(BaseLogger logger) {
 		logger.handler.addTask("time", 0, new TimePrefix(new SimpleDateFormat("HH:mm:ss")));
-		logger.handler.addTask("thread", 0, new ThreadPrefix());
-		logger.handler.addTask("loglevel", 0, new LogLevelPrefix());
-		logger.handler.addTask("sublogger", 0, new SubLoggerPrefix());
+		logger.handler.addTask("thread", 1, new ThreadPrefix());
+		logger.handler.addTask("loglevel", 2, new LogLevelPrefix());
+		logger.handler.addTask("sublogger", 3, new SubLoggerPrefix());
 		return logger;
 	}
 	

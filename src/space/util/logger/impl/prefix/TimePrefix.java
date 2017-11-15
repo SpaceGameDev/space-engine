@@ -20,6 +20,6 @@ public class TimePrefix extends AbstractPrefix {
 	
 	@Override
 	public void accept(LogMessage logMessage) {
-		logMessage.prefix.append(start).append(dateFormat.format(new Date())).append(end);
+		logMessage.prefix.append(startChar).append(dateFormat.format(new Date())).append(endChar);
 	}
 }
