@@ -2,10 +2,10 @@ package space.engine.number;
 
 import space.engine.number.base.INumberBase;
 import space.engine.number.exception.NumberException;
-import space.util.conversion.smart.ConverterSmart;
-import space.util.conversion.smart.ConverterSmartCaching;
-import space.util.conversion.smart.ConverterSmartSameCheck;
-import space.util.conversion.smart.ConverterSmartSynchronized;
+import space.util.conversion.smartOld.ConverterSmart;
+import space.util.conversion.smartOld.ConverterSmartCaching;
+import space.util.conversion.smartOld.ConverterSmartSameCheck;
+import space.util.conversion.smartOld.ConverterSmartSynchronized;
 import space.util.conversion.smart.IConverterSmart;
 import spaceOld.engine.logger.SubLogger;
 import spaceOld.engine.startup.init.ClassSearcherNoAbstract;
