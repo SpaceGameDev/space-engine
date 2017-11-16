@@ -5,14 +5,14 @@ import space.util.annotation.Self;
 public interface IStringBuilder1D<@Self SELF extends IStringBuilder1D<SELF>> extends IStringBuilder<SELF>, CharSequence {
 	
 	//pos
-	void setLength(int length);
+	SELF setLength(int length);
 	
-	default void reduceLength(int length) {
-		setLength(length() - length);
+	default SELF reduceLength(int length) {
+		return setLength(length() - length);
 	}
 	
-	default void addLength(int length) {
-		setLength(length() + length);
+	default SELF addLength(int length) {
+		return setLength(length() + length);
 	}
 	
 	//get result

@@ -267,8 +267,10 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 	}
 	
 	@Override
-	public void setX(int pos) {
+	public SELF setX(int pos) {
 		posX = pos;
+		//noinspection unchecked
+		return (SELF) this;
 	}
 	
 	public void notifyX() {
@@ -290,8 +292,10 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 	}
 	
 	@Override
-	public void setY(int pos) {
+	public SELF setY(int pos) {
 		posY = pos;
+		//noinspection unchecked
+		return (SELF) this;
 	}
 	
 	public void notifyY() {

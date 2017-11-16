@@ -42,19 +42,25 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 	}
 	
 	@Override
-	public void setLength(int length) {
+	public SELF setLength(int length) {
 		pos = length;
 		ensureCapacity(length);
+		//noinspection unchecked
+		return (SELF) this;
 	}
 	
 	@Override
-	public void addLength(int length) {
+	public SELF addLength(int length) {
 		pos += length;
+		//noinspection unchecked
+		return (SELF) this;
 	}
 	
 	@Override
-	public void reduceLength(int length) {
+	public SELF reduceLength(int length) {
 		pos -= length;
+		//noinspection unchecked
+		return (SELF) this;
 	}
 	
 	@Override

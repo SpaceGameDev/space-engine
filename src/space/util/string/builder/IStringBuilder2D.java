@@ -37,11 +37,11 @@ public interface IStringBuilder2D<@Self SELF extends IStringBuilder2D<SELF>> ext
 	//pos
 	int getX();
 	
-	void setX(int pos);
+	SELF setX(int pos);
 	
 	int getY();
 	
-	void setY(int pos);
+	SELF setY(int pos);
 	
 	//nextLine
 	SELF nextLine();
