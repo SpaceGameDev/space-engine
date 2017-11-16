@@ -5,6 +5,14 @@ import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+/**
+ * A {@link Converter} converts something FROM to something TO.
+ *
+ * @param <FROM> from type
+ * @param <TO>   to type
+ * @see Converter#convertNew(Object)
+ * @see Converter#convertInstance(Object, Object)
+ */
 public interface Converter<FROM, TO> {
 	
 	/**
@@ -12,10 +20,8 @@ public interface Converter<FROM, TO> {
 	 *
 	 * @param from the object to be converted FROM
 	 * @return the new Object TO
-	 * @throws UnsupportedOperationException                              if type is required
-	 * @throws space.util.conversion.exception.InvalidConversionException when the conversion is not allowed
 	 */
-	TO convertNew(FROM from) throws UnsupportedOperationException;
+	TO convertNew(FROM from);
 	
 	/**
 	 * converts FROM to LTO, using the supplied instance and returning it.
@@ -23,7 +29,6 @@ public interface Converter<FROM, TO> {
 	 * @param from the object to be converted FROM
 	 * @param ret  the supplied instance
 	 * @return the supplied instance TO
-	 * @throws space.util.conversion.exception.InvalidConversionException when the conversion is not allowed
 	 */
 	<LTO extends TO> LTO convertInstance(FROM from, LTO ret);
 	
