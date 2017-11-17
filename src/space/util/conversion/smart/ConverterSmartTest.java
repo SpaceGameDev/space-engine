@@ -4,6 +4,7 @@ import space.util.conversion.Converter;
 
 public class ConverterSmartTest {
 	
+	//test
 	public static void main(String[] args) {
 		ConverterSmart<Object> conv = new ConverterSmart<>();
 		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<IntWrapper, FloatWrapper>() {
