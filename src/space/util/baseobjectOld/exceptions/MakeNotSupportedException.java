@@ -1,4 +1,4 @@
-package space.util.baseobject.exceptions;
+package space.util.baseobjectOld.exceptions;
 
 public class MakeNotSupportedException extends RuntimeException {
 	

@@ -1,6 +1,6 @@
 package space.util.gui.monofont;
 
-import space.util.baseobject.ToString;
+import space.util.baseobjectOld.ToString;
 import space.util.gui.elements.direction.GuiColumn;
 import space.util.gui.elements.direction.GuiDirectional;
 import space.util.gui.elements.direction.GuiRow;

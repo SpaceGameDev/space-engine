@@ -1,7 +1,7 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.BaseObject;
-import space.util.baseobject.interfaces.ICache;
+import space.util.baseobjectOld.BaseObject;
+import space.util.baseobjectOld.interfaces.ICache;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 

@@ -1,6 +1,6 @@
 package space.util.sync.task.function.chained;
 
-import space.util.baseobject.ToStringInitializationOfBasicObjects;
+import space.util.baseobjectOld.ToStringInitializationOfBasicObjects;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.toStringHelper.ToStringHelper;

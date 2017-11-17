@@ -1,4 +1,4 @@
-package space.util.baseobject.interfaces;
+package space.util.baseobjectOld.interfaces;
 
 public interface ICache {
 	
