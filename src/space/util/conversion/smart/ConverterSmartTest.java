@@ -1,10 +1,14 @@
 package space.util.conversion.smart;
 
 import space.util.conversion.Converter;
+import space.util.gui.monofont.MonofontGuiApi;
+import space.util.string.toStringHelper.ToStringHelper;
 
 public class ConverterSmartTest {
 	
 	public static void main(String[] args) {
+		ToStringHelper.setDefault(MonofontGuiApi.INSTANCE);
+		
 		ConverterSmart<Object> conv = new ConverterSmart<>();
 		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<IntWrapper, FloatWrapper>() {
 			@Override

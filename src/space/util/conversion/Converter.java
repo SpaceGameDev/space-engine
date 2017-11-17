@@ -32,6 +32,20 @@ public interface Converter<FROM, TO> {
 	 */
 	<LTO extends TO> LTO convertInstance(FROM from, LTO ret);
 	
+	static <TYPE> Converter<TYPE, TYPE> identity() {
+		return new Converter<TYPE, TYPE>() {
+			@Override
+			public TYPE convertNew(TYPE type) {
+				return Copyable.copy(type);
+			}
+			
+			@Override
+			public <LTO extends TYPE> LTO convertInstance(TYPE type, LTO ret) {
+				return null;
+			}
+		};
+	}
+	
 	default <LTO> Converter<FROM, LTO> andThen(Converter<TO, LTO> next) {
 		return new ConverterAndThen<>(this, next);
 	}
