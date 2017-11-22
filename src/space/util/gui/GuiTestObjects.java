@@ -1,6 +1,6 @@
 package space.util.gui;
 
-import space.util.baseobjectOld.BaseObject;
+import space.util.baseobject.BaseObject;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;

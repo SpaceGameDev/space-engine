@@ -9,12 +9,12 @@ public class CacheUtil {
 		return (T) nullObject;
 	}
 	
-	public static <T> T toNull(T t) {
+	public static <T> T fromObjectToNull(T t) {
 		return t == nullObject ? null : t;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T fromNull(T t) {
+	public static <T> T fromNullToObject(T t) {
 		return t == null ? (T) nullObject : t;
 	}
 }

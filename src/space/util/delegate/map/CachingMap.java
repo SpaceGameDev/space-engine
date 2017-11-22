@@ -1,15 +1,16 @@
 package space.util.delegate.map;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.interfaces.ICache;
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.additional.ICache;
 
 import java.util.Map;
 import java.util.function.Function;
 
 import static space.util.delegate.util.CacheUtil.*;
 
+/**
+ * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
+ */
 public class CachingMap<K, V> extends DefaultingMap<K, V> implements ICache {
 	
 	static {
@@ -43,22 +44,6 @@ public class CachingMap<K, V> extends DefaultingMap<K, V> implements ICache {
 	@Override
 	@SuppressWarnings("unchecked")
 	public V get(Object key) {
-		V thisV = map.get(key);
-		if (thisV != null)
-			return fromNull(thisV);
-		
-		V newV = def.apply((K) key);
-		//noinspection unchecked
-		put((K) key, toNull(newV));
-		return newV;
-	}
-	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("map", this.map);
-		tsh.add("def", this.def);
-		tsh.add("iterateOverDef", this.iterateOverDef);
-		return tsh.build();
+		return fromObjectToNull(map.computeIfAbsent((K) key, (K k) -> fromNullToObject(def.apply(k))));
 	}
 }

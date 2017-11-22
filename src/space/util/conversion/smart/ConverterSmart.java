@@ -1,6 +1,6 @@
 package space.util.conversion.smart;
 
-import space.util.baseobjectOld.BaseObject;
+import space.util.baseobject.BaseObject;
 import space.util.conversion.Converter;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.toStringHelper.ToStringHelper;

@@ -1,7 +1,7 @@
 package space.util.delegate.list;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.delegate.list.listiterator.ModificationAwareListIterator;
 import space.util.string.toStringHelper.ToStringHelper;

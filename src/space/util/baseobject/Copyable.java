@@ -1,23 +1,40 @@
 package space.util.baseobject;
 
-import static space.util.GetClass.gClass;
+import space.util.baseobject.exceptions.CopyNotSupportedException;
+import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
 
-/**
- * the {@link Copyable#copy(Object)}-Methods should create a copy of the object with the same values in the fields
- * looping references will cause {@link StackOverflowError}
- */
+import java.util.function.UnaryOperator;
+
 public interface Copyable {
 	
-	@SuppressWarnings("unchecked")
-	static <OBJ> OBJ copy(OBJ object) {
-		if (object instanceof BaseObject)
-			return copy((OBJ & BaseObject) object);
+	//FIXME: write the default method
+	ThreadLocalGlobalCachingMap<Class<?>, UnaryOperator<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
+		return null;
+	});
+	
+	/**
+	 * add a manual entry to the copy()-Function map
+	 *
+	 * @param clazz    the {@link Class} to create the entry for
+	 * @param supplier the function creating the new {@link Object}
+	 * @param <OBJ>    the Object-Type
+	 */
+	static <OBJ> void manualEntry(Class<OBJ> clazz, UnaryOperator<OBJ> supplier) {
+		MAP.globalMap.put(clazz, supplier);
 	}
 	
+	/**
+	 * creates an object with a deep-copy.
+	 *
+	 * @param obj the {@link Class} to deep-copy
+	 * @return the new copied Instance
+	 * @throws CopyNotSupportedException if creation of an new copied Instance failed.
+	 */
 	@SuppressWarnings("unchecked")
-	static <OBJ extends BaseObject> OBJ copy(OBJ object) {
-		OBJ n = Makeable.make(gClass(object));
-		n.set(object);
-		return n;
+	static <OBJ> OBJ copy(OBJ obj) throws CopyNotSupportedException {
+		UnaryOperator<?> operator = MAP.get(obj.getClass());
+		if (operator == null)
+			throw new CopyNotSupportedException(obj.getClass());
+		return ((UnaryOperator<OBJ>) operator).apply(obj);
 	}
 }

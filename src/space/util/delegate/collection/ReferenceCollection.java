@@ -1,7 +1,7 @@
 package space.util.delegate.collection;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.util.ReferenceUtil;

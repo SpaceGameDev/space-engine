@@ -1,7 +1,7 @@
 package space.util.delegate.map;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.delegate.collection.MergingCollection;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -131,6 +131,9 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	
 	//DefaultFunctionWithIteration
 	public interface DefaultFunctionWithIteration<K, V> extends Function<K, V> {
+		
+		@Override
+		V apply(K k);
 		
 		void addKeySet(Collection<K> keySet);
 		

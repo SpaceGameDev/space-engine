@@ -1,7 +1,7 @@
 package space.util.delegate.map;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;

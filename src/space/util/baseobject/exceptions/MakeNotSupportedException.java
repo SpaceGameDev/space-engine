@@ -1,8 +1,12 @@
-package space.util.baseobjectOld.exceptions;
+package space.util.baseobject.exceptions;
 
-public class MakeNotSupportedException extends RuntimeException {
+public class MakeNotSupportedException extends BaseObjectException {
 	
 	public MakeNotSupportedException() {
+	}
+	
+	public MakeNotSupportedException(Class<?> clazz) {
+		this("create() is not supported for Class " + clazz.getName());
 	}
 	
 	public MakeNotSupportedException(String message) {

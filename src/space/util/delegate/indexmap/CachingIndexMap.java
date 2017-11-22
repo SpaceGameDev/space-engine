@@ -1,8 +1,8 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
-import space.util.baseobjectOld.interfaces.ICache;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
+import space.util.baseobject.additional.ICache;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -11,6 +11,9 @@ import java.util.function.IntFunction;
 
 import static space.util.delegate.util.CacheUtil.*;
 
+/**
+ * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
+ */
 public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements BaseObject, ICache {
 	
 	static {
@@ -50,10 +53,10 @@ public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements
 	public VALUE get(int index) {
 		VALUE thisV = indexMap.get(index);
 		if (thisV != null)
-			return fromNull(thisV);
+			return fromNullToObject(thisV);
 		
 		VALUE newV = def.get(index);
-		put(index, toNull(newV));
+		put(index, fromObjectToNull(newV));
 		return newV;
 	}
 	

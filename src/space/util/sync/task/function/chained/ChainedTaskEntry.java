@@ -1,6 +1,6 @@
 package space.util.sync.task.function.chained;
 
-import space.util.baseobjectOld.BaseObject;
+import space.util.baseobject.BaseObject;
 import space.util.dependency.IDependency;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;

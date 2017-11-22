@@ -1,8 +1,12 @@
-package space.util.baseobjectOld.exceptions;
+package space.util.baseobject.exceptions;
 
-public class CopyNotSupportedException extends RuntimeException {
+public class CopyNotSupportedException extends BaseObjectException {
 	
 	public CopyNotSupportedException() {
+	}
+	
+	public CopyNotSupportedException(Class<?> clazz) {
+		this("copy() is not supported for Class " + clazz.getName());
 	}
 	
 	public CopyNotSupportedException(String message) {

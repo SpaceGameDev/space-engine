@@ -7,9 +7,13 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class SyncronizedMap<K, V> extends DelegatingMap<K, V> {
+/**
+ * This {@link Map} synchronizes over the entire {@link Map}, which on a frequently accessed {@link Map} can be problematic.
+ * For that purpose, please use {@link java.util.concurrent.ConcurrentHashMap}, as it synchronizes on the buckets, not ht entire Map.
+ */
+public class SynchronizedMap<K, V> extends DelegatingMap<K, V> {
 	
-	public SyncronizedMap(Map<K, V> map) {
+	public SynchronizedMap(Map<K, V> map) {
 		super(map);
 	}
 	

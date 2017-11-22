@@ -1,7 +1,7 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobjectOld.BaseObject;
-import space.util.baseobjectOld.Copyable;
+import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
@@ -14,9 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-/**
- * If an index cannot be found in the delegating {@link IndexMap}, it will redirect to the def {@link IntFunction} trying to get the default value and return that.
- */
 public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements BaseObject {
 	
 	static {
