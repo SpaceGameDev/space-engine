@@ -1,7 +1,7 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.util.ReferenceUtil;
@@ -14,11 +14,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ReferenceIndexMap<VALUE> implements BaseObject, IndexMap<VALUE> {
+public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ReferenceIndexMap.class, d -> new ReferenceIndexMap(Copyable.copy(d.indexMap), d.refCreator));
+		Copyable.manualEntry(ReferenceIndexMap.class, d -> new ReferenceIndexMap(Copyable.copy(d.indexMap), d.refCreator));
 	}
 	
 	public IndexMap<Reference<? extends VALUE>> indexMap;

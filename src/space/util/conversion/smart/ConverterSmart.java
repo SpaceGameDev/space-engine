@@ -1,6 +1,6 @@
 package space.util.conversion.smart;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.conversion.Converter;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -140,7 +140,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		boolean isFinal();
 	}
 	
-	public class PathWrapper<FROM, TO> implements Path<FROM, TO>, BaseObject {
+	public class PathWrapper<FROM, TO> implements Path<FROM, TO>, ToString {
 		
 		public Converter<FROM, TO> conv;
 		public int weight;

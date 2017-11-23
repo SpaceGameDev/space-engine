@@ -1,6 +1,6 @@
 package space.util.gui;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -15,7 +15,7 @@ public class GuiTestObjects {
 		System.out.println(th);
 	}
 	
-	public static class TestObj1 implements BaseObject {
+	public static class TestObj1 implements ToString {
 		
 		String name;
 		String2D name2D;

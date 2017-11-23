@@ -1,6 +1,5 @@
 package space.util.delegate.list.listiterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -11,7 +10,7 @@ public class ModificationAwareListIterator<E> extends DelegatingListIterator<E> 
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ModificationAwareListIterator.class, d -> new ModificationAwareListIterator(Copyable.copy(d.iterator), d.onModification));
+		Copyable.manualEntry(ModificationAwareListIterator.class, d -> new ModificationAwareListIterator(Copyable.copy(d.iterator), d.onModification));
 	}
 	
 	public Runnable onModification;

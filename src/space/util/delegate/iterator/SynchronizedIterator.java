@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -11,7 +10,7 @@ public class SynchronizedIterator<E> extends DelegatingIterator<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(SynchronizedIterator.class, d -> new SynchronizedIterator(Copyable.copy(d.i)));
+		Copyable.manualEntry(SynchronizedIterator.class, d -> new SynchronizedIterator(Copyable.copy(d.i)));
 	}
 	
 	public SynchronizedIterator(Iterator<E> i) {

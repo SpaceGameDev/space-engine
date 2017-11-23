@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.UnmodifiableIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -13,7 +12,7 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(UnmodifiableCollection.class, d -> new UnmodifiableCollection(Copyable.copy(d.coll)));
+		Copyable.manualEntry(UnmodifiableCollection.class, d -> new UnmodifiableCollection(Copyable.copy(d.coll)));
 	}
 	
 	public UnmodifiableCollection(Collection<E> coll) {

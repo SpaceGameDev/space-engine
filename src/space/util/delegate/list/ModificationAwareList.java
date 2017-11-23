@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.delegate.list.listiterator.ModificationAwareListIterator;
@@ -22,7 +21,7 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ModificationAwareList.class, d -> new ModificationAwareList(Copyable.copy(d.list), d.onModification));
+		Copyable.manualEntry(ModificationAwareList.class, d -> new ModificationAwareList(Copyable.copy(d.list), d.onModification));
 	}
 	
 	public Runnable onModification;

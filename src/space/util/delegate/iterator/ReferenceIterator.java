@@ -1,7 +1,7 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -9,11 +9,11 @@ import java.lang.ref.Reference;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class ReferenceIterator<E> implements BaseObject, Iteratorable<E> {
+public class ReferenceIterator<E> implements ToString, Iteratorable<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ReferenceIterator.class, d -> new ReferenceIterator(Copyable.copy(d.i)));
+		Copyable.manualEntry(ReferenceIterator.class, d -> new ReferenceIterator(Copyable.copy(d.i)));
 	}
 	
 	public Iterator<Reference<? extends E>> i;

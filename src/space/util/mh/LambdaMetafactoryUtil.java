@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class LambdaMetafactoryUtil {
 	
@@ -53,6 +54,8 @@ public class LambdaMetafactoryUtil {
 	public static final MethodType MTConsumer = MethodType.methodType(Consumer.class);
 	@SuppressWarnings("unused")
 	public static final MethodType MTFunction = MethodType.methodType(Function.class);
+	@SuppressWarnings("unused")
+	public static final MethodType MTUnaryOperator = MethodType.methodType(UnaryOperator.class);
 	@SuppressWarnings("unused")
 	public static final MethodType MTPredicate = MethodType.methodType(Predicate.class);
 	
@@ -112,6 +115,11 @@ public class LambdaMetafactoryUtil {
 	@SuppressWarnings("unchecked")
 	public static <T, R> Function<T, R> metafactoryFunction(Lookup caller, MethodHandle invokedMethod, Class<R> invokedTypeReturn) throws Throwable {
 		return (Function<T, R>) metafactory(caller, MTFunction, "apply", MTObject, invokedMethod, MethodType.methodType(invokedTypeReturn));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> UnaryOperator<T> metafactoryUnaryOperator(Lookup caller, MethodHandle invokedMethod, Class<T> invokedTypeReturn) throws Throwable {
+		return (UnaryOperator<T>) metafactory(caller, MTUnaryOperator, "apply", MTObject, invokedMethod, MethodType.methodType(invokedTypeReturn));
 	}
 	
 	@SuppressWarnings("unchecked")

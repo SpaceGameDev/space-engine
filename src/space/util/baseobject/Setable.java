@@ -1,6 +1,5 @@
 package space.util.baseobject;
 
-import space.util.baseobject.exceptions.MakeNotSupportedException;
 import space.util.baseobject.exceptions.SetNotSupportedException;
 import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
 
@@ -8,7 +7,12 @@ import java.util.function.BiConsumer;
 
 public interface Setable {
 	
-	ThreadLocalGlobalCachingMap<Class<?>, BiConsumer<?, ?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> null);
+	ThreadLocalGlobalCachingMap<Class<?>, BiConsumer<?, ?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
+		if (Setable.class.isAssignableFrom(clazz))
+			return (Setable obj, Setable to) -> obj.set(to);
+		
+		return null;
+	});
 	
 	/**
 	 * add a manual entry to the set()-Function map
@@ -22,18 +26,13 @@ public interface Setable {
 	}
 	
 	/**
-	 * creates an object of the same type.
-	 * If there is no manual entry it will try to find an empty constructor.
+	 * sets one obj to the values of another
 	 *
-	 * @param obj the {@link Object} from which {@link Class} to create a new Instance from
-	 * @throws MakeNotSupportedException if creation of an new Instance failed.
+	 * @param obj the {@link Object} being set to a different state
+	 * @param to  the {@link Object} having a certain state
+	 * @throws SetNotSupportedException if setting failed
 	 */
-	static <OBJ> void set(OBJ obj, OBJ to) {
-		if (obj instanceof Setable) {
-			((Setable) obj).set(to);
-			return;
-		}
-		
+	static <OBJ> void set(OBJ obj, OBJ to) throws SetNotSupportedException {
 		BiConsumer<?, ?> function = MAP.get(obj.getClass());
 		if (function != null) {
 			//noinspection unchecked
@@ -43,5 +42,16 @@ public interface Setable {
 		throw new SetNotSupportedException(obj.getClass());
 	}
 	
-	void set(Object obj);
+	/**
+	 * sets one obj to the values of another
+	 *
+	 * @param obj the {@link Object} being set to a different state
+	 * @param to  the {@link Object} having a certain state
+	 * @throws SetNotSupportedException if setting failed
+	 */
+	static <OBJ extends Setable> void set(OBJ obj, OBJ to) throws SetNotSupportedException {
+		obj.set(to);
+	}
+	
+	void set(Object obj) throws SetNotSupportedException;
 }

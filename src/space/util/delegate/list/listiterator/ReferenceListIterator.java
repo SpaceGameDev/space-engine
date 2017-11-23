@@ -1,7 +1,7 @@
 package space.util.delegate.list.listiterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -11,11 +11,11 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ReferenceListIterator<E> implements BaseObject, ListIterator<E> {
+public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ReferenceListIterator.class, d -> new ReferenceListIterator(Copyable.copy(d.iterator), d.refCreator));
+		Copyable.manualEntry(ReferenceListIterator.class, d -> new ReferenceListIterator(Copyable.copy(d.iterator), d.refCreator));
 	}
 	
 	public ListIterator<Reference<? extends E>> iterator;

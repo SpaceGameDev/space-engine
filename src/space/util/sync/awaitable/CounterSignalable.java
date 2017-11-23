@@ -1,6 +1,6 @@
 package space.util.sync.awaitable;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -9,11 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * counts how many signal()-calls have been made and if it was called often enough, it will notify
  */
-public class CounterSignalable implements BaseObject, ISignalable {
-	
-	static {
-		BaseObject.initClass(CounterSignalable.class, CounterSignalable::new, d -> new CounterSignalable(d.cnt));
-	}
+public class CounterSignalable implements ToString, ISignalable {
 	
 	public int cnt;
 	

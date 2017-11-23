@@ -1,30 +1,58 @@
 package space.util.baseobject;
 
+import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiFunction;
 
 public interface ToString {
 	
-	Map<Class<?>, BiFunction<ToStringHelper<?>, Object, Object>> MAP = new HashMap<>();
+	ThreadLocalGlobalCachingMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = new ThreadLocalGlobalCachingMap<>();
 	
-	//putFunction
-	@SuppressWarnings("unchecked")
-	static <OBJ> void putToTSHFunction(Class<OBJ> clazz, BiFunction<ToStringHelper<?>, OBJ, Object> function) {
-		MAP.put(clazz, (BiFunction<ToStringHelper<?>, Object, Object>) function);
+	/**
+	 * add a manual entry to the toTSH()-Function map
+	 *
+	 * @param clazz    the {@link Class} to create the entry for
+	 * @param function the function converting {@link Object}s into {@link ToStringHelper}-return-types
+	 * @param <OBJ>    the Object-Type
+	 */
+	static <OBJ> void manualEntry(Class<OBJ> clazz, BiFunction<ToStringHelper<?>, OBJ, Object> function) {
+		MAP.put(clazz, function);
 	}
 	
-	@SuppressWarnings("unchecked")
-	static <T> BiFunction<ToStringHelper<T>, Object, T> get(Class<?> clazz) {
-		BiFunction<ToStringHelper<?>, Object, Object> func = MAP.get(clazz);
-		return func == null ? null : (BiFunction<ToStringHelper<T>, Object, T>) (Object) func;
+	/**
+	 * get the TSH-return-type of a specific object.
+	 *
+	 * @param api the {@link ToStringHelper} which should be used
+	 * @param obj the {@link Object} which should be turned into a String
+	 * @return the TSH-return-type Object
+	 */
+	static <OBJ, T> T toTSH(ToStringHelper<T> api, OBJ obj) {
+		if (obj instanceof ToString)
+			return ((ToString) obj).toTSH(api);
+		
+		BiFunction<ToStringHelper<?>, ?, Object> function = MAP.get(obj.getClass());
+		if (function != null)
+			//noinspection unchecked
+			return (T) ((BiFunction<ToStringHelper<?>, OBJ, Object>) function).apply(api, obj);
+		
+		return api.toString(obj.toString());
 	}
 	
-	//non-static
+	/**
+	 * get the TSH-return-type of a specific object.
+	 *
+	 * @param api the {@link ToStringHelper} which should be used
+	 * @return the TSH-return-type Object
+	 */
 	<T> T toTSH(ToStringHelper<T> api);
 	
+	/**
+	 * get the TSH-return-type of a specific object.
+	 * The default {@link ToStringHelper} API will be used.
+	 *
+	 * @return the TSH-return-type Object
+	 */
 	default Object toTSH() {
 		return toTSH(ToStringHelper.getDefault());
 	}

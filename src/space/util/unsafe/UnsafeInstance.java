@@ -54,7 +54,7 @@ public class UnsafeInstance {
 			try {
 				return unsafe.objectFieldOffset(c.getDeclaredField(name));
 			} catch (NoSuchFieldException e) {
-
+			
 			}
 			c = c.getSuperclass();
 		}

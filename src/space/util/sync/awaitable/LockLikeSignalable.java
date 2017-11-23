@@ -1,6 +1,6 @@
 package space.util.sync.awaitable;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -10,11 +10,7 @@ import java.util.concurrent.TimeUnit;
  * The {@link LockLikeSignalable} allows you to "lock" with the signal()-Method and "unlock" with the reset()-Method.
  * Only when the amount of "locks" is zero, it is signaled and Threads in await()-Methods return
  */
-public class LockLikeSignalable implements BaseObject, IResetable {
-	
-	static {
-		BaseObject.initClass(LockLikeSignalable.class, LockLikeSignalable::new, d -> new LockLikeSignalable());
-	}
+public class LockLikeSignalable implements ToString, IResetable {
 	
 	public int holderCnt;
 	

@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ModificationAwareIterator;
@@ -15,7 +14,7 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ModificationAwareIndexMap.class, d -> new ModificationAwareIndexMap(Copyable.copy(d.indexMap), d.onModification));
+		Copyable.manualEntry(ModificationAwareIndexMap.class, d -> new ModificationAwareIndexMap(Copyable.copy(d.indexMap), d.onModification));
 	}
 	
 	public Runnable onModification;

@@ -1,7 +1,7 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.impl.ArrayIterable;
 import space.util.delegate.iterator.MergingIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -16,11 +16,11 @@ import java.util.Iterator;
  * Use the createWithAddCollection()-Method or the setAddColl()-Method to redirect all add and addAll calls to the addColl.
  * If no addColl is specified, the Methods add() and addAll() throw {@link UnsupportedOperationException}.
  */
-public class MergingCollection<E> implements BaseObject, Collection<E> {
+public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(MergingCollection.class, d -> MergingCollection.createWithAddCollection(d.addColl, Copyable.copy(d.collections)));
+		Copyable.manualEntry(MergingCollection.class, d -> MergingCollection.createWithAddCollection(d.addColl, Copyable.copy(d.collections)));
 	}
 	
 	public Collection<E> addColl;

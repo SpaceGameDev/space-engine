@@ -1,17 +1,17 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class DelegatingIterator<E> implements BaseObject, Iteratorable<E> {
+public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(DelegatingIterator.class, d -> new DelegatingIterator(Copyable.copy(d.i)));
+		Copyable.manualEntry(DelegatingIterator.class, d -> new DelegatingIterator(Copyable.copy(d.i)));
 	}
 	
 	public Iterator<E> i;

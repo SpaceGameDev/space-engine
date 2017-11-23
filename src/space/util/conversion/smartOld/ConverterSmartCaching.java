@@ -1,7 +1,7 @@
 package space.util.conversion.smartOld;
 
-import space.util.conversion.impl.ConverterMapImpl;
 import space.util.conversion.Converter;
+import space.util.conversion.impl.ConverterMapImpl;
 import space.util.conversion.smart.IConverterSmart;
 import spaceOld.engine.logger.Logger;
 

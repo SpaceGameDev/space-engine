@@ -1,18 +1,12 @@
 package space.util.delegate.list;
 
 import space.util.ArrayUtils;
-import space.util.baseobject.BaseObject;
-import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Arrays;
 
-public class IntList implements BaseObject {
-	
-	static {
-		//noinspection RedundantTypeArguments
-		BaseObject.<IntList>initClass(IntList.class, IntList::new, d -> new IntList(Copyable.copy(d.array)));
-	}
+public class IntList implements ToString {
 	
 	public static final IntList EMPTY = new IntList(0);
 	public static int defaultCapacity = 4;
@@ -36,6 +30,11 @@ public class IntList implements BaseObject {
 	public IntList(int[] array, int size) {
 		this.array = array;
 		this.size = size;
+	}
+	
+	public IntList(IntList list) {
+		this.array = list.array.clone();
+		this.size = list.size;
 	}
 	
 	public boolean ensureCapacityIndex(int index) {

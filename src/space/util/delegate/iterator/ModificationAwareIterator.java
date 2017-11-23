@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -11,7 +10,7 @@ public class ModificationAwareIterator<E> extends DelegatingIterator<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ModificationAwareIterator.class, d -> new ModificationAwareIterator(Copyable.copy(d.i), d.onModification));
+		Copyable.manualEntry(ModificationAwareIterator.class, d -> new ModificationAwareIterator(Copyable.copy(d.i), d.onModification));
 	}
 	
 	public Runnable onModification;

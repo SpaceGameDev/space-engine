@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -17,7 +16,7 @@ public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ModificationAwareCollection.class, d -> new ModificationAwareCollection(Copyable.copy(d.coll), d.onModification));
+		Copyable.manualEntry(ModificationAwareCollection.class, d -> new ModificationAwareCollection(Copyable.copy(d.coll), d.onModification));
 	}
 	
 	public Runnable onModification;

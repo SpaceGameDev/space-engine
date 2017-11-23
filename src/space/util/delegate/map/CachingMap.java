@@ -1,6 +1,6 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.Copyable;
 import space.util.baseobject.additional.ICache;
 
 import java.util.Map;
@@ -15,7 +15,7 @@ public class CachingMap<K, V> extends DefaultingMap<K, V> implements ICache {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(CachingMap.class, d -> new CachingMap(d.map, d.def, d.iterateOverDef));
+		Copyable.manualEntry(CachingMap.class, d -> new CachingMap(d.map, d.def, d.iterateOverDef));
 	}
 	
 	//no def iteration

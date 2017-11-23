@@ -1,7 +1,7 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -11,11 +11,11 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class DelegatingIndexMap<VALUE> implements BaseObject, IndexMap<VALUE> {
+public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(DelegatingIndexMap.class, d -> new DelegatingIndexMap(Copyable.copy(d.indexMap)));
+		Copyable.manualEntry(DelegatingIndexMap.class, d -> new DelegatingIndexMap(Copyable.copy(d.indexMap)));
 	}
 	
 	public IndexMap<VALUE> indexMap;
@@ -46,13 +46,19 @@ public class DelegatingIndexMap<VALUE> implements BaseObject, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public int indexOf(VALUE v) {return indexMap.indexOf(v);}
+	public int indexOf(VALUE v) {
+		return indexMap.indexOf(v);
+	}
 	
 	@Override
-	public VALUE[] toArray() {return indexMap.toArray();}
+	public VALUE[] toArray() {
+		return indexMap.toArray();
+	}
 	
 	@Override
-	public VALUE[] toArray(VALUE[] array) {return indexMap.toArray(array);}
+	public VALUE[] toArray(VALUE[] array) {
+		return indexMap.toArray(array);
+	}
 	
 	@Override
 	public VALUE get(int index) {

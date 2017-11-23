@@ -1,6 +1,6 @@
 package space.util.sync.task.function.chained;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.delegate.list.ModificationAwareList;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public abstract class AbstractChainedTaskBuilder<FUNCTION> implements BaseObject, IChainedTaskBuilder<FUNCTION> {
+public abstract class AbstractChainedTaskBuilder<FUNCTION> implements ToString, IChainedTaskBuilder<FUNCTION> {
 	
 	public List<ChainedTaskEntry<FUNCTION>> list = new ModificationAwareList<>(new ArrayList<>(), this::onModification);
 	

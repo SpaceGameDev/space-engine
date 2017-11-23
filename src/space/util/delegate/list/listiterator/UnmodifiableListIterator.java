@@ -1,6 +1,5 @@
 package space.util.delegate.list.listiterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -10,7 +9,7 @@ public class UnmodifiableListIterator<E> extends DelegatingListIterator<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(UnmodifiableListIterator.class, d -> new UnmodifiableListIterator(Copyable.copy(d.iterator)));
+		Copyable.manualEntry(UnmodifiableListIterator.class, d -> new UnmodifiableListIterator(Copyable.copy(d.iterator)));
 	}
 	
 	public UnmodifiableListIterator(ListIterator<E> iterator) {

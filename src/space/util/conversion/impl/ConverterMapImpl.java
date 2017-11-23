@@ -8,7 +8,15 @@ import java.util.Map;
 
 public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, MINTO> {
 	
-	public Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map = new HashMap<>();
+	public Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map;
+	
+	public ConverterMapImpl() {
+		this(new HashMap<>());
+	}
+	
+	public ConverterMapImpl(Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map) {
+		this.map = map;
+	}
 	
 	//put
 	public <FROM extends MINFROM, TO extends MINTO> Converter<?, ?> putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter) {

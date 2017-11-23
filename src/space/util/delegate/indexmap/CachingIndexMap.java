@@ -1,7 +1,7 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.baseobject.additional.ICache;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -14,11 +14,11 @@ import static space.util.delegate.util.CacheUtil.*;
 /**
  * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
  */
-public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements BaseObject, ICache {
+public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements ToString, ICache {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(CachingIndexMap.class, d -> new CachingIndexMap(Copyable.copy(d.indexMap), d.def, d.iterateOverDef));
+		Copyable.manualEntry(CachingIndexMap.class, d -> new CachingIndexMap(Copyable.copy(d.indexMap), d.def, d.iterateOverDef));
 	}
 	
 	//no def iteration

@@ -1,7 +1,7 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
@@ -15,11 +15,11 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-public class DelegatingList<E> implements BaseObject, List<E> {
+public class DelegatingList<E> implements ToString, List<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(DelegatingList.class, d -> new DelegatingList(Copyable.copy(d.list)));
+		Copyable.manualEntry(DelegatingList.class, d -> new DelegatingList(Copyable.copy(d.list)));
 	}
 	
 	public List<E> list;

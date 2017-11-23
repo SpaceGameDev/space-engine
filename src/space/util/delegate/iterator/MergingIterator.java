@@ -1,7 +1,7 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -10,11 +10,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class MergingIterator<T> implements BaseObject, Iteratorable<T> {
+public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	static {
 		//noinspection unchecked,RedundantTypeArguments
-		BaseObject.<MergingIterator>initClass(MergingIterator.class, d -> new MergingIterator(Copyable.copy(d.iterators)));
+		Copyable.<MergingIterator>manualEntry(MergingIterator.class, d -> new MergingIterator(Copyable.copy(d.iterators)));
 	}
 	
 	public Iterator<T>[] iterators;

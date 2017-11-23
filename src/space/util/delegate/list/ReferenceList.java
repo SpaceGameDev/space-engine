@@ -1,7 +1,7 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.list.listiterator.ReferenceListIterator;
@@ -22,11 +22,11 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-public class ReferenceList<E> implements BaseObject, List<E> {
+public class ReferenceList<E> implements ToString, List<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ReferenceList.class, d -> new ReferenceList(Copyable.copy(d.list), d.refCreator));
+		Copyable.manualEntry(ReferenceList.class, d -> new ReferenceList(Copyable.copy(d.list), d.refCreator));
 	}
 	
 	public List<Reference<? extends E>> list;

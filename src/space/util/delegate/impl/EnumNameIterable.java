@@ -1,7 +1,6 @@
 package space.util.delegate.impl;
 
-import space.util.baseobject.BaseObject;
-import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -13,17 +12,16 @@ import java.util.Iterator;
 /**
  * iterates over the names of an enum
  */
-public class EnumNameIterable<E extends Enum<E>> implements BaseObject, Collection<String> {
-	
-	static {
-		//noinspection unchecked
-		BaseObject.initClass(EnumNameIterable.class, EnumNameIterable::new, d -> new EnumNameIterable(Copyable.copy(d.array)));
-	}
+public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection<String> {
 	
 	public E[] array;
 	
 	public EnumNameIterable() {
 		
+	}
+	
+	public EnumNameIterable(EnumNameIterable<E> iterable) {
+		this(iterable.array);
 	}
 	
 	public EnumNameIterable(E[] array) {

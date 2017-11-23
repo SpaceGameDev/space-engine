@@ -1,6 +1,6 @@
 package space.util.sync.awaitable;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -9,11 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * as soon as signal is being called, it will notify
  */
-public class BooleanSignalable implements BaseObject, IResetable {
-	
-	static {
-		BaseObject.initClass(BooleanSignalable.class, BooleanSignalable::new);
-	}
+public class BooleanSignalable implements ToString, IResetable {
 	
 	public boolean signaled;
 	

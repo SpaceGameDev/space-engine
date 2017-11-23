@@ -1,6 +1,6 @@
 package space.util.sync.awaitable;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -9,11 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * if signal() is getting called X-times, X Threads will leave the await()-Method
  */
-public class OneToOneSignalable implements BaseObject, ISignalable {
-	
-	static {
-		BaseObject.initClass(OneToOneSignalable.class, OneToOneSignalable::new, d -> new OneToOneSignalable());
-	}
+public class OneToOneSignalable implements ToString, ISignalable {
 	
 	public int stack;
 	

@@ -1,7 +1,7 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.collection.MergingCollection;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -21,11 +21,11 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	
 	static {
 		//noinspection unchecked,RedundantTypeArguments
-		BaseObject.<DefaultingMap>initClass(DefaultingMap.class, d -> new DefaultingMap(Copyable.copy(d.map), Copyable.copy(d.def), d.iterateOverDef));
+		Copyable.<DefaultingMap>manualEntry(DefaultingMap.class, d -> new DefaultingMap(Copyable.copy(d.map), Copyable.copy(d.def), d.iterateOverDef));
 		//noinspection unchecked,RedundantTypeArguments
-		BaseObject.<DefaultingMap.KeySet>initClass(DefaultingMap.KeySet.class, d -> d);
+		Copyable.<DefaultingMap.KeySet>manualEntry(DefaultingMap.KeySet.class, d -> d);
 		//noinspection unchecked,RedundantTypeArguments
-		BaseObject.<DefaultingMap.EntrySet>initClass(DefaultingMap.EntrySet.class, d -> d);
+		Copyable.manualEntry(DefaultingMap.EntrySet.class, d -> d);
 	}
 	
 	public Function<K, V> def;
@@ -143,7 +143,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	}
 	
 	//KeySet
-	protected class KeySet extends AbstractSet<K> implements BaseObject {
+	protected class KeySet extends AbstractSet<K> implements ToString {
 		
 		public HashSet<K> set;
 		
@@ -269,7 +269,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	}
 	
 	//EntrySet
-	protected class EntrySet extends AbstractSet<Entry<K, V>> implements BaseObject {
+	protected class EntrySet extends AbstractSet<Entry<K, V>> implements ToString {
 		
 		public HashSet<Entry<K, V>> set;
 		
@@ -392,11 +392,11 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 	}
 	
-	protected static class DummyEntry<K, V> implements BaseObject, Entry<K, V> {
+	protected static class DummyEntry<K, V> implements ToString, Entry<K, V> {
 		
 		static {
 			//noinspection unchecked
-			BaseObject.initClass(DummyEntry.class, DummyEntry::new, d -> new DummyEntry(d.k, d.v));
+			Copyable.manualEntry(DummyEntry.class, d -> new DummyEntry(d.k, d.v));
 		}
 		
 		public K k;

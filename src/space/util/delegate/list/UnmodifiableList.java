@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.UnmodifiableIterator;
 import space.util.delegate.list.listiterator.UnmodifiableListIterator;
@@ -18,7 +17,7 @@ public class UnmodifiableList<E> extends DelegatingList<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(UnmodifiableList.class, d -> new UnmodifiableList(Copyable.copy(d.list)));
+		Copyable.manualEntry(UnmodifiableList.class, d -> new UnmodifiableList(Copyable.copy(d.list)));
 	}
 	
 	public UnmodifiableList(List<E> list) {

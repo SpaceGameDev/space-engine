@@ -1,7 +1,7 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
@@ -11,11 +11,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class DelegatingMap<K, V> implements BaseObject, Map<K, V> {
+public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(DelegatingMap.class, d -> new DelegatingMap(Copyable.copy(d.map)));
+		Copyable.manualEntry(DelegatingMap.class, d -> new DelegatingMap(Copyable.copy(d.map)));
 	}
 	
 	public Map<K, V> map;

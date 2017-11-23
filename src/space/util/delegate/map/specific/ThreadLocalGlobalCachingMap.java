@@ -17,11 +17,15 @@ public class ThreadLocalGlobalCachingMap<K, V> extends DelegatingMap<K, V> {
 	public final Map<K, V> globalMap;
 	public final ThreadLocal<Map<K, V>> localMap;
 	
+	public ThreadLocalGlobalCachingMap() {
+		this(null);
+	}
+	
 	public ThreadLocalGlobalCachingMap(Function<K, V> creator) {
 		super(null);
 		
 		localMap = ThreadLocal.withInitial(HashMap::new);
-		globalMap = new CachingMap<>(new ConcurrentHashMap<>(), creator, false);
+		globalMap = creator != null ? new CachingMap<>(new ConcurrentHashMap<>(), creator, false) : new ConcurrentHashMap<>();
 		
 		map = new CachingMap<>(new SupplierMap<>(localMap::get), DefaultingMap.makeDefaultFunctionFromMap(globalMap), false);
 	}

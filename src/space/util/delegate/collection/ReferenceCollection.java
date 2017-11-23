@@ -1,7 +1,7 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.util.ReferenceUtil;
@@ -18,11 +18,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class ReferenceCollection<E> implements BaseObject, Collection<E> {
+public class ReferenceCollection<E> implements ToString, Collection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(ReferenceCollection.class, d -> new ReferenceCollection(Copyable.copy(d.coll), d.refCreator));
+		Copyable.manualEntry(ReferenceCollection.class, d -> new ReferenceCollection(Copyable.copy(d.coll), d.refCreator));
 	}
 	
 	public Collection<Reference<? extends E>> coll;

@@ -1,7 +1,6 @@
 package space.util.delegate.impl;
 
-import space.util.baseobject.BaseObject;
-import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -9,12 +8,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.Arrays;
 import java.util.Collection;
 
-public class ArrayIterable<E> implements BaseObject, Collection<E> {
-	
-	static {
-		//noinspection unchecked
-		BaseObject.initClass(ArrayIterable.class, ArrayIterable::new, d -> new ArrayIterable(Copyable.copy(d.array)));
-	}
+public class ArrayIterable<E> implements ToString, Collection<E> {
 	
 	public E[] array;
 	
@@ -24,6 +18,10 @@ public class ArrayIterable<E> implements BaseObject, Collection<E> {
 	
 	public ArrayIterable(E[] array) {
 		this.array = array;
+	}
+	
+	public ArrayIterable(ArrayIterable<E> array) {
+		this.array = array.array;
 	}
 	
 	@Override
@@ -111,12 +109,7 @@ public class ArrayIterable<E> implements BaseObject, Collection<E> {
 		return toString0();
 	}
 	
-	public static class ArrayIterator<E> implements BaseObject, Iteratorable<E> {
-		
-		static {
-			//noinspection unchecked
-			BaseObject.initClass(ArrayIterable.ArrayIterator.class, d -> new ArrayIterator<>(d.array));
-		}
+	public static class ArrayIterator<E> implements ToString, Iteratorable<E> {
 		
 		public E[] array;
 		public int index;

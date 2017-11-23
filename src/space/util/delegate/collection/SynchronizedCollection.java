@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -15,7 +14,7 @@ public class SynchronizedCollection<E> extends DelegatingCollection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(SynchronizedCollection.class, d -> new SynchronizedCollection(Copyable.copy(d.coll)));
+		Copyable.manualEntry(SynchronizedCollection.class, d -> new SynchronizedCollection(Copyable.copy(d.coll)));
 	}
 	
 	public SynchronizedCollection(Collection<E> coll) {

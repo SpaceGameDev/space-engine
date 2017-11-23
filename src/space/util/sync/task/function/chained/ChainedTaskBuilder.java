@@ -1,6 +1,6 @@
 package space.util.sync.task.function.chained;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.ToString;
 import space.util.baseobject.additional.ICache;
 import space.util.dependency.IDependency;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -20,14 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
-public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements BaseObject, ICache {
-	
-	static {
-		//noinspection RedundantTypeArguments
-		BaseObject.<ChainedTaskBuilder>initClass(ChainedTaskBuilder.class, (Supplier<ChainedTaskBuilder>) ChainedTaskBuilder::new);
-	}
+public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements ToString, ICache {
 	
 	public static boolean hideCacheValues = true;
 	
@@ -133,7 +127,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		return toString0();
 	}
 	
-	public static class ChainedTaskSinglethreaded<FUNCTION> implements BaseObject, IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskSinglethreaded<FUNCTION> implements ToString, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task;
 		
@@ -168,7 +162,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		}
 	}
 	
-	public static class ChainedTaskMultithreaded<FUNCTION> implements BaseObject, IFunctionTaskCreator<FUNCTION> {
+	public static class ChainedTaskMultithreaded<FUNCTION> implements ToString, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<Node> allNodes = new ArrayList<>();
 		public List<Node> firstNodes = new ArrayList<>();
@@ -227,7 +221,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			return toString0();
 		}
 		
-		public class Node extends TypeHandlerTaskCreator<FUNCTION> implements BaseObject {
+		public class Node extends TypeHandlerTaskCreator<FUNCTION> implements ToString {
 			
 			public FUNCTION func;
 			public IDependency dep;
@@ -264,7 +258,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				return toString0();
 			}
 			
-			public class NodeTask extends TypeHandlerTask implements BaseObject {
+			public class NodeTask extends TypeHandlerTask implements ToString {
 				
 				public ChainedTaskMultithreadedExecutor exec;
 				public AtomicInteger callCnt;
@@ -315,7 +309,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> node);
 		}
 		
-		public class ChainedTaskMultithreadedTask extends MultiTask implements ChainedTaskMultithreadedExecutor<FUNCTION>, BaseObject {
+		public class ChainedTaskMultithreadedTask extends MultiTask implements ChainedTaskMultithreadedExecutor<FUNCTION>, ToString {
 			
 			public ITypeHandler<FUNCTION> handler;
 			public Executor executor;

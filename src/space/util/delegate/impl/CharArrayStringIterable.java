@@ -1,7 +1,6 @@
 package space.util.delegate.impl;
 
-import space.util.baseobject.BaseObject;
-import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -13,16 +12,16 @@ import java.util.Iterator;
 /**
  * turns a char[][]-array into a Iterable of type String
  */
-public class CharArrayStringIterable implements BaseObject, Collection<String> {
-	
-	static {
-		BaseObject.initClass(CharArrayStringIterable.class, CharArrayStringIterable::new, d -> new CharArrayStringIterable(Copyable.copy(d.array)));
-	}
+public class CharArrayStringIterable implements ToString, Collection<String> {
 	
 	public char[][] array;
 	
 	public CharArrayStringIterable() {
 		
+	}
+	
+	public CharArrayStringIterable(CharArrayStringIterable iterable) {
+		this(iterable.array);
 	}
 	
 	public CharArrayStringIterable(char[][] array) {

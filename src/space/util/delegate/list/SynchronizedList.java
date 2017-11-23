@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -19,7 +18,7 @@ public class SynchronizedList<E> extends DelegatingList<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(SynchronizedList.class, d -> new SynchronizedList(Copyable.copy(d.list)));
+		Copyable.manualEntry(SynchronizedList.class, d -> new SynchronizedList(Copyable.copy(d.list)));
 	}
 	
 	public SynchronizedList(List<E> list) {

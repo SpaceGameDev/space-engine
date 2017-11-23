@@ -1,7 +1,7 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
@@ -14,11 +14,11 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements BaseObject {
+public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements ToString {
 	
 	static {
 		//noinspection unchecked,RedundantTypeArguments
-		BaseObject.<DefaultingIndexMap>initClass(DefaultingIndexMap.class, d -> new DefaultingIndexMap(Copyable.copy(d.indexMap), Copyable.copy(d.def), d.iterateOverDef));
+		Copyable.<DefaultingIndexMap>manualEntry(DefaultingIndexMap.class, d -> new DefaultingIndexMap(Copyable.copy(d.indexMap), Copyable.copy(d.def), d.iterateOverDef));
 	}
 	
 	public DefaultFunction<VALUE> def;

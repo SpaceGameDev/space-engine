@@ -1,7 +1,7 @@
 package space.util.conversion;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -54,11 +54,11 @@ public interface Converter<FROM, TO> {
 		return new ConverterBefore<>(before, this);
 	}
 	
-	class ConverterAndThen<FROM, MIDDLE, TO> implements Converter<FROM, TO>, BaseObject {
+	class ConverterAndThen<FROM, MIDDLE, TO> implements Converter<FROM, TO>, ToString {
 		
 		static {
 			//noinspection unchecked
-			BaseObject.initClass(ConverterAndThen.class, d -> new ConverterAndThen(Copyable.copy(d.th), Copyable.copy(d.next)));
+			Copyable.manualEntry(ConverterAndThen.class, d -> new ConverterAndThen<>(Copyable.copy(d.th), Copyable.copy(d.next)));
 		}
 		
 		public Converter<FROM, MIDDLE> th;
@@ -93,11 +93,11 @@ public interface Converter<FROM, TO> {
 		}
 	}
 	
-	class ConverterBefore<FROM, MIDDLE, TO> implements Converter<FROM, TO>, BaseObject {
+	class ConverterBefore<FROM, MIDDLE, TO> implements Converter<FROM, TO>, ToString {
 		
 		static {
 			//noinspection unchecked
-			BaseObject.initClass(ConverterBefore.class, d -> new ConverterBefore(Copyable.copy(d.before), Copyable.copy(d.th)));
+			Copyable.manualEntry(ConverterBefore.class, d -> new ConverterBefore(Copyable.copy(d.before), Copyable.copy(d.th)));
 		}
 		
 		public Converter<FROM, MIDDLE> before;

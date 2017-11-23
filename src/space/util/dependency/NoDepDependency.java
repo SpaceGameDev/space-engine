@@ -1,14 +1,12 @@
 package space.util.dependency;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.Setable;
+import space.util.baseobject.ToString;
+import space.util.baseobject.exceptions.SetNotSupportedException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class NoDepDependency implements BaseObject, IDependency {
-	
-	static {
-		BaseObject.initClass(NoDepDependency.class, NoDepDependency::new, d -> new NoDepDependency(d.uuid));
-	}
+public class NoDepDependency implements Setable, ToString, IDependency {
 	
 	public String uuid;
 	
@@ -42,6 +40,15 @@ public class NoDepDependency implements BaseObject, IDependency {
 	@Override
 	public boolean hasDependency() {
 		return false;
+	}
+	
+	@Override
+	public void set(Object obj) throws SetNotSupportedException {
+		if (!(obj instanceof IDependency))
+			throw new SetNotSupportedException(obj.getClass());
+		
+		IDependency dep = (IDependency) obj;
+		uuid = dep.uuid();
 	}
 	
 	@Override

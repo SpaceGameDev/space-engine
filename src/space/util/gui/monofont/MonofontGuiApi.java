@@ -26,8 +26,6 @@ import space.util.string.String2D;
 import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.ToStringHelper;
 
-import java.util.function.BiFunction;
-
 public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements ToStringHelper<MonofontGuiElement> {
 	
 	public static final MonofontGuiApi INSTANCE = new MonofontGuiApi();
@@ -178,24 +176,7 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 	//object
 	@Override
 	public MonofontGuiElement toString(Object obj) {
-		if (obj instanceof MonofontGuiElement)
-			return (MonofontGuiElement) obj;
-		if (obj instanceof ToString)
-			return ((ToString) obj).toTSH(this);
-		if (obj instanceof String)
-			return toString((String) obj);
-		if (obj instanceof CharSequence2D)
-			return toString((CharSequence2D) obj);
-		if (obj instanceof CharSequence)
-			return toString((CharSequence) obj);
-		if (obj instanceof Object[])
-			return toString((Object[]) obj);
-		if (obj == null)
-			return toStringNull();
-		BiFunction<ToStringHelper<MonofontGuiElement>, Object, MonofontGuiElement> func = ToString.get(obj.getClass());
-		if (func != null)
-			return func.apply(this, obj);
-		return create(MonofontText1D.class).setCharSequence(obj.toString());
+		return ToString.toTSH(this, obj);
 	}
 	
 	@Override

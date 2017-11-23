@@ -10,8 +10,8 @@ public class Test {
 	public static void main(String[] args) throws Throwable {
 		ToStringHelper.setDefault(MonofontGuiApi.INSTANCE);
 		
-		ArrayList<?> list = Createable.create(ArrayList.class);
+		ArrayList<?> list = Creatable.create(ArrayList.class);
 		System.out.println(list.getClass().getName() + " -> " + list);
-		System.out.println(Createable.MAP);
+		System.out.println(Creatable.MAP);
 	}
 }

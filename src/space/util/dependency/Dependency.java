@@ -1,14 +1,12 @@
 package space.util.dependency;
 
-import space.util.baseobject.BaseObject;
+import space.util.baseobject.Setable;
+import space.util.baseobject.ToString;
+import space.util.baseobject.exceptions.SetNotSupportedException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class Dependency implements BaseObject, IDependency {
-	
-	static {
-		BaseObject.initClass(Dependency.class, Dependency::new, d -> new Dependency(d.uuid, d.requires, d.requiredBy, d.defaultPriority));
-	}
+public class Dependency implements Setable, ToString, IDependency {
 	
 	public String uuid;
 	public String[] requires;
@@ -68,6 +66,18 @@ public class Dependency implements BaseObject, IDependency {
 	@Override
 	public int hashCode() {
 		return uuid.hashCode();
+	}
+	
+	@Override
+	public void set(Object obj) throws SetNotSupportedException {
+		if (!(obj instanceof IDependency))
+			throw new SetNotSupportedException(obj.getClass());
+		
+		IDependency dep = (IDependency) obj;
+		uuid = dep.uuid();
+		requires = dep.requires();
+		requiredBy = dep.requiredBy();
+		defaultPriority = dep.defaultPriority();
 	}
 	
 	@Override

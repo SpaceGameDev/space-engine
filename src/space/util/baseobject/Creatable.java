@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import static space.util.GetClass.gClass;
 
-public interface Createable {
+public interface Creatable {
 	
 	ThreadLocalGlobalCachingMap<Class<?>, Supplier<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 		try {
@@ -37,7 +37,7 @@ public interface Createable {
 	 * @return the new Instance
 	 * @throws MakeNotSupportedException if creation of an new Instance failed.
 	 */
-	static <OBJ> OBJ create(OBJ obj) {
+	static <OBJ> OBJ create(OBJ obj) throws MakeNotSupportedException {
 		return create(gClass(obj));
 	}
 	
@@ -52,8 +52,8 @@ public interface Createable {
 	@SuppressWarnings("unchecked")
 	static <OBJ> OBJ create(Class<OBJ> clazz) throws MakeNotSupportedException {
 		Supplier<?> supplier = MAP.get(clazz);
-		if (supplier == null)
-			throw new MakeNotSupportedException(clazz);
-		return (OBJ) supplier.get();
+		if (supplier != null)
+			return (OBJ) supplier.get();
+		throw new MakeNotSupportedException(clazz);
 	}
 }

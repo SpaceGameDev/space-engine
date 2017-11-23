@@ -1,7 +1,7 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
@@ -12,11 +12,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class SupplierCollection<E> implements BaseObject, Collection<E> {
+public class SupplierCollection<E> implements ToString, Collection<E> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(SupplierCollection.class, d -> new SupplierCollection(Copyable.copy(d.coll)));
+		Copyable.manualEntry(SupplierCollection.class, d -> new SupplierCollection(Copyable.copy(d.coll)));
 	}
 	
 	public Supplier<Collection<E>> coll;

@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -12,7 +11,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(UnmodifiableIndexMap.class, d -> new UnmodifiableIndexMap(Copyable.copy(d.indexMap)));
+		Copyable.manualEntry(UnmodifiableIndexMap.class, d -> new UnmodifiableIndexMap(Copyable.copy(d.indexMap)));
 	}
 	
 	public UnmodifiableIndexMap(IndexMap<VALUE> indexMap) {

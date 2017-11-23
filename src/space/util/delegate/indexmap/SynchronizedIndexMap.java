@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.BaseObject;
 import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
@@ -15,7 +14,7 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	static {
 		//noinspection unchecked
-		BaseObject.initClass(SynchronizedIndexMap.class, d -> new SynchronizedIndexMap(Copyable.copy(d.indexMap)));
+		Copyable.manualEntry(SynchronizedIndexMap.class, d -> new SynchronizedIndexMap(Copyable.copy(d.indexMap)));
 	}
 	
 	public SynchronizedIndexMap(IndexMap<VALUE> indexMap) {
