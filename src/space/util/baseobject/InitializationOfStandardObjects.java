@@ -7,6 +7,11 @@ public class InitializationOfStandardObjects {
 	
 	protected static boolean called = false;
 	
+	public static byte init2() {
+		init();
+		return 0;
+	}
+	
 	public static void init() {
 		if (called)
 			return;
@@ -14,10 +19,5 @@ public class InitializationOfStandardObjects {
 		
 		ToString.manualEntry(ArrayList.class, (api, list) -> api.toString(list.toArray()));
 		ToString.manualEntry(LinkedList.class, (api, list) -> api.toString(list.toArray()));
-	}
-	
-	public static byte init2() {
-		init();
-		return 0;
 	}
 }

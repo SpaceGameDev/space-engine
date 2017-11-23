@@ -5,6 +5,11 @@ import space.util.string.String2D;
 
 import java.util.function.Supplier;
 
+/**
+ * a helper class for creating {@link String}s for {@link Object}s
+ *
+ * @param <T> type of return from the {@link ToStringHelper}
+ */
 public interface ToStringHelper<T> {
 	
 	static ToStringHelper<?> getDefault() {
@@ -236,6 +241,29 @@ public interface ToStringHelper<T> {
 		default void add(String name, CharSequence2D obj) {
 			add(name, (Object) obj);
 		}
+		
+		T build();
+	}
+	
+	//tables
+	ToStringHelperTable<T> createTable(Object name, int dimensions);
+	
+	interface ToStringHelperTable<T> {
+		
+		/**
+		 * adds a separator inbetween the table
+		 *
+		 * @param pos       the position to start at
+		 * @param direction the direction the separator should go.
+		 *                  Most implementations can only go sideways.
+		 * @param multiple  an offset to position marking an area where all separators should be set.
+		 *                  If this value can longer than all entries, in this case it will only print as many as needed for all entries.
+		 * @param separator the separator itself
+		 * @param align     is the separators should be aligned with one another or can be anywhere, implementation specific
+		 */
+		void setSeparator(int[] pos, int[] direction, int[] multiple, String2D separator, boolean align);
+		
+		void put(int[] pos, T object);
 		
 		T build();
 	}

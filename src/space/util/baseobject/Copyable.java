@@ -9,12 +9,15 @@ import java.lang.invoke.MethodType;
 import java.util.function.UnaryOperator;
 
 public interface Copyable {
-
-//	UnaryOperator<Setable> SETABLE_UNARY_OPERATOR = obj -> {
-//		Setable ret = Creatable.create(obj);
-//		Setable.set(ret, obj);
-//		return ret;
-//	};
+	
+	/**
+	 * this may shallow-copy objects, instead of deep-copy
+	 */
+	UnaryOperator<Setable> SETABLE_UNARY_OPERATOR = obj -> {
+		Setable ret = Creatable.create(obj);
+		Setable.set(ret, obj);
+		return ret;
+	};
 	
 	ThreadLocalGlobalCachingMap<Class<?>, UnaryOperator<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 		//constructor with same type as argument, see java.util.ArrayList

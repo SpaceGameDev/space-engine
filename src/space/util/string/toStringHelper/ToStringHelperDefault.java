@@ -249,4 +249,25 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 			}
 		};
 	}
+	
+	//table
+	@Override
+	public ToStringHelperTable<String> createTable(Object name, int dimensions) {
+		return new ToStringHelperTable<String>() {
+			@Override
+			public void setSeparator(int[] pos, int[] direction, int[] multiple, String2D separator, boolean align) {
+			
+			}
+			
+			@Override
+			public void put(int[] pos, String object) {
+			
+			}
+			
+			@Override
+			public String build() {
+				return null;
+			}
+		};
+	}
 }
