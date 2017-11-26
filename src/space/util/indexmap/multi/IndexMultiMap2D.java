@@ -8,17 +8,17 @@ import java.util.NoSuchElementException;
 
 public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 	
-	public static int defaultCapacity = 16;
-	public static int defaultHeight = 1;
-	public static int expandShiftHeight = 1;
-	public static int expandShift = 1;
+	public static final int DEFAULT_CAPACITY = 16;
+	public static final int DEFAULT_HEIGHT = 4;
+	public static final int EXPAND_SHIFT_HEIGHT = 1;
+	public static final int EXPAND_SHIFT = 1;
 	
 	public VALUE[][] buffer;
 	public int[] length;
 	public int height;
 	
 	public IndexMultiMap2D() {
-		this(defaultHeight, defaultCapacity);
+		this(DEFAULT_HEIGHT, DEFAULT_CAPACITY);
 	}
 	
 	public IndexMultiMap2D(int sizeHeight, int sizeCapacity) {
@@ -55,7 +55,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 	public boolean ensureHeight(int capa) {
 		int l = buffer.length;
 		if (l < capa) {
-			int newsize = ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShiftHeight);
+			int newsize = ArrayUtils.getOptimalArraySizeExpansion(l, capa, EXPAND_SHIFT_HEIGHT);
 			
 			VALUE[][] old = buffer;
 			//noinspection unchecked
@@ -84,14 +84,14 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		
 		if (buf == null) {
 			//noinspection unchecked
-			buffer[height] = (VALUE[]) new Object[ArrayUtils.getOptimalArraySizeStart(defaultCapacity, capa)];
+			buffer[height] = (VALUE[]) new Object[ArrayUtils.getOptimalArraySizeStart(DEFAULT_CAPACITY, capa)];
 			return true;
 		}
 		
 		int l = buf.length;
 		if (l < capa) {
 			//noinspection unchecked
-			VALUE[] n = (VALUE[]) new Object[ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShift)];
+			VALUE[] n = (VALUE[]) new Object[ArrayUtils.getOptimalArraySizeExpansion(l, capa, EXPAND_SHIFT)];
 			System.arraycopy(buf, 0, n, 0, l);
 			buffer[height] = n;
 			return true;

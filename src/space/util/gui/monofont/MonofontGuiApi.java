@@ -232,4 +232,43 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 			}
 		};
 	}
+	
+	//table
+	@Override
+	public ToStringHelperTable<MonofontGuiElement> createTable(Object name, int dimensions) {
+		return new ToStringHelperTable<MonofontGuiElement>() {
+			MonofontTable table = new MonofontTable();
+			
+			@Override
+			public void put(int[] pos, MonofontGuiElement object) {
+				table.put(pos, object);
+			}
+			
+			@Override
+			public MonofontGuiElement build() {
+				return table;
+			}
+		};
+	}
+	
+	//mapper
+	@Override
+	public ToStringHelperMapper<MonofontGuiElement> createMapper(Object name) {
+		return new ToStringHelperMapper<MonofontGuiElement>() {
+			@Override
+			public void setSeparator(String separator, boolean align) {
+			
+			}
+			
+			@Override
+			public void put(int[] pos, MonofontGuiElement object) {
+			
+			}
+			
+			@Override
+			public MonofontGuiElement build() {
+				return null;
+			}
+		};
+	}
 }

@@ -1,5 +1,10 @@
 package space.util.string.toStringHelper;
 
+import space.util.indexmap.IndexMapArray;
+import space.util.indexmap.multi.IndexMultiMap;
+import space.util.indexmap.multi.IndexMultiMap2D;
+import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
+import space.util.indexmap.multi.IndexMultiMapLayered.IndexMultiMapLayeredImpl;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 
@@ -116,8 +121,15 @@ public interface ToStringHelper<T> {
 	T createModifier(String modifier, Object value);
 	
 	//objects
+	
+	/**
+	 * an object mapper mapping names of fields to values
+	 */
 	ToStringHelperObjectsInstance<T> createObjectInstance(Object obj);
 	
+	/**
+	 * an object mapper mapping names of fields to values
+	 */
 	interface ToStringHelperObjectsInstance<T> {
 		
 		//primitive
@@ -246,25 +258,53 @@ public interface ToStringHelper<T> {
 	}
 	
 	//tables
+	
+	/**
+	 * tables can be infinite in any of the infinite dimensions
+	 */
 	ToStringHelperTable<T> createTable(Object name, int dimensions);
 	
+	/**
+	 * tables can be infinite in any of the infinite dimensions
+	 */
 	interface ToStringHelperTable<T> {
-		
-		/**
-		 * adds a separator inbetween the table
-		 *
-		 * @param pos       the position to start at
-		 * @param direction the direction the separator should go.
-		 *                  Most implementations can only go sideways.
-		 * @param multiple  an offset to position marking an area where all separators should be set.
-		 *                  If this value can longer than all entries, in this case it will only print as many as needed for all entries.
-		 * @param separator the separator itself
-		 * @param align     is the separators should be aligned with one another or can be anywhere, implementation specific
-		 */
-		void setSeparator(int[] pos, int[] direction, int[] multiple, String2D separator, boolean align);
 		
 		void put(int[] pos, T object);
 		
 		T build();
+	}
+	
+	//mapper
+	
+	/**
+	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
+	 */
+	ToStringHelperMapper<T> createMapper(Object name);
+	
+	/**
+	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
+	 */
+	interface ToStringHelperMapper<T> {
+		
+		void setSeparator(String separator, boolean align);
+		
+		/**
+		 * pos.length = 2 <br>
+		 * pos[0] >= 0 <br>
+		 * pos[1] = 0 OR 1 <br>
+		 */
+		void put(int[] pos, T object);
+		
+		T build();
+	}
+	
+	static <VALUE> IndexMultiMap<VALUE> getOptimalMultiMap(int dimensions) {
+		if (dimensions < 0)
+			throw new IllegalArgumentException("Dimension " + dimensions + " < 0");
+		if (dimensions <= 1)
+			return new IndexMultiMapFrom1DIndexMap<>(new IndexMapArray<>());
+		if (dimensions <= 2)
+			return new IndexMultiMap2D<>();
+		return new IndexMultiMapLayeredImpl<>();
 	}
 }

@@ -1,10 +1,14 @@
 package space.util.string.toStringHelper;
 
 import space.util.delegate.iterator.Iteratorable;
+import space.util.indexmap.multi.IndexMultiMap;
+import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
+import space.util.indexmap.multi.IndexMultiMap2D;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder1D;
 
+import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Objects;
 
@@ -254,19 +258,63 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	@Override
 	public ToStringHelperTable<String> createTable(Object name, int dimensions) {
 		return new ToStringHelperTable<String>() {
-			@Override
-			public void setSeparator(int[] pos, int[] direction, int[] multiple, String2D separator, boolean align) {
-			
-			}
+			IndexMultiMap<String> map = ToStringHelper.getOptimalMultiMap(dimensions);
 			
 			@Override
 			public void put(int[] pos, String object) {
-			
+				map.put(pos, object);
 			}
 			
 			@Override
 			public String build() {
-				return null;
+				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
+				Iteratorable<IndexMultiMapEntry<String>> iter = map.tableIterator();
+				
+				b.append('{');
+				for (IndexMultiMapEntry<String> entry : iter) {
+					b.append(Arrays.toString(entry.getIndex())).append(": ").append(entry.getValue());
+					if (iter.hasNext())
+						b.append(", ");
+				}
+				b.append('}');
+				return b.toString();
+			}
+		};
+	}
+	
+	//mapper
+	@Override
+	public ToStringHelperMapper<String> createMapper(Object name) {
+		return new ToStringHelperMapper<String>() {
+			
+			IndexMultiMap<String> map = new IndexMultiMap2D<>(IndexMultiMap2D.DEFAULT_HEIGHT, 2);
+			public String separator = ": ";
+			
+			@Override
+			public void setSeparator(String separator, boolean align) {
+				this.separator = separator;
+			}
+			
+			@Override
+			public void put(int[] pos, String object) {
+				if (pos.length != 2 || (pos[1] == 0 || pos[1] == 1))
+					throw new IllegalArgumentException();
+				map.put(pos, object);
+			}
+			
+			@Override
+			public String build() {
+				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
+				
+				b.append('{');
+				int size = map.size();
+				for (int i = 0; i < size; i++) {
+					b.append(map.get(new int[] {i, 0})).append(separator).append(new int[] {i, 1});
+					if (i + 1 < size)
+						b.append(", ");
+				}
+				b.append('}');
+				return b.toString();
 			}
 		};
 	}
