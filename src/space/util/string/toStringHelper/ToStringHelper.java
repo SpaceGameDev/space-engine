@@ -257,16 +257,20 @@ public interface ToStringHelper<T> {
 		T build();
 	}
 	
+	//mapper
+	
+	/**
+	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
+	 */
+	ToStringHelperTable<T> createMapper(Object name, String separator, boolean align);
+	
 	//tables
 	
 	/**
-	 * tables can be infinite in any of the infinite dimensions
+	 * tables can be infinite in any of their (infinite) dimensions
 	 */
 	ToStringHelperTable<T> createTable(Object name, int dimensions);
 	
-	/**
-	 * tables can be infinite in any of the infinite dimensions
-	 */
 	interface ToStringHelperTable<T> {
 		
 		void put(int[] pos, T object);
@@ -274,37 +278,17 @@ public interface ToStringHelper<T> {
 		T build();
 	}
 	
-	//mapper
-	
-	/**
-	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
-	 */
-	ToStringHelperMapper<T> createMapper(Object name);
-	
-	/**
-	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
-	 */
-	interface ToStringHelperMapper<T> {
-		
-		void setSeparator(String separator, boolean align);
-		
-		/**
-		 * pos.length = 2 <br>
-		 * pos[0] >= 0 <br>
-		 * pos[1] = 0 OR 1 <br>
-		 */
-		void put(int[] pos, T object);
-		
-		T build();
-	}
-	
 	static <VALUE> IndexMultiMap<VALUE> getOptimalMultiMap(int dimensions) {
-		if (dimensions < 0)
-			throw new IllegalArgumentException("Dimension " + dimensions + " < 0");
-		if (dimensions <= 1)
-			return new IndexMultiMapFrom1DIndexMap<>(new IndexMapArray<>());
-		if (dimensions <= 2)
-			return new IndexMultiMap2D<>();
-		return new IndexMultiMapLayeredImpl<>();
+		if (dimensions <= 0)
+			throw new IllegalArgumentException("Dimension " + dimensions + " <= 0");
+		
+		switch (dimensions) {
+			case 1:
+				return new IndexMultiMapFrom1DIndexMap<>(new IndexMapArray<>());
+			case 2:
+				return new IndexMultiMap2D<>();
+			default:
+				return new IndexMultiMapLayeredImpl<>();
+		}
 	}
 }

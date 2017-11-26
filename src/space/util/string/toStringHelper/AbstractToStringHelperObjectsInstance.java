@@ -17,6 +17,9 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 	}
 	
 	@Override
+	public abstract T build();
+	
+	@Override
 	public String toString() {
 		return build().toString();
 	}

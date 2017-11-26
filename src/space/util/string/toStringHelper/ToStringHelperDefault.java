@@ -1,9 +1,7 @@
 package space.util.string.toStringHelper;
 
 import space.util.delegate.iterator.Iteratorable;
-import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
-import space.util.indexmap.multi.IndexMultiMap2D;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder1D;
@@ -257,14 +255,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//table
 	@Override
 	public ToStringHelperTable<String> createTable(Object name, int dimensions) {
-		return new ToStringHelperTable<String>() {
-			IndexMultiMap<String> map = ToStringHelper.getOptimalMultiMap(dimensions);
-			
-			@Override
-			public void put(int[] pos, String object) {
-				map.put(pos, object);
-			}
-			
+		return new AbstractToStringHelperTable<String>(dimensions) {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
@@ -284,24 +275,8 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	//mapper
 	@Override
-	public ToStringHelperMapper<String> createMapper(Object name) {
-		return new ToStringHelperMapper<String>() {
-			
-			IndexMultiMap<String> map = new IndexMultiMap2D<>(IndexMultiMap2D.DEFAULT_HEIGHT, 2);
-			public String separator = ": ";
-			
-			@Override
-			public void setSeparator(String separator, boolean align) {
-				this.separator = separator;
-			}
-			
-			@Override
-			public void put(int[] pos, String object) {
-				if (pos.length != 2 || (pos[1] == 0 || pos[1] == 1))
-					throw new IllegalArgumentException();
-				map.put(pos, object);
-			}
-			
+	public ToStringHelperTable<String> createMapper(Object name, String separator, boolean align) {
+		return new AbstractToStringHelperMapper<String>() {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();

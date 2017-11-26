@@ -1,6 +1,6 @@
 package space.util.gui;
 
-public interface GuiApi<BASEELEMENT> {
+public interface GuiApi<BASEELEMENT extends GuiElement<BASEELEMENT>> {
 	
 	<ELEMENT extends GuiElement<?>, RETURN extends ELEMENT> RETURN create(Class<ELEMENT> type);
 	
