@@ -3,10 +3,10 @@ package space.util.gui.tshImpl;
 import space.util.baseobject.ToString;
 import space.util.gui.GuiApi;
 import space.util.gui.GuiElement;
+import space.util.gui.elements.direction.GuiTable;
 import space.util.gui.elements.text.GuiText1D;
 import space.util.gui.elements.tsh.GuiArray;
 import space.util.gui.elements.tsh.GuiModifier;
-import space.util.gui.monofont.elements.direction.MonofontTable;
 import space.util.gui.monofont.elements.text.MonofontText2D;
 import space.util.gui.monofont.elements.tsh.MonofontObjects;
 import space.util.string.CharSequence2D;
@@ -220,17 +220,23 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	@Override
 	public ToStringHelperTable<T> createTable(Object name, int dimensions) {
 		return new ToStringHelperTable<T>() {
-			MonofontTable table = new MonofontTable();
+			GuiTable<T> table = api.create(GuiTable.class);
 			
 			@Override
 			public void put(int[] pos, T object) {
-				table.put(pos, object);
+				table.getTable().put(pos, object);
 			}
 			
 			@Override
+			@SuppressWarnings("unchecked")
 			public T build() {
-				return table;
+				return (T) table;
 			}
 		};
+	}
+	
+	@Override
+	public ToStringHelperTable<T> createMapper(Object name, String separator, boolean align) {
+		return null;
 	}
 }

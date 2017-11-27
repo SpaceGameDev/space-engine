@@ -2,7 +2,7 @@ package space.util.gui;
 
 import space.util.gui.elements.direction.GuiTable;
 import space.util.gui.elements.text.GuiText1D;
-import space.util.gui.elements.text.GuiText2D;
+import space.util.gui.elements.text.GuiText2DCreator;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.elements.direction.MonofontColumn;
@@ -18,7 +18,7 @@ public class GuiTestManual {
 		
 		MonofontRow row = api.create(MonofontRow.class);
 		row.setMonofontStyle(MonofontTableCreatorIncludingTable.DEFAULT);
-		row.add(api.create(GuiText2D.class).setCharSequence(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append("Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
+		row.add(api.create(GuiText2DCreator.class).setCharSequence(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append("Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
 		
 		MonofontColumn column = api.create(MonofontColumn.class);
 		column.setMonofontStyle(MonofontTableCreatorIncludingTable.DEFAULT);

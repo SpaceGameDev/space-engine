@@ -1,4 +1,4 @@
-package space.util.gui.elements.text;
+package space.util.gui.elementsOld.text;
 
 import space.util.gui.GuiElement;
 

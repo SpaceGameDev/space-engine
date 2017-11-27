@@ -239,7 +239,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		
 		@SuppressWarnings("unchecked")
 		public <CLAZZ extends MIN> ConverterSmartPriorityConverter<CLAZZ, NODE> getConvertFrom(Class<CLAZZ> clazz) {
-			return (ConverterSmartPriorityConverter<CLAZZ, NODE>) mapConvertFrom.get(clazz);
+			return mapConvertFrom.get(clazz);
 		}
 		
 		public <CLAZZ extends MIN> Converter<? extends MIN, NODE> putConvertFrom(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<CLAZZ, NODE> node) {
@@ -248,7 +248,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		
 		@SuppressWarnings("unchecked")
 		public <CLAZZ extends MIN> ConverterSmartPriorityConverter<NODE, CLAZZ> getConvertTo(Class<CLAZZ> clazz) {
-			return (ConverterSmartPriorityConverter<NODE, CLAZZ>) mapConvertTo.get(clazz);
+			return mapConvertTo.get(clazz);
 		}
 		
 		public <CLAZZ extends MIN> Converter<NODE, ? extends MIN> putConvertTo(Class<CLAZZ> clazz, ConverterSmartPriorityConverter<NODE, CLAZZ> node) {

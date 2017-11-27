@@ -1,4 +1,4 @@
-package space.util.gui.elements.direction;
+package space.util.gui.elementsOld.direction;
 
 import space.util.gui.GuiElement;
 import space.util.indexmap.IndexMap;

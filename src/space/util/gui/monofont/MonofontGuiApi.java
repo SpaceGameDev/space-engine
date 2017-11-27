@@ -5,7 +5,7 @@ import space.util.gui.elements.direction.GuiDirectional;
 import space.util.gui.elements.direction.GuiRow;
 import space.util.gui.elements.direction.GuiTable;
 import space.util.gui.elements.text.GuiText1D;
-import space.util.gui.elements.text.GuiText2D;
+import space.util.gui.elements.text.GuiText2DCreator;
 import space.util.gui.elements.tsh.GuiArray;
 import space.util.gui.elements.tsh.GuiModifier;
 import space.util.gui.elements.tsh.GuiVariable;
@@ -33,7 +33,7 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement> implements 
 		addElements(MonofontTable::new, MonofontTable.class, GuiTable.class);
 		//text
 		addElements(MonofontText1D::new, MonofontText1D.class, GuiText1D.class);
-		addElements(MonofontText2D::new, MonofontText2D.class, GuiText2D.class);
+		addElements(MonofontText2D::new, MonofontText2D.class, GuiText2DCreator.class);
 		//tsh
 		addElements(MonofontArray::new, MonofontArray.class, GuiArray.class);
 		addElements(MonofontArray::new, MonofontModifier.class, GuiModifier.class);
