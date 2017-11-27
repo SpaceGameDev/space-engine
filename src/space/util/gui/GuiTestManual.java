@@ -1,44 +1,43 @@
 package space.util.gui;
 
-import space.util.gui.elements.direction.GuiTable;
-import space.util.gui.elements.text.GuiText1D;
+import space.util.gui.elements.direction.GuiColumnCreator;
+import space.util.gui.elements.direction.GuiColumnCreator.GuiColumn;
+import space.util.gui.elements.direction.GuiRowCreator;
+import space.util.gui.elements.direction.GuiRowCreator.GuiRow;
+import space.util.gui.elements.direction.GuiTableCreator;
+import space.util.gui.elements.direction.GuiTableCreator.GuiTable;
+import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.elements.text.GuiText2DCreator;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.gui.monofont.MonofontGuiElement;
-import space.util.gui.monofont.elements.direction.MonofontColumn;
-import space.util.gui.monofont.elements.direction.MonofontRow;
-import space.util.gui.monofont.elements.direction.MonofontTable;
-import space.util.gui.monofont.tableCreator.MonofontTableCreatorIncludingTable;
 import space.util.string.builder.CharBufferBuilder2D;
 
 public class GuiTestManual {
 	
 	public static void main(String[] args) {
-		GuiApi<?> api = MonofontGuiApi.INSTANCE;
+		GuiApi<MonofontGuiElement<?>> api = MonofontGuiApi.INSTANCE;
+	}
+	
+	public static <BASE extends GuiElement<BASE, ?>> void work(GuiApi<BASE> api) {
+		GuiRow<BASE, ?> row = api.<GuiRowCreator<BASE>>get(GuiRowCreator.class).create();
+		row.add(api.get(GuiText2DCreator.class).create(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append("Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
 		
-		MonofontRow row = api.create(MonofontRow.class);
-		row.setMonofontStyle(MonofontTableCreatorIncludingTable.DEFAULT);
-		row.add(api.create(GuiText2DCreator.class).setCharSequence(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append("Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
-		
-		MonofontColumn column = api.create(MonofontColumn.class);
-		column.setMonofontStyle(MonofontTableCreatorIncludingTable.DEFAULT);
-		column.add(api.create(GuiText1D.class).setCharSequence("Hi there!!!"));
-		column.add(api.create(GuiText1D.class).setCharSequence("I'm writing things..."));
+		GuiColumn<> column = api.get(GuiColumnCreator.class).create(); column.add(api.get(GuiText1DCreator.class).create("Hi there!!!"));
+		column.add(api.get(GuiText1DCreator.class).create("I'm writing things..."));
 		row.add(column);
 		
-		MonofontTable table = api.create(GuiTable.class);
-		table.setMonofontStyle(MonofontTableCreatorIncludingTable.DEFAULT);
-		table.put(new int[] {0, 0}, api.create(GuiText1D.class).setCharSequence("7"));
-		table.put(new int[] {0, 1}, api.create(GuiText1D.class).setCharSequence("8"));
-		table.put(new int[] {0, 2}, api.create(GuiText1D.class).setCharSequence("9"));
-		table.put(new int[] {1, 0}, api.create(GuiText1D.class).setCharSequence("4"));
-		table.put(new int[] {1, 1}, api.create(GuiText1D.class).setCharSequence("mid"));
-		table.put(new int[] {1, 2}, api.create(GuiText1D.class).setCharSequence("6"));
-		table.put(new int[] {2, 0}, api.create(GuiText1D.class).setCharSequence("1"));
-		table.put(new int[] {2, 1}, api.create(GuiText1D.class).setCharSequence("2"));
-		table.put(new int[] {2, 2}, api.create(GuiText1D.class).setCharSequence("3"));
-		table.put(new int[] {3, 1}, api.create(GuiText1D.class).setCharSequence("0"));
-		table.put(new int[] {3, 2}, api.create(GuiText1D.class).setCharSequence(","));
+		GuiTable table = api.get(GuiTableCreator.class).create();
+		table.put(new int[] {0, 0}, api.get(GuiText1DCreator.class).create("7"));
+		table.put(new int[] {0, 1}, api.get(GuiText1DCreator.class).create("8"));
+		table.put(new int[] {0, 2}, api.get(GuiText1DCreator.class).create("9"));
+		table.put(new int[] {1, 0}, api.get(GuiText1DCreator.class).create("4"));
+		table.put(new int[] {1, 1}, api.get(GuiText1DCreator.class).create("mid"));
+		table.put(new int[] {1, 2}, api.get(GuiText1DCreator.class).create("6"));
+		table.put(new int[] {2, 0}, api.get(GuiText1DCreator.class).create("1"));
+		table.put(new int[] {2, 1}, api.get(GuiText1DCreator.class).create("2"));
+		table.put(new int[] {2, 2}, api.get(GuiText1DCreator.class).create("3"));
+		table.put(new int[] {3, 1}, api.get(GuiText1DCreator.class).create("0"));
+		table.put(new int[] {3, 2}, api.get(GuiText1DCreator.class).create(","));
 		row.add(table);
 		
 		println(row);

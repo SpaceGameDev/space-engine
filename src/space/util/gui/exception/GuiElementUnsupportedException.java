@@ -1,4 +1,4 @@
-package space.util.gui;
+package space.util.gui.exception;
 
 public class GuiElementUnsupportedException extends RuntimeException {
 	

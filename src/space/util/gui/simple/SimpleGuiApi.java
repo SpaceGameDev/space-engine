@@ -2,38 +2,39 @@ package space.util.gui.simple;
 
 import space.util.delegate.map.specific.ClassMap.GetClassOrSuperMap;
 import space.util.gui.GuiApi;
+import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
-import space.util.gui.GuiElementUnsupportedException;
+import space.util.gui.exception.GuiElementUnsupportedException;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public abstract class SimpleGuiApi<BASEELEMENT extends GuiElement<BASEELEMENT>> implements GuiApi<BASEELEMENT> {
+public abstract class SimpleGuiApi<BASE extends GuiElement<BASE, ?>> implements GuiApi<BASE> {
 	
-	public Map<Class<? extends GuiElement<?>>, Supplier<? extends GuiElement<?>>> map = new GetClassOrSuperMap<>(new HashMap<>());
+	public Map<Class<? extends GuiCreator<? extends BASE>>, Supplier<GuiCreator<? extends BASE>>> map = new GetClassOrSuperMap<>(new HashMap<>());
 	
-	public void addElement(Supplier<? extends GuiElement<?>> con, Class<? extends GuiElement<?>> clazz) {
+	public void addElement(Supplier<GuiCreator<? extends BASE>> con, Class<? extends GuiCreator<? extends BASE>> clazz) {
 		map.put(clazz, con);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public final void addElements(Supplier<? extends GuiElement<?>> con, Class<?>... clazz) {
+	public final void addElements(Supplier<GuiCreator<? extends BASE>> con, Class<?>... clazz) {
 		for (Class<?> e : clazz)
-			map.put((Class<? extends GuiElement<?>>) e, con);
+			map.put((Class<? extends GuiCreator<? extends BASE>>) e, con);
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public <ELEMENT extends GuiElement<?>, RETURN extends ELEMENT> RETURN create(Class<ELEMENT> type) {
-		Supplier<? extends GuiElement<?>> sup = map.get(type);
-		if (sup == null)
+	public <CREATOR extends GuiCreator<? extends BASE>> CREATOR get(Class<CREATOR> type) {
+		Supplier<GuiCreator<? extends BASE>> creator = map.get(type);
+		if (creator == null)
 			throw new GuiElementUnsupportedException("Gui Element unsupported: " + type.getName());
-		return (RETURN) sup.get();
+		//noinspection unchecked
+		return (CREATOR) creator;
 	}
 	
 	@Override
-	public <ELEMENT extends GuiElement<?>> boolean isSupported(Class<ELEMENT> type) {
+	public <CREATOR extends GuiCreator<? extends BASE>> boolean isSupported(Class<CREATOR> type) {
 		return map.containsKey(type);
 	}
 }

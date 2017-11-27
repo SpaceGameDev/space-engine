@@ -2,7 +2,7 @@ package space.util.gui.monofont.elements.direction;
 
 import space.util.delegate.indexmap.ModificationAwareIndexMap;
 import space.util.gui.GuiElement;
-import space.util.gui.elements.direction.GuiDirectional;
+import space.util.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
 import space.util.gui.monofont.IMonofontWithStyle;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
@@ -13,7 +13,7 @@ import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.CharSequence2D;
 
-public abstract class MonofontElementList extends MonofontGuiElementCaching implements GuiDirectional<MonofontGuiElement>, IMonofontWithStyle {
+public abstract class MonofontElementList extends MonofontGuiElementCaching implements GuiDirectional<MonofontGuiElement<?>, Object>, IMonofontWithStyle {
 	
 	public IMonofontTableCreator style;
 	public IndexMap<GuiElement<?>> list = new ModificationAwareIndexMap<>(new IndexMapArray<>(), this::modification);

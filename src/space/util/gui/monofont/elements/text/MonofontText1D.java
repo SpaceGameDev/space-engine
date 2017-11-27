@@ -1,15 +1,17 @@
 package space.util.gui.monofont.elements.text;
 
-import space.util.gui.elements.text.GuiText1D;
+import space.util.gui.elements.text.GuiText1DCreator;
+import space.util.gui.elements.text.GuiText1DCreator.GuiText1D;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 
-public class MonofontText1D extends MonofontGuiElement implements GuiText1D<MonofontGuiElement> {
+public class MonofontText1D extends MonofontGuiElement implements GuiText1D<MonofontGuiElement<?>, GuiText1DCreator<MonofontGuiElement<?>>> {
 	
 	public CharSequence squ;
 	
-	public MonofontText1D() {
+	public MonofontText1D(MonofontText1D text) {
+		this(text.squ);
 	}
 	
 	public MonofontText1D(CharSequence squ) {
@@ -17,9 +19,8 @@ public class MonofontText1D extends MonofontGuiElement implements GuiText1D<Mono
 	}
 	
 	@Override
-	public MonofontText1D setCharSequence(CharSequence squ) {
-		this.squ = squ;
-		return this;
+	public GuiText1DCreator<MonofontText1D> getCreator() {
+		return MonofontText1D::new;
 	}
 	
 	@Override

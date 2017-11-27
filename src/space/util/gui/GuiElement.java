@@ -1,10 +1,10 @@
 package space.util.gui;
 
-public interface GuiElement<ELEMENT extends GuiElement<ELEMENT, CREATOR>, CREATOR extends GuiCreator<ELEMENT>> {
+public interface GuiElement<BASE extends GuiElement<BASE, CREATOR>, CREATOR extends GuiCreator<BASE>> {
 	
-	GuiApi<ELEMENT> getApi();
+	GuiApi<?> getApi();
 	
 	CREATOR getCreator();
 	
-	ELEMENT toBaseElement();
+	BASE toBaseElement();
 }

@@ -1,12 +1,12 @@
 package space.util.gui.monofont;
 
 import space.util.baseobject.ToString;
-import space.util.gui.GuiApi;
+import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public abstract class MonofontGuiElement implements ToString, GuiElement<MonofontGuiElement> {
+public abstract class MonofontGuiElement<CREATOR extends GuiCreator<MonofontGuiElement<CREATOR>>> implements ToString, GuiElement<MonofontGuiElement<CREATOR>, CREATOR> {
 	
 	public MonofontGuiElement parent;
 	
@@ -15,17 +15,15 @@ public abstract class MonofontGuiElement implements ToString, GuiElement<Monofon
 		this.parent = parent;
 	}
 	
-	//stackSize
-	public int getStackSize() {
-		if (parent == null)
-			return 0;
-		return parent.getStackSize() + 1;
-	}
-	
 	//api
 	@Override
-	public GuiApi<MonofontGuiElement> getApi() {
+	public MonofontGuiApi getApi() {
 		return MonofontGuiApi.INSTANCE;
+	}
+	
+	@Override
+	public MonofontGuiElement<CREATOR> toBaseElement() {
+		return this;
 	}
 	
 	//size
@@ -33,7 +31,7 @@ public abstract class MonofontGuiElement implements ToString, GuiElement<Monofon
 	
 	public abstract int sizeY();
 	
-	//build
+	//toString
 	public abstract CharSequence2D build();
 	
 	@Override
