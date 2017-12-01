@@ -1,5 +1,5 @@
 package space.util.gui;
 
-public interface GuiCreator<BASE extends GuiElement<BASE, ?>> {
+public interface GuiCreator {
 	
 }

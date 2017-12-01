@@ -2,36 +2,30 @@ package space.util.gui.elements.direction;
 
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
-import space.util.indexmap.IndexMap;
 
 /**
  * when using this, the resulting element should go in the inverse direction of the parent (row - column - row - ...)
  */
 @FunctionalInterface
-public interface GuiDirectionalCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiDirectionalCreator extends GuiCreator {
 	
 	/**
-	 * creates a {@link GuiDirectional} with a Method {@link GuiDirectional#getIndexMap()} getting the {@link IndexMap} to fill
+	 * creates a {@link GuiDirectional}.
+	 * Use the Methods {@link GuiDirectional#add(GuiElement)}, {@link GuiDirectional#put(int, GuiElement)}
+	 * and {@link GuiDirectional#remove(int)} to config it like a {@link space.util.indexmap.IndexMap}.
 	 *
 	 * @return a new {@link GuiDirectional} to fill a table within
 	 */
-	//FIXME: get this running...
-	GuiDirectional<BASE, GuiDirectionalCreator<BASE>> create();
+	GuiDirectional create();
 	
-	interface GuiDirectional<BASE extends GuiElement<BASE, CREATOR>, CREATOR extends GuiDirectionalCreator<BASE>> extends GuiElement<BASE, CREATOR> {
+	interface GuiDirectional extends GuiElement {
 		
-		IndexMap<BASE> getIndexMap();
+		void add(GuiElement v);
 		
-		default void add(BASE v) {
-			getIndexMap().add(v);
-		}
+		GuiElement put(int index, GuiElement v);
 		
-		default void put(int index, BASE v) {
-			getIndexMap().put(index, v);
-		}
+		GuiElement remove(int index);
 		
-		default void remove(int index) {
-			getIndexMap().remove(index);
-		}
+		void remove(GuiElement v);
 	}
 }

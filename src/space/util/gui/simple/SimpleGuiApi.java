@@ -3,38 +3,39 @@ package space.util.gui.simple;
 import space.util.delegate.map.specific.ClassMap.GetClassOrSuperMap;
 import space.util.gui.GuiApi;
 import space.util.gui.GuiCreator;
-import space.util.gui.GuiElement;
 import space.util.gui.exception.GuiElementUnsupportedException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
-public abstract class SimpleGuiApi<BASE extends GuiElement<BASE, ?>> implements GuiApi<BASE> {
+public abstract class SimpleGuiApi implements GuiApi {
 	
-	public Map<Class<? extends GuiCreator<? extends BASE>>, Supplier<GuiCreator<? extends BASE>>> map = new GetClassOrSuperMap<>(new HashMap<>());
+	public Map<Class<? extends GuiCreator>, GuiCreator> map = new GetClassOrSuperMap<>(new HashMap<>());
 	
-	public void addElement(Supplier<GuiCreator<? extends BASE>> con, Class<? extends GuiCreator<? extends BASE>> clazz) {
+	//add
+	public void addElement(GuiCreator con, Class<? extends GuiCreator> clazz) {
 		map.put(clazz, con);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public final void addElements(Supplier<GuiCreator<? extends BASE>> con, Class<?>... clazz) {
-		for (Class<?> e : clazz)
-			map.put((Class<? extends GuiCreator<? extends BASE>>) e, con);
+	@SafeVarargs
+	public final void addElements(GuiCreator con, Class<? extends GuiCreator>... clazz) {
+		for (Class<? extends GuiCreator> e : clazz)
+			map.put(e, con);
 	}
 	
+	//get
 	@Override
-	public <CREATOR extends GuiCreator<? extends BASE>> CREATOR get(Class<CREATOR> type) {
-		Supplier<GuiCreator<? extends BASE>> creator = map.get(type);
+	public <CREATOR extends GuiCreator> CREATOR get(Class<CREATOR> type) {
+		GuiCreator creator = map.get(type);
 		if (creator == null)
 			throw new GuiElementUnsupportedException("Gui Element unsupported: " + type.getName());
 		//noinspection unchecked
 		return (CREATOR) creator;
 	}
 	
+	//exists
 	@Override
-	public <CREATOR extends GuiCreator<? extends BASE>> boolean isSupported(Class<CREATOR> type) {
+	public <CREATOR extends GuiCreator> boolean isSupported(Class<CREATOR> type) {
 		return map.containsKey(type);
 	}
 }

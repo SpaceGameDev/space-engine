@@ -4,7 +4,7 @@ import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.gui.exception.IllegalGuiElementException;
 
-public interface GuiVariableCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiVariableCreator extends GuiCreator {
 	
 	/**
 	 * creates a visual variable simmilar to this:
@@ -17,7 +17,7 @@ public interface GuiVariableCreator<BASE extends GuiElement<BASE, ?>> extends Gu
 	 */
 	GuiVariable create(String name, GuiElement value) throws IllegalGuiElementException;
 	
-	interface GuiVariable<ELEMENT extends GuiElement<ELEMENT, CREATOR>, CREATOR extends GuiVariableCreator<ELEMENT>> extends GuiElement<ELEMENT, CREATOR> {
+	interface GuiVariable extends GuiElement {
 	
 	}
 }

@@ -20,7 +20,7 @@ import space.util.gui.monofont.elements.tsh.MonofontModifier;
 import space.util.gui.monofont.elements.tsh.MonofontVariable;
 import space.util.gui.simple.SimpleGuiApi;
 
-public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement<?>> {
+public class MonofontGuiApi extends SimpleGuiApi {
 	
 	public static final MonofontGuiApi INSTANCE = new MonofontGuiApi();
 	
@@ -41,7 +41,7 @@ public class MonofontGuiApi extends SimpleGuiApi<MonofontGuiElement<?>> {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public Class<MonofontGuiElement<?>> getBaseElementClass() {
-		return (Class<MonofontGuiElement<?>>) (Object) MonofontGuiElement.class;
+	public Class<MonofontGuiElement> getBaseElementClass() {
+		return MonofontGuiElement.class;
 	}
 }

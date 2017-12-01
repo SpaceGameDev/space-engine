@@ -1,14 +1,12 @@
 package space.util.gui.elements.direction;
 
-import space.util.gui.GuiElement;
-
 @FunctionalInterface
-public interface GuiRowCreator<BASE extends GuiElement<BASE, ?>> extends GuiDirectionalCreator<BASE> {
+public interface GuiRowCreator extends GuiDirectionalCreator {
 	
 	@Override
 	GuiRow create();
 	
-	interface GuiRow<BASE extends GuiElement<BASE, CREATOR>, CREATOR extends GuiRowCreator<BASE>> extends GuiDirectional<BASE, CREATOR> {
+	interface GuiRow extends GuiDirectional {
 	
 	}
 }

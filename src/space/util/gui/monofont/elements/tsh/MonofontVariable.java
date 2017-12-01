@@ -1,25 +1,32 @@
 package space.util.gui.monofont.elements.tsh;
 
-import space.util.gui.elements.tsh.GuiVariable;
+import space.util.gui.GuiCreator;
+import space.util.gui.GuiElement;
+import space.util.gui.elements.tsh.GuiVariableCreator;
+import space.util.gui.elements.tsh.GuiVariableCreator.GuiVariable;
+import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
 
-public class MonofontVariable extends MonofontGuiElement implements GuiVariable<MonofontGuiElement> {
+public class MonofontVariable extends MonofontGuiElement implements GuiVariable {
 	
-	public CharSequence name;
+	public static final GuiVariableCreator CREATOR = MonofontVariable::new;
+	
+	public String name;
 	public MonofontGuiElement value;
 	
-	@Override
-	public GuiVariable<MonofontGuiElement> setVariableName(CharSequence name) {
+	public MonofontVariable(String name, GuiElement value) {
+		if (!(value instanceof MonofontGuiElement))
+			throw new IllegalGuiElementException(value);
+		
 		this.name = name;
-		return this;
+		this.value = (MonofontGuiElement) value;
 	}
 	
 	@Override
-	public GuiVariable<MonofontGuiElement> setVariableValue(MonofontGuiElement value) {
-		this.value = value;
-		return this;
+	public GuiCreator getCreator() {
+		return CREATOR;
 	}
 	
 	@Override

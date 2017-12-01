@@ -6,7 +6,9 @@ import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 
-public class MonofontText1D extends MonofontGuiElement implements GuiText1D<MonofontGuiElement<?>, GuiText1DCreator<MonofontGuiElement<?>>> {
+public class MonofontText1D extends MonofontGuiElement implements GuiText1D {
+	
+	public static final GuiText1DCreator CREATOR = MonofontText1D::new;
 	
 	public CharSequence squ;
 	
@@ -19,8 +21,8 @@ public class MonofontText1D extends MonofontGuiElement implements GuiText1D<Mono
 	}
 	
 	@Override
-	public GuiText1DCreator<MonofontText1D> getCreator() {
-		return MonofontText1D::new;
+	public GuiText1DCreator getCreator() {
+		return CREATOR;
 	}
 	
 	@Override

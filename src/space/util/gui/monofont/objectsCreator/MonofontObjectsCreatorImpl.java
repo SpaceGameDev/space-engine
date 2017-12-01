@@ -61,49 +61,42 @@ public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 		buffer.startEdit();
 		
 		//class name
-		buffer.setY(0);
-		buffer.setX(0);
-		buffer.append(cross).append(className).fill(valueEnd - className.length(), lineLeftRight).append(cross);
+		buffer.setY(0).setX(0).append(cross).append(className).fill(valueEnd - className.length(), lineLeftRight).append(cross);
 		
+		//entries
 		int index = 0;
 		iter = monofontObjects.tsh.list.listIterator();
 		for (Entry<MonofontGuiElement> elem : Iteratorable.toIteratorable(iter)) {
-			elem.value.setParent(monofontObjects);
 			index = iter.previousIndex();
 			int starty = axis.getIndex(0, index) + 1;
 			int untily = axis.getIndex(0, index + 1) + 1;
 			
 			//lineLeft
-			buffer.setY(starty);
-			buffer.setX(0);
-			buffer.append(lineUpDown);
+			buffer.setY(starty).setX(0).append(lineUpDown);
 			
 			//name
 			buffer.append(new String2D(elem.name + separator), untily, valueStart, fillChar);
 			
 			//value
-			buffer.setY(starty);
-			buffer.setX(valueStart);
-			buffer.append(elem.value.build(), untily, valueEnd, fillChar);
+			buffer.setY(starty).setX(valueStart).append(elem.value.build(), untily, valueEnd, fillChar);
 			
 			//lineRight
-			buffer.setY(starty);
-			buffer.setX(valueEnd);
-			buffer.append(lineUpDown);
+			buffer.setY(starty).setX(valueEnd).append(lineUpDown);
 		}
 		
+		//sides
 		int lasty = axis.getIndex(0, index + 1) + 1;
 		fillDown(buffer, 0, 1, lasty, lineUpDown);
 		fillDown(buffer, valueEnd, 1, lasty, lineUpDown);
 		
-		buffer.setY(lasty);
-		buffer.setX(0);
-		buffer.append(cross).fill(valueEnd, lineLeftRight).append(cross);
+		//lastLine
+		buffer.setY(lasty).setX(0).append(cross).fill(valueEnd, lineLeftRight).append(cross);
 		
 		buffer.endEdit();
-		return new String2D(buffer);
+		return buffer.toString2D();
 	}
 	
+	@SuppressWarnings("SameParameterValue")
 	protected static void fillDown(CharBufferBuilder2D<?> buffer, int x, int fromy, int toy, char c) {
 		for (int y = fromy; y < toy; y++) {
 			buffer.setY(y);

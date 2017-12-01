@@ -3,13 +3,13 @@ package space.util.gui.elements.tsh;
 import space.util.gui.GuiApi;
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
+import space.util.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
 import space.util.gui.elements.text.GuiText1DCreator;
-import space.util.gui.exception.IllegalGuiElementException;
 
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface GuiArrayCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiArrayCreator extends GuiCreator {
 	
 	/**
 	 * creates a {@link GuiElement}-Array. It can be used to visualize an array[] or {@link java.util.List}.
@@ -18,15 +18,13 @@ public interface GuiArrayCreator<BASE extends GuiElement<BASE, ?>> extends GuiCr
 	 *              you can get the value this way: <code>array.getClass().getComponentType()</code>
 	 * @param array an array of {@link GuiElement}s with all the entries
 	 * @return the new {@link GuiArray}
-	 * @throws IllegalGuiElementException if a supplied {@link GuiElement} is illegal (eg. wrong type)
 	 */
-	default <TYPE> GuiArray create(GuiApi<?> api, Class<TYPE> type, TYPE[] array, Function<TYPE, String> mapper) throws IllegalGuiElementException {
-		GuiElement<?, ?>[] elem = new GuiElement[array.length];
-		for (int i = 0; i < array.length; i++)
-			elem[i] = api.get(GuiText1DCreator.class).create(mapper.apply(array[i])).toBaseElement();
-		
-		//noinspection unchecked
-		return create(type, (BASE[]) elem);
+	default <TYPE> GuiArray create(GuiApi api, Class<TYPE> type, TYPE[] array, Function<TYPE, String> mapper) {
+		GuiArray gui = create(type);
+		for (TYPE elem : array)
+			//noinspection unchecked
+			gui.add(api.get(GuiText1DCreator.class).create(mapper.apply(elem)));
+		return gui;
 	}
 	
 	/**
@@ -36,11 +34,33 @@ public interface GuiArrayCreator<BASE extends GuiElement<BASE, ?>> extends GuiCr
 	 *              you can get the value this way: <code>array.getClass().getComponentType()</code>
 	 * @param array an array of {@link GuiElement}s with all the entries
 	 * @return the new {@link GuiArray}
-	 * @throws IllegalGuiElementException if a supplied {@link GuiElement} is illegal (eg. wrong type)
 	 */
-	GuiArray create(Class<?> type, BASE[] array) throws IllegalGuiElementException;
+	default GuiArray create(Class<?> type, GuiElement[] array) {
+		GuiArray gui = create(type);
+		for (GuiElement b : array)
+			gui.add(b);
+		return gui;
+	}
 	
-	interface GuiArray<ELEMENT extends GuiElement<ELEMENT, CREATOR>, CREATOR extends GuiArrayCreator<ELEMENT>> extends GuiElement<ELEMENT, CREATOR> {
+	/**
+	 * creates a new {@link GuiArray}
+	 *
+	 * @return the new {@link GuiArray}
+	 */
+	GuiArray create(Class<?> type);
 	
+	interface GuiArray extends GuiDirectional {
+		
+		@Override
+		void add(GuiElement v);
+		
+		@Override
+		GuiElement put(int index, GuiElement v);
+		
+		@Override
+		GuiElement remove(int index);
+		
+		@Override
+		void remove(GuiElement v);
 	}
 }

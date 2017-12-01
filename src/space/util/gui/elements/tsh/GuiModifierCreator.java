@@ -5,7 +5,7 @@ import space.util.gui.GuiElement;
 import space.util.gui.exception.IllegalGuiElementException;
 
 @FunctionalInterface
-public interface GuiModifierCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiModifierCreator extends GuiCreator {
 	
 	/**
 	 * creates a modifier to a value in this or a similar way:
@@ -16,7 +16,7 @@ public interface GuiModifierCreator<BASE extends GuiElement<BASE, ?>> extends Gu
 	 * @return the new {@link GuiModifier}
 	 * @throws IllegalGuiElementException if a supplied {@link GuiElement} is illegal (eg. wrong type)
 	 */
-	default GuiModifier create(String modifier, GuiElement<?, ?> value) throws IllegalGuiElementException {
+	default GuiModifier create(String modifier, GuiElement value) throws IllegalGuiElementException {
 		return create(modifier, " ", value);
 	}
 	
@@ -30,9 +30,9 @@ public interface GuiModifierCreator<BASE extends GuiElement<BASE, ?>> extends Gu
 	 * @return the new {@link GuiModifier}
 	 * @throws IllegalGuiElementException if a supplied {@link GuiElement} is illegal (eg. wrong type)
 	 */
-	GuiModifier create(String modifier, String separator, GuiElement<?, ?> value) throws IllegalGuiElementException;
+	GuiModifier create(String modifier, String separator, GuiElement value) throws IllegalGuiElementException;
 	
-	interface GuiModifier<ELEMENT extends GuiElement<ELEMENT, CREATOR>, CREATOR extends GuiModifierCreator<ELEMENT>> extends GuiElement<ELEMENT, CREATOR> {
+	interface GuiModifier extends GuiElement {
 	
 	}
 }

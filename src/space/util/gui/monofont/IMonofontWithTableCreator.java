@@ -2,7 +2,7 @@ package space.util.gui.monofont;
 
 import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
 
-public interface IMonofontWithStyle {
+public interface IMonofontWithTableCreator {
 	
-	void setMonofontStyle(IMonofontTableCreator style);
+	void setMonofontTableCreator(IMonofontTableCreator style);
 }

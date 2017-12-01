@@ -2,36 +2,27 @@ package space.util.gui.elements.direction;
 
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
-import space.util.indexmap.IndexMap;
-import space.util.indexmap.multi.IndexMultiMap;
 
-public interface GuiTableCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiTableCreator extends GuiCreator {
 	
 	/**
-	 * creates a {@link GuiTable} with a Method {@link GuiTable#getIndexMultiMap()} getting the {@link IndexMap} to fill
+	 * creates a {@link GuiTable}.
+	 * Use the Methods {@link GuiTable#add(GuiElement)},  {@link GuiTable#add(int[], GuiElement)},
+	 * {@link GuiTable#put(int[], GuiElement)} and {@link GuiTable#remove(int[])}
+	 * to config it like a {@link space.util.indexmap.multi.IndexMultiMap}.
 	 *
 	 * @return a new {@link GuiTable} to fill a table within
 	 */
-	BASE create();
+	GuiTable create();
 	
-	interface GuiTable<BASE extends GuiElement<BASE, CREATOR>, CREATOR extends GuiTableCreator<BASE>> extends GuiElement<BASE, CREATOR> {
+	interface GuiTable extends GuiElement {
 		
-		IndexMultiMap<BASE> getIndexMultiMap();
+		void add(GuiElement v);
 		
-		default void add(BASE v) {
-			getIndexMultiMap().add(v);
-		}
+		void add(int[] pos, GuiElement v);
 		
-		default void add(int[] pos, BASE v) {
-			getIndexMultiMap().add(pos, v);
-		}
+		GuiElement put(int[] pos, GuiElement v);
 		
-		default void put(int[] pos, BASE v) {
-			getIndexMultiMap().put(pos, v);
-		}
-		
-		default void remove(int[] pos) {
-			getIndexMultiMap().remove(pos);
-		}
+		GuiElement remove(int[] pos);
 	}
 }

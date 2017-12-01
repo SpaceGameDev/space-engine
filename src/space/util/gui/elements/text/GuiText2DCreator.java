@@ -4,7 +4,7 @@ import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.string.CharSequence2D;
 
-public interface GuiText2DCreator<BASE extends GuiElement<BASE, ?>> extends GuiCreator<BASE> {
+public interface GuiText2DCreator extends GuiCreator {
 	
 	/**
 	 * creates a simple 2D Text
@@ -14,7 +14,7 @@ public interface GuiText2DCreator<BASE extends GuiElement<BASE, ?>> extends GuiC
 	 */
 	GuiText2D create(CharSequence2D text);
 	
-	interface GuiText2D<ELEMENT extends GuiElement<ELEMENT, CREATOR>, CREATOR extends GuiText2DCreator<ELEMENT>> extends GuiElement<ELEMENT, CREATOR> {
+	interface GuiText2D extends GuiElement {
 	
 	}
 }

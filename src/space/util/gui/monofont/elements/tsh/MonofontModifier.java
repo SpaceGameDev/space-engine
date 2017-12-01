@@ -1,29 +1,33 @@
 package space.util.gui.monofont.elements.tsh;
 
-import space.util.gui.elements.tsh.GuiModifier;
+import space.util.gui.GuiElement;
+import space.util.gui.elements.tsh.GuiModifierCreator;
+import space.util.gui.elements.tsh.GuiModifierCreator.GuiModifier;
+import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
 
-public class MonofontModifier extends MonofontGuiElement implements GuiModifier<MonofontGuiElement> {
+public class MonofontModifier extends MonofontGuiElement implements GuiModifier {
 	
-	public CharSequence modifier;
+	public static final GuiModifierCreator CREATOR = MonofontModifier::new;
+	
+	public String modifier;
+	public String separator;
 	public MonofontGuiElement value;
 	
-	public MonofontModifier(CharSequence modifier, Object value) {
-		super();
-	}
-	
-	@Override
-	public GuiModifier<MonofontGuiElement> setModifier(CharSequence modifier) {
+	public MonofontModifier(String modifier, String separator, GuiElement value) {
+		if (!(value instanceof MonofontGuiElement))
+			throw new IllegalGuiElementException(value);
+		
 		this.modifier = modifier;
-		return this;
+		this.separator = separator;
+		this.value = (MonofontGuiElement) value;
 	}
 	
 	@Override
-	public GuiModifier<MonofontGuiElement> setVariableValue(MonofontGuiElement value) {
-		this.value = value;
-		return this;
+	public GuiModifierCreator getCreator() {
+		return CREATOR;
 	}
 	
 	@Override
@@ -38,6 +42,6 @@ public class MonofontModifier extends MonofontGuiElement implements GuiModifier<
 	
 	@Override
 	public CharSequence2D build() {
-		return new CharBufferBuilder2D<>().append(modifier).append(" ").append(value.build());
+		return new CharBufferBuilder2D<>().append(modifier).append(separator).append(value.build());
 	}
 }

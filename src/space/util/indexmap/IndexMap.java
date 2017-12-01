@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-//FIXME: impl equals and hashcode!!! on all impl
 public interface IndexMap<VALUE> extends Iterable<VALUE> {
 	
 	int[] EMPTYINT = Empties.EMPTYINTARRAY;

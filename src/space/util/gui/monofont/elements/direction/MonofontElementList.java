@@ -3,68 +3,65 @@ package space.util.gui.monofont.elements.direction;
 import space.util.delegate.indexmap.ModificationAwareIndexMap;
 import space.util.gui.GuiElement;
 import space.util.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
-import space.util.gui.monofont.IMonofontWithStyle;
+import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
-import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
-import space.util.gui.monofont.tableCreator.MonofontTableCreatorDefault;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.CharSequence2D;
 
-public abstract class MonofontElementList extends MonofontGuiElementCaching implements GuiDirectional<MonofontGuiElement<?>, Object>, IMonofontWithStyle {
+public abstract class MonofontElementList extends MonofontGuiElementCaching implements GuiDirectional {
 	
-	public IMonofontTableCreator style;
-	public IndexMap<GuiElement<?>> list = new ModificationAwareIndexMap<>(new IndexMapArray<>(), this::modification);
+	public IndexMap<MonofontGuiElement> list = new ModificationAwareIndexMap<>(new IndexMapArray<>(), this::modification);
 	
 	public MonofontElementList() {
-		this(MonofontTableCreatorDefault.STYLE_DEFAULT);
-	}
-	
-	public MonofontElementList(IMonofontTableCreator style) {
-		this.style = style;
-	}
-	
-	public void setMonofontStyle(IMonofontTableCreator style) {
-		this.style = style;
-	}
-	
-	public void add(GuiElement<?> v) {
-		if (!(v instanceof MonofontGuiElement))
-			throw new IllegalArgumentException("GuiElement not of Monofont!");
-		list.add(v);
-		((MonofontGuiElement) v).parent = this;
-	}
-	
-	public boolean remove(GuiElement<?> v) {
-		boolean ret = list.remove(v);
-		if (v instanceof MonofontGuiElement)
-			((MonofontGuiElement) v).parent = this;
-		return ret;
 	}
 	
 	@Override
-	public IndexMap<GuiElement<?>> getList() {
-		return list;
+	public void add(GuiElement gui) {
+		if (!(gui instanceof MonofontGuiElement))
+			throw new IllegalGuiElementException(gui);
+		MonofontGuiElement v = (MonofontGuiElement) gui;
+		v.setParent(this);
+		list.add(v);
+	}
+	
+	@Override
+	public GuiElement put(int index, GuiElement gui) {
+		if (!(gui instanceof MonofontGuiElement))
+			throw new IllegalGuiElementException(gui);
+		MonofontGuiElement v = (MonofontGuiElement) gui;
+		v.setParent(this);
+		MonofontGuiElement old = list.put(index, v);
+		if (old != null)
+			old.setParent(null);
+		return old;
+	}
+	
+	@Override
+	public GuiElement remove(int index) {
+		MonofontGuiElement old = list.remove(index);
+		if (old != null)
+			old.setParent(null);
+		return old;
+	}
+	
+	@Override
+	public void remove(GuiElement gui) {
+		if (!(gui instanceof MonofontGuiElement))
+			throw new IllegalGuiElementException(gui);
+		MonofontGuiElement v = (MonofontGuiElement) gui;
+		list.remove(v);
+		v.setParent(null);
 	}
 	
 	public IndexMap<CharSequence2D> buildList() {
 		IndexMap<CharSequence2D> charTable = new IndexMapArray<>();
-		for (IndexMapEntry<GuiElement<?>> entry : list.tableIterator()) {
-			int pos = entry.getIndex();
-			GuiElement<?> value = entry.getValue();
-			
-			if (value == null) {
-				charTable.put(pos, null);
-				continue;
-			}
-			
-			if (!(value instanceof MonofontGuiElement))
-				throw new IllegalStateException("GuiElement not of Monofont found!");
-			charTable.put(pos, ((MonofontGuiElement) value).build());
+		for (IndexMapEntry<MonofontGuiElement> entry : list.tableIterator()) {
+			GuiElement value = entry.getValue();
+			charTable.put(entry.getIndex(), value != null ? ((MonofontGuiElement) value).build() : null);
 		}
-		
 		return charTable;
 	}
 }
