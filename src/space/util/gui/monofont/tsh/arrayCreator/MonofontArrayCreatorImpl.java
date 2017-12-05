@@ -1,8 +1,8 @@
-package space.util.gui.monofont.arrayCreator;
+package space.util.gui.monofont.tsh.arrayCreator;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.gui.monofont.MonofontGuiElement;
-import space.util.gui.monofont.elements.tsh.MonofontArray;
+import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.math.MathUtils;
@@ -36,12 +36,12 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 	}
 	
 	@Override
-	public CharSequence2D makeTable(MonofontArray monofontArray) {
-		String className = monofontArray.type.getName() + "[]";
+	public CharSequence2D makeTable(Class<?> type, IndexMap<MonofontGuiElement> elements) {
+		String className = type.getName() + "[]";
 		
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		Iteratorable<IndexMapEntry<MonofontGuiElement>> iter = monofontArray.list.tableIterator();
+		Iteratorable<IndexMapEntry<MonofontGuiElement>> iter = elements.tableIterator();
 		for (IndexMapEntry<MonofontGuiElement> elem : iter) {
 			int index = elem.getIndex();
 			MonofontGuiElement value = elem.getValue();
@@ -62,7 +62,7 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 		buffer.setY(0).setX(0).append(leftBound).append(className).fill(maxX - className.length(), line).append(rightBound);
 		
 		//entries
-		iter = monofontArray.list.tableIterator();
+		iter = elements.tableIterator();
 		for (IndexMapEntry<MonofontGuiElement> elem : iter) {
 			int index = elem.getIndex();
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;

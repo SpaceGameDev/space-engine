@@ -2,7 +2,7 @@ package space.util.gui.monofont.objectsCreator;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.gui.monofont.MonofontGuiElement;
-import space.util.gui.monofont.elements.tsh.MonofontObjects;
+import space.util.gui.monofont.elements.tshOld.MonofontObjects;
 import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.math.MathUtils;
 import space.util.string.CharSequence2D;

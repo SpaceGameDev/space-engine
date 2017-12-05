@@ -1,4 +1,4 @@
-package space.util.gui.elements.tsh;
+package space.util.gui.elements.tshOld;
 
 import space.util.gui.GuiApi;
 import space.util.gui.GuiCreator;

@@ -9,7 +9,7 @@ import space.util.gui.elements.tsh.GuiArrayCreator;
 import space.util.gui.elements.tsh.GuiArrayCreator.GuiArray;
 import space.util.gui.elements.tsh.GuiModifier;
 import space.util.gui.monofont.elements.text.MonofontText2D;
-import space.util.gui.monofont.elements.tsh.MonofontObjects;
+import space.util.gui.monofont.elements.tshOld.MonofontObjects;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;

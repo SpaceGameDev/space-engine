@@ -1,10 +1,10 @@
-package space.util.gui.monofont.elements.tsh;
+package space.util.gui.monofont.elements.tshOld;
 
-import space.util.gui.elements.tsh.GuiObjectsCreator;
-import space.util.gui.elements.tsh.GuiObjectsCreator.GuiObjects;
+import space.util.gui.elements.tshOld.GuiObjectsCreator;
+import space.util.gui.elements.tshOld.GuiObjectsCreator.GuiObjects;
 import space.util.gui.monofont.MonofontGuiElementCaching;
-import space.util.gui.monofont.objectsCreator.MonofontObjectsCreator;
-import space.util.gui.monofont.objectsCreator.MonofontObjectsCreatorImpl;
+import space.util.gui.monofont.objectsCreatorOld.MonofontObjectsCreator;
+import space.util.gui.monofont.objectsCreatorOld.MonofontObjectsCreatorImpl;
 import space.util.string.CharSequence2D;
 import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.ToStringHelper;

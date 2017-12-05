@@ -3,16 +3,15 @@ package space.util.conversion.impl;
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * maps a {@link Key}[from-class, to-class] to a {@link Converter}[from, to].
+ * Is threadsafe if the internal {@link Map} is threadsafe.
+ */
 public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, MINTO> {
 	
 	public Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map;
-	
-	public ConverterMapImpl() {
-		this(new HashMap<>());
-	}
 	
 	public ConverterMapImpl(Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map) {
 		this.map = map;
@@ -27,6 +26,8 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 	@Override
 	@SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
 	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverter(Class<FROM> fromClass, Class<TO> toClass) {
+		if (fromClass.equals(toClass))
+			return Converter.identity();
 		return (Converter<FROM, TO>) map.get(new Key<>(fromClass, toClass));
 	}
 	

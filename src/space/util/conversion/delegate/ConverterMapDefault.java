@@ -4,11 +4,17 @@ import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 import space.util.conversion.impl.ConverterMapImpl;
 
+import java.util.Map;
+
+/**
+ * Is threadsafe if the internal {@link Map} is threadsafe.
+ */
 public class ConverterMapDefault<MINFROM, MINTO> extends ConverterMapImpl<MINFROM, MINTO> {
 	
 	public ConverterMap<MINFROM, MINTO> def;
 	
-	public ConverterMapDefault(ConverterMap<MINFROM, MINTO> def) {
+	public ConverterMapDefault(Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map, ConverterMap<MINFROM, MINTO> def) {
+		super(map);
 		this.def = def;
 	}
 	
@@ -17,7 +23,6 @@ public class ConverterMapDefault<MINFROM, MINTO> extends ConverterMapImpl<MINFRO
 		Converter<FROM, TO> conv = super.getConverter(fromClass, toClass);
 		if (conv != null)
 			return conv;
-		
 		return def.getConverter(fromClass, toClass);
 	}
 }

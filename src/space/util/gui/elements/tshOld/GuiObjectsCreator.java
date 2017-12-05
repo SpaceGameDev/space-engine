@@ -1,4 +1,4 @@
-package space.util.gui.elements.tsh;
+package space.util.gui.elements.tshOld;
 
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
@@ -11,7 +11,7 @@ public interface GuiObjectsCreator extends GuiCreator {
 	 * creates a new {@link GuiObjects} Instance
 	 *
 	 * @param obj the {@link Object} to create an Instance for
-	 * @return the new {@link GuiModifierCreator.GuiModifier}
+	 * @return the new {@link GuiObjects}
 	 */
 	GuiObjects create(Object obj, ToStringHelper helper);
 	

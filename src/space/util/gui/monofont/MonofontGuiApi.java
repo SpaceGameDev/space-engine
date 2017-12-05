@@ -8,6 +8,7 @@ import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.elements.text.GuiText2DCreator;
 import space.util.gui.elements.tsh.GuiArrayCreator;
 import space.util.gui.elements.tsh.GuiModifierCreator;
+import space.util.gui.elements.tsh.GuiToStringHelperApiCreator;
 import space.util.gui.elements.tsh.GuiVariableCreator;
 import space.util.gui.monofont.elements.direction.MonofontColumn;
 import space.util.gui.monofont.elements.direction.MonofontDirectional;
@@ -19,10 +20,12 @@ import space.util.gui.monofont.elements.tsh.MonofontArray;
 import space.util.gui.monofont.elements.tsh.MonofontModifier;
 import space.util.gui.monofont.elements.tsh.MonofontVariable;
 import space.util.gui.simple.SimpleGuiApi;
+import space.util.string.toStringHelper.ToStringHelper;
 
 public class MonofontGuiApi extends SimpleGuiApi {
 	
 	public static final MonofontGuiApi INSTANCE = new MonofontGuiApi();
+	public static final ToStringHelper<?> TSH = INSTANCE.get(GuiToStringHelperApiCreator.class).create();
 	
 	protected MonofontGuiApi() {
 		//direction

@@ -1,5 +1,6 @@
 package space.util.string.toStringHelper;
 
+import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap2D;
@@ -45,8 +46,6 @@ public interface ToStringHelper<T> {
 	T toString(boolean b);
 	
 	T toString(char c);
-	
-	T toString(Object o);
 	
 	//array
 	default T toString(byte[] obj) {
@@ -116,6 +115,61 @@ public interface ToStringHelper<T> {
 	
 	//null
 	T toStringNull();
+	
+	//object
+	default T toString(Object o) {
+		//null
+		if (o == null)
+			return toStringNull();
+		
+		//string
+		if (o instanceof String)
+			return toString((String) o);
+		if (o instanceof CharSequence)
+			return toString((CharSequence2D) o);
+		if (o instanceof String2D)
+			return toString((String2D) o);
+		if (o instanceof CharSequence2D)
+			return toString((CharSequence2D) o);
+		
+		//native autoboxing
+		if (o instanceof Byte)
+			return toString(((Byte) o).byteValue());
+		if (o instanceof Short)
+			return toString(((Short) o).shortValue());
+		if (o instanceof Integer)
+			return toString(((Integer) o).intValue());
+		if (o instanceof Long)
+			return toString(((Long) o).longValue());
+		if (o instanceof Float)
+			return toString(((Float) o).floatValue());
+		if (o instanceof Double)
+			return toString(((Double) o).doubleValue());
+		if (o instanceof Boolean)
+			return toString(((Boolean) o).booleanValue());
+		if (o instanceof Character)
+			return toString(((Character) o).charValue());
+		
+		//native array
+		if (o instanceof byte[])
+			return toString((byte[]) o);
+		if (o instanceof short[])
+			return toString((short[]) o);
+		if (o instanceof int[])
+			return toString((int[]) o);
+		if (o instanceof long[])
+			return toString((long[]) o);
+		if (o instanceof float[])
+			return toString((float[]) o);
+		if (o instanceof double[])
+			return toString((double[]) o);
+		if (o instanceof boolean[])
+			return toString((boolean[]) o);
+		if (o instanceof char[])
+			return toString((char[]) o);
+		
+		return ToString.toTSH(this, o);
+	}
 	
 	//modifier
 	T createModifier(String modifier, Object value);
@@ -262,14 +316,14 @@ public interface ToStringHelper<T> {
 	/**
 	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
 	 */
-	ToStringHelperTable<T> createMapper(Object name, String separator, boolean align);
+	ToStringHelperTable<T> createMapper(String name, String separator, boolean align);
 	
 	//tables
 	
 	/**
 	 * tables can be infinite in any of their (infinite) dimensions
 	 */
-	ToStringHelperTable<T> createTable(Object name, int dimensions);
+	ToStringHelperTable<T> createTable(String name, int dimensions);
 	
 	interface ToStringHelperTable<T> {
 		

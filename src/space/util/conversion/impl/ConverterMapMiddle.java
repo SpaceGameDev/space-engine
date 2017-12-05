@@ -3,16 +3,27 @@ package space.util.conversion.impl;
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * maps FROM something to a MIDDLE type and from the MIDDLE type TO something.
+ * Is threadsafe if the internal {@link Map} is threadsafe.
+ */
 public class ConverterMapMiddle<MINFROM, MINTO, MIDDLE> implements ConverterMap<MINFROM, MINTO> {
 	
-	public Map<Class<?>, Converter<?, MIDDLE>> mapFrom = new HashMap<>();
-	public Map<Class<?>, Converter<MIDDLE, ?>> mapTo = new HashMap<>();
+	public Map<Class<?>, Converter<?, MIDDLE>> mapFrom;
+	public Map<Class<?>, Converter<MIDDLE, ?>> mapTo;
+	
+	public ConverterMapMiddle(Map<Class<?>, Converter<?, MIDDLE>> mapFrom, Map<Class<?>, Converter<MIDDLE, ?>> mapTo) {
+		this.mapFrom = mapFrom;
+		this.mapTo = mapTo;
+	}
 	
 	@Override
 	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverter(Class<FROM> fromClass, Class<TO> toClass) {
+		if (fromClass.equals(toClass))
+			return Converter.identity();
+		
 		Converter<?, MIDDLE> convFM = mapFrom.get(fromClass);
 		if (convFM == null)
 			return null;

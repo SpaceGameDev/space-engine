@@ -2,13 +2,13 @@ package space.util.gui.monofont.elements.tsh;
 
 import space.util.gui.GuiElement;
 import space.util.gui.elements.tsh.GuiModifierCreator;
-import space.util.gui.elements.tsh.GuiModifierCreator.GuiModifier;
+import space.util.gui.elements.tsh.GuiModifierCreator.ToStringHelperModifier;
 import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
 
-public class MonofontModifier extends MonofontGuiElement implements GuiModifier {
+public class MonofontModifier extends MonofontGuiElement implements ToStringHelperModifier {
 	
 	public static final GuiModifierCreator CREATOR = MonofontModifier::new;
 	

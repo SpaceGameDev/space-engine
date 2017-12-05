@@ -8,7 +8,6 @@ import space.util.string.builder.CharBufferBuilder1D;
 
 import java.util.Arrays;
 import java.util.ListIterator;
-import java.util.Objects;
 
 public class ToStringHelperDefault implements ToStringHelper<String> {
 	
@@ -55,12 +54,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 		return Character.toString(c);
 	}
 	
-	@Override
-	public String toString(Object o) {
-		return Objects.toString(o);
-	}
-	
-	//array
+	//native array
 	@Override
 	public String toString(byte[] obj, int from, int to) {
 		if (obj == null)
@@ -181,7 +175,6 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 		return b.toString();
 	}
 	
-	//array object
 	@Override
 	public String toString(Object[] obj, int from, int to) {
 		if (obj == null)

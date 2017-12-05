@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 /**
  * A Resolver made to find an optimal way to convert between two Classes or Objects
  * You can add {@link Path}s, on which the Resolver use to convert from one Class to another.
+ * It is synchronized.
  *
  * @see space.util.conversion.smart.ConverterSmart.Path
  */
@@ -48,7 +49,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		putPath(classFrom, classTo, new PathWrapper<>(conv, weight, isFinal));
 	}
 	
-	public <FROM extends MIN, TO extends MIN> void putPath(Class<FROM> classFrom, Class<TO> classTo, Path<FROM, TO> conv) {
+	public synchronized <FROM extends MIN, TO extends MIN> void putPath(Class<FROM> classFrom, Class<TO> classTo, Path<FROM, TO> conv) {
 		getNodeOrCreate(classFrom).putConvertTo(classTo, conv);
 		getNodeOrCreate(classTo).putConvertFrom(classFrom, conv);
 	}
@@ -56,12 +57,18 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	//getConverter
 	@Override
 	public <FROM extends MIN, TO extends MIN> Converter<FROM, TO> getConverter(Class<FROM> fromClass, Class<TO> toClass) {
-		Resolver result = new Resolver();
-		Node<?> node = nodes.get(fromClass);
-		if (node == null)
-			return null;
+		if (fromClass.equals(toClass))
+			return Converter.identity();
 		
-		getConverter0(node, new IndexMapArray<>(), 0, 0, toClass, result);
+		Resolver result = new Resolver();
+		
+		synchronized (this) {
+			Node<?> node = nodes.get(fromClass);
+			if (node == null)
+				return null;
+			
+			getConverter0(node, new IndexMapArray<>(), 0, 0, toClass, result);
+		}
 		
 		//noinspection unchecked
 		return (Converter<FROM, TO>) result.build();
@@ -90,16 +97,16 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	
 	protected static class Resolver {
 		
-		Path<?, ?>[] path;
+		Converter<?, ?>[] path;
 		int weight = Integer.MAX_VALUE;
 		
-		@SuppressWarnings("unchecked")
 		public Converter<?, ?> build() {
 			if (path == null || path.length == 0)
 				return null;
 			
 			Converter curr = path[0];
 			for (int i = 1; i < path.length; i++)
+				//noinspection unchecked
 				curr = curr.andThen(path[i]);
 			return curr;
 		}

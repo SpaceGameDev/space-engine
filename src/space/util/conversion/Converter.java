@@ -1,6 +1,7 @@
 package space.util.conversion;
 
 import space.util.baseobject.Copyable;
+import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -32,16 +33,18 @@ public interface Converter<FROM, TO> {
 	 */
 	<LTO extends TO> LTO convertInstance(FROM from, LTO ret);
 	
-	static <TYPE> Converter<TYPE, TYPE> identity() {
-		return new Converter<TYPE, TYPE>() {
+	@SuppressWarnings("unchecked")
+	static <FROM, TO> Converter<FROM, TO> identity() {
+		return (Converter<FROM, TO>) new Converter<Object, Object>() {
 			@Override
-			public TYPE convertNew(TYPE type) {
+			public Object convertNew(Object type) {
 				return Copyable.copy(type);
 			}
 			
 			@Override
-			public <LTO extends TYPE> LTO convertInstance(TYPE type, LTO ret) {
-				return null;
+			public <LTO> LTO convertInstance(Object type, LTO ret) {
+				Setable.set(ret, type);
+				return ret;
 			}
 		};
 	}

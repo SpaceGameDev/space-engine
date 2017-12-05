@@ -7,7 +7,7 @@ import space.util.string.toStringHelper.ToStringHelper;
 public class ConverterSmartTest {
 	
 	public static void main(String[] args) {
-		ToStringHelper.setDefault(MonofontGuiApi.INSTANCE);
+		ToStringHelper.setDefault(MonofontGuiApi.TSH);
 		
 		ConverterSmart<Object> conv = new ConverterSmart<>();
 		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<IntWrapper, FloatWrapper>() {
