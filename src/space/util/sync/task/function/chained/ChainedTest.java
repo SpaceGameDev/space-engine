@@ -22,7 +22,7 @@ public class ChainedTest {
 	public static final boolean workCheckInterrupt = true;
 	
 	public static void main(String[] args) throws Exception {
-		ToStringHelper.setDefault(MonofontGuiApi.INSTANCE);
+		ToStringHelper.setDefault(MonofontGuiApi.TSH);
 		InitializationOfStandardObjects.init();
 		try {
 			if (prestart)

@@ -11,15 +11,10 @@ import java.util.Map;
  */
 public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, MINTO> {
 	
-	public Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map;
+	public Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map;
 	
-	public ConverterMapImpl(Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map) {
+	public ConverterMapImpl(Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map) {
 		this.map = map;
-	}
-	
-	//put
-	public <FROM extends MINFROM, TO extends MINTO> Converter<?, ?> putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter) {
-		return map.put(new Key<>(fromClass, toClass), converter);
 	}
 	
 	//get
@@ -29,6 +24,12 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 		if (fromClass.equals(toClass))
 			return Converter.identity();
 		return (Converter<FROM, TO>) map.get(new Key<>(fromClass, toClass));
+	}
+	
+	//put
+	@Override
+	public <FROM extends MINFROM, TO extends MINTO> void putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter) {
+		map.put(new Key<>(fromClass, toClass), converter);
 	}
 	
 	public static class Key<KEY1, KEY2> {

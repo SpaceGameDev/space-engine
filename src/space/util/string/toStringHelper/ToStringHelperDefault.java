@@ -247,14 +247,14 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	//table
 	@Override
-	public ToStringHelperTable<String> createTable(Object name, int dimensions) {
+	public ToStringHelperTable<String> createTable(String name, int dimensions) {
 		return new AbstractToStringHelperTable<String>(dimensions) {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
 				Iteratorable<IndexMultiMapEntry<String>> iter = map.tableIterator();
 				
-				b.append('{');
+				b.append(name).append("{ ");
 				for (IndexMultiMapEntry<String> entry : iter) {
 					b.append(Arrays.toString(entry.getIndex())).append(": ").append(entry.getValue());
 					if (iter.hasNext())
@@ -268,13 +268,13 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	
 	//mapper
 	@Override
-	public ToStringHelperTable<String> createMapper(Object name, String separator, boolean align) {
+	public ToStringHelperTable<String> createMapper(String name, String separator, boolean align) {
 		return new AbstractToStringHelperMapper<String>() {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
 				
-				b.append('{');
+				b.append(name).append("{ ");
 				int size = map.size();
 				for (int i = 0; i < size; i++) {
 					b.append(map.get(new int[] {i, 0})).append(separator).append(new int[] {i, 1});

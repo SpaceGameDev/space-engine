@@ -33,6 +33,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	}
 	
 	//putConverter
+	@Override
 	public <FROM extends MIN, TO extends MIN> void putConverter(Class<FROM> classFrom, Class<TO> classTo, Converter<FROM, TO> conv) {
 		putPath(classFrom, classTo, new PathWrapper<>(conv));
 	}

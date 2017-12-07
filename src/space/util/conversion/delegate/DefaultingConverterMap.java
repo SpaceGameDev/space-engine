@@ -9,11 +9,11 @@ import java.util.Map;
 /**
  * Is threadsafe if the internal {@link Map} is threadsafe.
  */
-public class ConverterMapDefault<MINFROM, MINTO> extends ConverterMapImpl<MINFROM, MINTO> {
+public class DefaultingConverterMap<MINFROM, MINTO> extends ConverterMapImpl<MINFROM, MINTO> {
 	
 	public ConverterMap<MINFROM, MINTO> def;
 	
-	public ConverterMapDefault(Map<Key<Class<?>, Class<?>>, Converter<?, ?>> map, ConverterMap<MINFROM, MINTO> def) {
+	public DefaultingConverterMap(Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map, ConverterMap<MINFROM, MINTO> def) {
 		super(map);
 		this.def = def;
 	}

@@ -46,4 +46,9 @@ public class CachingMap<K, V> extends DefaultingMap<K, V> implements ICache {
 	public V get(Object key) {
 		return fromObjectToNull(map.computeIfAbsent((K) key, (K k) -> fromNullToObject(def.apply(k))));
 	}
+	
+	@Override
+	public void clearCache() {
+		map.clear();
+	}
 }

@@ -36,6 +36,11 @@ public class ConverterMapMiddle<MINFROM, MINTO, MIDDLE> implements ConverterMap<
 		return ((Converter<FROM, MIDDLE>) convFM).andThen((Converter<MIDDLE, TO>) convMT);
 	}
 	
+	@Override
+	public <FROM extends MINFROM, TO extends MINTO> void putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter) {
+		throw new UnsupportedOperationException();
+	}
+	
 	public <FROM extends MINFROM> Converter<?, MIDDLE> putFromConvMiddle(Class<? extends FROM> key, Converter<FROM, MIDDLE> value) {
 		return mapFrom.put(key, value);
 	}

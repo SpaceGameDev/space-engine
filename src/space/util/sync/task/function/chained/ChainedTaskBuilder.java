@@ -88,11 +88,11 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 	//clear
 	@Override
 	public void onModification() {
-		clear();
+		clearCache();
 	}
 	
 	@Override
-	public void clear() {
+	public void clearCache() {
 		singlethread = null;
 		multithread = null;
 	}

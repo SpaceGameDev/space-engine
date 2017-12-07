@@ -61,6 +61,11 @@ public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements
 	}
 	
 	@Override
+	public void clearCache() {
+		indexMap.clear();
+	}
+	
+	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);

@@ -40,7 +40,7 @@ public abstract class MonofontGuiElementCaching extends MonofontGuiElement imple
 	}
 	
 	@Override
-	public void clear() {
+	public void clearCache() {
 		buffer = null;
 		modification();
 	}
