@@ -1,8 +1,8 @@
 package space.util.bufferAllocator.stack;
 
 import space.util.bufferAllocator.alloc.IBufferAllocator;
-import space.util.bufferAllocator.buffers.BufferStorage;
 import space.util.bufferAllocator.buffers.IBuffer;
+import space.util.bufferAllocator.buffers.SimpleBuffer;
 import space.util.releasable.IReleasable;
 import space.util.releasable.IReleasableWrapper;
 import spaceOld.util.math.format.old.HexFormat;
@@ -26,13 +26,13 @@ public class BufferAllocatorStackOneBuffer implements IBufferAllocatorStack, IRe
 	public static final long DUMPCAP = 512;
 	
 	public IBufferAllocator alloc;
-	public BufferStorage storage;
+	public SimpleBuffer storage;
 	public float expander;
 	
 	public PointerList pointerList;
 	public long pointer = 0;
 	
-	private ArrayList<BufferStorage> oldBufferList = new ArrayList<>(0);
+	private ArrayList<SimpleBuffer> oldBufferList = new ArrayList<>(0);
 	
 	public BufferAllocatorStackOneBuffer() {
 		this(null);
@@ -100,7 +100,7 @@ public class BufferAllocatorStackOneBuffer implements IBufferAllocatorStack, IRe
 	public void makeInternalBuffer(long capacity) {
 		if (storage != null)
 			oldBufferList.add(storage);
-		storage = new BufferStorage(capacity);
+		storage = new SimpleBuffer(capacity);
 		
 		//in case I'm testing stuff
 		try {

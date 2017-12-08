@@ -1,6 +1,6 @@
 package space.util.unsafe;
 
-public class NoUnsafeException extends Exception {
+public class NoUnsafeException extends RuntimeException {
 	
 	public NoUnsafeException() {
 	}

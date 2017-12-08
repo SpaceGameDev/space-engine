@@ -5,8 +5,10 @@ import java.util.Properties;
 public class SystemInfo {
 	
 	public static volatile SystemInfo SYSTEMINFO = new SystemInfo();
+	
 	public final Properties properties;
 	public final Runtime runtime;
+	
 	public final String os;
 	public final String userDir;
 	public final int archBits;

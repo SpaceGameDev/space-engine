@@ -6,27 +6,26 @@ import java.lang.reflect.Field;
 
 public class UnsafeInstance {
 	
-	public static final Unsafe unsafe;
+	public static final Unsafe UNSAFE;
 	
 	static {
 		Unsafe u = null;
-		//noinspection EmptyCatchBlock
 		try {
 			Field f = Unsafe.class.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			u = (Unsafe) f.get(null);
-		} catch (Exception e) {
+		} catch (Exception ignore) {
 			
 		}
-		unsafe = u;
+		UNSAFE = u;
 	}
 	
 	public static Unsafe getUnsafe() {
-		return unsafe;
+		return UNSAFE;
 	}
 	
 	public static boolean isUnsafeAvailable() {
-		return unsafe != null;
+		return UNSAFE != null;
 	}
 	
 	public static void throwIfUnavailable() throws NoUnsafeException {
@@ -36,12 +35,12 @@ public class UnsafeInstance {
 	
 	public static Unsafe getUnsafeOrThrow() throws NoUnsafeException {
 		throwIfUnavailable();
-		return unsafe;
+		return UNSAFE;
 	}
 	
 	public static long objectFieldOffset(Class<?> clazz, String name) throws UnsafeNoFieldException {
 		try {
-			return unsafe.objectFieldOffset(clazz.getDeclaredField(name));
+			return UNSAFE.objectFieldOffset(clazz.getDeclaredField(name));
 		} catch (Exception e) {
 			throw new UnsafeNoFieldException("Field " + clazz.getName() + "." + name, e);
 		}
@@ -52,7 +51,7 @@ public class UnsafeInstance {
 		Class<?> c = clazz;
 		while (c != null) {
 			try {
-				return unsafe.objectFieldOffset(c.getDeclaredField(name));
+				return UNSAFE.objectFieldOffset(c.getDeclaredField(name));
 			} catch (NoSuchFieldException e) {
 			
 			}
