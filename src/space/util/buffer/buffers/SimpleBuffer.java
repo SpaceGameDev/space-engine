@@ -1,4 +1,4 @@
-package space.util.bufferAllocator.buffers;
+package space.util.buffer.buffers;
 
 import space.util.baseobject.additional.IReleasable;
 import space.util.unsafe.UnsafeInstance;
