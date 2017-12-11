@@ -143,25 +143,25 @@ public interface IBuffer extends IReleasable {
 	
 	//fill
 	//byte
-	void fillByte(long offset, byte b, int length);
+	void fillByte(long offset, byte b, long length);
 	
 	//short
-	void fillShort(long offset, short b, int length);
+	void fillShort(long offset, short b, long length);
 	
 	//int
-	void fillInt(long offset, int b, int length);
+	void fillInt(long offset, int b, long length);
 	
 	//long
-	void fillLong(long offset, long b, int length);
+	void fillLong(long offset, long b, long length);
 	
 	//float
-	void fillFloat(long offset, float b, int length);
+	void fillFloat(long offset, float b, long length);
 	
 	//double
-	void fillDouble(long offset, double b, int length);
+	void fillDouble(long offset, double b, long length);
 	
 	//boolean
-	void fillBoolean(long offset, boolean b, int length);
+	void fillBoolean(long offset, boolean b, long length);
 	
 	//buffers
 	default void copyInto(long offset, IBuffer dest) {

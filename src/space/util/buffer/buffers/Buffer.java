@@ -1,5 +1,6 @@
 package space.util.buffer.buffers;
 
+import static space.util.math.MathUtils.min;
 import static space.util.unsafe.UnsafeInstance.UNSAFE;
 import static sun.misc.Unsafe.*;
 
@@ -193,39 +194,85 @@ public class Buffer extends SimpleBuffer implements IBuffer {
 	}
 	
 	@Override
-	public void fillByte(long offset, byte b, int length) {
-		UNSAFE.set
+	public void fillByte(long offset, byte b, long length) {
+		UNSAFE.setMemory(address + offset, length, b);
 	}
 	
 	@Override
-	public void fillShort(long offset, short b, int length) {
-		
+	public void fillShort(long offset, short b, long length) {
+		short[] tarray = new short[] {b};
+		UNSAFE.copyMemory(tarray, ARRAY_SHORT_BASE_OFFSET, null, address + offset, min(ARRAY_SHORT_INDEX_SCALE, length));
+		int i = ARRAY_SHORT_INDEX_SCALE;
+		for (; (i << 1) < length; i <<= 1)
+			UNSAFE.copyMemory(address + offset, address + offset + i, i);
+		if (i < length)
+			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
 	}
 	
 	@Override
-	public void fillInt(long offset, int b, int length) {
-		
+	public void fillInt(long offset, int b, long length) {
+		int[] tarray = new int[] {b};
+		UNSAFE.copyMemory(tarray, ARRAY_INT_BASE_OFFSET, null, address + offset, min(ARRAY_INT_INDEX_SCALE, length));
+		int i = ARRAY_INT_INDEX_SCALE;
+		for (; (i << 1) < length; i <<= 1)
+			UNSAFE.copyMemory(address + offset, address + offset + i, i);
+		if (i < length)
+			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
 	}
 	
 	@Override
-	public void fillLong(long offset, long b, int length) {
-		
+	public void fillLong(long offset, long b, long length) {
+		long[] tarray = new long[] {b};
+		UNSAFE.copyMemory(tarray, ARRAY_LONG_BASE_OFFSET, null, address + offset, min(ARRAY_LONG_INDEX_SCALE, length));
+		int i = ARRAY_LONG_INDEX_SCALE;
+		for (; (i << 1) < length; i <<= 1)
+			UNSAFE.copyMemory(address + offset, address + offset + i, i);
+		if (i < length)
+			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
 	}
 	
 	@Override
-	public void fillFloat(long offset, float b, int length) {
-		
+	public void fillFloat(long offset, float b, long length) {
+		float[] tarray = new float[] {b};
+		UNSAFE.copyMemory(tarray, ARRAY_FLOAT_BASE_OFFSET, null, address + offset, min(ARRAY_FLOAT_INDEX_SCALE, length));
+		int i = ARRAY_FLOAT_INDEX_SCALE;
+		for (; (i << 1) < length; i <<= 1)
+			UNSAFE.copyMemory(address + offset, address + offset + i, i);
+		if (i < length)
+			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
 	}
 	
 	@Override
-	public void fillDouble(long offset, double b, int length) {
-		
+	public void fillDouble(long offset, double b, long length) {
+		double[] tarray = new double[] {b};
+		UNSAFE.copyMemory(tarray, ARRAY_DOUBLE_BASE_OFFSET, null, address + offset, min(ARRAY_DOUBLE_INDEX_SCALE, length));
+		int i = ARRAY_DOUBLE_INDEX_SCALE;
+		for (; (i << 1) < length; i <<= 1)
+			UNSAFE.copyMemory(address + offset, address + offset + i, i);
+		if (i < length)
+			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
 	}
 	
 	@Override
-	public void fillBoolean(long offset, boolean b, int length) {
-		
+	public void fillBoolean(long offset, boolean b, long length) {
+		fillByte(offset, (byte) (b ? 1 : 0), length);
 	}
+	
+	//test for filling buffers
+//	public static void main(String[] args) {
+//		int capa = 3;
+//		Buffer buffer = new Buffer(capa);
+//		buffer.fillShort(0, (short) 0x1234, capa);
+//		System.out.println(buffer.address + " - " + buffer.address + buffer.capacity);
+//		
+//		CharBufferBuilder2D b = new CharBufferBuilder2D<>();
+//		for (int i = 0; i < capa; i++) {
+//			if (i % 8 == 0)
+//				b.setY(0).setX(i * 3).append(Integer.toHexString(i));
+//			b.setY(1).setX(i * 3).append(Integer.toHexString(Byte.toUnsignedInt(buffer.getByte(i))));
+//		}
+//		System.out.println(b);
+//	}
 	
 	@Override
 	public void copyInto(long offset, IBuffer dest, long destPos, long length) {
