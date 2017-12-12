@@ -258,29 +258,13 @@ public class Buffer extends SimpleBuffer implements IBuffer {
 		fillByte(offset, (byte) (b ? 1 : 0), length);
 	}
 	
-	//test for filling buffers
-//	public static void main(String[] args) {
-//		int capa = 3;
-//		Buffer buffer = new Buffer(capa);
-//		buffer.fillShort(0, (short) 0x1234, capa);
-//		System.out.println(buffer.address + " - " + buffer.address + buffer.capacity);
-//		
-//		CharBufferBuilder2D b = new CharBufferBuilder2D<>();
-//		for (int i = 0; i < capa; i++) {
-//			if (i % 8 == 0)
-//				b.setY(0).setX(i * 3).append(Integer.toHexString(i));
-//			b.setY(1).setX(i * 3).append(Integer.toHexString(Byte.toUnsignedInt(buffer.getByte(i))));
-//		}
-//		System.out.println(b);
-//	}
-	
 	@Override
 	public void copyInto(long offset, IBuffer dest, long destPos, long length) {
-		
+		UNSAFE.copyMemory(address + offset, dest.address() + destPos, length);
 	}
 	
 	@Override
 	public void copyFrom(IBuffer src, long srcPos, long length, long offset) {
-		
+		UNSAFE.copyMemory(src.address() + srcPos, address + offset, length);
 	}
 }

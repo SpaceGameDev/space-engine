@@ -2,199 +2,254 @@ package space.util.buffer.buffers;
 
 public class CheckedBuffer extends Buffer {
 	
-	public IBuffer buffer;
-	
-	public CheckedBuffer() {
-	
+	public CheckedBuffer(long capacity) {
+		super(capacity);
 	}
 	
-	public CheckedBuffer(IBuffer buffer) {
-		this.buffer = buffer;
+	public CheckedBuffer(long address, long capacity) {
+		super(address, capacity);
 	}
 	
+	//capacity checks
 	public boolean hasCapacity(long offset) {
-		return offset >= 0 && storage.capacity > offset;
+		return 0 <= offset && offset < capacity;
 	}
 	
 	public boolean hasCapacity(long offset, long length) {
-		return offset >= 0 && storage.capacity >= length + offset;
+		return 0 <= offset && length + offset <= capacity;
 	}
 	
 	public void requireCapacity(long offset) {
 		if (!hasCapacity(offset))
-			throw new BufferOutOfBoundsException(offset);
+			throw new BufferOutOfBoundsException(address, capacity, offset);
 	}
 	
 	public void requireCapacity(long offset, long length) {
 		if (!hasCapacity(offset, length))
-			throw new BufferOutOfBoundsException(offset, length);
+			throw new BufferOutOfBoundsException(address, capacity, offset, length);
 	}
 	
+	//checks
 	@Override
-	public byte getByteOffset(long offset) {
+	public byte getByte(long offset) {
 		requireCapacity(offset);
-		return buffer.getByteOffset(offset);
-	}
-	
-	@Override
-	public void getByteOffset(long offset, byte[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getByteOffset(offset, b);
-	}
-	
-	@Override
-	public void putByteOffset(long offset, byte b) {
 		requireCapacity(offset);
-		buffer.putByteOffset(offset, b);
+		return super.getByte(offset);
 	}
 	
 	@Override
-	public void putByteOffset(long offset, byte[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putByteOffset(offset, b);
-	}
-	
-	@Override
-	public short getShortOffset(long offset) {
+	public void putByte(long offset, byte b) {
 		requireCapacity(offset);
-		return buffer.getShortOffset(offset);
+		super.putByte(offset, b);
 	}
 	
 	@Override
-	public void getShortOffset(long offset, short[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getShortOffset(offset, b);
-	}
-	
-	@Override
-	public void putShortOffset(long offset, short b) {
+	public short getShort(long offset) {
 		requireCapacity(offset);
-		buffer.putShortOffset(offset, b);
+		return super.getShort(offset);
 	}
 	
 	@Override
-	public void putShortOffset(long offset, short[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putShortOffset(offset, b);
-	}
-	
-	@Override
-	public int getIntOffset(long offset) {
+	public void putShort(long offset, short b) {
 		requireCapacity(offset);
-		return buffer.getIntOffset(offset);
+		super.putShort(offset, b);
 	}
 	
 	@Override
-	public void getIntOffset(long offset, int[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getIntOffset(offset, b);
-	}
-	
-	@Override
-	public void putIntOffset(long offset, int b) {
+	public int getInt(long offset) {
 		requireCapacity(offset);
-		buffer.putIntOffset(offset, b);
+		return super.getInt(offset);
 	}
 	
 	@Override
-	public void putIntOffset(long offset, int[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putIntOffset(offset, b);
-	}
-	
-	@Override
-	public long getLongOffset(long offset) {
+	public void putInt(long offset, int b) {
 		requireCapacity(offset);
-		return buffer.getLongOffset(offset);
+		super.putInt(offset, b);
 	}
 	
 	@Override
-	public void getLongOffset(long offset, long[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getLongOffset(offset, b);
-	}
-	
-	@Override
-	public void putLongOffset(long offset, long b) {
+	public long getLong(long offset) {
 		requireCapacity(offset);
-		buffer.putLongOffset(offset, b);
+		return super.getLong(offset);
 	}
 	
 	@Override
-	public void putLongOffset(long offset, long[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putLongOffset(offset, b);
-	}
-	
-	@Override
-	public float getFloatOffset(long offset) {
+	public void putLong(long offset, long b) {
 		requireCapacity(offset);
-		return buffer.getFloatOffset(offset);
+		super.putLong(offset, b);
 	}
 	
 	@Override
-	public void getFloatOffset(long offset, float[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getFloatOffset(offset, b);
-	}
-	
-	@Override
-	public void putFloatOffset(long offset, float b) {
+	public float getFloat(long offset) {
 		requireCapacity(offset);
-		buffer.putFloatOffset(offset, b);
+		return super.getFloat(offset);
 	}
 	
 	@Override
-	public void putFloatOffset(long offset, float[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putFloatOffset(offset, b);
-	}
-	
-	@Override
-	public double getDoubleOffset(long offset) {
+	public void putFloat(long offset, float b) {
 		requireCapacity(offset);
-		return buffer.getDoubleOffset(offset);
+		super.putFloat(offset, b);
 	}
 	
 	@Override
-	public void getDoubleOffset(long offset, double[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getDoubleOffset(offset, b);
-	}
-	
-	@Override
-	public void putDoubleOffset(long offset, double b) {
+	public double getDouble(long offset) {
 		requireCapacity(offset);
-		buffer.putDoubleOffset(offset, b);
+		return super.getDouble(offset);
 	}
 	
 	@Override
-	public void putDoubleOffset(long offset, double[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putDoubleOffset(offset, b);
-	}
-	
-	@Override
-	public boolean getBooleanOffset(long offset) {
+	public void putDouble(long offset, double b) {
 		requireCapacity(offset);
-		return buffer.getBooleanOffset(offset);
+		super.putDouble(offset, b);
 	}
 	
 	@Override
-	public void getBooleanOffset(long offset, boolean[] b) {
-		requireCapacity(offset, b.length);
-		buffer.getBooleanOffset(offset, b);
-	}
-	
-	@Override
-	public void putBooleanOffset(long offset, boolean b) {
+	public boolean getBoolean(long offset) {
 		requireCapacity(offset);
-		buffer.putBooleanOffset(offset, b);
+		return super.getBoolean(offset);
 	}
 	
 	@Override
-	public void putBooleanOffset(long offset, boolean[] b) {
-		requireCapacity(offset, b.length);
-		buffer.putBooleanOffset(offset, b);
+	public void putBoolean(long offset, boolean b) {
+		requireCapacity(offset);
+		super.putBoolean(offset, b);
+	}
+	
+	@Override
+	public void copyInto(long offset, byte[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(byte[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, short[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(short[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, int[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(int[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, long[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(long[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, float[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(float[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, double[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(double[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void copyInto(long offset, boolean[] dest, int destPos, int length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(boolean[] src, int srcPos, int length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
+	}
+	
+	@Override
+	public void fillByte(long offset, byte b, long length) {
+		requireCapacity(offset, length);
+		super.fillByte(offset, b, length);
+	}
+	
+	@Override
+	public void fillShort(long offset, short b, long length) {
+		requireCapacity(offset, length);
+		super.fillShort(offset, b, length);
+	}
+	
+	@Override
+	public void fillInt(long offset, int b, long length) {
+		requireCapacity(offset, length);
+		super.fillInt(offset, b, length);
+	}
+	
+	@Override
+	public void fillLong(long offset, long b, long length) {
+		requireCapacity(offset, length);
+		super.fillLong(offset, b, length);
+	}
+	
+	@Override
+	public void fillFloat(long offset, float b, long length) {
+		requireCapacity(offset, length);
+		super.fillFloat(offset, b, length);
+	}
+	
+	@Override
+	public void fillDouble(long offset, double b, long length) {
+		requireCapacity(offset, length);
+		super.fillDouble(offset, b, length);
+	}
+	
+	@Override
+	public void fillBoolean(long offset, boolean b, long length) {
+		requireCapacity(offset, length);
+		super.fillBoolean(offset, b, length);
+	}
+	
+	@Override
+	public void copyInto(long offset, IBuffer dest, long destPos, long length) {
+		requireCapacity(offset, length);
+		super.copyInto(offset, dest, destPos, length);
+	}
+	
+	@Override
+	public void copyFrom(IBuffer src, long srcPos, long length, long offset) {
+		requireCapacity(offset, length);
+		super.copyFrom(src, srcPos, length, offset);
 	}
 }

@@ -51,11 +51,19 @@ public interface IBuffer extends IReleasable {
 	
 	//arrays
 	//byte array
-	default void copyInto(long offset, byte[] dest) {
+	default void copyInto(byte[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(byte[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, byte[] dest, int destPos, int length);
+	
+	default void copyFrom(byte[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(byte[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -64,11 +72,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(byte[] src, int srcPos, int length, long offset);
 	
 	//short array
-	default void copyInto(long offset, short[] dest) {
+	default void copyInto(short[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(short[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, short[] dest, int destPos, int length);
+	
+	default void copyFrom(short[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(short[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -77,11 +93,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(short[] src, int srcPos, int length, long offset);
 	
 	//int array
-	default void copyInto(long offset, int[] dest) {
+	default void copyInto(int[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(int[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, int[] dest, int destPos, int length);
+	
+	default void copyFrom(int[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(int[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -90,11 +114,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(int[] src, int srcPos, int length, long offset);
 	
 	//long array
-	default void copyInto(long offset, long[] dest) {
+	default void copyInto(long[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(long[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, long[] dest, int destPos, int length);
+	
+	default void copyFrom(long[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(long[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -103,11 +135,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(long[] src, int srcPos, int length, long offset);
 	
 	//float array
-	default void copyInto(long offset, float[] dest) {
+	default void copyInto(float[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(float[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, float[] dest, int destPos, int length);
+	
+	default void copyFrom(float[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(float[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -116,11 +156,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(float[] src, int srcPos, int length, long offset);
 	
 	//double array
-	default void copyInto(long offset, double[] dest) {
+	default void copyInto(double[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(double[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, double[] dest, int destPos, int length);
+	
+	default void copyFrom(double[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(double[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);
@@ -129,11 +177,19 @@ public interface IBuffer extends IReleasable {
 	void copyFrom(double[] src, int srcPos, int length, long offset);
 	
 	//boolean array
-	default void copyInto(long offset, boolean[] dest) {
+	default void copyInto(boolean[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(boolean[] dest, long offset) {
 		copyInto(offset, dest, 0, dest.length);
 	}
 	
 	void copyInto(long offset, boolean[] dest, int destPos, int length);
+	
+	default void copyFrom(boolean[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
 	
 	default void copyFrom(boolean[] src, long offset) {
 		copyFrom(src, 0, src.length, offset);

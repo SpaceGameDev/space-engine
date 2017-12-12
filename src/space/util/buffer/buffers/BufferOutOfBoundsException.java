@@ -1,5 +1,7 @@
 package space.util.buffer.buffers;
 
+import space.util.string.builder.CharBufferBuilder1D;
+
 public class BufferOutOfBoundsException extends RuntimeException {
 	
 	public BufferOutOfBoundsException() {
@@ -18,19 +20,32 @@ public class BufferOutOfBoundsException extends RuntimeException {
 		super(message, cause);
 	}
 	
-	public BufferOutOfBoundsException(long offset, long length) {
-		super(makeMessage(offset, length));
+	public BufferOutOfBoundsException(long address, long capacity, long offset) {
+		super(makeMessage(address, offset, capacity));
 	}
 	
-	public BufferOutOfBoundsException(long offset) {
-		super(makeMessage(offset));
+	public BufferOutOfBoundsException(long address, long capacity, long offset, long length) {
+		super(makeMessage(address, offset, length, capacity));
 	}
 	
-	private static String makeMessage(long offset, long length) {
-		return "offset: " + offset + ", length: " + length;
+	private static String makeMessage(long address, long capacity, long offset, long length) {
+		//@formatter:off
+		return new CharBufferBuilder1D<>()
+				.append("address: ").append(address)
+				.append(" >= offset: ").append(offset)
+				.append(" +  length: ").append(length)
+				.append(" -> end: ").append(offset + length)
+				.append(" > capacity: ").append(capacity).toString();
+		//@formatter:on
 	}
 	
-	private static String makeMessage(long offset) {
-		return "offset: " + offset;
+	private static String makeMessage(long address, long capacity, long offset) {
+		//@formatter:off
+		return new CharBufferBuilder1D<>()
+				.append("address: ").append(address)
+				.append(" >= offset: ").append(offset)
+				.append(" > capacity: ").append(capacity)
+				.toString();
+		//@formatter:on
 	}
 }

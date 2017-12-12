@@ -31,4 +31,13 @@ public class SimpleBuffer implements IReleasable {
 			address = 0;
 		}
 	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			release();
+		} finally {
+			super.finalize();
+		}
+	}
 }
