@@ -2,10 +2,8 @@ package space.util.buffer.string;
 
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
+import space.util.buffer.buffers.NioByteBufferWrapper;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -14,13 +12,10 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-import static space.util.unsafe.UnsafeInstance.*;
-
 public class DefaultStringConverter implements IBufferStringConverter {
 	
 	public static final String CHARACTER_CODING_EXCEPTION = "CHARACTER_CODING_EXCEPTION";
 	public static final byte NULL_CHARACTER = 0;
-	public static final byte[] TWO_NULL_CHARACTERS = new byte[] {NULL_CHARACTER, NULL_CHARACTER};
 	
 	public static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 	public static final CharsetEncoder UTF8_ENCODER = UTF8_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
@@ -32,26 +27,6 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	public static final CharsetEncoder ASCII_ENCODER = ASCII_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
 	public static final CharsetDecoder ASCII_DECODER = ASCII_CHARSET.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
 	
-	public static final Class<?> BYTE_BUFFER_CLASS;
-	public static final long BYTE_BUFFER_PARENT;
-	public static final long BYTE_BUFFER_ADDRESS;
-	public static final long BYTE_BUFFER_CAPACITY;
-	
-	static {
-		throwIfUnavailable();
-		try {
-			ByteBuffer parent = ByteBuffer.allocateDirect(0);
-			ByteBuffer bb = parent.slice();
-			BYTE_BUFFER_CLASS = bb.getClass();
-			Field f = find(bb, parent);
-			BYTE_BUFFER_PARENT = UNSAFE.objectFieldOffset(f);
-			BYTE_BUFFER_ADDRESS = objectFieldOffsetWithSuper(BYTE_BUFFER_CLASS, "address");
-			BYTE_BUFFER_CAPACITY = objectFieldOffsetWithSuper(BYTE_BUFFER_CLASS, "capacity");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public BufferAllocator alloc;
 	
 	public DefaultStringConverter(BufferAllocator alloc) {
@@ -61,32 +36,34 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	//memString from String
 	@Override
 	public Buffer memStringUTF8(String str, boolean nullTerm) {
-		byte[] ba = new byte[memStringUTF8Length(str, nullTerm)];
-		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		UTF8_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
+		int length = memStringUTF8Length(str, nullTerm);
+		Buffer buffer = alloc.malloc(length);
+		UTF8_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
-			buffer.put(NULL_CHARACTER);
-		return alloc.allocByte(ba);
+			buffer.putByte(length - 1, NULL_CHARACTER);
+		return buffer;
 	}
 	
 	@Override
 	public Buffer memStringUTF16(String str, boolean nullTerm) {
-		byte[] ba = new byte[memStringUTF16Length(str, nullTerm)];
-		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		UTF16_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
-		if (nullTerm)
-			buffer.put(TWO_NULL_CHARACTERS);
-		return alloc.allocByte(ba);
+		int length = memStringUTF16Length(str, nullTerm);
+		Buffer buffer = alloc.malloc(length);
+		UTF16_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
+		if (nullTerm) {
+			buffer.putByte(length - 2, NULL_CHARACTER);
+			buffer.putByte(length - 1, NULL_CHARACTER);
+		}
+		return buffer;
 	}
 	
 	@Override
 	public Buffer memStringASCII(String str, boolean nullTerm) {
-		byte[] ba = new byte[memStringASCIILength(str, nullTerm)];
-		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		ASCII_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
+		int length = memStringASCIILength(str, nullTerm);
+		Buffer buffer = alloc.malloc(length);
+		ASCII_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
-			buffer.put(NULL_CHARACTER);
-		return alloc.allocByte(ba);
+			buffer.putByte(length - 1, NULL_CHARACTER);
+		return buffer;
 	}
 	
 	//memString length
@@ -108,17 +85,17 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	//memString from Buffer
 	@Override
 	public String memUTF8String(Buffer buffer) {
-		return memUTF8String(buffer, findNull(buffer));
+		return memUTF8String(buffer, findNullCharacter(buffer));
 	}
 	
 	@Override
 	public String memUTF16String(Buffer buffer) {
-		return memUTF16String(buffer, findNull(buffer));
+		return memUTF16String(buffer, findNullCharacter(buffer));
 	}
 	
 	@Override
 	public String memASCIIString(Buffer buffer) {
-		return memASCIIString(buffer, findNull(buffer));
+		return memASCIIString(buffer, findNullCharacter(buffer));
 	}
 	
 	//memString from Buffer with length
@@ -127,7 +104,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
-			return UTF8_DECODER.decode(wrap(buffer, length)).toString();
+			return UTF8_DECODER.decode(NioByteBufferWrapper.wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
 			return CHARACTER_CODING_EXCEPTION;
 		}
@@ -138,7 +115,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
-			return UTF16_DECODER.decode(wrap(buffer, length)).toString();
+			return UTF16_DECODER.decode(NioByteBufferWrapper.wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
 			return CHARACTER_CODING_EXCEPTION;
 		}
@@ -149,47 +126,17 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
-			return ASCII_DECODER.decode(wrap(buffer, length)).toString();
+			return ASCII_DECODER.decode(NioByteBufferWrapper.wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
 			return CHARACTER_CODING_EXCEPTION;
 		}
 	}
 	
 	//static
-	static int findNull(Buffer buffer) {
+	public static int findNullCharacter(Buffer buffer) {
 		for (int i = (int) (buffer.capacity() - 1); i >= 0; i--)
 			if (buffer.getByte(i) != NULL_CHARACTER)
 				return i + 1;
 		return -1;
-	}
-	
-	public static ByteBuffer wrap(Buffer buffer, int length) {
-		if (length < buffer.capacity())
-			throw new RuntimeException("length exceeds capacity!");
-		try {
-			ByteBuffer b = (ByteBuffer) UNSAFE.allocateInstance(BYTE_BUFFER_CLASS);
-			UNSAFE.putLong(b, BYTE_BUFFER_ADDRESS, buffer.address());
-			UNSAFE.putInt(b, BYTE_BUFFER_CAPACITY, length);
-			UNSAFE.putObject(b, BYTE_BUFFER_PARENT, null);
-			return b;
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public static Field find(Object o, Object find) throws IllegalArgumentException, IllegalAccessException {
-		Class<?> s = o.getClass();
-		while (s != null) {
-			for (Field f : s.getDeclaredFields()) {
-				if (Modifier.isStatic(f.getModifiers()))
-					continue;
-				f.setAccessible(true);
-				if (f.get(o) == find) {
-					return f;
-				}
-			}
-			s = s.getSuperclass();
-		}
-		return null;
 	}
 }
