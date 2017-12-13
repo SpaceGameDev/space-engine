@@ -2,6 +2,7 @@ package space.util.buffer.stack;
 
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
+import space.util.stack.PointerList;
 import space.util.stack.multistack.MultiStack;
 
 public class BufferAllocatorStackBufferList extends MultiStack<Buffer> implements BufferAllocatorStack {
@@ -9,11 +10,17 @@ public class BufferAllocatorStackBufferList extends MultiStack<Buffer> implement
 	public BufferAllocator alloc;
 	
 	public BufferAllocatorStackBufferList() {
-		this(null);
+		super(Buffer::free);
 	}
 	
 	public BufferAllocatorStackBufferList(BufferAllocator alloc) {
 		super(Buffer::free);
+		this.alloc = alloc;
+	}
+	
+	public BufferAllocatorStackBufferList(BufferAllocator alloc, PointerList pointerList) {
+		super(DEFAULT_START_SIZE, Buffer::free, pointerList);
+		this.alloc = alloc;
 	}
 	
 	@Override

@@ -13,8 +13,8 @@ public class MultiStack<T> implements IMultiStack<T> {
 	public int size;
 	public T[] array;
 	
-	public PointerList pointerList = new PointerList();
 	public Consumer<T> onDelete;
+	public PointerList pointerList = new PointerList();
 	
 	public MultiStack(int initsize) {
 		this(initsize, null);
@@ -25,10 +25,15 @@ public class MultiStack<T> implements IMultiStack<T> {
 	}
 	
 	public MultiStack(int initSize, Consumer<T> onDelete) {
+		this(initSize, onDelete, new PointerList());
+	}
+	
+	protected MultiStack(int initSize, Consumer<T> onDelete, PointerList pointerList) {
 		this.size = 0;
 		//noinspection unchecked
 		this.array = (T[]) new Object[initSize];
 		this.onDelete = onDelete;
+		this.pointerList = pointerList;
 	}
 	
 	public void ensureCapacity(int capa) {

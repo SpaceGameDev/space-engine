@@ -6,9 +6,16 @@ import java.util.Arrays;
 public class MathUtils {
 	
 	/**
-	 * from Integer.digits, but that is package-private...
+	 * from {@link Integer#digits}, but that is package-private...
 	 */
-	public final static char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+	public final static char[] DIGITS = {
+			//@formatter:off
+			'0', '1', '2', '3', '4', '5', '6', '7', '8',
+			'9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+			'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+			'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+			//@formatter:on
+	};
 	
 	public static final double PI2 = 2 * Math.PI;
 	public static final double sqrt2 = Math.sqrt(2);

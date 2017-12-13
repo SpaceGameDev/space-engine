@@ -1,9 +1,9 @@
 package space.util.gui.monofont;
 
-import space.util.baseobject.additional.ICache;
+import space.util.baseobject.additional.Cache;
 import space.util.string.CharSequence2D;
 
-public abstract class MonofontGuiElementCaching extends MonofontGuiElement implements ICache {
+public abstract class MonofontGuiElementCaching extends MonofontGuiElement implements Cache {
 	
 	public boolean isBuild = false;
 	protected CharSequence2D buffer;

@@ -47,7 +47,7 @@ public class UnsafeInstance {
 	}
 	
 	@SuppressWarnings("EmptyCatchBlock")
-	public static long objectFieldOffsetSearchSuperclass(Class<?> clazz, String name) throws UnsafeNoFieldException {
+	public static long objectFieldOffsetWithSuper(Class<?> clazz, String name) throws UnsafeNoFieldException {
 		Class<?> c = clazz;
 		while (c != null) {
 			try {

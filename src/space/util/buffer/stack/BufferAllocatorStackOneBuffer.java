@@ -2,32 +2,38 @@ package space.util.buffer.stack;
 
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
+import space.util.baseobject.additional.Dumpable;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.SimpleBuffer;
+import space.util.buffer.buffers.BufferImpl;
 import space.util.buffer.buffers.SubBuffer;
 import space.util.stack.PointerList;
+import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString {
+public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString, Dumpable {
 	
-	public static final long DEFAULTCAPACITY = 1024;
-	public static final long DUMPCAP = 1024;
+	public static final long DEFAULT_CAPACITY = 1024;
 	
 	public BufferAllocator alloc;
-	public SimpleBuffer buffer;
+	public BufferImpl buffer;
 	public long topOfStack = 0;
-	public PointerList pointerList = new PointerList();
-	
-	public BufferAllocatorStackOneBuffer(BufferAllocator alloc) {
-		this(alloc, DEFAULTCAPACITY);
-	}
+	public PointerList pointerList;
 	
 	//constructor
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc) {
+		this(alloc, DEFAULT_CAPACITY);
+	}
+	
 	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity) {
+		this(alloc, initCapacity, new PointerList());
+	}
+	
+	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList) {
 		this.alloc = alloc;
 		makeInternalBuffer(initCapacity);
+		this.pointerList = pointerList;
 	}
 	
 	//expansion
@@ -37,7 +43,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	public void makeInternalBuffer(long capacity) {
-		buffer = new SimpleBuffer(capacity);
+		buffer = new BufferImpl(capacity);
 	}
 	
 	//push
@@ -72,9 +78,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	//alloc
 	protected long allocInternal(long capacity) {
 		long oldTopOfStack = topOfStack;
-		topOfStack += capacity;
-		ensureCapacity(topOfStack);
-		
+		ensureCapacity(topOfStack += capacity);
 		return buffer.address + oldTopOfStack;
 	}
 	
@@ -89,17 +93,8 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	//dump
-	public String dump() {
-		if (buffer.capacity > DUMPCAP)
-			return "DUMP CAP reached!";
-		StringBuilder b = new StringBuilder((int) buffer.capacity * 3);
-		StringBuilderWrapperCommaPolicy bw = new StringBuilderWrapperCommaPolicy(b);
-		for (long i = 0; i < buffer.capacity; i++) {
-			HexFormat.toHex(bw, unsafe.getByte(buffer.address + i));
-			b.append(' ');
-		}
-		b.setLength(b.length() - 1);
-		return b.toString();
+	public String2D dump() {
+		return buffer.dump();
 	}
 	
 	@Override
@@ -109,6 +104,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 		tsh.add("buffer", this.buffer);
 		tsh.add("topOfStack", this.topOfStack);
 		tsh.add("pointerList", this.pointerList);
+		tsh.add("dump", dump());
 		return tsh.build();
 	}
 	

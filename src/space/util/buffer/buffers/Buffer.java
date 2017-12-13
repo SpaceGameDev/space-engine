@@ -1,8 +1,10 @@
 package space.util.buffer.buffers;
 
+import space.util.baseobject.additional.Dumpable;
 import space.util.baseobject.additional.Freeable;
+import space.util.string.String2D;
 
-public interface Buffer extends Freeable {
+public interface Buffer extends Freeable, Dumpable {
 	
 	long address();
 	
@@ -12,6 +14,9 @@ public interface Buffer extends Freeable {
 	void free();
 	
 	void clear();
+	
+	@Override
+	String2D dump();
 	
 	//single
 	//byte

@@ -1,19 +1,36 @@
 package space.util.buffer.buffers;
 
+import space.util.baseobject.additional.Dumpable;
+import space.util.baseobject.additional.Freeable;
+import space.util.math.MathUtils;
+import space.util.string.String2D;
+import space.util.string.builder.CharBufferBuilder2D;
+import space.util.unsafe.UnsafeInstance;
+
 import static space.util.math.MathUtils.min;
 import static space.util.unsafe.UnsafeInstance.UNSAFE;
 import static sun.misc.Unsafe.*;
 
-public class BufferImpl extends SimpleBuffer implements Buffer {
+public class BufferImpl implements Buffer, Freeable, Dumpable {
+	
+	static {
+		UnsafeInstance.throwIfUnavailable();
+	}
+	
+	public long address;
+	public long capacity;
 	
 	public BufferImpl(long capacity) {
-		super(capacity);
+		this.address = UNSAFE.allocateMemory(capacity);
+		this.capacity = capacity;
 	}
 	
 	public BufferImpl(long address, long capacity) {
-		super(address, capacity);
+		this.address = address;
+		this.capacity = capacity;
 	}
 	
+	//getter
 	@Override
 	public long address() {
 		return address;
@@ -24,9 +41,49 @@ public class BufferImpl extends SimpleBuffer implements Buffer {
 		return capacity;
 	}
 	
+	//clear
 	@Override
 	public void clear() {
 		UNSAFE.setMemory(address, capacity, (byte) 0);
+	}
+	
+	//Freeable
+	@Override
+	public synchronized void free() {
+		if (address != 0) {
+			UNSAFE.freeMemory(address);
+			address = 0;
+			capacity = 0;
+		}
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			free();
+		} finally {
+			super.finalize();
+		}
+	}
+	
+	//Dumpable
+	@Override
+	public String2D dump() {
+		if (capacity > Dumpable.getMaxDump())
+			return Dumpable.DUMP_CAP_REACHED;
+		if (capacity > Integer.MAX_VALUE)
+			return new String2D("capacity above Integer.MAX_VALUE!");
+		
+		CharBufferBuilder2D<?> b = new CharBufferBuilder2D<>(2, (int) capacity * 3);
+		for (int i = 0; i < capacity; i++) {
+			int pos = i * 3;
+			byte d = UNSAFE.getByte(address + i);
+			
+			if (i % 8 == 0)
+				b.setY(0).setX(pos).append(Integer.toHexString(i));
+			b.setY(1).setX(pos).append(MathUtils.DIGITS[(d >>> 4) & 0xF]).append(MathUtils.DIGITS[d & 0xF]);
+		}
+		return b.toString2D();
 	}
 	
 	//single

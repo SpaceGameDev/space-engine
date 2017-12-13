@@ -1,6 +1,5 @@
 package space.util.buffer.string;
 
-import space.util.SpaceException;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
 
@@ -15,71 +14,82 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-import static spaceOld.util.UnsafeInstance.*;
+import static space.util.unsafe.UnsafeInstance.*;
 
 public class DefaultStringConverter implements IBufferStringConverter {
 	
-	public static Class<?> byteBufferClass;
-	public static long byteBufferParent;
-	public static long byteBufferAddress;
-	public static long byteBufferCapacity;
+	public static final String CHARACTER_CODING_EXCEPTION = "CHARACTER_CODING_EXCEPTION";
+	public static final byte NULL_CHARACTER = 0;
+	public static final byte[] TWO_NULL_CHARACTERS = new byte[] {NULL_CHARACTER, NULL_CHARACTER};
+	
+	public static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
+	public static final CharsetEncoder UTF8_ENCODER = UTF8_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	public static final CharsetDecoder UTF8_DECODER = UTF8_CHARSET.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	public static final Charset UTF16_CHARSET = StandardCharsets.UTF_16;
+	public static final CharsetEncoder UTF16_ENCODER = UTF16_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	public static final CharsetDecoder UTF16_DECODER = UTF16_CHARSET.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	public static final Charset ASCII_CHARSET = StandardCharsets.US_ASCII;
+	public static final CharsetEncoder ASCII_ENCODER = ASCII_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	public static final CharsetDecoder ASCII_DECODER = ASCII_CHARSET.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+	
+	public static final Class<?> BYTE_BUFFER_CLASS;
+	public static final long BYTE_BUFFER_PARENT;
+	public static final long BYTE_BUFFER_ADDRESS;
+	public static final long BYTE_BUFFER_CAPACITY;
 	
 	static {
+		throwIfUnavailable();
 		try {
 			ByteBuffer parent = ByteBuffer.allocateDirect(0);
 			ByteBuffer bb = parent.slice();
-			byteBufferClass = bb.getClass();
+			BYTE_BUFFER_CLASS = bb.getClass();
 			Field f = find(bb, parent);
-			byteBufferParent = unsafe.objectFieldOffset(f);
-			byteBufferAddress = objectFieldOffsetSub(byteBufferClass, "address");
-			byteBufferCapacity = objectFieldOffsetSub(byteBufferClass, "capacity");
+			BYTE_BUFFER_PARENT = UNSAFE.objectFieldOffset(f);
+			BYTE_BUFFER_ADDRESS = objectFieldOffsetWithSuper(BYTE_BUFFER_CLASS, "address");
+			BYTE_BUFFER_CAPACITY = objectFieldOffsetWithSuper(BYTE_BUFFER_CLASS, "capacity");
 		} catch (Exception e) {
-			throw new SpaceException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
 	public BufferAllocator alloc;
 	
-	@Override
-	public void setAlloc(BufferAllocator alloc) {
+	public DefaultStringConverter(BufferAllocator alloc) {
 		this.alloc = alloc;
 	}
 	
-	@Override
-	public BufferAllocator alloc() {
-		return alloc;
-	}
-	
+	//memString from String
 	@Override
 	public Buffer memStringUTF8(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringUTF8Length(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		StringConverterUtil.util.UTF8Encoder.encode(CharBuffer.wrap(str), buffer, false);
+		UTF8_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
 		if (nullTerm)
-			buffer.put(StringConverterUtil.NULLCHARACTER);
-		return alloc().allocByte(ba);
+			buffer.put(NULL_CHARACTER);
+		return alloc.allocByte(ba);
 	}
 	
 	@Override
 	public Buffer memStringUTF16(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringUTF16Length(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		StringConverterUtil.util.UTF16Encoder.encode(CharBuffer.wrap(str), buffer, false);
+		UTF16_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
 		if (nullTerm)
-			buffer.put(StringConverterUtil.TWONULLCHARACTER);
-		return alloc().allocByte(ba);
+			buffer.put(TWO_NULL_CHARACTERS);
+		return alloc.allocByte(ba);
 	}
 	
 	@Override
 	public Buffer memStringASCII(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringASCIILength(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
-		StringConverterUtil.util.ASCIIEncoder.encode(CharBuffer.wrap(str), buffer, false);
+		ASCII_ENCODER.encode(CharBuffer.wrap(str), buffer, false);
 		if (nullTerm)
-			buffer.put(StringConverterUtil.NULLCHARACTER);
-		return alloc().allocByte(ba);
+			buffer.put(NULL_CHARACTER);
+		return alloc.allocByte(ba);
 	}
 	
+	//memString length
 	@Override
 	public int memStringUTF8Length(String str, boolean nullTerm) {
 		return str.length() + (nullTerm ? 1 : 0);
@@ -95,6 +105,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		return str.length() + (nullTerm ? 1 : 0);
 	}
 	
+	//memString from Buffer
 	@Override
 	public String memUTF8String(Buffer buffer) {
 		return memUTF8String(buffer, findNull(buffer));
@@ -110,57 +121,59 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		return memASCIIString(buffer, findNull(buffer));
 	}
 	
-	static int findNull(Buffer buffer) {
-		byte[] str = new byte[(int) buffer.capacity()];
-		buffer.getByte(str);
-		for (int i = 0; i < str.length; i++)
-			if (str[i] == StringConverterUtil.NULLCHARACTER)
-				return i;
-		return -1;
-	}
-	
+	//memString from Buffer with length
 	@Override
 	public String memUTF8String(Buffer buffer, int length) {
 		if (length == -1)
-			return "Invalid Length";
+			throw new IllegalArgumentException("Illegal length");
 		try {
-			return StringConverterUtil.util.UTF8Decoder.decode(wrap(buffer)).toString().substring(0, length);
+			return UTF8_DECODER.decode(wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
-			return "CharacterCodingException";
+			return CHARACTER_CODING_EXCEPTION;
 		}
 	}
 	
 	@Override
 	public String memUTF16String(Buffer buffer, int length) {
 		if (length == -1)
-			return "Invalid Length";
+			throw new IllegalArgumentException("Illegal length");
 		try {
-			return StringConverterUtil.util.UTF16Decoder.decode(wrap(buffer)).toString().substring(0, length);
+			return UTF16_DECODER.decode(wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
-			return "CharacterCodingException";
+			return CHARACTER_CODING_EXCEPTION;
 		}
 	}
 	
 	@Override
 	public String memASCIIString(Buffer buffer, int length) {
 		if (length == -1)
-			return "Invalid Length";
+			throw new IllegalArgumentException("Illegal length");
 		try {
-			return StringConverterUtil.util.ASCIIDecoder.decode(wrap(buffer)).toString().substring(0, length);
+			return ASCII_DECODER.decode(wrap(buffer, length)).toString();
 		} catch (CharacterCodingException e) {
-			return "CharacterCodingException";
+			return CHARACTER_CODING_EXCEPTION;
 		}
 	}
 	
-	public ByteBuffer wrap(Buffer buffer) {
+	//static
+	static int findNull(Buffer buffer) {
+		for (int i = (int) (buffer.capacity() - 1); i >= 0; i--)
+			if (buffer.getByte(i) != NULL_CHARACTER)
+				return i + 1;
+		return -1;
+	}
+	
+	public static ByteBuffer wrap(Buffer buffer, int length) {
+		if (length < buffer.capacity())
+			throw new RuntimeException("length exceeds capacity!");
 		try {
-			ByteBuffer b = (ByteBuffer) unsafe.allocateInstance(byteBufferClass);
-			unsafe.putLong(b, byteBufferAddress, buffer.address());
-			unsafe.putInt(b, byteBufferCapacity, buffer.capacityInt());
-			unsafe.putObject(b, byteBufferParent, null);
+			ByteBuffer b = (ByteBuffer) UNSAFE.allocateInstance(BYTE_BUFFER_CLASS);
+			UNSAFE.putLong(b, BYTE_BUFFER_ADDRESS, buffer.address());
+			UNSAFE.putInt(b, BYTE_BUFFER_CAPACITY, length);
+			UNSAFE.putObject(b, BYTE_BUFFER_PARENT, null);
 			return b;
 		} catch (InstantiationException e) {
-			throw new SpaceException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -178,39 +191,5 @@ public class DefaultStringConverter implements IBufferStringConverter {
 			s = s.getSuperclass();
 		}
 		return null;
-	}
-	
-	public static class StringConverterUtil {
-		
-		public static final StringConverterUtil util = new StringConverterUtil();
-		
-		public static final byte NULLCHARACTER = 0;
-		public static final byte[] TWONULLCHARACTER = new byte[] {NULLCHARACTER, NULLCHARACTER};
-		
-		public final Charset UTF8Charset;
-		public final CharsetEncoder UTF8Encoder;
-		public final CharsetDecoder UTF8Decoder;
-		
-		public final Charset UTF16Charset;
-		public final CharsetEncoder UTF16Encoder;
-		public final CharsetDecoder UTF16Decoder;
-		
-		public final Charset ASCIICharset;
-		public final CharsetEncoder ASCIIEncoder;
-		public final CharsetDecoder ASCIIDecoder;
-		
-		public StringConverterUtil() {
-			UTF8Charset = StandardCharsets.UTF_8;
-			UTF8Encoder = UTF8Charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-			UTF8Decoder = UTF8Charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-			
-			UTF16Charset = StandardCharsets.UTF_16;
-			UTF16Encoder = UTF16Charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-			UTF16Decoder = UTF16Charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-			
-			ASCIICharset = StandardCharsets.US_ASCII;
-			ASCIIEncoder = ASCIICharset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-			ASCIIDecoder = ASCIICharset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
-		}
 	}
 }

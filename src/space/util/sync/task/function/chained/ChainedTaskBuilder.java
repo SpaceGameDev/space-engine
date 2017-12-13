@@ -1,7 +1,7 @@
 package space.util.sync.task.function.chained;
 
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.ICache;
+import space.util.baseobject.additional.Cache;
 import space.util.dependency.IDependency;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements ToString, ICache {
+public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements ToString, Cache {
 	
 	public static boolean hideCacheValues = true;
 	

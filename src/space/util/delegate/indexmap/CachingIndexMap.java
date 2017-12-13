@@ -2,7 +2,7 @@ package space.util.delegate.indexmap;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.ICache;
+import space.util.baseobject.additional.Cache;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -14,7 +14,7 @@ import static space.util.delegate.util.CacheUtil.*;
 /**
  * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
  */
-public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements ToString, ICache {
+public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements ToString, Cache {
 	
 	static {
 		//noinspection unchecked
