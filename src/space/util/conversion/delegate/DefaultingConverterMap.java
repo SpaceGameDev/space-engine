@@ -2,18 +2,17 @@ package space.util.conversion.delegate;
 
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
-import space.util.conversion.impl.ConverterMapImpl;
 
 import java.util.Map;
 
 /**
  * Is threadsafe if the internal {@link Map} is threadsafe.
  */
-public class DefaultingConverterMap<MINFROM, MINTO> extends ConverterMapImpl<MINFROM, MINTO> {
+public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> {
 	
 	public ConverterMap<MINFROM, MINTO> def;
 	
-	public DefaultingConverterMap(Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map, ConverterMap<MINFROM, MINTO> def) {
+	public DefaultingConverterMap(ConverterMap<MINFROM, MINTO> map, ConverterMap<MINFROM, MINTO> def) {
 		super(map);
 		this.def = def;
 	}

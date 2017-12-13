@@ -1,5 +1,7 @@
 package space.util.indexmap.multi;
 
+import space.util.indexmap.multi.IndexMultiMapLayered.IndexMultiMapLayeredImpl;
+
 public class IndexMultiMapLayeredTest {
 	
 	public static void main(String[] args) {

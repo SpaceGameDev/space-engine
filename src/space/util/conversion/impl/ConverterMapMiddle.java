@@ -4,6 +4,7 @@ import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * maps FROM something to a MIDDLE type and from the MIDDLE type TO something.
@@ -34,6 +35,11 @@ public class ConverterMapMiddle<MINFROM, MINTO, MIDDLE> implements ConverterMap<
 		
 		//noinspection unchecked
 		return ((Converter<FROM, MIDDLE>) convFM).andThen((Converter<MIDDLE, TO>) convMT);
+	}
+	
+	@Override
+	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverterOrAdd(Class<FROM> fromClass, Class<TO> toClass, BiFunction<Class<FROM>, Class<TO>, Converter<FROM, TO>> function) {
+		return getConverter(fromClass, toClass);
 	}
 	
 	@Override

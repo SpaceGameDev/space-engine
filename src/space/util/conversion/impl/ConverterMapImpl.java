@@ -4,6 +4,7 @@ import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * maps a {@link Key}[from-class, to-class] to a {@link Converter}[from, to].
@@ -24,6 +25,14 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 		if (fromClass.equals(toClass))
 			return Converter.identity();
 		return (Converter<FROM, TO>) map.get(new Key<>(fromClass, toClass));
+	}
+	
+	@Override
+	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverterOrAdd(Class<FROM> fromClass, Class<TO> toClass, BiFunction<Class<? extends MINFROM>, Class<? extends MINTO>, Converter<? extends MINFROM, ? extends MINTO>> function) {
+		if (fromClass.equals(toClass))
+			return Converter.identity();
+		//noinspection unchecked
+		return (Converter<FROM, TO>) map.computeIfAbsent(new Key<>(fromClass, toClass), key -> function.apply(key.key1, key.key2));
 	}
 	
 	//put

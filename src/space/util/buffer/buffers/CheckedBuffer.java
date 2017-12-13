@@ -2,6 +2,7 @@ package space.util.buffer.buffers;
 
 import space.util.buffer.buffers.exception.BufferOutOfBoundsException;
 import space.util.buffer.buffers.exception.NullBufferException;
+import space.util.string.String2D;
 
 public class CheckedBuffer implements Buffer {
 	
@@ -51,6 +52,11 @@ public class CheckedBuffer implements Buffer {
 	@Override
 	public void clear() {
 		buffer.clear();
+	}
+	
+	@Override
+	public String2D dump() {
+		return buffer.dump();
 	}
 	
 	//checked delegates

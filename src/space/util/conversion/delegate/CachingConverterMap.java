@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class CachingConverterMap<MINFROM, MINTO> extends DefaultingConverterMap<MINFROM, MINTO> {
 	
-	public CachingConverterMap(Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map, ConverterMap<MINFROM, MINTO> def) {
+	public CachingConverterMap(ConverterMap<MINFROM, MINTO> map, ConverterMap<MINFROM, MINTO> def) {
 		super(map, def);
 	}
 	
@@ -19,6 +19,6 @@ public class CachingConverterMap<MINFROM, MINTO> extends DefaultingConverterMap<
 	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverter(Class<FROM> fromClass, Class<TO> toClass) {
 		if (fromClass.equals(toClass))
 			return Converter.identity();
-		return (Converter<FROM, TO>) map.computeIfAbsent(new Key<>(fromClass, toClass), key -> def.getConverter(fromClass, toClass));
+		return map.getConverterOrAdd(fromClass, toClass, (fromClass1, toClass1) -> def.getConverter(fromClass1, toClass1));
 	}
 }
