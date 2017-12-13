@@ -1,8 +1,8 @@
 package space.util.buffer.string;
 
 import space.util.SpaceException;
-import space.util.buffer.alloc.IBufferAllocator;
-import space.util.buffer.buffers.IBuffer;
+import space.util.buffer.alloc.BufferAllocator;
+import space.util.buffer.buffers.Buffer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -38,20 +38,20 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		}
 	}
 	
-	public IBufferAllocator alloc;
+	public BufferAllocator alloc;
 	
 	@Override
-	public void setAlloc(IBufferAllocator alloc) {
+	public void setAlloc(BufferAllocator alloc) {
 		this.alloc = alloc;
 	}
 	
 	@Override
-	public IBufferAllocator alloc() {
+	public BufferAllocator alloc() {
 		return alloc;
 	}
 	
 	@Override
-	public IBuffer memStringUTF8(String str, boolean nullTerm) {
+	public Buffer memStringUTF8(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringUTF8Length(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
 		StringConverterUtil.util.UTF8Encoder.encode(CharBuffer.wrap(str), buffer, false);
@@ -61,7 +61,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public IBuffer memStringUTF16(String str, boolean nullTerm) {
+	public Buffer memStringUTF16(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringUTF16Length(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
 		StringConverterUtil.util.UTF16Encoder.encode(CharBuffer.wrap(str), buffer, false);
@@ -71,7 +71,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public IBuffer memStringASCII(String str, boolean nullTerm) {
+	public Buffer memStringASCII(String str, boolean nullTerm) {
 		byte[] ba = new byte[memStringASCIILength(str, nullTerm)];
 		ByteBuffer buffer = ByteBuffer.wrap(ba);
 		StringConverterUtil.util.ASCIIEncoder.encode(CharBuffer.wrap(str), buffer, false);
@@ -96,21 +96,21 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memUTF8String(IBuffer buffer) {
+	public String memUTF8String(Buffer buffer) {
 		return memUTF8String(buffer, findNull(buffer));
 	}
 	
 	@Override
-	public String memUTF16String(IBuffer buffer) {
+	public String memUTF16String(Buffer buffer) {
 		return memUTF16String(buffer, findNull(buffer));
 	}
 	
 	@Override
-	public String memASCIIString(IBuffer buffer) {
+	public String memASCIIString(Buffer buffer) {
 		return memASCIIString(buffer, findNull(buffer));
 	}
 	
-	static int findNull(IBuffer buffer) {
+	static int findNull(Buffer buffer) {
 		byte[] str = new byte[(int) buffer.capacity()];
 		buffer.getByte(str);
 		for (int i = 0; i < str.length; i++)
@@ -120,7 +120,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memUTF8String(IBuffer buffer, int length) {
+	public String memUTF8String(Buffer buffer, int length) {
 		if (length == -1)
 			return "Invalid Length";
 		try {
@@ -131,7 +131,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memUTF16String(IBuffer buffer, int length) {
+	public String memUTF16String(Buffer buffer, int length) {
 		if (length == -1)
 			return "Invalid Length";
 		try {
@@ -142,7 +142,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memASCIIString(IBuffer buffer, int length) {
+	public String memASCIIString(Buffer buffer, int length) {
 		if (length == -1)
 			return "Invalid Length";
 		try {
@@ -152,7 +152,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 		}
 	}
 	
-	public ByteBuffer wrap(IBuffer buffer) {
+	public ByteBuffer wrap(Buffer buffer) {
 		try {
 			ByteBuffer b = (ByteBuffer) unsafe.allocateInstance(byteBufferClass);
 			unsafe.putLong(b, byteBufferAddress, buffer.address());

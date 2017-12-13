@@ -1,73 +1,60 @@
 package space.util.buffer.stack;
 
-import space.util.buffer.alloc.IBufferAllocator;
-import space.util.buffer.buffers.IBuffer;
+import space.util.ArrayUtils;
+import space.util.baseobject.ToString;
+import space.util.buffer.alloc.BufferAllocator;
+import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.SimpleBuffer;
-import space.util.releasable.IReleasable;
-import space.util.releasable.IReleasableWrapper;
-import spaceOld.util.math.format.old.HexFormat;
-import spaceOld.util.stack.PointerList;
-import spaceOld.util.string.builder.wrapper.StringBuilderWrapperCommaPolicy;
+import space.util.buffer.buffers.SubBuffer;
+import space.util.stack.PointerList;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
-import static java.lang.Math.max;
-import static spaceOld.engine.base.sideSpecific.ClientSide.client;
-import static spaceOld.util.UnsafeInstance.unsafe;
-import static spaceOld.util.math.MathUtils.floor;
-
-public class BufferAllocatorStackOneBuffer implements IBufferAllocatorStack, IReleasableWrapper {
+public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString {
 	
-	public static final int DEFAULTCAPACITY = 64;
-	public static final float DEFAULTEXPANDER = 2;
-	public static final int POINTERCAPACITY = 8;
-	public static final float POINTEREXPANDER = 1.2f;
-	public static final long DUMPCAP = 512;
+	public static final long DEFAULTCAPACITY = 1024;
+	public static final long DUMPCAP = 1024;
 	
-	public IBufferAllocator alloc;
-	public SimpleBuffer storage;
-	public float expander;
+	public BufferAllocator alloc;
+	public SimpleBuffer buffer;
+	public long topOfStack = 0;
+	public PointerList pointerList = new PointerList();
 	
-	public PointerList pointerList;
-	public long pointer = 0;
-	
-	private ArrayList<SimpleBuffer> oldBufferList = new ArrayList<>(0);
-	
-	public BufferAllocatorStackOneBuffer() {
-		this(null);
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc) {
+		this(alloc, DEFAULTCAPACITY);
 	}
 	
-	public BufferAllocatorStackOneBuffer(IBufferAllocator alloc) {
-		this(alloc, DEFAULTCAPACITY, DEFAULTEXPANDER, new PointerList(POINTERCAPACITY, POINTEREXPANDER));
-	}
-	
-	public BufferAllocatorStackOneBuffer(IBufferAllocator alloc, long startCapacity) {
-		this(alloc, startCapacity, DEFAULTEXPANDER, new PointerList(POINTERCAPACITY, POINTEREXPANDER));
-	}
-	
-	public BufferAllocatorStackOneBuffer(IBufferAllocator alloc, long startCapacity, float expander, PointerList pointerList) {
+	//constructor
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity) {
 		this.alloc = alloc;
-		this.expander = expander;
-		this.pointerList = pointerList;
-		makeInternalBuffer(startCapacity);
+		makeInternalBuffer(initCapacity);
 	}
 	
+	//expansion
+	public void ensureCapacity(long capacity) {
+		if (buffer.capacity < capacity)
+			makeInternalBuffer(ArrayUtils.getOptimalArraySizeExpansion(buffer.capacity, capacity, 1));
+	}
+	
+	public void makeInternalBuffer(long capacity) {
+		buffer = new SimpleBuffer(capacity);
+	}
+	
+	//push
 	@Override
 	public long pushPointer() {
-		return pointer;
+		return topOfStack;
 	}
 	
 	@Override
 	public void push() {
-		pointerList.push(pushPointer());
+		pointerList.push(topOfStack);
 	}
 	
+	//pop
 	@Override
 	public void popPointer(long pointer) {
-		this.pointer = pointer;
-		if (pointer == 0)
-			clearOldBuffers0();
+		this.topOfStack = pointer;
 	}
 	
 	@Override
@@ -75,83 +62,40 @@ public class BufferAllocatorStackOneBuffer implements IBufferAllocatorStack, IRe
 		popPointer(pointerList.pop());
 	}
 	
+	//put
 	@Override
 	@Deprecated
-	public <X extends IBuffer> X put(X t) {
+	public <X extends Buffer> X put(X t) {
 		throw new UnsupportedOperationException();
 	}
 	
-	@Override
-	@Deprecated
-	public void setOnDelete(Consumer<IBuffer> onDelete) {
-		throw new UnsupportedOperationException();
-	}
-	
-	public void ensureCapacity(long capacity) {
-		if (storage.capacity < capacity) {
-			expandTo(capacity);
-		}
-	}
-	
-	public void expandTo(long capacity) {
-		makeInternalBuffer(max((long) floor((double) storage.capacity * expander), capacity));
-	}
-	
-	public void makeInternalBuffer(long capacity) {
-		if (storage != null)
-			oldBufferList.add(storage);
-		storage = new SimpleBuffer(capacity);
+	//alloc
+	protected long allocInternal(long capacity) {
+		long oldTopOfStack = topOfStack;
+		topOfStack += capacity;
+		ensureCapacity(topOfStack);
 		
-		//in case I'm testing stuff
-		try {
-			client.getSide().releaseTracker.addWrapper(this);
-		} catch (IllegalStateException e) {
-			
-		}
-	}
-	
-	public void clearOldBuffers() {
-		if (pointer != 0)
-			throw new IllegalStateException();
-		clearOldBuffers0();
-	}
-	
-	private void clearOldBuffers0() {
-		oldBufferList.clear();
-	}
-	
-	public long alloc(long capacity) {
-		long newPointer = pointer + capacity;
-		ensureCapacity(newPointer);
-		
-		long oldPointer = pointer;
-		pointer = newPointer;
-		
-		return storage.address + oldPointer;
+		return buffer.address + oldTopOfStack;
 	}
 	
 	@Override
-	public IBuffer malloc(long capacity) {
-		return alloc.alloc(alloc(capacity), capacity);
+	public Buffer malloc(long capacity) {
+		return new SubBuffer(allocInternal(capacity), capacity, buffer);
 	}
 	
 	@Override
-	public IBuffer alloc(long address, long capacity) {
+	public Buffer alloc(long address, long capacity) {
 		return alloc.alloc(address, capacity);
 	}
 	
-	@Override
-	public IReleasable getReleasable() {
-		return storage;
-	}
-	
+	//dump
 	public String dump() {
-		if (storage.capacity > DUMPCAP)
+		if (buffer.capacity > DUMPCAP)
 			return "DUMP CAP reached!";
-		StringBuilder b = new StringBuilder((int) storage.capacity * 3);
+		StringBuilder b = new StringBuilder((int) buffer.capacity * 3);
 		StringBuilderWrapperCommaPolicy bw = new StringBuilderWrapperCommaPolicy(b);
-		for (long i = 0; i < storage.capacity; i++) {
-			HexFormat.toHex(bw, unsafe.getByte(storage.address + i));
+		for (long i = 0; i < buffer.capacity; i++) {
+			HexFormat.toHex(bw, unsafe.getByte(buffer.address + i));
 			b.append(' ');
 		}
 		b.setLength(b.length() - 1);
@@ -159,21 +103,17 @@ public class BufferAllocatorStackOneBuffer implements IBufferAllocatorStack, IRe
 	}
 	
 	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("alloc", this.alloc);
+		tsh.add("buffer", this.buffer);
+		tsh.add("topOfStack", this.topOfStack);
+		tsh.add("pointerList", this.pointerList);
+		return tsh.build();
+	}
+	
+	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("{buffer address: ");
-		builder.append(storage.address);
-		builder.append(", buffer capacity: ");
-		builder.append(storage.capacity);
-		builder.append(", expander: ");
-		builder.append(expander);
-		builder.append(", pointer: ");
-		builder.append(pointer);
-		builder.append(", oldBuffers: ");
-		builder.append(oldBufferList.size());
-		builder.append(", buffer dump: ");
-		builder.append(dump());
-		builder.append("}");
-		return builder.toString();
+		return toString0();
 	}
 }

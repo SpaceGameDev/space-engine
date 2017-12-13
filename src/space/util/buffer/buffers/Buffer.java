@@ -1,270 +1,234 @@
 package space.util.buffer.buffers;
 
-import static space.util.math.MathUtils.min;
-import static space.util.unsafe.UnsafeInstance.UNSAFE;
-import static sun.misc.Unsafe.*;
+import space.util.baseobject.additional.Freeable;
 
-public class Buffer extends SimpleBuffer implements IBuffer {
+public interface Buffer extends Freeable {
 	
-	public Buffer(long capacity) {
-		super(capacity);
-	}
+	long address();
 	
-	public Buffer(long address, long capacity) {
-		super(address, capacity);
-	}
+	long capacity();
 	
 	@Override
-	public long address() {
-		return address;
-	}
+	void free();
 	
-	@Override
-	public long capacity() {
-		return capacity;
-	}
-	
-	@Override
-	public void clear() {
-		UNSAFE.setMemory(address, capacity, (byte) 0);
-	}
+	void clear();
 	
 	//single
 	//byte
-	@Override
-	public byte getByte(long offset) {
-		return UNSAFE.getByte(address + offset);
-	}
+	byte getByte(long offset);
 	
-	@Override
-	public void putByte(long offset, byte b) {
-		UNSAFE.putByte(address + offset, b);
-	}
+	void putByte(long offset, byte b);
 	
 	//short
-	@Override
-	public short getShort(long offset) {
-		return UNSAFE.getShort(address + offset);
-	}
+	short getShort(long offset);
 	
-	@Override
-	public void putShort(long offset, short b) {
-		UNSAFE.putShort(address + offset, b);
-	}
+	void putShort(long offset, short b);
 	
 	//int
-	@Override
-	public int getInt(long offset) {
-		return UNSAFE.getInt(address + offset);
-	}
+	int getInt(long offset);
 	
-	@Override
-	public void putInt(long offset, int b) {
-		UNSAFE.putInt(address + offset, b);
-	}
+	void putInt(long offset, int b);
 	
 	//long
-	@Override
-	public long getLong(long offset) {
-		return UNSAFE.getLong(address + offset);
-	}
+	long getLong(long offset);
 	
-	@Override
-	public void putLong(long offset, long b) {
-		UNSAFE.putLong(address + offset, b);
-	}
+	void putLong(long offset, long b);
 	
 	//float
-	@Override
-	public float getFloat(long offset) {
-		return UNSAFE.getFloat(address + offset);
-	}
+	float getFloat(long offset);
 	
-	@Override
-	public void putFloat(long offset, float b) {
-		UNSAFE.putFloat(address + offset, b);
-	}
+	void putFloat(long offset, float b);
 	
 	//double
-	@Override
-	public double getDouble(long offset) {
-		return UNSAFE.getDouble(address + offset);
-	}
+	double getDouble(long offset);
 	
-	@Override
-	public void putDouble(long offset, double b) {
-		UNSAFE.putDouble(address + offset, b);
-	}
+	void putDouble(long offset, double b);
 	
 	//boolean
-	@Override
-	public boolean getBoolean(long offset) {
-		return UNSAFE.getByte(address + offset) != 0;
-	}
+	boolean getBoolean(long offset);
 	
-	@Override
-	public void putBoolean(long offset, boolean b) {
-		UNSAFE.putByte(address + offset, (byte) (b ? 1 : 0));
-	}
+	void putBoolean(long offset, boolean b);
 	
 	//arrays
-	//byte
-	@Override
-	public void copyInto(long offset, byte[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_BYTE_BASE_OFFSET + destPos * ARRAY_BYTE_INDEX_SCALE, length * ARRAY_BYTE_INDEX_SCALE);
+	//byte array
+	default void copyInto(byte[] dest) {
+		copyInto(0, dest, 0, dest.length);
 	}
 	
-	@Override
-	public void copyFrom(byte[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_BYTE_BASE_OFFSET + srcPos * ARRAY_BYTE_INDEX_SCALE, null, address + offset, length * ARRAY_BYTE_INDEX_SCALE);
+	default void copyInto(byte[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
 	}
+	
+	void copyInto(long offset, byte[] dest, int destPos, int length);
+	
+	default void copyFrom(byte[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(byte[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(byte[] src, int srcPos, int length, long offset);
+	
+	//short array
+	default void copyInto(short[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(short[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, short[] dest, int destPos, int length);
+	
+	default void copyFrom(short[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(short[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(short[] src, int srcPos, int length, long offset);
+	
+	//int array
+	default void copyInto(int[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(int[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, int[] dest, int destPos, int length);
+	
+	default void copyFrom(int[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(int[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(int[] src, int srcPos, int length, long offset);
+	
+	//long array
+	default void copyInto(long[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(long[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, long[] dest, int destPos, int length);
+	
+	default void copyFrom(long[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(long[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(long[] src, int srcPos, int length, long offset);
+	
+	//float array
+	default void copyInto(float[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(float[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, float[] dest, int destPos, int length);
+	
+	default void copyFrom(float[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(float[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(float[] src, int srcPos, int length, long offset);
+	
+	//double array
+	default void copyInto(double[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(double[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, double[] dest, int destPos, int length);
+	
+	default void copyFrom(double[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(double[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(double[] src, int srcPos, int length, long offset);
+	
+	//boolean array
+	default void copyInto(boolean[] dest) {
+		copyInto(0, dest, 0, dest.length);
+	}
+	
+	default void copyInto(boolean[] dest, long offset) {
+		copyInto(offset, dest, 0, dest.length);
+	}
+	
+	void copyInto(long offset, boolean[] dest, int destPos, int length);
+	
+	default void copyFrom(boolean[] src) {
+		copyFrom(src, 0, src.length, 0);
+	}
+	
+	default void copyFrom(boolean[] src, long offset) {
+		copyFrom(src, 0, src.length, offset);
+	}
+	
+	void copyFrom(boolean[] src, int srcPos, int length, long offset);
+	
+	//fill
+	//byte
+	void fillByte(long offset, byte b, long length);
 	
 	//short
-	@Override
-	public void copyInto(long offset, short[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_SHORT_BASE_OFFSET + destPos * ARRAY_SHORT_INDEX_SCALE, length * ARRAY_SHORT_INDEX_SCALE);
-	}
-	
-	@Override
-	public void copyFrom(short[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_SHORT_BASE_OFFSET + srcPos * ARRAY_SHORT_INDEX_SCALE, null, address + offset, length * ARRAY_SHORT_INDEX_SCALE);
-	}
+	void fillShort(long offset, short b, long length);
 	
 	//int
-	@Override
-	public void copyInto(long offset, int[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_INT_BASE_OFFSET + destPos * ARRAY_INT_INDEX_SCALE, length * ARRAY_INT_INDEX_SCALE);
-	}
-	
-	@Override
-	public void copyFrom(int[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_INT_BASE_OFFSET + srcPos * ARRAY_INT_INDEX_SCALE, null, address + offset, length * ARRAY_INT_INDEX_SCALE);
-	}
+	void fillInt(long offset, int b, long length);
 	
 	//long
-	@Override
-	public void copyInto(long offset, long[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_LONG_BASE_OFFSET + destPos * ARRAY_LONG_INDEX_SCALE, length * ARRAY_LONG_INDEX_SCALE);
-	}
-	
-	@Override
-	public void copyFrom(long[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_LONG_BASE_OFFSET + srcPos * ARRAY_LONG_INDEX_SCALE, null, address + offset, length * ARRAY_LONG_INDEX_SCALE);
-	}
+	void fillLong(long offset, long b, long length);
 	
 	//float
-	@Override
-	public void copyInto(long offset, float[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_FLOAT_BASE_OFFSET + destPos * ARRAY_FLOAT_INDEX_SCALE, length * ARRAY_FLOAT_INDEX_SCALE);
-	}
-	
-	@Override
-	public void copyFrom(float[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_FLOAT_BASE_OFFSET + srcPos * ARRAY_FLOAT_INDEX_SCALE, null, address + offset, length * ARRAY_FLOAT_INDEX_SCALE);
-	}
+	void fillFloat(long offset, float b, long length);
 	
 	//double
-	@Override
-	public void copyInto(long offset, double[] dest, int destPos, int length) {
-		UNSAFE.copyMemory(null, address + offset, dest, ARRAY_DOUBLE_BASE_OFFSET + destPos * ARRAY_DOUBLE_INDEX_SCALE, length * ARRAY_DOUBLE_INDEX_SCALE);
-	}
-	
-	@Override
-	public void copyFrom(double[] src, int srcPos, int length, long offset) {
-		UNSAFE.copyMemory(src, ARRAY_DOUBLE_BASE_OFFSET + srcPos * ARRAY_DOUBLE_INDEX_SCALE, null, address + offset, length * ARRAY_DOUBLE_INDEX_SCALE);
-	}
+	void fillDouble(long offset, double b, long length);
 	
 	//boolean
-	@Override
-	public void copyInto(long offset, boolean[] dest, int destPos, int length) {
-		if (AllowBooleanArrayCopy.ALLOWBOOLEANARRAYCOPY)
-			UNSAFE.copyMemory(null, address + offset, dest, ARRAY_BOOLEAN_BASE_OFFSET + destPos * ARRAY_BOOLEAN_INDEX_SCALE, length * ARRAY_BOOLEAN_INDEX_SCALE);
-		else
-			for (int i = 0; i < length; i++)
-				dest[i] = UNSAFE.getByte(address + i * ARRAY_BOOLEAN_INDEX_SCALE) != 0;
+	void fillBoolean(long offset, boolean b, long length);
+	
+	//buffers
+	default void copyInto(long offset, Buffer dest) {
+		copyInto(offset, dest, 0, dest.capacity());
 	}
 	
-	@Override
-	public void copyFrom(boolean[] src, int srcPos, int length, long offset) {
-		if (AllowBooleanArrayCopy.ALLOWBOOLEANARRAYCOPY)
-			UNSAFE.copyMemory(src, ARRAY_BOOLEAN_BASE_OFFSET + srcPos * ARRAY_BOOLEAN_INDEX_SCALE, null, address + offset, length * ARRAY_BOOLEAN_INDEX_SCALE);
-		else
-			for (int i = 0; i < length; i++)
-				UNSAFE.putByte(address + i * ARRAY_BOOLEAN_INDEX_SCALE, (byte) (src[i] ? 1 : 0));
+	void copyInto(long offset, Buffer dest, long destPos, long length);
+	
+	default void copyFrom(Buffer src, long offset) {
+		copyFrom(src, 0, src.capacity(), offset);
 	}
 	
-	@Override
-	public void fillByte(long offset, byte b, long length) {
-		UNSAFE.setMemory(address + offset, length, b);
-	}
-	
-	@Override
-	public void fillShort(long offset, short b, long length) {
-		short[] tarray = new short[] {b};
-		UNSAFE.copyMemory(tarray, ARRAY_SHORT_BASE_OFFSET, null, address + offset, min(ARRAY_SHORT_INDEX_SCALE, length));
-		int i = ARRAY_SHORT_INDEX_SCALE;
-		for (; (i << 1) < length; i <<= 1)
-			UNSAFE.copyMemory(address + offset, address + offset + i, i);
-		if (i < length)
-			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
-	}
-	
-	@Override
-	public void fillInt(long offset, int b, long length) {
-		int[] tarray = new int[] {b};
-		UNSAFE.copyMemory(tarray, ARRAY_INT_BASE_OFFSET, null, address + offset, min(ARRAY_INT_INDEX_SCALE, length));
-		int i = ARRAY_INT_INDEX_SCALE;
-		for (; (i << 1) < length; i <<= 1)
-			UNSAFE.copyMemory(address + offset, address + offset + i, i);
-		if (i < length)
-			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
-	}
-	
-	@Override
-	public void fillLong(long offset, long b, long length) {
-		long[] tarray = new long[] {b};
-		UNSAFE.copyMemory(tarray, ARRAY_LONG_BASE_OFFSET, null, address + offset, min(ARRAY_LONG_INDEX_SCALE, length));
-		int i = ARRAY_LONG_INDEX_SCALE;
-		for (; (i << 1) < length; i <<= 1)
-			UNSAFE.copyMemory(address + offset, address + offset + i, i);
-		if (i < length)
-			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
-	}
-	
-	@Override
-	public void fillFloat(long offset, float b, long length) {
-		float[] tarray = new float[] {b};
-		UNSAFE.copyMemory(tarray, ARRAY_FLOAT_BASE_OFFSET, null, address + offset, min(ARRAY_FLOAT_INDEX_SCALE, length));
-		int i = ARRAY_FLOAT_INDEX_SCALE;
-		for (; (i << 1) < length; i <<= 1)
-			UNSAFE.copyMemory(address + offset, address + offset + i, i);
-		if (i < length)
-			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
-	}
-	
-	@Override
-	public void fillDouble(long offset, double b, long length) {
-		double[] tarray = new double[] {b};
-		UNSAFE.copyMemory(tarray, ARRAY_DOUBLE_BASE_OFFSET, null, address + offset, min(ARRAY_DOUBLE_INDEX_SCALE, length));
-		int i = ARRAY_DOUBLE_INDEX_SCALE;
-		for (; (i << 1) < length; i <<= 1)
-			UNSAFE.copyMemory(address + offset, address + offset + i, i);
-		if (i < length)
-			UNSAFE.copyMemory(address + offset, address + offset + i, length - i);
-	}
-	
-	@Override
-	public void fillBoolean(long offset, boolean b, long length) {
-		fillByte(offset, (byte) (b ? 1 : 0), length);
-	}
-	
-	@Override
-	public void copyInto(long offset, IBuffer dest, long destPos, long length) {
-		UNSAFE.copyMemory(address + offset, dest.address() + destPos, length);
-	}
-	
-	@Override
-	public void copyFrom(IBuffer src, long srcPos, long length, long offset) {
-		UNSAFE.copyMemory(src.address() + srcPos, address + offset, length);
-	}
+	void copyFrom(Buffer src, long srcPos, long length, long offset);
 }

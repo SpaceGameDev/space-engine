@@ -1,28 +1,28 @@
 package space.util.buffer.stack;
 
-import space.util.buffer.alloc.IBufferAllocator;
-import space.util.buffer.buffers.IBuffer;
+import space.util.buffer.alloc.BufferAllocator;
+import space.util.buffer.buffers.Buffer;
 import spaceOld.util.stack.IStack;
 import spaceOld.util.stack.Stack;
 
 import java.util.function.Consumer;
 
-public class BufferAllocatorStackCombined implements IBufferAllocatorStack {
+public class BufferAllocatorStackCombined implements BufferAllocatorStack {
 	
 	public static final int defaultLargeThreshold = 64;
 	
-	public final IBufferAllocator alloc;
+	public final BufferAllocator alloc;
 	public final BufferAllocatorStackOneBuffer oneBuffer;
 	public final BufferAllocatorStackBufferList bufferList;
 	
 	public long largeThreshold;
 	public IStack<BiIntEntry> stack = new Stack<>();
 	
-	public BufferAllocatorStackCombined(IBufferAllocator alloc) {
+	public BufferAllocatorStackCombined(BufferAllocator alloc) {
 		this(alloc, defaultLargeThreshold);
 	}
 	
-	public BufferAllocatorStackCombined(IBufferAllocator alloc, int largeThreshold) {
+	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold) {
 		this.largeThreshold = largeThreshold;
 		
 		this.alloc = alloc;
@@ -61,13 +61,13 @@ public class BufferAllocatorStackCombined implements IBufferAllocatorStack {
 	
 	@Override
 	@Deprecated
-	public <X extends IBuffer> X put(X t) {
+	public <X extends Buffer> X put(X t) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	@Deprecated
-	public void setOnDelete(Consumer<IBuffer> onDelete) {
+	public void setOnDelete(Consumer<Buffer> onDelete) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -88,12 +88,12 @@ public class BufferAllocatorStackCombined implements IBufferAllocatorStack {
 	}
 	
 	@Override
-	public IBuffer alloc(long address, long capacity) {
+	public Buffer alloc(long address, long capacity) {
 		return bufferList.alloc(address, capacity);
 	}
 	
 	@Override
-	public IBuffer malloc(long capacity) {
+	public Buffer malloc(long capacity) {
 		if (capacity < largeThreshold) {
 			return oneBuffer.malloc(capacity);
 		}

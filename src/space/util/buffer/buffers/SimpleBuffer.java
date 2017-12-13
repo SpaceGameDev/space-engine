@@ -1,11 +1,11 @@
 package space.util.buffer.buffers;
 
-import space.util.baseobject.additional.IReleasable;
+import space.util.baseobject.additional.Freeable;
 import space.util.unsafe.UnsafeInstance;
 
 import static space.util.unsafe.UnsafeInstance.UNSAFE;
 
-public class SimpleBuffer implements IReleasable {
+public class SimpleBuffer implements Freeable {
 	
 	static {
 		UnsafeInstance.throwIfUnavailable();
@@ -25,17 +25,18 @@ public class SimpleBuffer implements IReleasable {
 	}
 	
 	@Override
-	public synchronized void release() {
+	public synchronized void free() {
 		if (address != 0) {
 			UNSAFE.freeMemory(address);
 			address = 0;
+			capacity = 0;
 		}
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
 		try {
-			release();
+			free();
 		} finally {
 			super.finalize();
 		}

@@ -201,7 +201,16 @@ public class ArrayUtils {
 		return requestedSize >= newSizeOld ? requestedSize << expandShift : newSizeOld;
 	}
 	
+	public static long getOptimalArraySizeExpansion(long currSize, long requestedSize, long expandShift) {
+		long newSizeOld = currSize << expandShift;
+		return requestedSize >= newSizeOld ? requestedSize << expandShift : newSizeOld;
+	}
+	
 	public static int getOptimalArraySizeStart(int defaultSize, int requestedSize) {
+		return requestedSize == 0 ? 0 : (requestedSize > defaultSize ? requestedSize : defaultSize);
+	}
+	
+	public static long getOptimalArraySizeStart(long defaultSize, long requestedSize) {
 		return requestedSize == 0 ? 0 : (requestedSize > defaultSize ? requestedSize : defaultSize);
 	}
 	

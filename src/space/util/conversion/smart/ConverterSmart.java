@@ -117,8 +117,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	 * Path is a Path between to Classes the Resolver can take. It has {@link Path#weight()} and can be checked on {@link Path#isFinal()}.
 	 *
 	 * @see space.util.conversion.Converter the baseclass {@link Converter}
-	 * @see Path#weight() check the weight of a {@link Path}
-	 * @see Path#isFinal() check wether a {@link Path} is lossless
+	 * @see Path#weight() checkOffset the weight of a {@link Path}
+	 * @see Path#isFinal() checkOffset wether a {@link Path} is lossless
 	 */
 	interface Path<FROM, TO> extends Converter<FROM, TO> {
 		

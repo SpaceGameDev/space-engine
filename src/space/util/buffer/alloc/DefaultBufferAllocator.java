@@ -1,17 +1,17 @@
 package space.util.buffer.alloc;
 
 import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.IBuffer;
+import space.util.buffer.buffers.BufferImpl;
 
-public class DefaultBufferAllocator implements IBufferAllocator {
+public class DefaultBufferAllocator implements BufferAllocator {
 	
 	@Override
-	public IBuffer malloc(long capacity) {
-		return new Buffer(capacity);
+	public Buffer malloc(long capacity) {
+		return new BufferImpl(capacity);
 	}
 	
 	@Override
-	public IBuffer alloc(long address, long capacity) {
-		return new Buffer(address, capacity);
+	public Buffer alloc(long address, long capacity) {
+		return new BufferImpl(address, capacity);
 	}
 }
