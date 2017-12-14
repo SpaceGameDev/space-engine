@@ -9,10 +9,10 @@ public abstract class AbstractToStringHelperMapper<T> implements ToStringHelperT
 	public IndexMultiMap<T> map = new IndexMultiMap2D<>(IndexMultiMap2D.DEFAULT_HEIGHT, 2);
 	
 	@Override
-	public void put(int[] pos, T object) {
+	public T put(int[] pos, T object) {
 		if (pos.length != 2 || (pos[1] == 0 || pos[1] == 1))
 			throw new IllegalArgumentException();
-		map.put(pos, object);
+		return map.put(pos, object);
 	}
 	
 	@Override

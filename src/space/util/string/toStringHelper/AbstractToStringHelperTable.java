@@ -12,8 +12,8 @@ public abstract class AbstractToStringHelperTable<T> implements ToStringHelperTa
 	}
 	
 	@Override
-	public void put(int[] pos, T object) {
-		map.put(pos, object);
+	public T put(int[] pos, T object) {
+		return map.put(pos, object);
 	}
 	
 	@Override

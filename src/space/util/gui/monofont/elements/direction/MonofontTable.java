@@ -1,5 +1,6 @@
 package space.util.gui.monofont.elements.direction;
 
+import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.gui.elements.direction.GuiTableCreator;
 import space.util.gui.elements.direction.GuiTableCreator.GuiTable;
@@ -32,7 +33,7 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 	}
 	
 	@Override
-	public GuiTableCreator getCreator() {
+	public GuiCreator getCreator() {
 		return CREATOR;
 	}
 	
@@ -79,8 +80,8 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
 		for (IndexMultiMapEntry<MonofontGuiElement> entry : table.tableIterator()) {
 			MonofontGuiElement value = entry.getValue();
-			charTable.put(entry.getIndex(), value != null ? value.build() : null);
+			charTable.put(entry.getIndex(), value != null ? value.buildSequence2D() : null);
 		}
-		return style.makeTable(this, charTable);
+		return style.makeTable("", this, charTable);
 	}
 }

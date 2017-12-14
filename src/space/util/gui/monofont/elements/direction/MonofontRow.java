@@ -30,6 +30,6 @@ public class MonofontRow extends MonofontElementList implements GuiRow, IMonofon
 	
 	@Override
 	public CharSequence2D rebuild0() {
-		return style.makeTable(this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, 1));
+		return style.makeTable("", this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, 1));
 	}
 }

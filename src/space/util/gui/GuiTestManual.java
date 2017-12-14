@@ -48,6 +48,6 @@ public class GuiTestManual {
 	}
 	
 	public static void println(GuiElement elem) {
-		System.out.println(((MonofontGuiElement) elem).build());
+		System.out.println(((MonofontGuiElement) elem).buildSequence2D());
 	}
 }

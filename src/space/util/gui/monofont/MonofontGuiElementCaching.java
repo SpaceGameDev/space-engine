@@ -34,7 +34,7 @@ public abstract class MonofontGuiElementCaching extends MonofontGuiElement imple
 	}
 	
 	@Override
-	public CharSequence2D build() {
+	public CharSequence2D buildSequence2D() {
 		rebuild();
 		return buffer;
 	}

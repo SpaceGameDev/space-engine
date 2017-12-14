@@ -68,7 +68,7 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;
 			int untilx = axis.getIndex(1, index + 1) + (index + 1) * separatorLength + 1;
 			
-			buffer.setY(1).setX(startx).append(elem.getValue().build(), maxY, untilx, fillChar);
+			buffer.setY(1).setX(startx).append(elem.getValue().buildSequence2D(), maxY, untilx, fillChar);
 		}
 		
 		//sides

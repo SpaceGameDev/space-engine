@@ -16,8 +16,8 @@ public interface IMonofontTableCreator {
 	 * @param valueTable may contain null elements which should be treated like empty strings
 	 * @return a nice table
 	 */
-	default CharSequence2D makeTable(MonofontGuiElement guiElement, IndexMap<CharSequence2D> valueTable) {
-		return makeTable(guiElement, new IndexMultiMapFrom1DIndexMap<>(valueTable));
+	default CharSequence2D makeTable(String name, MonofontGuiElement guiElement, IndexMap<CharSequence2D> valueTable) {
+		return makeTable(name, guiElement, new IndexMultiMapFrom1DIndexMap<>(valueTable));
 	}
 	
 	/**
@@ -27,5 +27,5 @@ public interface IMonofontTableCreator {
 	 * @param valueTable may contain null elements which should be treated like empty strings
 	 * @return a nice table
 	 */
-	CharSequence2D makeTable(MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable);
+	CharSequence2D makeTable(String name, MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable);
 }

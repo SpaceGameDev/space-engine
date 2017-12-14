@@ -29,6 +29,6 @@ public class MonofontColumn extends MonofontElementList implements GuiColumn, IM
 	
 	@Override
 	public CharSequence2D rebuild0() {
-		return style.makeTable(this, buildList());
+		return style.makeTable("", this, buildList());
 	}
 }

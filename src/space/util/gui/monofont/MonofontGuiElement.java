@@ -26,11 +26,11 @@ public abstract class MonofontGuiElement implements ToString, GuiElement {
 	public abstract int sizeY();
 	
 	//toString
-	public abstract CharSequence2D build();
+	public abstract CharSequence2D buildSequence2D();
 	
 	@Override
 	public String toString() {
-		return build().toString();
+		return buildSequence2D().toString();
 	}
 	
 	@Override
@@ -38,6 +38,6 @@ public abstract class MonofontGuiElement implements ToString, GuiElement {
 		if (api instanceof MonofontGuiApi)
 			//noinspection unchecked
 			return (T) this;
-		return api.toString(build());
+		return api.toString(buildSequence2D());
 	}
 }

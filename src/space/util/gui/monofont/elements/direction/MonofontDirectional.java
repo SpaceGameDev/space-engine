@@ -51,6 +51,6 @@ public class MonofontDirectional extends MonofontElementList implements GuiDirec
 	@Override
 	public CharSequence2D rebuild0() {
 		calcIsRowLike();
-		return style.makeTable(this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, isRowLike() ? 0 : 1));
+		return style.makeTable("", this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, isRowLike() ? 0 : 1));
 	}
 }

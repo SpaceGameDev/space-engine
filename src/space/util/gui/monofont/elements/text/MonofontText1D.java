@@ -36,7 +36,7 @@ public class MonofontText1D extends MonofontGuiElement implements GuiText1D {
 	}
 	
 	@Override
-	public CharSequence2D build() {
+	public CharSequence2D buildSequence2D() {
 		return new String2D(squ);
 	}
 }

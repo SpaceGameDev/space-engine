@@ -78,7 +78,7 @@ public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 			buffer.append(new String2D(elem.name + separator), untily, valueStart, fillChar);
 			
 			//value
-			buffer.setY(starty).setX(valueStart).append(elem.value.build(), untily, valueEnd, fillChar);
+			buffer.setY(starty).setX(valueStart).append(elem.value.buildSequence2D(), untily, valueEnd, fillChar);
 			
 			//lineRight
 			buffer.setY(starty).setX(valueEnd).append(lineUpDown);

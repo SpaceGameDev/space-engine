@@ -12,6 +12,11 @@ public interface GuiToStringHelperMapperCreator<T> extends GuiCreator {
 	interface GuiToStringHelperMapper extends GuiElement, ToStringHelperTable<GuiElement> {
 		
 		@Override
-		void put(int[] pos, GuiElement object);
+		GuiElement put(int[] pos, GuiElement object);
+		
+		@Override
+		default GuiElement build() {
+			return this;
+		}
 	}
 }

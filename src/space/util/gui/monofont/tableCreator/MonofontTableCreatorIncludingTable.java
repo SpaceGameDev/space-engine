@@ -34,8 +34,8 @@ public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSing
 	}
 	
 	@Override
-	public CharSequence2D makeTable(MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
-		return (allowIncluding && guiElement.parent != null && MonofontIncluding.toIncludeList.contains(guiElement.parent.getClass())) ? makeTableNoBorder(valueTable) : super.makeTable(guiElement, valueTable);
+	public CharSequence2D makeTable(String name, MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
+		return (allowIncluding && guiElement.parent != null && MonofontIncluding.toIncludeList.contains(guiElement.parent.getClass())) ? makeTableNoBorder(valueTable) : super.makeTable(name, guiElement, valueTable);
 	}
 	
 	public CharSequence2D makeTableNoBorder(IndexMultiMap<CharSequence2D> valueTable) {

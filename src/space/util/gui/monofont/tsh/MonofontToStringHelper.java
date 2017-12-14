@@ -5,12 +5,11 @@ import space.util.gui.GuiElement;
 import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.elements.text.GuiText2DCreator;
 import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator;
+import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator.ToStringHelperArray;
 import space.util.gui.elements.tsh.GuiToStringHelperMapperCreator;
 import space.util.gui.elements.tsh.GuiToStringHelperModifierCreator;
 import space.util.gui.elements.tsh.GuiToStringHelperObjectsCreator;
 import space.util.gui.elements.tsh.GuiToStringHelperTableCreator;
-import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMapArray;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -77,88 +76,88 @@ public class MonofontToStringHelper<T extends GuiElement> implements ToStringHel
 	public T toString(byte[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(byte.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(byte.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(short[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(short.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(short.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(int[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(int.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(int.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(long[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(long.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(long.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(float[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(float.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(float.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(double[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(double.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(double.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(boolean[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(boolean.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(boolean.class, indexMap);
+		return (T) array;
 	}
 	
 	@Override
 	public T toString(char[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(char.class);
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(char.class, indexMap);
+		return (T) array;
 	}
 	
 	//string
@@ -197,11 +196,11 @@ public class MonofontToStringHelper<T extends GuiElement> implements ToStringHel
 	public T toString(Object[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		IndexMap<T> indexMap = new IndexMapArray<>();
+		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(obj.getClass().getComponentType());
 		for (int i = from; i < to; i++)
-			indexMap.put(i, toString(obj[i]));
+			array.put(i, toString(obj[i]));
 		//noinspection unchecked
-		return (T) api.get(GuiToStringHelperArrayCreator.class).create(obj.getClass().getComponentType(), indexMap);
+		return (T) array;
 	}
 	
 	//modifier

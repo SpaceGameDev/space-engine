@@ -12,6 +12,11 @@ public interface GuiToStringHelperTableCreator<T> extends GuiCreator {
 	interface GuiToStringHelperTable extends GuiElement, ToStringHelperTable<GuiElement> {
 		
 		@Override
-		void put(int[] pos, GuiElement object);
+		GuiElement put(int[] pos, GuiElement object);
+		
+		@Override
+		default GuiElement build() {
+			return this;
+		}
 	}
 }

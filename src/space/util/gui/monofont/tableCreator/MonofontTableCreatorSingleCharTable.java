@@ -35,7 +35,7 @@ public class MonofontTableCreatorSingleCharTable implements IMonofontTableCreato
 	}
 	
 	@Override
-	public CharSequence2D makeTable(MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
+	public CharSequence2D makeTable(String name, MonofontGuiElement guiElement, IndexMultiMap<CharSequence2D> valueTable) {
 		//axis size
 		int[] size = new int[] {valueTable.size(), valueTable.maxSize(1)};
 		IndexAxisMapInt axis = new IndexAxisMapInt(); //content index
