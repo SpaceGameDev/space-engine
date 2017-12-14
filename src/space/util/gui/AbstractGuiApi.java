@@ -1,14 +1,12 @@
-package space.util.gui.simple;
+package space.util.gui;
 
 import space.util.delegate.map.specific.ClassMap.GetClassOrSuperMap;
-import space.util.gui.GuiApi;
-import space.util.gui.GuiCreator;
 import space.util.gui.exception.GuiElementUnsupportedException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class SimpleGuiApi implements GuiApi {
+public abstract class AbstractGuiApi implements GuiApi {
 	
 	public Map<Class<? extends GuiCreator>, GuiCreator> map = new GetClassOrSuperMap<>(new HashMap<>());
 	

@@ -1,11 +1,11 @@
-package space.util.gui.monofont.elements.tsh;
+package space.util.gui.monofont.tsh.elements;
 
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
-import space.util.gui.elements.tsh.GuiToStringHelperModifierCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperModifierCreator.GuiToStringHelperModifier;
 import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
+import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator.GuiToStringHelperModifier;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
 

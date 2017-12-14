@@ -1,4 +1,4 @@
-package space.util.gui.monofont.tableCreator;
+package space.util.gui.monofont.tableCreator.multi;
 
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontIncluding;
@@ -48,7 +48,7 @@ public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSing
 		
 		//buffer building content
 		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
-		buffer.beingEdited++;
+		buffer.startEdit();
 		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.tableIterator()) {
 			int indexy = getSafeO(elem.getIndex(), 0, 0);
 			int indexx = getSafeO(elem.getIndex(), 1, 0);
@@ -84,7 +84,7 @@ public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSing
 			}
 		}
 		
-		buffer.beingEdited--;
+		buffer.endEdit();
 		return new String2D(buffer);
 	}
 }

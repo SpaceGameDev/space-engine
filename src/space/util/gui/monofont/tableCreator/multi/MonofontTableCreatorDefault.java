@@ -1,4 +1,4 @@
-package space.util.gui.monofont.tableCreator;
+package space.util.gui.monofont.tableCreator.multi;
 
 public class MonofontTableCreatorDefault {
 	

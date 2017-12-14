@@ -1,4 +1,4 @@
-package space.util.gui.monofont.tsh.arrayCreator;
+package space.util.gui.monofont.tableCreator;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.gui.monofont.MonofontGuiElement;
@@ -12,10 +12,10 @@ import space.util.string.builder.CharBufferBuilder2D;
 /**
  * makes a table with full borders out of single characters
  */
-public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
+public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	
 	@SuppressWarnings("unused")
-	public static MonofontArrayCreator INSTANCE = new MonofontArrayCreatorImpl('[', ']', "|", '-');
+	public static MonofontColumnCreatorArray INSTANCE = new MonofontColumnCreatorArray('[', ']', "|", '-');
 	
 	public char fillChar;
 	public char leftBound;
@@ -23,11 +23,11 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 	public String separator;
 	public char line;
 	
-	public MonofontArrayCreatorImpl(char leftBound, char rightBound, String separator, char line) {
+	public MonofontColumnCreatorArray(char leftBound, char rightBound, String separator, char line) {
 		this(' ', leftBound, rightBound, separator, line);
 	}
 	
-	public MonofontArrayCreatorImpl(char fillChar, char leftBound, char rightBound, String separator, char line) {
+	public MonofontColumnCreatorArray(char fillChar, char leftBound, char rightBound, String separator, char line) {
 		this.fillChar = fillChar;
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
@@ -36,16 +36,14 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 	}
 	
 	@Override
-	public CharSequence2D makeTable(Class<?> type, IndexMap<MonofontGuiElement> elements) {
-		String className = type.getName() + "[]";
-		
+	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, IndexMap<CharSequence2D> elements) {
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		Iteratorable<IndexMapEntry<MonofontGuiElement>> iter = elements.tableIterator();
-		for (IndexMapEntry<MonofontGuiElement> elem : iter) {
+		Iteratorable<IndexMapEntry<CharSequence2D>> iter = elements.tableIterator();
+		for (IndexMapEntry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
-			MonofontGuiElement value = elem.getValue();
-			axis.put(new int[] {0, index}, new int[] {value.sizeX(), value.sizeY()});
+			CharSequence2D value = elem.getValue();
+			axis.put(new int[] {0, index}, new int[] {value.maxLength(), value.height()});
 		}
 		
 		//sizes
@@ -63,12 +61,12 @@ public class MonofontArrayCreatorImpl implements MonofontArrayCreator {
 		
 		//entries
 		iter = elements.tableIterator();
-		for (IndexMapEntry<MonofontGuiElement> elem : iter) {
+		for (IndexMapEntry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;
 			int untilx = axis.getIndex(1, index + 1) + (index + 1) * separatorLength + 1;
 			
-			buffer.setY(1).setX(startx).append(elem.getValue().buildSequence2D(), maxY, untilx, fillChar);
+			buffer.setY(1).setX(startx).append(elem.getValue(), maxY, untilx, fillChar);
 		}
 		
 		//sides

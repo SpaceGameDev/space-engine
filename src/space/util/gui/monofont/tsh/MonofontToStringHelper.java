@@ -4,12 +4,12 @@ import space.util.gui.GuiApi;
 import space.util.gui.GuiElement;
 import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.elements.text.GuiText2DCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator.ToStringHelperArray;
-import space.util.gui.elements.tsh.GuiToStringHelperMapperCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperModifierCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperObjectsCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperTableCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator.ToStringHelperArray;
+import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperObjectsCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperTableCreator;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -24,50 +24,50 @@ public class MonofontToStringHelper<T extends GuiElement> implements ToStringHel
 	
 	//native
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(byte b) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Byte.toString(b));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(short s) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Short.toString(s));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(int i) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Integer.toString(i));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(long l) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Long.toString(l));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(float f) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Float.toString(f));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(double d) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Double.toString(d));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(boolean b) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Boolean.toString(b));
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(char c) {
-		//noinspection unchecked
 		return (T) api.get(GuiText1DCreator.class).create(Character.toString(c));
 	}
 	
@@ -160,38 +160,7 @@ public class MonofontToStringHelper<T extends GuiElement> implements ToStringHel
 		return (T) array;
 	}
 	
-	//string
-	@Override
-	public T toString(CharSequence str) {
-		//noinspection unchecked
-		return (T) api.get(GuiText1DCreator.class).create(str.toString());
-	}
-	
-	@Override
-	public T toString(String str) {
-		//noinspection unchecked
-		return (T) api.get(GuiText1DCreator.class).create(str);
-	}
-	
-	@Override
-	public T toString(CharSequence2D str) {
-		//noinspection unchecked
-		return (T) api.get(GuiText2DCreator.class).create(str);
-	}
-	
-	@Override
-	public T toString(String2D str) {
-		//noinspection unchecked
-		return (T) api.get(GuiText2DCreator.class).create(str);
-	}
-	
-	//null
-	@Override
-	public T toStringNull() {
-		//noinspection unchecked
-		return (T) api.get(GuiText1DCreator.class).create("null");
-	}
-	
+	//array object
 	@Override
 	public T toString(Object[] obj, int from, int to) {
 		if (obj == null)
@@ -203,31 +172,63 @@ public class MonofontToStringHelper<T extends GuiElement> implements ToStringHel
 		return (T) array;
 	}
 	
+	//string
+	@Override
+	@SuppressWarnings("unchecked")
+	public T toString(CharSequence str) {
+		return (T) api.get(GuiText1DCreator.class).create(str.toString());
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public T toString(String str) {
+		return (T) api.get(GuiText1DCreator.class).create(str);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public T toString(CharSequence2D str) {
+		return (T) api.get(GuiText2DCreator.class).create(str);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public T toString(String2D str) {
+		return (T) api.get(GuiText2DCreator.class).create(str);
+	}
+	
+	//null
+	@Override
+	@SuppressWarnings("unchecked")
+	public T toStringNull() {
+		return (T) api.get(GuiText1DCreator.class).create("null");
+	}
+	
 	//modifier
 	@Override
+	@SuppressWarnings("unchecked")
 	public T createModifier(String modifier, Object value) {
-		//noinspection unchecked
 		return (T) api.get(GuiToStringHelperModifierCreator.class).create(modifier, toString(value));
 	}
 	
 	//object
 	@Override
+	@SuppressWarnings("unchecked")
 	public ToStringHelperObjectsInstance<T> createObjectInstance(Object obj) {
-		//noinspection unchecked
 		return (ToStringHelperObjectsInstance<T>) api.get(GuiToStringHelperObjectsCreator.class).create(obj, this);
 	}
 	
 	//mapper
 	@Override
+	@SuppressWarnings("unchecked")
 	public ToStringHelperTable<T> createMapper(String name, String separator, boolean align) {
-		//noinspection unchecked
-		return (ToStringHelperTable<T>) api.get(GuiToStringHelperMapperCreator.class).create(name, separator, align);
+		return (ToStringHelperTable<T>) api.get(GuiToStringHelperMapperCreator.class).create(name, new String2D(separator), align);
 	}
 	
 	//table
 	@Override
+	@SuppressWarnings("unchecked")
 	public ToStringHelperTable<T> createTable(String name, int dimensions) {
-		//noinspection unchecked
 		return (ToStringHelperTable<T>) api.get(GuiToStringHelperTableCreator.class).create(name, dimensions);
 	}
 }

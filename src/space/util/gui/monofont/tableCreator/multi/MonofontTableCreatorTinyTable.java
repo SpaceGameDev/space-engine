@@ -1,4 +1,4 @@
-package space.util.gui.monofont.tableCreator;
+package space.util.gui.monofont.tableCreator.multi;
 
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.indexmap.axis.IndexAxisMapInt;
@@ -13,25 +13,21 @@ import static space.util.ArrayUtils.getSafeO;
 /**
  * makes a table with only a left-right separator
  */
-public class MonofontTableCreatorArray implements IMonofontTableCreator {
+public class MonofontTableCreatorTinyTable implements IMonofontTableCreator {
 	
 	@SuppressWarnings("unused")
-	public static MonofontTableCreatorArray DEFAULT = new MonofontTableCreatorArray('[', ',', ']');
+	public static MonofontTableCreatorTinyTable DEFAULT = new MonofontTableCreatorTinyTable('|');
 	
 	public char fillChar;
-	public char start;
 	public char lineUpDown;
-	public char end;
 	
-	public MonofontTableCreatorArray(char start, char lineUpDown, char end) {
-		this(' ', start, lineUpDown, end);
+	public MonofontTableCreatorTinyTable(char lineUpDown) {
+		this(' ', lineUpDown);
 	}
 	
-	public MonofontTableCreatorArray(char fillChar, char start, char lineUpDown, char end) {
+	public MonofontTableCreatorTinyTable(char fillChar, char lineUpDown) {
 		this.fillChar = fillChar;
-		this.start = start;
 		this.lineUpDown = lineUpDown;
-		this.end = end;
 	}
 	
 	@Override
@@ -45,41 +41,27 @@ public class MonofontTableCreatorArray implements IMonofontTableCreator {
 		
 		//buffer building content
 		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
-		buffer.beingEdited++;
+		buffer.startEdit();
 		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.tableIterator()) {
 			int indexy = getSafeO(elem.getIndex(), 0, 0);
 			int indexx = getSafeO(elem.getIndex(), 1, 0);
 			buffer.setY(axis.getIndex(0, indexy));
-			buffer.setX(axis.getIndex(1, indexx) + indexx + 1);
+			buffer.setX(axis.getIndex(1, indexx) + indexx);
 			int untily = axis.getIndex(0, indexy + 1);
-			int untilx = axis.getIndex(1, indexx + 1) + indexx + 1;
+			int untilx = axis.getIndex(1, indexx + 1) + indexx;
 			buffer.append(elem.getValue() == null ? String2D.EMPTY : elem.getValue(), untily, untilx, fillChar);
-		}
-		
-		//filling start
-		for (int indexy = 0; indexy < axis.getIndex(0, size[0]); indexy++) {
-			buffer.setY(indexy);
-			buffer.setX(0);
-			buffer.append(start);
 		}
 		
 		//filling up down
 		for (int indexy = 0; indexy < axis.getIndex(0, size[0]); indexy++) {
 			buffer.setY(indexy);
 			for (int indexx = 1; indexx < size[1]; indexx++) {
-				buffer.setX(axis.getIndex(1, indexx) + indexx);
+				buffer.setX(axis.getIndex(1, indexx) + indexx - 1);
 				buffer.append(lineUpDown);
 			}
 		}
 		
-		//filling end
-		for (int indexy = 0; indexy < axis.getIndex(0, size[0]); indexy++) {
-			buffer.setY(indexy);
-			buffer.setX(axis.getIndex(1, size[1]) + size[1]);
-			buffer.append(end);
-		}
-		
-		buffer.beingEdited--;
+		buffer.endEdit();
 		return new String2D(buffer);
 	}
 }

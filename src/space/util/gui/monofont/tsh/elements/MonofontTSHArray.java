@@ -1,11 +1,11 @@
-package space.util.gui.monofont.elements.tsh;
+package space.util.gui.monofont.tsh.elements;
 
 import space.util.gui.GuiCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator.ToStringHelperArray;
 import space.util.gui.monofont.elements.direction.MonofontElementList;
-import space.util.gui.monofont.tsh.arrayCreator.MonofontArrayCreator;
-import space.util.gui.monofont.tsh.arrayCreator.MonofontArrayCreatorImpl;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreator;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreatorArray;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator.ToStringHelperArray;
 import space.util.string.CharSequence2D;
 
 import java.util.function.Supplier;
@@ -13,10 +13,10 @@ import java.util.function.Supplier;
 public class MonofontTSHArray extends MonofontElementList implements ToStringHelperArray {
 	
 	public static final GuiToStringHelperArrayCreator CREATOR = MonofontTSHArray::new;
-	public static Supplier<MonofontArrayCreator> DEFAULT = () -> MonofontArrayCreatorImpl.INSTANCE;
+	public static Supplier<MonofontColumnCreatorArray> DEFAULT = () -> MonofontColumnCreatorArray.INSTANCE;
 	
 	public Class<?> type;
-	public MonofontArrayCreator style = DEFAULT.get();
+	public MonofontColumnCreator style = DEFAULT.get();
 	
 	public MonofontTSHArray(Class<?> type) {
 		this.type = type;
@@ -29,6 +29,6 @@ public class MonofontTSHArray extends MonofontElementList implements ToStringHel
 	
 	@Override
 	public CharSequence2D rebuild0() {
-		return style.makeTable(type, list);
+		return style.makeTable(type.getName() + "[]", this, buildList());
 	}
 }

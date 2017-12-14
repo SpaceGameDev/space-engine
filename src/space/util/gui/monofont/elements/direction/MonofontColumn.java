@@ -4,7 +4,7 @@ import space.util.gui.elements.direction.GuiColumnCreator;
 import space.util.gui.elements.direction.GuiColumnCreator.GuiColumn;
 import space.util.gui.monofont.IMonofontWithTableCreator;
 import space.util.gui.monofont.MonofontIncluding;
-import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
+import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
 import space.util.string.CharSequence2D;
 
 public class MonofontColumn extends MonofontElementList implements GuiColumn, IMonofontWithTableCreator {

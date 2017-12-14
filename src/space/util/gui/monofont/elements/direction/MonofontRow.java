@@ -4,7 +4,7 @@ import space.util.gui.elements.direction.GuiRowCreator;
 import space.util.gui.elements.direction.GuiRowCreator.GuiRow;
 import space.util.gui.monofont.IMonofontWithTableCreator;
 import space.util.gui.monofont.MonofontIncluding;
-import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
+import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
 import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
 import space.util.string.CharSequence2D;
 

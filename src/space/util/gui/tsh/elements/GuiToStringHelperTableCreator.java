@@ -1,15 +1,15 @@
-package space.util.gui.elements.tsh;
+package space.util.gui.tsh.elements;
 
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperTable;
 
 @FunctionalInterface
-public interface GuiToStringHelperMapperCreator<T> extends GuiCreator {
+public interface GuiToStringHelperTableCreator<T> extends GuiCreator {
 	
-	GuiToStringHelperMapper create(String name, String separator, boolean align);
+	GuiToStringHelperTable create(String name, int dimensions);
 	
-	interface GuiToStringHelperMapper extends GuiElement, ToStringHelperTable<GuiElement> {
+	interface GuiToStringHelperTable extends GuiElement, ToStringHelperTable<GuiElement> {
 		
 		@Override
 		GuiElement put(int[] pos, GuiElement object);

@@ -1,9 +1,9 @@
-package space.util.gui.monofont.elements.tsh;
+package space.util.gui.monofont.tsh.elements;
 
-import space.util.gui.elements.tsh.GuiToStringHelperTableCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperTableCreator.GuiToStringHelperTable;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.elements.direction.MonofontTable;
+import space.util.gui.tsh.elements.GuiToStringHelperTableCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperTableCreator.GuiToStringHelperTable;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.util.indexmap.multi.IndexMultiMap2D;

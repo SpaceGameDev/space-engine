@@ -6,7 +6,7 @@ import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.monofont.IMonofontWithTableCreator;
 import space.util.gui.monofont.MonofontIncluding;
 import space.util.gui.monofont.elements.text.MonofontText1D;
-import space.util.gui.monofont.tableCreator.IMonofontTableCreator;
+import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
 import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
 import space.util.string.CharSequence2D;
 

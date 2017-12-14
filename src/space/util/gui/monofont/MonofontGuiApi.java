@@ -1,30 +1,31 @@
 package space.util.gui.monofont;
 
+import space.util.gui.AbstractGuiApi;
 import space.util.gui.elements.direction.GuiColumnCreator;
 import space.util.gui.elements.direction.GuiDirectionalCreator;
 import space.util.gui.elements.direction.GuiRowCreator;
 import space.util.gui.elements.direction.GuiTableCreator;
 import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.elements.text.GuiText2DCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperApiCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperArrayCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperMapperCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperModifierCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperObjectsCreator;
-import space.util.gui.elements.tsh.GuiToStringHelperTableCreator;
 import space.util.gui.monofont.elements.direction.MonofontColumn;
 import space.util.gui.monofont.elements.direction.MonofontDirectional;
 import space.util.gui.monofont.elements.direction.MonofontRow;
 import space.util.gui.monofont.elements.direction.MonofontTable;
 import space.util.gui.monofont.elements.text.MonofontText1D;
 import space.util.gui.monofont.elements.text.MonofontText2D;
-import space.util.gui.monofont.elements.tsh.MonofontTSHArray;
-import space.util.gui.monofont.elements.tsh.MonofontTSHModifier;
-import space.util.gui.monofont.elements.tsh.MonofontTSHTable;
-import space.util.gui.simple.SimpleGuiApi;
+import space.util.gui.monofont.tsh.elements.MonofontTSHArray;
+import space.util.gui.monofont.tsh.elements.MonofontTSHMapper;
+import space.util.gui.monofont.tsh.elements.MonofontTSHModifier;
+import space.util.gui.monofont.tsh.elements.MonofontTSHTable;
+import space.util.gui.tsh.elements.GuiToStringHelperApiCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperObjectsCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperTableCreator;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public class MonofontGuiApi extends SimpleGuiApi {
+public class MonofontGuiApi extends AbstractGuiApi {
 	
 	public static final MonofontGuiApi INSTANCE = new MonofontGuiApi();
 	public static final ToStringHelper<?> TSH = INSTANCE.get(GuiToStringHelperApiCreator.class).create();
@@ -43,7 +44,7 @@ public class MonofontGuiApi extends SimpleGuiApi {
 		//tsh
 		addElement(null, GuiToStringHelperApiCreator.class);
 		addElement(MonofontTSHArray.CREATOR, GuiToStringHelperArrayCreator.class);
-		addElement(null, GuiToStringHelperMapperCreator.class);
+		addElement(MonofontTSHMapper.CREATOR, GuiToStringHelperMapperCreator.class);
 		addElement(MonofontTSHModifier.CREATOR, GuiToStringHelperModifierCreator.class);
 		addElement(null, GuiToStringHelperObjectsCreator.class);
 		addElement(MonofontTSHTable.CREATOR, GuiToStringHelperTableCreator.class);

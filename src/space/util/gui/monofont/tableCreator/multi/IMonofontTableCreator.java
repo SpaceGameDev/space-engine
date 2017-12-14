@@ -1,13 +1,14 @@
-package space.util.gui.monofont.tableCreator;
+package space.util.gui.monofont.tableCreator.multi;
 
 import space.util.gui.monofont.MonofontGuiElement;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreator;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
 import space.util.string.CharSequence2D;
 
 @FunctionalInterface
-public interface IMonofontTableCreator {
+public interface IMonofontTableCreator extends MonofontColumnCreator {
 	
 	/**
 	 * creates a nice table String2D from a IndexMultiMap

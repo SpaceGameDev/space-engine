@@ -1,25 +1,25 @@
-package space.util.gui.tshImpl;
+package space.util.gui.tsh;
 
 import space.util.baseobject.ToString;
 import space.util.gui.GuiApi;
 import space.util.gui.GuiElement;
-import space.util.gui.elements.direction.GuiTable;
 import space.util.gui.elements.text.GuiText1DCreator;
-import space.util.gui.elements.tsh.GuiArrayCreator;
-import space.util.gui.elements.tsh.GuiArrayCreator.GuiArray;
-import space.util.gui.elements.tsh.GuiModifier;
-import space.util.gui.monofont.elements.text.MonofontText2D;
-import space.util.gui.monofont.elements.tshOld.MonofontObjects;
+import space.util.gui.elements.text.GuiText2DCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator.ToStringHelperArray;
+import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperObjectsCreator;
+import space.util.gui.tsh.elements.GuiToStringHelperTableCreator;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
-import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStringHelper<T> {
+public class AbstractGuiToStringHelper<T extends GuiElement> implements ToStringHelper<T> {
 	
-	public final GuiApi<T> api;
+	public final GuiApi api;
 	
-	public ToStringHelperGuiWrapper(GuiApi<T> api) {
+	public AbstractGuiToStringHelper(GuiApi api) {
 		this.api = api;
 	}
 	
@@ -77,9 +77,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(byte[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<?> list = api.get(GuiArrayCreator.class).create(byte.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(byte.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -87,9 +88,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(short[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(short.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -97,9 +99,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(int[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(int.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -107,9 +110,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(long[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(long.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -117,9 +121,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(float[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(float.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -127,9 +132,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(double[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(double.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -137,9 +143,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(boolean[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(boolean.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -147,9 +154,10 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(char[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(char.class);
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
@@ -163,35 +171,41 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	public T toString(Object[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		GuiArray<T> list = api.get(GuiArray.class);
+		ToStringHelperArray list = api.get(GuiToStringHelperArrayCreator.class).create(obj.getClass().getComponentType());
 		for (int i = from; i < to; i++)
-			list.add(toString(obj[i]));
+			list.put(i, toString(obj[i]));
+		//noinspection unchecked
 		return (T) list;
 	}
 	
 	//String
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(CharSequence str) {
-		return str == null ? toStringNull() : (T) api.get(GuiText1DCreator.class).create(str);
+		return str == null ? toStringNull() : (T) api.get(GuiText1DCreator.class).create(str.toString());
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(String str) {
 		return str == null ? toStringNull() : (T) api.get(GuiText1DCreator.class).create(str);
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(CharSequence2D str) {
-		return str == null ? toStringNull() : (T) api.get(MonofontText2D.class).create(str);
+		return str == null ? toStringNull() : (T) api.get(GuiText2DCreator.class).create(str);
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toString(String2D str) {
-		return str == null ? toStringNull() : (T) api.get(MonofontText2D.class).create(str);
+		return str == null ? toStringNull() : (T) api.get(GuiText2DCreator.class).create(str);
 	}
 	
 	//null
 	@Override
+	@SuppressWarnings("unchecked")
 	public T toStringNull() {
 		return (T) api.get(GuiText1DCreator.class).create("null");
 	}
@@ -200,44 +214,27 @@ public class ToStringHelperGuiWrapper<T extends GuiElement<T>> implements ToStri
 	@Override
 	@SuppressWarnings("unchecked")
 	public T createModifier(String modifier, Object value) {
-		GuiModifier<T> mod = api.get(GuiModifier.class);
-		mod.setModifier(modifier);
-		mod.setVariableValue(toString(value));
-		return (T) mod;
+		return (T) api.get(GuiToStringHelperModifierCreator.class).create(modifier, toString(value));
 	}
 	
 	//objects
 	@Override
+	@SuppressWarnings("unchecked")
 	public ToStringHelperObjectsInstance<T> createObjectInstance(Object obj) {
-		return new AbstractToStringHelperObjectsInstance<T>(obj, this) {
-			@Override
-			public T build() {
-				return new MonofontObjects(this);
-			}
-		};
+		return (ToStringHelperObjectsInstance<T>) api.get(GuiToStringHelperObjectsCreator.class).create(obj, this);
+	}
+	
+	//mapper
+	@Override
+	@SuppressWarnings("unchecked")
+	public ToStringHelperTable<T> createMapper(String name, String separator, boolean align) {
+		return (ToStringHelperTable<T>) api.get(GuiToStringHelperMapperCreator.class).create(name, new String2D(separator), align);
 	}
 	
 	//table
 	@Override
-	public ToStringHelperTable<T> createTable(Object name, int dimensions) {
-		return new ToStringHelperTable<T>() {
-			GuiTable<T> table = api.get(GuiTable.class);
-			
-			@Override
-			public void put(int[] pos, T object) {
-				table.getTable().put(pos, object);
-			}
-			
-			@Override
-			@SuppressWarnings("unchecked")
-			public T build() {
-				return (T) table;
-			}
-		};
-	}
-	
-	@Override
-	public ToStringHelperTable<T> createMapper(Object name, String separator, boolean align) {
-		return null;
+	@SuppressWarnings("unchecked")
+	public ToStringHelperTable<T> createTable(String name, int dimensions) {
+		return (ToStringHelperTable<T>) api.get(GuiToStringHelperTableCreator.class).create(name, dimensions);
 	}
 }
