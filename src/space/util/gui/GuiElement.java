@@ -2,7 +2,7 @@ package space.util.gui;
 
 public interface GuiElement {
 	
-	GuiApi<?> getApi();
+	GuiApi getApi();
 	
-	GuiCreator<?> getCreator();
+	GuiCreator getCreator();
 }

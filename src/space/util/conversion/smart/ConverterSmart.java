@@ -5,6 +5,7 @@ import space.util.conversion.Converter;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperTable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Map.Entry;
  *
  * @see space.util.conversion.smart.ConverterSmart.Path
  */
-public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
+public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 	
 	public Map<Class<?>, Node<?>> nodes = new HashMap<>();
 	
@@ -33,7 +34,6 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 	}
 	
 	//putConverter
-	@Override
 	public <FROM extends MIN, TO extends MIN> void putConverter(Class<FROM> classFrom, Class<TO> classTo, Converter<FROM, TO> conv) {
 		putPath(classFrom, classTo, new PathWrapper<>(conv));
 	}
@@ -94,6 +94,18 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 				getConverter0(newNode, path, depth + 1, newWeight, toClass, result);
 			}
 		}
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("nodes", this.nodes);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 	
 	protected static class Resolver {
@@ -207,7 +219,7 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		}
 	}
 	
-	public class Node<NODE extends MIN> {
+	public class Node<NODE extends MIN> implements ToString {
 		
 		public final Class<NODE> clazzNode;
 		public HashMap<Class<? extends MIN>, Path<? extends MIN, NODE>> mapConvertFrom = new HashMap<>();
@@ -238,8 +250,34 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN> {
 		}
 		
 		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("clazzNode", this.clazzNode);
+			
+			ToStringHelperTable<T> convertFrom = api.createMapper("convertFrom", " -> ", true);
+			int i = 0;
+			for (Entry<Class<? extends MIN>, Path<? extends MIN, NODE>> entry : mapConvertFrom.entrySet()) {
+				convertFrom.put(new int[] {0, i}, api.toString(entry.getKey().getName()));
+				convertFrom.put(new int[] {1, i}, api.toString(entry.getValue()));
+				i++;
+			}
+			tsh.add("convertFrom", convertFrom);
+			
+			ToStringHelperTable<T> convertTo = api.createMapper("convertTo", " -> ", true);
+			int j = 0;
+			for (Entry<Class<? extends MIN>, Path<? extends MIN, NODE>> entry : mapConvertFrom.entrySet()) {
+				convertTo.put(new int[] {0, j}, api.toString(entry.getKey().getName()));
+				convertTo.put(new int[] {1, j}, api.toString(entry.getValue()));
+				j++;
+			}
+			tsh.add("convertTo", convertTo);
+			
+			return tsh.build();
+		}
+		
+		@Override
 		public String toString() {
-			return "Node<" + clazzNode.getName() + ">";
+			return toString0();
 		}
 	}
 }

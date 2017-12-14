@@ -26,7 +26,7 @@ public class IllegalGuiElementException extends RuntimeException {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 	
-	public IllegalGuiElementException(GuiElement<?> value) {
+	public IllegalGuiElementException(GuiElement value) {
 		this(value.getClass());
 	}
 	

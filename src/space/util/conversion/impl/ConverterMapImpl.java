@@ -1,7 +1,10 @@
 package space.util.conversion.impl;
 
+import space.util.baseobject.ToString;
 import space.util.conversion.Converter;
-import space.util.conversion.ConverterMap;
+import space.util.conversion.ConverterMap.ConverterMapAdvanced;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -10,7 +13,7 @@ import java.util.function.BiFunction;
  * maps a {@link Key}[from-class, to-class] to a {@link Converter}[from, to].
  * Is threadsafe if the internal {@link Map} is threadsafe.
  */
-public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, MINTO> {
+public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMapAdvanced<MINFROM, MINTO>, ToString {
 	
 	public Map<Key<Class<? extends MINFROM>, Class<? extends MINTO>>, Converter<? extends MINFROM, ? extends MINTO>> map;
 	
@@ -28,10 +31,10 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 	}
 	
 	@Override
-	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> getConverterOrAdd(Class<FROM> fromClass, Class<TO> toClass, BiFunction<Class<? extends MINFROM>, Class<? extends MINTO>, Converter<? extends MINFROM, ? extends MINTO>> function) {
+	@SuppressWarnings("unchecked")
+	public <FROM extends MINFROM, TO extends MINTO> Converter<FROM, TO> computeIfAbsent(Class<FROM> fromClass, Class<TO> toClass, BiFunction<Class<? extends MINFROM>, Class<? extends MINTO>, Converter<? extends MINFROM, ? extends MINTO>> function) {
 		if (fromClass.equals(toClass))
 			return Converter.identity();
-		//noinspection unchecked
 		return (Converter<FROM, TO>) map.computeIfAbsent(new Key<>(fromClass, toClass), key -> function.apply(key.key1, key.key2));
 	}
 	
@@ -41,7 +44,19 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 		map.put(new Key<>(fromClass, toClass), converter);
 	}
 	
-	public static class Key<KEY1, KEY2> {
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("map", this.map);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
+	public static class Key<KEY1, KEY2> implements ToString {
 		
 		public final KEY1 key1;
 		public final KEY2 key2;
@@ -67,6 +82,19 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMap<MINFROM, M
 			int result = key1.hashCode();
 			result = 31 * result + key2.hashCode();
 			return result;
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("key1", this.key1);
+			tsh.add("key2", this.key2);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
 		}
 	}
 }

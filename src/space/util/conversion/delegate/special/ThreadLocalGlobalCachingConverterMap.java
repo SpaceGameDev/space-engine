@@ -1,7 +1,6 @@
 package space.util.conversion.delegate.special;
 
 import space.util.baseobject.ToString;
-import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 import space.util.conversion.delegate.CachingConverterMap;
 import space.util.conversion.delegate.DelegatingConverterMap;
@@ -27,11 +26,6 @@ public class ThreadLocalGlobalCachingConverterMap<MINFROM, MINTO> extends Delega
 		localMap = ThreadLocal.withInitial(() -> new ConverterMapImpl<>(new HashMap<>()));
 		globalMap = creator != null ? new CachingConverterMap<>(new ConverterMapImpl<>(new ConcurrentHashMap<>()), creator) : new ConverterMapImpl<>(new ConcurrentHashMap<>());
 		map = new CachingConverterMap<>(new SupplierConverterMap<>(localMap::get), globalMap);
-	}
-	
-	@Override
-	public <FROM extends MINFROM, TO extends MINTO> void putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter) {
-		globalMap.putConverter(fromClass, toClass, converter);
 	}
 	
 	@Override

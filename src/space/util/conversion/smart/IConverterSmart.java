@@ -6,8 +6,5 @@ import space.util.conversion.ConverterMap;
 public interface IConverterSmart<MIN> extends ConverterMap<MIN, MIN> {
 	
 	@Override
-	<FROM extends MIN, TO extends MIN> void putConverter(Class<FROM> fromClass, Class<TO> toClass, Converter<FROM, TO> converter);
-	
-	@Override
 	<FROM extends MIN, TO extends MIN> Converter<FROM, TO> getConverter(Class<FROM> fromClass, Class<TO> toClass);
 }

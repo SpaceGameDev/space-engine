@@ -1,14 +1,17 @@
 package space.util.conversion.delegate;
 
+import space.util.baseobject.ToString;
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Map;
 
 /**
  * Is threadsafe if the internal {@link Map} is threadsafe.
  */
-public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> {
+public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> implements ToString {
 	
 	public ConverterMap<MINFROM, MINTO> def;
 	
@@ -23,5 +26,18 @@ public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterM
 		if (conv != null)
 			return conv;
 		return def.getConverter(fromClass, toClass);
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("map", this.map);
+		tsh.add("def", this.def);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }
