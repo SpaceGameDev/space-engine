@@ -17,7 +17,7 @@ import static space.util.ArrayUtils.getSafeO;
 public class MonofontTableCreatorIncludingTable extends MonofontTableCreatorSingleCharTable {
 	
 	@SuppressWarnings("unused")
-	public static IMonofontTableCreator DEFAULT = new MonofontTableCreatorIncludingTable('|', '-', '+');
+	public static MonofontTableCreator DEFAULT = new MonofontTableCreatorIncludingTable('|', '-', '+');
 	
 	public boolean allowIncluding = true;
 	

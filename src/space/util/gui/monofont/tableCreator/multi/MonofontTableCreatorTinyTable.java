@@ -13,7 +13,7 @@ import static space.util.ArrayUtils.getSafeO;
 /**
  * makes a table with only a left-right separator
  */
-public class MonofontTableCreatorTinyTable implements IMonofontTableCreator {
+public class MonofontTableCreatorTinyTable implements MonofontTableCreator {
 	
 	@SuppressWarnings("unused")
 	public static MonofontTableCreatorTinyTable DEFAULT = new MonofontTableCreatorTinyTable('|');

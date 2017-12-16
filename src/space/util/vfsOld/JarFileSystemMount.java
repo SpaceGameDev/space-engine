@@ -1,4 +1,4 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.string.builder.IStringBuilder;
 

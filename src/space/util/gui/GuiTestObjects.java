@@ -2,7 +2,6 @@ package space.util.gui;
 
 import space.util.baseobject.ToString;
 import space.util.gui.monofont.MonofontGuiApi;
-import space.util.gui.tshImpl.ToStringHelperGuiWrapper;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -10,7 +9,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 public class GuiTestObjects {
 	
 	public static void main(String[] args) {
-		ToStringHelper.setDefault(new ToStringHelperGuiWrapper<>(MonofontGuiApi.INSTANCE));
+		ToStringHelper.setDefault(MonofontGuiApi.TSH);
 //		System.out.println(new Dependency("test", new String[] {"before"}, new String[] {"after", "last"}));
 		TestObj1 th = new TestObj1("Name thing", new String2D(new String[] {"Hello there!", "I'm a Name Thing"}));
 		System.out.println(th);

@@ -1,8 +1,8 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.*;
 
-public abstract class FileSystemMount extends Thing {
+public abstract class FileSystemMount extends Entry {
 	
 	public String location;
 	public String splitRegex;

@@ -15,11 +15,11 @@ import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public class AbstractGuiToStringHelper<T extends GuiElement> implements ToStringHelper<T> {
+public class AbstractGuiToStringHelperApi<T extends GuiElement> implements ToStringHelper<T> {
 	
 	public final GuiApi api;
 	
-	public AbstractGuiToStringHelper(GuiApi api) {
+	public AbstractGuiToStringHelperApi(GuiApi api) {
 		this.api = api;
 	}
 	

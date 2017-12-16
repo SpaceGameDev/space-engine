@@ -13,11 +13,13 @@ import space.util.gui.monofont.elements.direction.MonofontRow;
 import space.util.gui.monofont.elements.direction.MonofontTable;
 import space.util.gui.monofont.elements.text.MonofontText1D;
 import space.util.gui.monofont.elements.text.MonofontText2D;
+import space.util.gui.monofont.tsh.MonofontToStringHelper;
 import space.util.gui.monofont.tsh.elements.MonofontTSHArray;
 import space.util.gui.monofont.tsh.elements.MonofontTSHMapper;
 import space.util.gui.monofont.tsh.elements.MonofontTSHModifier;
+import space.util.gui.monofont.tsh.elements.MonofontTSHObjects;
 import space.util.gui.monofont.tsh.elements.MonofontTSHTable;
-import space.util.gui.tsh.elements.GuiToStringHelperApiCreator;
+import space.util.gui.tsh.GuiToStringHelperApiCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperModifierCreator;
@@ -28,7 +30,7 @@ import space.util.string.toStringHelper.ToStringHelper;
 public class MonofontGuiApi extends AbstractGuiApi {
 	
 	public static final MonofontGuiApi INSTANCE = new MonofontGuiApi();
-	public static final ToStringHelper<?> TSH = INSTANCE.get(GuiToStringHelperApiCreator.class).create();
+	public static final ToStringHelper<?> TSH = new MonofontToStringHelper(INSTANCE);
 	
 	protected MonofontGuiApi() {
 		//direction
@@ -42,11 +44,11 @@ public class MonofontGuiApi extends AbstractGuiApi {
 		addElements(MonofontText2D.CREATOR, GuiText2DCreator.class);
 		
 		//tsh
-		addElement(null, GuiToStringHelperApiCreator.class);
+		addElement((GuiToStringHelperApiCreator) () -> TSH, GuiToStringHelperApiCreator.class);
 		addElement(MonofontTSHArray.CREATOR, GuiToStringHelperArrayCreator.class);
 		addElement(MonofontTSHMapper.CREATOR, GuiToStringHelperMapperCreator.class);
 		addElement(MonofontTSHModifier.CREATOR, GuiToStringHelperModifierCreator.class);
-		addElement(null, GuiToStringHelperObjectsCreator.class);
+		addElement(MonofontTSHObjects.CREATOR, GuiToStringHelperObjectsCreator.class);
 		addElement(MonofontTSHTable.CREATOR, GuiToStringHelperTableCreator.class);
 	}
 	

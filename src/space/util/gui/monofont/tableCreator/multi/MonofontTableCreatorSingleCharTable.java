@@ -13,10 +13,10 @@ import static space.util.ArrayUtils.getSafeO;
 /**
  * makes a table with full borders out of single characters
  */
-public class MonofontTableCreatorSingleCharTable implements IMonofontTableCreator {
+public class MonofontTableCreatorSingleCharTable implements MonofontTableCreator {
 	
 	@SuppressWarnings("unused")
-	public static IMonofontTableCreator DEFAULT = new MonofontTableCreatorSingleCharTable('|', '-', '+');
+	public static MonofontTableCreator DEFAULT = new MonofontTableCreatorSingleCharTable('|', '-', '+');
 	
 	public char fillChar;
 	public char lineUpDown;

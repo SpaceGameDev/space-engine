@@ -1,4 +1,4 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.string.builder.IStringBuilder;
 import spaceOld.util.string.builder.layered.LayeredStringBuilder;
@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class Thing {
+public abstract class Entry {
 	
 	public String name;
 	
-	public Thing(String name) {
+	public Entry(String name) {
 		this.name = name;
 	}
 	

@@ -1,4 +1,4 @@
-package space.util.gui.tsh.elements;
+package space.util.gui.tsh;
 
 import space.util.gui.GuiCreator;
 import space.util.string.toStringHelper.ToStringHelper;

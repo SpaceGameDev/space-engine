@@ -4,7 +4,7 @@ import space.util.gui.GuiElement;
 import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
-import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
+import space.util.gui.monofont.tableCreator.multi.MonofontTableCreator;
 import space.util.gui.monofont.tableCreator.multi.MonofontTableCreatorNoBorder;
 import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator.GuiToStringHelperMapper;
@@ -23,7 +23,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 	public String name;
 	public CharSequence2D separator;
 	public boolean align;
-	public IMonofontTableCreator style = MonofontTableCreatorNoBorder.DEFAULT;
+	public MonofontTableCreator style = MonofontTableCreatorNoBorder.DEFAULT;
 	public IndexMap<Entry> table = new IndexMapArray<>();
 	
 	public MonofontTSHMapper(String name, CharSequence2D separator, boolean align) {

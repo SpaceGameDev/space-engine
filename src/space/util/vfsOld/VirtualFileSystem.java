@@ -1,4 +1,4 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.string.builder.IStringBuilder;
 
@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class VirtualFileSystem extends Thing {
+public class VirtualFileSystem extends Entry {
 	
 	public String splitRegex;
-	public Thing rootFolder;
+	public Entry rootFolder;
 	
-	public VirtualFileSystem(String splitRegex, Thing th) {
+	public VirtualFileSystem(String splitRegex, Entry th) {
 		this(splitRegex);
 		setRootFolder(rootFolder);
 	}
@@ -26,7 +26,7 @@ public class VirtualFileSystem extends Thing {
 		this("/");
 	}
 	
-	public VirtualFileSystem setRootFolder(Thing rootFolder) {
+	public VirtualFileSystem setRootFolder(Entry rootFolder) {
 		this.rootFolder = rootFolder;
 		rootFolder.name = "root";
 		return this;

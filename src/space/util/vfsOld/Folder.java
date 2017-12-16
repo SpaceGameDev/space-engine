@@ -1,4 +1,4 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.string.builder.IStringBuilder;
 
@@ -10,21 +10,21 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Folder extends Thing {
+public class Folder extends Entry {
 	
-	public HashMap<String, Thing> list = new HashMap<>();
+	public HashMap<String, Entry> list = new HashMap<>();
 	
 	public Folder(String name) {
 		super(name);
 	}
 	
-	public void add(Thing th) {
+	public void add(Entry th) {
 		list.put(th.name, th);
 	}
 	
-	public Thing get(int index, String[] path) throws FileNotFoundException {
+	public Entry get(int index, String[] path) throws FileNotFoundException {
 		String name = path[index];
-		Thing th = list.get(name);
+		Entry th = list.get(name);
 		if (th == null)
 			throw new FileNotFoundException("Invalid Path " + Arrays.toString(path) + ": name " + name + " not existent in Folder " + this.name);
 		return th;
@@ -52,7 +52,7 @@ public class Folder extends Thing {
 		b.append(name);
 		b.nextLine();
 		int spacesNew = spaces + 1;
-		for (Thing th : list.values()) {
+		for (Entry th : list.values()) {
 			th.tree(b, spacesNew);
 		}
 	}

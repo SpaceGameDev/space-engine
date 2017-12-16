@@ -3,14 +3,14 @@ package space.util.gui.monofont.elements.direction;
 import space.util.gui.elements.direction.GuiDirectionalCreator;
 import space.util.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
 import space.util.gui.elements.text.GuiText1DCreator;
-import space.util.gui.monofont.IMonofontWithTableCreator;
 import space.util.gui.monofont.MonofontIncluding;
 import space.util.gui.monofont.elements.text.MonofontText1D;
-import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
-import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreator;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreator.ColumnDirection;
+import space.util.gui.monofont.tableCreator.MonofontWithColumnCreator;
 import space.util.string.CharSequence2D;
 
-public class MonofontDirectional extends MonofontElementList implements GuiDirectional, IMonofontWithTableCreator {
+public class MonofontDirectional extends MonofontElementList implements GuiDirectional, MonofontWithColumnCreator {
 	
 	static {
 		MonofontIncluding.toIncludeList.add(MonofontDirectional.class);
@@ -18,24 +18,25 @@ public class MonofontDirectional extends MonofontElementList implements GuiDirec
 	
 	public static final GuiText1DCreator CREATOR = MonofontText1D::new;
 	
-	public IMonofontTableCreator style;
-	protected boolean isRowLike;
+	public MonofontColumnCreator style;
+	protected ColumnDirection directionCache;
 	
-	public boolean isRowLike() {
+	//direction
+	public ColumnDirection direction() {
 		rebuild();
-		return isRowLike;
+		return directionCache;
 	}
 	
-	protected void calcIsRowLike() {
+	protected ColumnDirection calcDirection() {
 		if (parent == null)
-			isRowLike = true;
+			return ColumnDirection.VERTICAL;
 		if (parent instanceof MonofontDirectional)
-			isRowLike = !((MonofontDirectional) parent).isRowLike();
+			return ((MonofontDirectional) parent).direction().opposite();
 		if (parent instanceof MonofontColumn)
-			isRowLike = true;
+			return ColumnDirection.VERTICAL;
 		if (parent instanceof MonofontRow)
-			isRowLike = false;
-		isRowLike = true;
+			return ColumnDirection.HORIZONTAL;
+		return ColumnDirection.VERTICAL;
 	}
 	
 	@Override
@@ -44,13 +45,13 @@ public class MonofontDirectional extends MonofontElementList implements GuiDirec
 	}
 	
 	@Override
-	public void setMonofontTableCreator(IMonofontTableCreator style) {
+	public void setMonofontColumnCreator(MonofontColumnCreator style) {
 		this.style = style;
 	}
 	
 	@Override
 	public CharSequence2D rebuild0() {
-		calcIsRowLike();
-		return style.makeTable("", this, new IndexMultiMapFrom1DIndexMap<>(buildList(), false, isRowLike() ? 0 : 1));
+		directionCache = calcDirection();
+		return style.makeTable("", this, directionCache, buildList());
 	}
 }

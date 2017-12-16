@@ -11,9 +11,9 @@ import space.util.string.builder.CharBufferBuilder2D;
 import static space.util.ArrayUtils.getSafeO;
 
 /**
- * makes a table with only a left-right separator
+ * makes a table with no borders
  */
-public class MonofontTableCreatorNoBorder implements IMonofontTableCreator {
+public class MonofontTableCreatorNoBorder implements MonofontTableCreator {
 	
 	@SuppressWarnings("unused")
 	public static MonofontTableCreatorNoBorder DEFAULT = new MonofontTableCreatorNoBorder();

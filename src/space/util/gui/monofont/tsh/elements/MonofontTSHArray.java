@@ -3,6 +3,7 @@ package space.util.gui.monofont.tsh.elements;
 import space.util.gui.GuiCreator;
 import space.util.gui.monofont.elements.direction.MonofontElementList;
 import space.util.gui.monofont.tableCreator.MonofontColumnCreator;
+import space.util.gui.monofont.tableCreator.MonofontColumnCreator.ColumnDirection;
 import space.util.gui.monofont.tableCreator.MonofontColumnCreatorArray;
 import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperArrayCreator.ToStringHelperArray;
@@ -29,6 +30,6 @@ public class MonofontTSHArray extends MonofontElementList implements ToStringHel
 	
 	@Override
 	public CharSequence2D rebuild0() {
-		return style.makeTable(type.getName() + "[]", this, buildList());
+		return style.makeTable(type.getName() + "[]", this, ColumnDirection.VERTICAL, buildList());
 	}
 }

@@ -5,18 +5,18 @@ import space.util.gui.GuiElement;
 import space.util.gui.elements.direction.GuiTableCreator;
 import space.util.gui.elements.direction.GuiTableCreator.GuiTable;
 import space.util.gui.exception.IllegalGuiElementException;
-import space.util.gui.monofont.IMonofontWithTableCreator;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
 import space.util.gui.monofont.MonofontIncluding;
-import space.util.gui.monofont.tableCreator.multi.IMonofontTableCreator;
+import space.util.gui.monofont.tableCreator.multi.MonofontTableCreator;
 import space.util.gui.monofont.tableCreator.multi.MonofontTableCreatorDefault;
+import space.util.gui.monofont.tableCreator.multi.MonofontWithTableCreator;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.util.indexmap.multi.IndexMultiMap2D;
 import space.util.string.CharSequence2D;
 
-public class MonofontTable extends MonofontGuiElementCaching implements GuiTable, IMonofontWithTableCreator {
+public class MonofontTable extends MonofontGuiElementCaching implements GuiTable, MonofontWithTableCreator {
 	
 	static {
 		MonofontIncluding.toIncludeList.add(MonofontTable.class);
@@ -24,11 +24,11 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 	
 	public static final GuiTableCreator CREATOR = MonofontTable::new;
 	
-	public IMonofontTableCreator style = MonofontTableCreatorDefault.STYLE_DEFAULT;
+	public MonofontTableCreator style = MonofontTableCreatorDefault.STYLE_DEFAULT;
 	public IndexMultiMap<MonofontGuiElement> table = new IndexMultiMap2D<>();
 	
 	@Override
-	public void setMonofontTableCreator(IMonofontTableCreator style) {
+	public void setMonofontTableCreator(MonofontTableCreator style) {
 		this.style = style;
 	}
 	

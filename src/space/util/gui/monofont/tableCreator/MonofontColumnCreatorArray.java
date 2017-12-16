@@ -36,7 +36,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	}
 	
 	@Override
-	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, IndexMap<CharSequence2D> elements) {
+	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, ColumnDirection direction, IndexMap<CharSequence2D> elements) {
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
 		Iteratorable<IndexMapEntry<CharSequence2D>> iter = elements.tableIterator();

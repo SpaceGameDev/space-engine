@@ -1,4 +1,4 @@
-package space.util.vfs;
+package space.util.vfsOld;
 
 import spaceOld.util.string.builder.IStringBuilder;
 
@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class ReadOnlyThing extends Thing {
+public class ReadOnlyEntry extends Entry {
 	
-	public Thing th;
+	public Entry th;
 	
-	public ReadOnlyThing(Thing th) {
+	public ReadOnlyEntry(Entry th) {
 		super(th.name);
 		this.th = th;
 	}

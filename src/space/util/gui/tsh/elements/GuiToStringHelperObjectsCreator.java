@@ -13,10 +13,9 @@ public interface GuiToStringHelperObjectsCreator extends GuiCreator {
 	 * @param obj the {@link Object} to create an Instance for
 	 * @return the new {@link ToStringHelperObjects}
 	 */
-	ToStringHelperObjects create(Object obj, ToStringHelper helper);
+	ToStringHelperObjects create(Object obj, ToStringHelper<? extends GuiElement> helper);
 	
-	interface ToStringHelperObjects extends GuiElement {
-		
-		ToStringHelperObjectsInstance<ToStringHelperObjects> getTSH();
+	interface ToStringHelperObjects extends GuiElement, ToStringHelperObjectsInstance<GuiElement> {
+	
 	}
 }

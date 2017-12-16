@@ -1,13 +1,13 @@
-package space.util.gui.monofont.objectsCreator;
+package space.util.gui.monofont.tsh.objectsCreator;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.gui.monofont.MonofontGuiElement;
-import space.util.gui.monofont.elements.tshOld.MonofontObjects;
 import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.math.MathUtils;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder2D;
+import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.util.string.toStringHelper.AbstractToStringHelperObjectsInstance.Entry;
 
 import java.util.ListIterator;
@@ -15,10 +15,9 @@ import java.util.ListIterator;
 /**
  * makes a table with full borders out of single characters
  */
-public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
+public class MonofontTSHObjectsCreatorImpl implements MonofontTSHObjectsCreator {
 	
-	@SuppressWarnings("unused")
-	public static MonofontObjectsCreator INSTANCE = new MonofontObjectsCreatorImpl('|', '-', '+', ": ");
+	public static final MonofontTSHObjectsCreator DEFAULT = new MonofontTSHObjectsCreatorImpl('|', '-', '+', ": ");
 	
 	public char fillChar;
 	public char lineUpDown;
@@ -26,11 +25,11 @@ public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 	public char cross;
 	public String separator;
 	
-	public MonofontObjectsCreatorImpl(char lineUpDown, char lineLeftRight, char cross, String separator) {
+	public MonofontTSHObjectsCreatorImpl(char lineUpDown, char lineLeftRight, char cross, String separator) {
 		this(' ', lineUpDown, lineLeftRight, cross, separator);
 	}
 	
-	public MonofontObjectsCreatorImpl(char fillChar, char lineUpDown, char lineLeftRight, char cross, String separator) {
+	public MonofontTSHObjectsCreatorImpl(char fillChar, char lineUpDown, char lineLeftRight, char cross, String separator) {
 		this.fillChar = fillChar;
 		this.lineUpDown = lineUpDown;
 		this.lineLeftRight = lineLeftRight;
@@ -38,13 +37,12 @@ public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 		this.separator = separator;
 	}
 	
-	@Override
-	public CharSequence2D makeTable(MonofontObjects monofontObjects) {
-		String className = monofontObjects.tsh.object.getClass().getName();
+	public CharSequence2D makeTable(AbstractToStringHelperObjectsInstance<MonofontGuiElement> monofontObjects) {
+		String className = monofontObjects.object.getClass().getName();
 		
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		ListIterator<Entry<MonofontGuiElement>> iter = monofontObjects.tsh.list.listIterator();
+		ListIterator<Entry<MonofontGuiElement>> iter = monofontObjects.list.listIterator();
 		for (Entry<MonofontGuiElement> elem : Iteratorable.toIteratorable(iter)) {
 			int index = iter.previousIndex();
 			axis.put(new int[] {index, 0}, new int[] {1, elem.name.length()});
@@ -65,7 +63,7 @@ public class MonofontObjectsCreatorImpl implements MonofontObjectsCreator {
 		
 		//entries
 		int index = 0;
-		iter = monofontObjects.tsh.list.listIterator();
+		iter = monofontObjects.list.listIterator();
 		for (Entry<MonofontGuiElement> elem : Iteratorable.toIteratorable(iter)) {
 			index = iter.previousIndex();
 			int starty = axis.getIndex(0, index) + 1;
