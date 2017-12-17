@@ -2,19 +2,19 @@ package space.util.vfs.virtual;
 
 import space.util.delegate.collection.SetCast;
 import space.util.vfs.AbstractEntry;
-import space.util.vfs.interfaces.Directory;
 import space.util.vfs.interfaces.Entry;
+import space.util.vfs.interfaces.Folder;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class VirtualDirectory extends AbstractEntry implements Directory {
+public class VirtualFolder extends AbstractEntry implements Folder {
 	
 	protected Map<String, Entry> list = new HashMap<>();
 	
-	public VirtualDirectory(String name) {
+	public VirtualFolder(String name) {
 		super(name);
 	}
 	

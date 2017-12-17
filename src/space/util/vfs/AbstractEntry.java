@@ -1,14 +1,14 @@
 package space.util.vfs;
 
-import space.util.vfs.interfaces.Directory;
 import space.util.vfs.interfaces.Entry;
+import space.util.vfs.interfaces.Folder;
 
 import java.util.Objects;
 
 public class AbstractEntry implements Entry {
 	
 	protected String name;
-	protected Directory parent;
+	protected Folder parent;
 	
 	public AbstractEntry(String name) {
 		this.name = name;
@@ -27,12 +27,12 @@ public class AbstractEntry implements Entry {
 	
 	//parent
 	@Override
-	public void setParent(Directory parent) {
+	public void setParent(Folder parent) {
 		this.parent = parent;
 	}
 	
 	@Override
-	public Directory getParent() {
+	public Folder getParent() {
 		return parent;
 	}
 	

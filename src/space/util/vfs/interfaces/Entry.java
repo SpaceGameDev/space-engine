@@ -23,12 +23,12 @@ public interface Entry {
 	/**
 	 * @param parent the new parent of this file
 	 */
-	void setParent(Directory parent);
+	void setParent(Folder parent);
 	
 	/**
 	 * @return the parent of this file, or null if it is the root
 	 */
-	Directory getParent();
+	Folder getParent();
 	
 	//path
 	
@@ -40,7 +40,7 @@ public interface Entry {
 	}
 	
 	default String[] resolvePathOfFile(int depth) {
-		Directory parent = getParent();
+		Folder parent = getParent();
 		
 		if (parent == null) {
 			String[] str = new String[depth];
