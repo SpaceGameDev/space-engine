@@ -1,24 +1,10 @@
 package space.util.number.integer;
 
-import space.engine.number.base.BigNumberSigned;
-import space.engine.number.base.INumberSimple;
-import space.util.creatorOld.Creator;
-import spaceOld.util.string.builder.IStringBuilder;
-import spaceOld.util.string.builder.LayeredToString;
+import space.util.number.base.NumberAddSub;
+import space.util.number.big.BigNumberSigned;
 
-public class NumberBigInteger extends IInteger<NumberBigInteger> implements INumberSimple<NumberBigInteger>, LayeredToString {
+public class NumberBigInteger extends IInteger<NumberBigInteger> implements NumberAddSub<NumberBigInteger> {
 	
-	public static final Creator<NumberBigInteger> CREATOR = new Creator<NumberBigInteger>() {
-		@Override
-		public NumberBigInteger create() {
-			return new NumberBigInteger();
-		}
-		
-		@Override
-		public NumberBigInteger[] createArray(int size) {
-			return new NumberBigInteger[size];
-		}
-	};
 	public BigNumberSigned n;
 	
 	//constructor
@@ -40,11 +26,6 @@ public class NumberBigInteger extends IInteger<NumberBigInteger> implements INum
 	
 	public NumberBigInteger(long magnitude) {
 		this(new BigNumberSigned(magnitude));
-	}
-	
-	@Override
-	public Creator<NumberBigInteger> creator() {
-		return CREATOR;
 	}
 	
 	public long getCapacityBits() {
@@ -80,6 +61,17 @@ public class NumberBigInteger extends IInteger<NumberBigInteger> implements INum
 		return this;
 	}
 	
+	//can't have overflow, as it will expand automatically
+	@Override
+	public NumberBigInteger add(NumberBigInteger b, int[] overflow) {
+		return add(b);
+	}
+	
+	@Override
+	public NumberBigInteger sub(NumberBigInteger b, int[] overflow) {
+		return sub(b);
+	}
+	
 	@Override
 	public NumberBigInteger negate() {
 		n.negate();
@@ -91,14 +83,8 @@ public class NumberBigInteger extends IInteger<NumberBigInteger> implements INum
 		return this;
 	}
 	
-	//toString
-	@Override
-	public void toStringLayered(IStringBuilder sb) {
-		n.toStringLayered(sb);
-	}
-	
 	@Override
 	public String toString() {
-		return n.toString0();
+		return n.toString();
 	}
 }

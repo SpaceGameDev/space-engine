@@ -1,5 +1,7 @@
 package space.util.math;
 
+import space.util.primitive.PrimitiveType;
+
 public class FixedPointMath {
 	
 	public static final long bitMaskBit33 = 0x100000000L;
@@ -7,14 +9,14 @@ public class FixedPointMath {
 	public static int add31(int a, int b, int[] overflow) {
 		int r = a + b;
 		if (((a ^ r) & (b ^ r)) < 0)
-			overflow[0] += (r & PrimitiveInteger.int32MaskSign) == 0 ? -1 : 1;
+			overflow[0] += (r & PrimitiveType.INT32.MASK_SIGN) == 0 ? -1 : 1;
 		return r;
 	}
 	
 	public static int sub31(int a, int b, int[] overflow) {
 		int r = a - b;
 		if (((a ^ b) & (a ^ r)) < 0)
-			overflow[0] += (r & PrimitiveInteger.int32MaskSign) == 0 ? -1 : 1;
+			overflow[0] += (r & PrimitiveType.INT32.MASK_SIGN) == 0 ? -1 : 1;
 		return r;
 	}
 	
@@ -35,14 +37,14 @@ public class FixedPointMath {
 	public static long add63(long a, long b, int[] overflow) {
 		long r = a + b;
 		if (((a ^ r) & (b ^ r)) < 0)
-			overflow[0] += (r & PrimitiveInteger.int64MaskSign) == 0 ? -1 : 1;
+			overflow[0] += (r & PrimitiveType.INT64.MASK_SIGN) == 0 ? -1 : 1;
 		return r;
 	}
 	
 	public static long sub63(long a, long b, int[] overflow) {
 		long r = a - b;
 		if (((a ^ b) & (a ^ r)) < 0)
-			overflow[0] += (r & PrimitiveInteger.int64MaskSign) == 0 ? -1 : 1;
+			overflow[0] += (r & PrimitiveType.INT64.MASK_SIGN) == 0 ? -1 : 1;
 		return r;
 	}
 	

@@ -1,5 +1,7 @@
 package space.util.math;
 
+import space.util.primitive.PrimitiveType;
+
 @SuppressWarnings("SameParameterValue")
 public class UnsignedMath {
 	
@@ -88,121 +90,121 @@ public class UnsignedMath {
 	
 	//compare
 	public static int compare(byte x, byte y) {
-		return SignedMath.compare(x + PrimitiveInteger.ByteMaskSign, y + PrimitiveInteger.ByteMaskSign);
+		return SignedMath.compare(x + PrimitiveType.INT8.MASK_SIGN, y + PrimitiveType.INT8.MASK_SIGN);
 	}
 	
 	public static int compare(short x, short y) {
-		return SignedMath.compare(x + PrimitiveInteger.int16MaskSign, y + PrimitiveInteger.int16MaskSign);
+		return SignedMath.compare(x + PrimitiveType.INT16.MASK_SIGN, y + PrimitiveType.INT16.MASK_SIGN);
 	}
 	
 	public static int compare(int x, int y) {
-		return SignedMath.compare(x + PrimitiveInteger.int32MaskSign, y + PrimitiveInteger.int32MaskSign);
+		return SignedMath.compare(x + PrimitiveType.INT32.MASK_SIGN, y + PrimitiveType.INT32.MASK_SIGN);
 	}
 	
 	public static int compare(long x, long y) {
-		return SignedMath.compare(x + PrimitiveInteger.int64MaskSign, y + PrimitiveInteger.int64MaskSign);
+		return SignedMath.compare(x + PrimitiveType.INT64.MASK_SIGN, y + PrimitiveType.INT64.MASK_SIGN);
 	}
 	
 	//isBiggerEquals x >= y
 	public static boolean isBiggerEquals(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign >= y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN >= y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean isBiggerEquals(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign >= y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN >= y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean isBiggerEquals(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign >= y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN >= y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean isBiggerEquals(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign >= y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN >= y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//isBigger x > y
 	public static boolean isBigger(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign > y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN > y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean isBigger(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign > y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN > y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean isBigger(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign > y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN > y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean isBigger(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign > y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN > y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//equals x == y
 	public static boolean equals(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign == y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN == y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean equals(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign == y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN == y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean equals(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign == y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN == y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean equals(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign == y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN == y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//notEquals x != y
 	public static boolean notEquals(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign != y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN != y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean notEquals(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign != y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN != y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean notEquals(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign != y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN != y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean notEquals(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign != y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN != y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//isLess x < y
 	public static boolean isLess(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign < y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN < y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean isLess(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign < y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN < y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean isLess(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign < y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN < y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean isLess(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign < y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN < y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//isLessEquals x <= y
 	public static boolean isLessEquals(byte x, byte y) {
-		return x + PrimitiveInteger.ByteMaskSign <= y + PrimitiveInteger.ByteMaskSign;
+		return x + PrimitiveType.INT8.MASK_SIGN <= y + PrimitiveType.INT8.MASK_SIGN;
 	}
 	
 	public static boolean isLessEquals(short x, short y) {
-		return x + PrimitiveInteger.int16MaskSign <= y + PrimitiveInteger.int16MaskSign;
+		return x + PrimitiveType.INT16.MASK_SIGN <= y + PrimitiveType.INT16.MASK_SIGN;
 	}
 	
 	public static boolean isLessEquals(int x, int y) {
-		return x + PrimitiveInteger.int32MaskSign <= y + PrimitiveInteger.int32MaskSign;
+		return x + PrimitiveType.INT32.MASK_SIGN <= y + PrimitiveType.INT32.MASK_SIGN;
 	}
 	
 	public static boolean isLessEquals(long x, long y) {
-		return x + PrimitiveInteger.int64MaskSign <= y + PrimitiveInteger.int64MaskSign;
+		return x + PrimitiveType.INT64.MASK_SIGN <= y + PrimitiveType.INT64.MASK_SIGN;
 	}
 	
 	//powerOfTwo is
@@ -358,57 +360,57 @@ public class UnsignedMath {
 	
 	//casts to fp
 	public static float toFloatUnsigned(byte i) {
-		float ret = (float) (i & PrimitiveInteger.ByteMaskNumber);
-		if ((i & PrimitiveInteger.ByteMaskSign) != 0)
+		float ret = (float) (i & PrimitiveType.INT8.MASK_NUMBER);
+		if ((i & PrimitiveType.INT8.MASK_SIGN) != 0)
 			ret += 0x1P7f;
 		return ret;
 	}
 	
 	public static float toFloatUnsigned(short i) {
-		float ret = (float) (i & PrimitiveInteger.int16MaskNumber);
-		if ((i & PrimitiveInteger.int16MaskSign) != 0)
+		float ret = (float) (i & PrimitiveType.INT16.MASK_NUMBER);
+		if ((i & PrimitiveType.INT16.MASK_SIGN) != 0)
 			ret += 0x1P15f;
 		return ret;
 	}
 	
 	public static float toFloatUnsigned(int i) {
-		float ret = (float) (i & PrimitiveInteger.int32MaskNumber);
-		if ((i & PrimitiveInteger.int32MaskSign) != 0)
+		float ret = (float) (i & PrimitiveType.INT32.MASK_NUMBER);
+		if ((i & PrimitiveType.INT32.MASK_SIGN) != 0)
 			ret += 0x1P31f;
 		return ret;
 	}
 	
 	public static float toFloatUnsigned(long i) {
-		float ret = (float) (i & PrimitiveInteger.int64MaskNumber);
-		if ((i & PrimitiveInteger.int64MaskSign) != 0)
+		float ret = (float) (i & PrimitiveType.INT64.MASK_NUMBER);
+		if ((i & PrimitiveType.INT64.MASK_SIGN) != 0)
 			ret += 0x1P63f;
 		return ret;
 	}
 	
 	public static double toDoubleUnsigned(byte i) {
-		double ret = (double) (i & PrimitiveInteger.ByteMaskNumber);
-		if ((i & PrimitiveInteger.ByteMaskSign) != 0)
+		double ret = (double) (i & PrimitiveType.INT8.MASK_NUMBER);
+		if ((i & PrimitiveType.INT8.MASK_SIGN) != 0)
 			ret += 0x1P7d;
 		return ret;
 	}
 	
 	public static double toDoubleUnsigned(short i) {
-		double ret = (double) (i & PrimitiveInteger.int16MaskNumber);
-		if ((i & PrimitiveInteger.int16MaskSign) != 0)
+		double ret = (double) (i & PrimitiveType.INT16.MASK_NUMBER);
+		if ((i & PrimitiveType.INT16.MASK_SIGN) != 0)
 			ret += 0x1P15d;
 		return ret;
 	}
 	
 	public static double toDoubleUnsigned(int i) {
-		double ret = (double) (i & PrimitiveInteger.int32MaskNumber);
-		if ((i & PrimitiveInteger.int32MaskSign) != 0)
+		double ret = (double) (i & PrimitiveType.INT32.MASK_NUMBER);
+		if ((i & PrimitiveType.INT32.MASK_SIGN) != 0)
 			ret += 0x1P31d;
 		return ret;
 	}
 	
 	public static double toDoubleUnsigned(long i) {
-		double ret = (double) (i & PrimitiveInteger.int64MaskNumber);
-		if ((i & PrimitiveInteger.int64MaskSign) != 0)
+		double ret = (double) (i & PrimitiveType.INT64.MASK_NUMBER);
+		if ((i & PrimitiveType.INT64.MASK_SIGN) != 0)
 			ret += 0x1P63d;
 		return ret;
 	}

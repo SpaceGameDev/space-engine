@@ -2,7 +2,7 @@ package space.util.number.base;
 
 import space.util.annotation.Self;
 
-public interface INumberBase<@Self SELF extends INumberBase<SELF>> {
+public interface NumberBase<@Self SELF extends NumberBase<SELF>> {
 	
 	@Self
 	SELF set(SELF n);

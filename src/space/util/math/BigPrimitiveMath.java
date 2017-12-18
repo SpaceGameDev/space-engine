@@ -1,5 +1,7 @@
 package space.util.math;
 
+import space.util.primitive.PrimitiveType;
+
 public class BigPrimitiveMath {
 	
 	//int[] array from primitive
@@ -35,28 +37,28 @@ public class BigPrimitiveMath {
 	//signed
 	//FIXME: if number is negative, rest bits have to be filled with 0xFF
 	public static int[] intArrayFromByteSigned(byte i2) {
-		int i = i2 & PrimitiveInteger.int32MaskNumber;
+		int i = i2 & PrimitiveType.INT8.MASK_NUMBER;
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromShortSigned(short i2) {
-		int i = i2 & PrimitiveInteger.int32MaskNumber;
+		int i = i2 & PrimitiveType.INT16.MASK_NUMBER;
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromIntSigned(int i2) {
-		int i = i2 & PrimitiveInteger.int32MaskNumber;
+		int i = i2 & PrimitiveType.INT32.MASK_NUMBER;
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromLongSigned(long l2) {
-		long l = l2 & PrimitiveInteger.int64MaskNumber;
+		long l = l2 & PrimitiveType.INT64.MASK_NUMBER;
 		if (Long.compareUnsigned(l, 0x0L) == 0)
 			return new int[0];
 		if (Long.compareUnsigned(l, 0xFFFFFFFFL) != 1)
@@ -120,19 +122,19 @@ public class BigPrimitiveMath {
 	
 	//signed
 	public static byte byteFromIntArraySigned(int[] v, boolean sign) {
-		return (byte) ((intFromIntArrayUnsigned(v) & PrimitiveInteger.ByteMaskNumber) | (sign ? 0 : PrimitiveInteger.ByteMaskSign));
+		return (byte) ((intFromIntArrayUnsigned(v) & PrimitiveType.INT8.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT8.MASK_SIGN));
 	}
 	
 	public static short shortFromIntArraySigned(int[] v, boolean sign) {
-		return (short) ((longFromIntArrayUnsigned(v) & PrimitiveInteger.int16MaskNumber) | (sign ? 0 : PrimitiveInteger.int16MaskSign));
+		return (short) ((intFromIntArrayUnsigned(v) & PrimitiveType.INT16.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT16.MASK_SIGN));
 	}
 	
 	public static int intFromIntArraySigned(int[] v, boolean sign) {
-		return (intFromIntArrayUnsigned(v) & PrimitiveInteger.int32MaskNumber) | (sign ? 0 : PrimitiveInteger.int32MaskSign);
+		return (intFromIntArrayUnsigned(v) & PrimitiveType.INT32.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT32.MASK_SIGN);
 	}
 	
 	public static long longFromIntArraySigned(int[] v, boolean sign) {
-		return (longFromIntArrayUnsigned(v) & PrimitiveInteger.int64MaskNumber) | (sign ? 0 : PrimitiveInteger.int64MaskSign);
+		return (longFromIntArrayUnsigned(v) & PrimitiveType.INT64.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT64.MASK_SIGN);
 	}
 	
 	//fixed
@@ -161,18 +163,18 @@ public class BigPrimitiveMath {
 	
 	//getSign
 	public static boolean getSign(byte b) {
-		return (b & PrimitiveInteger.ByteMaskSign) == 0;
+		return (b & PrimitiveType.INT8.MASK_SIGN) == 0;
 	}
 	
 	public static boolean getSign(short b) {
-		return (b & PrimitiveInteger.ByteMaskSign) == 0;
+		return (b & PrimitiveType.INT16.MASK_SIGN) == 0;
 	}
 	
 	public static boolean getSign(int b) {
-		return (b & PrimitiveInteger.ByteMaskSign) == 0;
+		return (b & PrimitiveType.INT32.MASK_SIGN) == 0;
 	}
 	
 	public static boolean getSign(long b) {
-		return (b & PrimitiveInteger.ByteMaskSign) == 0;
+		return (b & PrimitiveType.INT64.MASK_SIGN) == 0;
 	}
 }

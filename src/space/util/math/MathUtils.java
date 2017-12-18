@@ -224,6 +224,50 @@ public class MathUtils {
 		return Math.ceil(v);
 	}
 	
+	public static byte pow(byte base, byte exp) {
+		byte result = 1;
+		while (exp != 0) {
+			if ((exp & 1) != 0)
+				result *= base;
+			exp >>= 1;
+			base *= base;
+		}
+		return result;
+	}
+	
+	public static short pow(short base, short exp) {
+		short result = 1;
+		while (exp != 0) {
+			if ((exp & 1) != 0)
+				result *= base;
+			exp >>= 1;
+			base *= base;
+		}
+		return result;
+	}
+	
+	public static int pow(int base, int exp) {
+		int result = 1;
+		while (exp != 0) {
+			if ((exp & 1) != 0)
+				result *= base;
+			exp >>= 1;
+			base *= base;
+		}
+		return result;
+	}
+	
+	public static long pow(long base, long exp) {
+		long result = 1;
+		while (exp != 0) {
+			if ((exp & 1) != 0)
+				result *= base;
+			exp >>= 1;
+			base *= base;
+		}
+		return result;
+	}
+	
 	public static int getMultiplyOf(int... numbers) {
 		int ret = 1;
 		Arrays.sort(numbers);
