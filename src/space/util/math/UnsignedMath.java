@@ -243,11 +243,11 @@ public class UnsignedMath {
 	
 	//powerOfTwo get floor
 	public static int getPowerOfTwoFloor(byte x) {
-		return 31 - numberOfLeadingZeros(x);
+		return 7 - numberOfLeadingZeros(x);
 	}
 	
 	public static int getPowerOfTwoFloor(short x) {
-		return 31 - numberOfLeadingZeros(x);
+		return 15 - numberOfLeadingZeros(x);
 	}
 	
 	public static int getPowerOfTwoFloor(int x) {
@@ -260,11 +260,11 @@ public class UnsignedMath {
 	
 	//powerOfTwo get ceil
 	public static int getPowerOfTwoCeil(byte x) {
-		return 32 - numberOfLeadingZeros(x - 1);
+		return 8 - numberOfLeadingZeros(x - 1);
 	}
 	
 	public static int getPowerOfTwoCeil(short x) {
-		return 32 - numberOfLeadingZeros(x - 1);
+		return 16 - numberOfLeadingZeros(x - 1);
 	}
 	
 	public static int getPowerOfTwoCeil(int x) {

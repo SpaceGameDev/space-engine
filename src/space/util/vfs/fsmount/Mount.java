@@ -4,7 +4,6 @@ import space.util.vfs.AbstractEntry;
 import space.util.vfs.interfaces.Entry;
 import space.util.vfs.interfaces.Folder;
 
-import java.io.IOException;
 import java.util.Set;
 
 public class Mount extends AbstractEntry implements Folder {
@@ -15,12 +14,12 @@ public class Mount extends AbstractEntry implements Folder {
 	}
 	
 	@Override
-	public void add(Entry entry) throws IOException {
+	public void add(Entry entry) {
 	
 	}
 	
 	@Override
-	public void delete(String name) throws IOException {
+	public void delete(String name) {
 	
 	}
 }

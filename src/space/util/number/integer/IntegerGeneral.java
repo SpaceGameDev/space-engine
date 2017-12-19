@@ -1,8 +1,14 @@
 package space.util.number.integer;
 
 import space.util.math.BigMath;
+import space.util.number.format.IIntegerToString;
+import space.util.number.format.IntegerToString;
+
+import java.util.function.Supplier;
 
 public final class IntegerGeneral extends IInteger<IntegerGeneral> {
+	
+	public static Supplier<IIntegerToString> DEFAULT_TO_STRING = () -> IntegerToString.INSTANCE;
 	
 	public boolean sign;
 	public int[] number;

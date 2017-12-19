@@ -222,23 +222,6 @@ public class SignedMath {
 		return x > 0 && (x & (x - 1)) == 0;
 	}
 	
-	//powerOfTwo is fast
-	public static boolean isPowerOfTwoFast(byte x) {
-		return x == 1 || x == 2 || x == 4 || x == 8 || x == 16 || isPowerOfTwo(x);
-	}
-	
-	public static boolean isPowerOfTwoFast(short x) {
-		return x == 1 || x == 2 || x == 4 || x == 8 || x == 16 || isPowerOfTwo(x);
-	}
-	
-	public static boolean isPowerOfTwoFast(int x) {
-		return x == 1 || x == 2 || x == 4 || x == 8 || x == 16 || isPowerOfTwo(x);
-	}
-	
-	public static boolean isPowerOfTwoFast(long x) {
-		return x == 1 || x == 2 || x == 4 || x == 8 || x == 16 || isPowerOfTwo(x);
-	}
-	
 	//powerOfTwo get floor
 	public static int getPowerOfTwoFloor(byte x) {
 		return UnsignedMath.getPowerOfTwoFloor(MathUtils.abs(x));
