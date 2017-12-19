@@ -6,33 +6,37 @@ import space.util.number.format.IntegerToString;
 
 import java.util.function.Supplier;
 
-public final class UnsignedIntegerGeneral extends IUnsignedInteger<UnsignedIntegerGeneral> {
+public final class UnsignedGeneral extends IUnsignedInteger<UnsignedGeneral> {
 	
 	public static Supplier<IIntegerToString> DEFAULT_TO_STRING = () -> IntegerToString.INSTANCE;
 	
 	public int[] number;
 	
-	public UnsignedIntegerGeneral() {
+	public UnsignedGeneral() {
 	}
 	
-	public UnsignedIntegerGeneral(int[] number) {
+	public UnsignedGeneral(int[] number) {
+		this.number = number;
+	}
+	
+	public void set(int[] number) {
 		this.number = number;
 	}
 	
 	@Override
-	public UnsignedIntegerGeneral set(UnsignedIntegerGeneral n) {
+	public UnsignedGeneral set(UnsignedGeneral n) {
 		number = n.number.clone();
 		return this;
 	}
 	
 	@Override
-	public UnsignedIntegerGeneral make() {
-		return new UnsignedIntegerGeneral();
+	public UnsignedGeneral make() {
+		return new UnsignedGeneral();
 	}
 	
 	@Override
-	public UnsignedIntegerGeneral copy() {
-		return new UnsignedIntegerGeneral(number.clone());
+	public UnsignedGeneral copy() {
+		return new UnsignedGeneral(number.clone());
 	}
 	
 	@Override

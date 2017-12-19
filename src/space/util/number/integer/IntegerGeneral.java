@@ -21,6 +21,11 @@ public final class IntegerGeneral extends IInteger<IntegerGeneral> {
 		this.number = number;
 	}
 	
+	public void set(boolean sign, int[] number) {
+		this.sign = sign;
+		this.number = number;
+	}
+	
 	@Override
 	public IntegerGeneral set(IntegerGeneral n) {
 		sign = n.sign;

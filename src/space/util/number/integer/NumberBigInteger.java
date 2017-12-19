@@ -32,6 +32,11 @@ public class NumberBigInteger extends IInteger<NumberBigInteger> implements Numb
 		return n.getCapacityNumberBit();
 	}
 	
+	public void set(boolean sign, int[] number) {
+		n.sign = sign;
+		n.magnitude = number;
+	}
+	
 	@Override
 	public NumberBigInteger set(NumberBigInteger n) {
 		this.n = n.n.copy();

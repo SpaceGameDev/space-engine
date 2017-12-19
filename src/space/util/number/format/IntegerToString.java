@@ -12,6 +12,16 @@ public class IntegerToString implements IIntegerToString {
 	}
 	
 	@Override
+	public String toString(byte n, int radix, int cnt) {
+		return toString((int) n, radix, cnt);
+	}
+	
+	@Override
+	public String toString(short n, int radix, int cnt) {
+		return toString((int) n, radix, cnt);
+	}
+	
+	@Override
 	public String toString(int n, int radix, int cnt) {
 		if (radix == 10)
 			return toStringRadix10(n, cnt);
