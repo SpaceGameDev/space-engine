@@ -257,8 +257,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 			ToStringHelperTable<T> convertFrom = api.createMapper("convertFrom", " -> ", true);
 			int i = 0;
 			for (Entry<Class<? extends MIN>, Path<? extends MIN, NODE>> entry : mapConvertFrom.entrySet()) {
-				convertFrom.put(new int[] {0, i}, api.toString(entry.getKey().getName()));
-				convertFrom.put(new int[] {1, i}, api.toString(entry.getValue()));
+				convertFrom.put(new int[] {i, 0}, api.toString(entry.getKey().getName()));
+				convertFrom.put(new int[] {i, 1}, api.toString(entry.getValue()));
 				i++;
 			}
 			tsh.add("convertFrom", convertFrom);
@@ -266,8 +266,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 			ToStringHelperTable<T> convertTo = api.createMapper("convertTo", " -> ", true);
 			int j = 0;
 			for (Entry<Class<? extends MIN>, Path<? extends MIN, NODE>> entry : mapConvertFrom.entrySet()) {
-				convertTo.put(new int[] {0, j}, api.toString(entry.getKey().getName()));
-				convertTo.put(new int[] {1, j}, api.toString(entry.getValue()));
+				convertTo.put(new int[] {j, 0}, api.toString(entry.getKey().getName()));
+				convertTo.put(new int[] {j, 1}, api.toString(entry.getValue()));
 				j++;
 			}
 			tsh.add("convertTo", convertTo);

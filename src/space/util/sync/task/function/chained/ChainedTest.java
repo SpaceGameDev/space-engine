@@ -1,6 +1,6 @@
 package space.util.sync.task.function.chained;
 
-import space.util.baseobject.InitializationOfStandardObjects;
+import space.util.baseobject.BaseObjectInit;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -23,7 +23,7 @@ public class ChainedTest {
 	
 	public static void main(String[] args) throws Exception {
 		ToStringHelper.setDefault(MonofontGuiApi.TSH);
-		InitializationOfStandardObjects.init();
+		BaseObjectInit.init();
 		try {
 			if (prestart)
 				pool.prestartAllCoreThreads();

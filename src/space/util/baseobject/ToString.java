@@ -7,7 +7,16 @@ import java.util.function.BiFunction;
 
 public interface ToString {
 	
+	/**
+	 * used to have a static-init-function in the interface
+	 */
+	byte zero = BaseObjectInit.init2();
+	
 	ThreadLocalGlobalCachingMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = new ThreadLocalGlobalCachingMap<>();
+	
+	static void init() {
+	
+	}
 	
 	/**
 	 * add a manual entry to the toTSH()-Function map

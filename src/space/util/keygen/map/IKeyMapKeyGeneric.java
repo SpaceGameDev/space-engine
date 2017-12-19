@@ -24,8 +24,6 @@ public interface IKeyMapKeyGeneric<VALUE> extends IKeyMap<VALUE> {
 	
 	<V extends VALUE> V putIfAbsent(IKey<V> key, Supplier<? extends V> v);
 	
-	<V extends VALUE> V replace(IKey<V> key, V newValue);
-	
 	<V extends VALUE> boolean replace(IKey<V> key, V oldValue, V newValue);
 	
 	<V extends VALUE> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);

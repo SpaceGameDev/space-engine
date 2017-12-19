@@ -6,20 +6,20 @@ import space.util.keygen.IKeyGenerator;
 
 import java.util.function.Supplier;
 
-public class KeyMapGeneralGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMapGeneralGeneric<VALUE> {
+public class KeyMapGlobalGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMapGeneralGeneric<VALUE> {
 	
-	public KeyMapGeneralGeneric() {
+	public KeyMapGlobalGeneric() {
 	}
 	
-	public KeyMapGeneralGeneric(IndexMap<VALUE> map) {
+	public KeyMapGlobalGeneric(IndexMap<VALUE> map) {
 		super(map);
 	}
 	
-	public KeyMapGeneralGeneric(IKeyGenerator gen) {
+	public KeyMapGlobalGeneric(IKeyGenerator gen) {
 		super(gen);
 	}
 	
-	public KeyMapGeneralGeneric(IndexMap<VALUE> map, IKeyGenerator gen) {
+	public KeyMapGlobalGeneric(IndexMap<VALUE> map, IKeyGenerator gen) {
 		super(map, gen);
 	}
 	
@@ -70,13 +70,6 @@ public class KeyMapGeneralGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMa
 	public VALUE putIfAbsent(IKey<?> key, Supplier<? extends VALUE> v) {
 		check(key);
 		return map.putIfAbsent(key.getID(), v);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public VALUE replace(IKey<?> key, VALUE newValue) {
-		check(key);
-		return map.replace(key.getID(), newValue);
 	}
 	
 	@Override

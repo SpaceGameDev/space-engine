@@ -116,11 +116,6 @@ public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		return contains(index) ? put(index, newValue) : null;
-	}
-	
-	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		if (Objects.equals(get(index), oldValue)) {
 			put(index, newValue);
@@ -136,11 +131,6 @@ public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 			return true;
 		}
 		return false;
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		return contains(index) ? put(index, newValue.get()) : null;
 	}
 	
 	@Override

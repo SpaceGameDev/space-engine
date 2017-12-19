@@ -83,11 +83,6 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void putAllReplace(IndexMap<VALUE> indexMap) {
-		this.indexMap.get().putAllReplace(indexMap);
-	}
-	
-	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		this.indexMap.get().putAllIfAbsent(indexMap);
 	}
@@ -105,16 +100,6 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
 		return indexMap.get().putIfAbsent(index, v);
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		return indexMap.get().replace(index, newValue);
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		return indexMap.get().replace(index, newValue);
 	}
 	
 	@Override

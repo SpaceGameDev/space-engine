@@ -39,11 +39,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public void putAllReplace(IndexMap<VALUE> indexMap) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
@@ -65,16 +60,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	

@@ -58,17 +58,17 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	public VALUE get(int index) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length)
+		if (index >= array.length)
 			return null;
 		
-		return array[index];
+		return getInternal(index);
 	}
 	
 	@Override
 	public VALUE put(int index, VALUE v) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		return putUnchecked(index, v);
+		return putInternal(index, v);
 	}
 	
 	@Override
@@ -80,10 +80,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	public VALUE remove(int index) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length)
+		if (index >= array.length)
 			return null;
 		
-		return removeUnchecked(index);
+		return removeInternal(index);
 	}
 	
 	@Override
@@ -102,17 +102,17 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	}
 	
 	//access unchecked
-	protected VALUE getUnchecked(int index) {
+	protected VALUE getInternal(int index) {
 		return array[index];
 	}
 	
-	protected VALUE removeUnchecked(int index) {
+	protected VALUE removeInternal(int index) {
 		VALUE ret = array[index];
 		array[index] = null;
 		return ret;
 	}
 	
-	protected VALUE putUnchecked(int index, VALUE v) {
+	protected VALUE putInternal(int index, VALUE v) {
 		ensureCapacityAvailable(index);
 		if (index >= length)
 			length = index + 1;
@@ -146,60 +146,41 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	public VALUE getOrDefault(int index, VALUE def) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length)
+		if (index >= array.length)
 			return def;
 		
-		return getUnchecked(index);
+		VALUE ret = getInternal(index);
+		return ret != null ? ret : def;
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, VALUE v) {
-		if (index < 0)
-			throw new IndexOutOfBoundsException("no negative index!");
-		if (index >= array.length && array[index] != null)
-			return null;
+		VALUE ret = get(index);
+		if (ret != null)
+			return ret;
 		
-		return putUnchecked(index, v);
+		putInternal(index, v);
+		return v;
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		if (index < 0)
-			throw new IndexOutOfBoundsException("no negative index!");
-		if (index >= array.length && array[index] != null)
-			return null;
+		VALUE ret = get(index);
+		if (ret != null)
+			return ret;
 		
-		return putUnchecked(index, v.get());
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		if (index < 0)
-			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length || array[index] == null)
-			return null;
-		
-		return putUnchecked(index, newValue);
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		if (index < 0)
-			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length || array[index] == null)
-			return null;
-		
-		return putUnchecked(index, newValue.get());
+		putInternal(index, ret = v.get());
+		return ret;
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length || array[index] == oldValue)
+		if (index >= array.length || array[index] != oldValue)
 			return false;
 		
-		putUnchecked(index, newValue);
+		putInternal(index, newValue);
 		return true;
 	}
 	
@@ -207,10 +188,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length || array[index] == oldValue)
+		if (index >= array.length || array[index] != oldValue)
 			return false;
 		
-		putUnchecked(index, newValue.get());
+		putInternal(index, newValue.get());
 		return true;
 	}
 	
@@ -218,10 +199,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	public boolean remove(int index, VALUE v) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index > array.length || array[index] != v)
+		if (index >= array.length || array[index] != v)
 			return false;
 		
-		removeUnchecked(index);
+		removeInternal(index);
 		return true;
 	}
 	

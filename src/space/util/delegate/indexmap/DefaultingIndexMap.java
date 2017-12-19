@@ -104,11 +104,6 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	}
 	
 	@Override
-	public void putAllReplace(IndexMap<VALUE> indexMap) {
-		superputAllReplace(indexMap);
-	}
-	
-	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		superputAllIfAbsent(indexMap);
 	}
@@ -126,16 +121,6 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
 		return superputIfAbsent(index, v);
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		return superreplace(index, newValue);
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		return superreplace(index, newValue);
 	}
 	
 	@Override

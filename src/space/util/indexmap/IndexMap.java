@@ -50,10 +50,6 @@ public interface IndexMap<VALUE> extends Iterable<VALUE> {
 		indexMap.tableIterator().forEach(entry -> put(entry.getIndex(), entry.getValue()));
 	}
 	
-	default void putAllReplace(IndexMap<VALUE> indexMap) {
-		indexMap.tableIterator().forEach(entry -> replace(entry.getIndex(), entry::getValue));
-	}
-	
 	default void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		indexMap.tableIterator().forEach(entry -> putIfAbsent(entry.getIndex(), entry::getValue));
 	}
@@ -80,18 +76,6 @@ public interface IndexMap<VALUE> extends Iterable<VALUE> {
 		
 		put(index, c = v.get());
 		return c;
-	}
-	
-	default VALUE replace(int index, VALUE newValue) {
-		if (contains(index))
-			return put(index, newValue);
-		return null;
-	}
-	
-	default VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		if (contains(index))
-			return put(index, newValue.get());
-		return null;
 	}
 	
 	default boolean replace(int index, VALUE oldValue, VALUE newValue) {

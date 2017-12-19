@@ -82,11 +82,6 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public synchronized void putAllReplace(IndexMap<VALUE> indexMap) {
-		super.putAllReplace(indexMap);
-	}
-	
-	@Override
 	public synchronized void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
 	}
@@ -104,16 +99,6 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	@Override
 	public synchronized VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
 		return super.putIfAbsent(index, v);
-	}
-	
-	@Override
-	public synchronized VALUE replace(int index, VALUE newValue) {
-		return super.replace(index, newValue);
-	}
-	
-	@Override
-	public synchronized VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		return super.replace(index, newValue);
 	}
 	
 	@Override

@@ -59,13 +59,6 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public void putAllReplace(IndexMap<VALUE> indexMap) {
-		super.putAllReplace(indexMap);
-		if (indexMap.size() == 0)
-			onModification.run();
-	}
-	
-	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
 		if (indexMap.size() == 0)
@@ -82,20 +75,6 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
 		VALUE ret = super.putIfAbsent(index, v);
-		onModification.run();
-		return ret;
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		VALUE ret = super.replace(index, newValue);
-		onModification.run();
-		return ret;
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		VALUE ret = super.replace(index, newValue);
 		onModification.run();
 		return ret;
 	}

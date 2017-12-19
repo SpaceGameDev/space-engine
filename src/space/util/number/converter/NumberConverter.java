@@ -1,7 +1,9 @@
 package space.util.number.converter;
 
 import space.util.conversion.smart.ConverterSmart;
+import space.util.gui.monofont.MonofontGuiApi;
 import space.util.number.base.NumberBase;
+import space.util.string.toStringHelper.ToStringHelper;
 
 public class NumberConverter {
 	
@@ -16,5 +18,10 @@ public class NumberConverter {
 		
 		new IntegerConverter().accept(conv);
 		new UnsignedConverter().accept(conv);
+	}
+	
+	public static void main(String[] args) {
+		ToStringHelper.setDefault(MonofontGuiApi.TSH);
+		System.out.println(conv);
 	}
 }

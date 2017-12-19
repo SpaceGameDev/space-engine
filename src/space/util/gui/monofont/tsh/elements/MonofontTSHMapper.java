@@ -61,8 +61,13 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 	public CharSequence2D rebuild0() {
 		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
 		for (IndexMapEntry<Entry> entry : table.tableIterator()) {
+			if (entry == null)
+				continue;
+			
 			int index = entry.getIndex();
 			Entry value = entry.getValue();
+			if (value.key == null || value.value == null)
+				throw new NullPointerException("Entry contained null: key: " + value.key + ", value: " + value.value);
 			
 			if (align) {
 				charTable.put(new int[] {index, 0}, value.key.buildSequence2D());

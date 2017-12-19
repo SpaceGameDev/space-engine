@@ -73,13 +73,6 @@ public class KeyMapKeyGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMapKey
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public <V extends VALUE> V replace(IKey<V> key, V newValue) {
-		check(key);
-		return (V) map.replace(key.getID(), newValue);
-	}
-	
-	@Override
 	public <V extends VALUE> boolean replace(IKey<V> key, V oldValue, V newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);

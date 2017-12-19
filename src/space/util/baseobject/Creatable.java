@@ -8,15 +8,23 @@ import java.util.function.Supplier;
 
 import static space.util.GetClass.gClass;
 
-public interface Creatable {
+public final class Creatable {
 	
-	ThreadLocalGlobalCachingMap<Class<?>, Supplier<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
+	public static final ThreadLocalGlobalCachingMap<Class<?>, Supplier<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 		try {
 			return LambdaMetafactoryUtil.metafactoryConstructor(LambdaMetafactoryUtil.PUBLICLOOKUP, clazz);
 		} catch (Throwable ignore) {
 			return null;
 		}
 	});
+	
+	static {
+		BaseObjectInit.init();
+	}
+	
+	static void init() {
+	
+	}
 	
 	/**
 	 * add a manual entry to the create()-Function map
@@ -25,7 +33,7 @@ public interface Creatable {
 	 * @param supplier the function creating the new {@link Object}
 	 * @param <OBJ>    the Object-Type
 	 */
-	static <OBJ> void manualEntry(Class<OBJ> clazz, Supplier<OBJ> supplier) {
+	public static <OBJ> void manualEntry(Class<OBJ> clazz, Supplier<OBJ> supplier) {
 		MAP.globalMap.put(clazz, supplier);
 	}
 	
@@ -37,7 +45,7 @@ public interface Creatable {
 	 * @return the new Instance
 	 * @throws MakeNotSupportedException if creation of an new Instance failed.
 	 */
-	static <OBJ> OBJ create(OBJ obj) throws MakeNotSupportedException {
+	public static <OBJ> OBJ create(OBJ obj) throws MakeNotSupportedException {
 		return create(gClass(obj));
 	}
 	
@@ -50,7 +58,7 @@ public interface Creatable {
 	 * @throws MakeNotSupportedException if creation of an new Instance failed.
 	 */
 	@SuppressWarnings("unchecked")
-	static <OBJ> OBJ create(Class<OBJ> clazz) throws MakeNotSupportedException {
+	public static <OBJ> OBJ create(Class<OBJ> clazz) throws MakeNotSupportedException {
 		Supplier<?> supplier = MAP.get(clazz);
 		if (supplier != null)
 			return (OBJ) supplier.get();

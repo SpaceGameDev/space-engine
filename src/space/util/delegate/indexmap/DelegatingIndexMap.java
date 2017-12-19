@@ -86,11 +86,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void putAllReplace(IndexMap<VALUE> indexMap) {
-		this.indexMap.putAllReplace(indexMap);
-	}
-	
-	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		this.indexMap.putAllIfAbsent(indexMap);
 	}
@@ -108,16 +103,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
 		return indexMap.putIfAbsent(index, v);
-	}
-	
-	@Override
-	public VALUE replace(int index, VALUE newValue) {
-		return indexMap.replace(index, newValue);
-	}
-	
-	@Override
-	public VALUE replace(int index, Supplier<? extends VALUE> newValue) {
-		return indexMap.replace(index, newValue);
 	}
 	
 	@Override
@@ -189,10 +174,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 		IndexMap.super.putAll(indexMap);
 	}
 	
-	protected void superputAllReplace(IndexMap<VALUE> indexMap) {
-		IndexMap.super.putAllReplace(indexMap);
-	}
-	
 	protected void superputAllIfAbsent(IndexMap<VALUE> indexMap) {
 		IndexMap.super.putAllIfAbsent(indexMap);
 	}
@@ -207,14 +188,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	protected VALUE superputIfAbsent(int index, Supplier<? extends VALUE> v) {
 		return IndexMap.super.putIfAbsent(index, v);
-	}
-	
-	protected VALUE superreplace(int index, VALUE newValue) {
-		return IndexMap.super.replace(index, newValue);
-	}
-	
-	protected VALUE superreplace(int index, Supplier<? extends VALUE> newValue) {
-		return IndexMap.super.replace(index, newValue);
 	}
 	
 	protected boolean superreplace(int index, VALUE oldValue, VALUE newValue) {

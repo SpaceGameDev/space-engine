@@ -7,12 +7,21 @@ import java.util.function.BiConsumer;
 
 public interface Setable {
 	
+	/**
+	 * used to have a static-init-function in the interface
+	 */
+	byte zero = BaseObjectInit.init2();
+	
 	ThreadLocalGlobalCachingMap<Class<?>, BiConsumer<?, ?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 		if (Setable.class.isAssignableFrom(clazz))
 			return (Setable obj, Setable to) -> obj.set(to);
 		
 		return null;
 	});
+	
+	static void init() {
+	
+	}
 	
 	/**
 	 * add a manual entry to the set()-Function map

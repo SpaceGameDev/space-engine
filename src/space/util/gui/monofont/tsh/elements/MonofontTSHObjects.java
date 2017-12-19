@@ -52,11 +52,6 @@ public class MonofontTSHObjects extends MonofontGuiElementCaching implements ToS
 	}
 	
 	@Override
-	public String toString() {
-		return tshObjectsInstance.toString();
-	}
-	
-	@Override
 	public void add(String name, byte obj) {
 		tshObjectsInstance.add(name, obj);
 	}
