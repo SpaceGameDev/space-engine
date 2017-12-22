@@ -10,6 +10,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * Synchronizes over the entire {@link Collection}. Frequent access on the {@link Collection} can be problematic.
+ */
 public class SynchronizedCollection<E> extends DelegatingCollection<E> {
 	
 	static {

@@ -18,6 +18,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceCollection#refCreator Reference Creator} supplied with the Constructor or directly set.
+ */
 public class ReferenceCollection<E> implements ToString, Collection<E> {
 	
 	static {
@@ -174,6 +177,7 @@ public class ReferenceCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
+	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean equals(Object obj) {
 		if (obj == this)
 			return true;

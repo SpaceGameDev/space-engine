@@ -13,6 +13,9 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+/**
+ * The {@link UnmodifiableList} makes the {@link List} unmodifiable.
+ */
 public class UnmodifiableList<E> extends DelegatingList<E> {
 	
 	static {

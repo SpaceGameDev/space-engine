@@ -3,6 +3,7 @@ package space.util.delegate.indexmap;
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Cache;
+import space.util.delegate.map.CachingMap;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -12,7 +13,9 @@ import java.util.function.IntFunction;
 import static space.util.delegate.util.CacheUtil.*;
 
 /**
- * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
+ * The {@link CachingMap} tries to get a value from the {@link CachingMap#map}, and when no value has been found, it will get the value from the {@link CachingMap#def}, write it into the local map and return it;
+ * <p>
+ * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
  */
 public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements ToString, Cache {
 	

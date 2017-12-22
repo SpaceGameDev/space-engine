@@ -9,6 +9,8 @@ import java.util.function.Function;
 import static space.util.delegate.util.CacheUtil.*;
 
 /**
+ * The {@link CachingMap} tries to get a value from the {@link CachingMap#map}, and when no value has been found, it will get the value from the {@link CachingMap#def}, write it into the local map and return it;
+ * <p>
  * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
  */
 public class CachingMap<K, V> extends DefaultingMap<K, V> implements Cache {

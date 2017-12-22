@@ -6,6 +6,9 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 import java.util.Iterator;
 
+/**
+ * The {@link ModificationAwareIterator} will call the {@link ModificationAwareIterator#onModification} {@link Runnable} when the {@link Iterator} is modified.
+ */
 public class ModificationAwareIterator<E> extends DelegatingIterator<E> {
 	
 	static {

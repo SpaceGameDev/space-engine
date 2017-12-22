@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Merges multiple {@link Iterator} to one {@link Iterator}.
+ */
 public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	static {
@@ -79,6 +82,7 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	}
 	
 	@Override
+	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
@@ -89,7 +93,6 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		
 		if (next != that.next)
 			return false;
-		// Probably incorrect - comparing Object[] arrays with Arrays.equals
 		if (!Arrays.equals(iterators, that.iterators))
 			return false;
 		return currIter != null ? currIter.equals(that.currIter) : that.currIter == null;
@@ -104,6 +107,7 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	}
 	
 	@Override
+	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iterators", this.iterators);

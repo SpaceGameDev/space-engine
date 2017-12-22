@@ -17,6 +17,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * The {@link DefaultingMap} tries to get a value from the {@link DefaultingMap#map}, and when no value has been found, it will return the value from the {@link DefaultingMap#def};
+ * <p>
+ * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
+ */
 public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	
 	static {
@@ -25,7 +30,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		//noinspection unchecked,RedundantTypeArguments
 		Copyable.<DefaultingMap.KeySet>manualEntry(DefaultingMap.KeySet.class, d -> d);
 		//noinspection unchecked,RedundantTypeArguments
-		Copyable.manualEntry(DefaultingMap.EntrySet.class, d -> d);
+		Copyable.<DefaultingMap.EntrySet>manualEntry(DefaultingMap.EntrySet.class, d -> d);
 	}
 	
 	public Function<K, V> def;

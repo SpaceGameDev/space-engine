@@ -6,6 +6,9 @@ import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Arrays;
 
+/**
+ * A List of Ints
+ */
 public class IntList implements ToString {
 	
 	public static final IntList EMPTY = new IntList(0);
@@ -110,10 +113,7 @@ public class IntList implements ToString {
 			return false;
 		
 		IntList intList = (IntList) o;
-		
-		if (size != intList.size)
-			return false;
-		return Arrays.equals(array, intList.array);
+		return size == intList.size && Arrays.equals(array, intList.array);
 	}
 	
 	@Override

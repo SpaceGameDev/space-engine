@@ -16,6 +16,9 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+/**
+ * The {@link ModificationAwareList} will call the {@link ModificationAwareList#onModification} {@link Runnable} when the {@link List} is modified.
+ */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareList<E> extends DelegatingList<E> {
 	

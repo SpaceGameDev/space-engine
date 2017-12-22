@@ -15,7 +15,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * remaps the VALUE to a Reference
+ * Remaps the Value V to a {@link Reference} of type V. These References are created by the {@link ReferenceMap#refCreator Reference Creator} supplied with the Constructor or directly set.<br>
+ * <br>
+ * If the Key K (and NOT the Value) should be a {@link java.lang.ref.WeakReference}, refer to {@link java.util.WeakHashMap}.
  */
 public class ReferenceMap<K, V> implements Map<K, V> {
 	
@@ -225,11 +227,13 @@ public class ReferenceMap<K, V> implements Map<K, V> {
 	}
 	
 	@Override
+	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (!(o instanceof ReferenceMap))
 			return false;
+		
 		return map.equals(((ReferenceMap<?, ?>) o).map);
 	}
 	

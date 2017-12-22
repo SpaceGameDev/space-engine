@@ -8,6 +8,9 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * A {@link ListIterator} delegating all calls to it's Field {@link SupplierListIterator#iterator}, which is an {@link Supplier} of Type {@link ListIterator}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ */
 public class SupplierListIterator<E> implements ToString, ListIterator<E> {
 	
 	static {

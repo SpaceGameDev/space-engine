@@ -5,6 +5,9 @@ import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.ListIterator;
 
+/**
+ * The {@link UnmodifiableListIterator} makes the {@link ListIterator} unmodifiable.
+ */
 public class UnmodifiableListIterator<E> extends DelegatingListIterator<E> {
 	
 	static {

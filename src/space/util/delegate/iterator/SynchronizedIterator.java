@@ -6,6 +6,9 @@ import space.util.string.toStringHelper.ToStringHelper;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+/**
+ * Synchronizes over the entire {@link Iterator}. Frequent access on the {@link Iterator} can be problematic.
+ */
 public class SynchronizedIterator<E> extends DelegatingIterator<E> {
 	
 	static {

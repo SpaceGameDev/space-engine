@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * A {@link Iteratorable} delegating all calls to it's Field {@link SupplierIterator#i}, which is an {@link Supplier} of Type {@link Iteratorable}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ */
 public class SupplierIterator<E> implements ToString, Iteratorable<E> {
 	
 	static {

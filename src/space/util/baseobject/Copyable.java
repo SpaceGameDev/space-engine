@@ -20,7 +20,7 @@ public final class Copyable {
 	/**
 	 * this may shallow-copy objects, instead of deep-copy!
 	 */
-	public static final UnaryOperator<Setable> SETABLE_UNARY_OPERATOR = obj -> {
+	public static final UnaryOperator<Setable> CREATE_THEN_SET_UNARY_OPERATOR = obj -> {
 		Setable ret = Creatable.create(obj);
 		Setable.set(ret, obj);
 		return ret;
@@ -29,13 +29,13 @@ public final class Copyable {
 	/**
 	 * used internally for adding some {@link Copyable#manualEntry(Class, UnaryOperator) Manual Entries} while {@link Copyable} is initializing
 	 */
-	private static volatile Map<Class<?>, UnaryOperator<?>> INIT_MAP;
+	private static volatile Map<Class<?>, UnaryOperator<?>> WRITE_MAP;
 	public static final ThreadLocalGlobalCachingMap<Class<?>, UnaryOperator<?>> MAP;
 	
 	static {
 		Map<Class<?>, UnaryOperator<?>> startupMap = new ConcurrentHashMap<>();
 		
-		INIT_MAP = startupMap;
+		WRITE_MAP = startupMap;
 		MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 			//constructor with same type as argument, see java.util.ArrayList
 			try {
@@ -48,12 +48,14 @@ public final class Copyable {
 			//this may shallow-copy objects, instead of deep-copy!
 			//create() and then set()
 			if (ALLOW_CREATE_THEN_SET && Setable.class.isAssignableFrom(clazz))
-				return SETABLE_UNARY_OPERATOR;
+				return CREATE_THEN_SET_UNARY_OPERATOR;
 			
 			return null;
 		});
-		INIT_MAP = MAP.globalMap;
-		INIT_MAP.putAll(startupMap);
+		
+		//FIXME: not synchronized!!!
+		WRITE_MAP = MAP.globalMap;
+		WRITE_MAP.putAll(startupMap);
 		
 		BaseObjectInit.init();
 	}
@@ -70,7 +72,7 @@ public final class Copyable {
 	 * @param <OBJ>    the Object-Type
 	 */
 	public static <OBJ> void manualEntry(Class<OBJ> clazz, UnaryOperator<OBJ> function) {
-		INIT_MAP.put(clazz, function);
+		WRITE_MAP.put(clazz, function);
 	}
 	
 	/**

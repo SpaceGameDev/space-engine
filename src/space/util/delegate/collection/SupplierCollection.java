@@ -12,6 +12,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * A {@link Collection} delegating all calls to it's Field {@link SupplierCollection#coll}, which is an {@link Supplier} of Type {@link Collection}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ */
 public class SupplierCollection<E> implements ToString, Collection<E> {
 	
 	static {

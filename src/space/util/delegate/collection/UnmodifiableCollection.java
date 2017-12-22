@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+/**
+ * The {@link UnmodifiableCollection} makes the {@link Collection} unmodifiable.
+ */
 public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	
 	static {

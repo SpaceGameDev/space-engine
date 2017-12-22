@@ -9,6 +9,9 @@ import java.lang.ref.Reference;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+/**
+ * Remaps all Entries to a {@link Reference} of type E. (No Reference Creator is needed here)
+ */
 public class ReferenceIterator<E> implements ToString, Iteratorable<E> {
 	
 	static {

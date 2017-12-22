@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * casts a collection to a Set<br>
- * <b>does not ensure uniqueness of entries</b>
+ * Casts a {@link Collection} to a {@link Set}<br>
+ * <b>Does not ensure uniqueness of entries</b>
  */
 public class SetCast<E> extends DelegatingCollection<E> implements Set<E> {
 	

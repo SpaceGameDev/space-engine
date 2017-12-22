@@ -5,6 +5,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * An abstract {@link Map} for easier overriding of {@link GetOverrideMap#get(Object)} and {@link GetOverrideMap#containsKey(Object)} Methods.
+ */
 public abstract class GetOverrideMap<K, V> extends DelegatingMap<K, V> {
 	
 	public GetOverrideMap(Map<K, V> map) {

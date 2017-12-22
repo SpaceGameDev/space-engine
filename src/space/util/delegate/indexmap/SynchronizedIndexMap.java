@@ -10,6 +10,9 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Synchronizes over the entire {@link IndexMap}. Frequent access on the {@link IndexMap} can be problematic.
+ */
 public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	static {

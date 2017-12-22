@@ -14,6 +14,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Remaps all Entries to a {@link Reference} of type VALUE. These References are created by the {@link ReferenceIndexMap#refCreator Reference Creator} supplied with the Constructor or directly set.
+ */
 public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	static {

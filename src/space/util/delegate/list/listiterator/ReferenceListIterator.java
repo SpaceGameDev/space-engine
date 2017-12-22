@@ -11,6 +11,9 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceListIterator#refCreator Reference Creator} supplied with the Constructor or directly set.
+ */
 public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
 	
 	static {
@@ -81,6 +84,7 @@ public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
 	}
 	
 	@Override
+	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;

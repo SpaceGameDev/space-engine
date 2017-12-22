@@ -10,6 +10,9 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.Collection;
 import java.util.function.Supplier;
 
+/**
+ * The {@link ModificationAwareIndexMap} will call the {@link ModificationAwareIndexMap#onModification} {@link Runnable} when the {@link IndexMap} is modified.
+ */
 public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	static {

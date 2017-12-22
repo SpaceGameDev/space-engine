@@ -11,6 +11,9 @@ import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * The {@link ModificationAwareCollection} will call the {@link ModificationAwareCollection#onModification} {@link Runnable} when the {@link Collection} is modified.
+ */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
 	

@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * An abstract {@link Map} for easier overriding of all put / set Methods.
+ */
 public abstract class SetOverrideMap<K, V> extends DelegatingMap<K, V> {
 	
 	public SetOverrideMap(Map<K, V> map) {

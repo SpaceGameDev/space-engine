@@ -14,6 +14,9 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+/**
+ * Synchronizes over the entire {@link List}. Frequent access on the {@link List} can be problematic.
+ */
 public class SynchronizedList<E> extends DelegatingList<E> {
 	
 	static {

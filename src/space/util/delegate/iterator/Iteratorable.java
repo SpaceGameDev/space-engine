@@ -3,8 +3,8 @@ package space.util.delegate.iterator;
 import java.util.Iterator;
 
 /**
- * Iteratorable allows you to put Iterators (like the ListIterator) inside a normal iterating for-loop (with ':').
- * The iterator() -Method just returns itself.
+ * {@link Iteratorable} allows you to put {@link Iterator Iterators} (like the {@link java.util.ListIterator}) inside a iterating for-each loop (with ':').
+ * The {@link Iteratorable#iterator()} just returns itself.
  */
 public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 	

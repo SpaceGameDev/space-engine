@@ -12,9 +12,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * A Collection merging multiple Collections.
- * Use the createWithAddCollection()-Method or the setAddColl()-Method to redirect all add and addAll calls to the addColl.
- * If no addColl is specified, the Methods add() and addAll() throw {@link UnsupportedOperationException}.
+ * Merges multiple {@link Collection} to one {@link Collection}.
+ * <p>
+ * Use the {@link MergingCollection#createWithAddCollection(Collection, Collection[])} or the {@link MergingCollection#setAddColl(Collection)} to redirect all {@link Collection#add} and {@link Collection#addAll(Collection)} calls to the supplied {@link MergingCollection#addColl}.
+ * If no {@link MergingCollection#addColl} is specified, the Methods {@link Collection#add} and {@link Collection#addAll(Collection)} throw an {@link UnsupportedOperationException}.
  */
 public class MergingCollection<E> implements ToString, Collection<E> {
 	
@@ -41,7 +42,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
-		MergingCollection<E> ret = new MergingCollection<E>(collections);
+		MergingCollection<E> ret = new MergingCollection<>(collections);
 		ret.setAddColl(addColl);
 		return ret;
 	}

@@ -7,6 +7,9 @@ import space.util.string.toStringHelper.ToStringHelper;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+/**
+ * A {@link Iterator} delegating all calls to it's Field {@link DelegatingIterator#i}, provided by Constructor or set directly.
+ */
 public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 	
 	static {

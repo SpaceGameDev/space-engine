@@ -35,30 +35,25 @@ public class BigPrimitiveMath {
 	}
 	
 	//signed
-	//FIXME: if number is negative, rest bits have to be filled with 0xFF
-	public static int[] intArrayFromByteSigned(byte i2) {
-		int i = i2 & PrimitiveType.INT8.MASK_NUMBER;
+	public static int[] intArrayFromByteSigned(byte i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
-	public static int[] intArrayFromShortSigned(short i2) {
-		int i = i2 & PrimitiveType.INT16.MASK_NUMBER;
+	public static int[] intArrayFromShortSigned(short i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
-	public static int[] intArrayFromIntSigned(int i2) {
-		int i = i2 & PrimitiveType.INT32.MASK_NUMBER;
+	public static int[] intArrayFromIntSigned(int i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
 			return new int[0];
 		return new int[] {i};
 	}
 	
-	public static int[] intArrayFromLongSigned(long l2) {
-		long l = l2 & PrimitiveType.INT64.MASK_NUMBER;
+	public static int[] intArrayFromLongSigned(long l) {
 		if (Long.compareUnsigned(l, 0x0L) == 0)
 			return new int[0];
 		if (Long.compareUnsigned(l, 0xFFFFFFFFL) != 1)

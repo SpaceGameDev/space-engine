@@ -1,9 +1,15 @@
 package space.util.delegate.map;
 
+import space.util.delegate.list.ModificationAwareList;
+
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * The {@link ModificationAwareList} will call the {@link ModificationAwareList#onModification} {@link Runnable} when the {@link List} is modified.
+ */
 public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	
 	public Runnable onModification;

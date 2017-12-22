@@ -14,6 +14,9 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
+/**
+ * The {@link DefaultingIndexMap} tries to get a value from the {@link DefaultingIndexMap#indexMap}, and when no value has been found, it will return the value from the {@link DefaultingIndexMap#def};
+ */
 public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements ToString {
 	
 	static {

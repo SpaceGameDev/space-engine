@@ -22,6 +22,9 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+/**
+ * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceList#refCreator Reference Creator} supplied with the Constructor or directly set.
+ */
 public class ReferenceList<E> implements ToString, List<E> {
 	
 	static {
@@ -217,12 +220,12 @@ public class ReferenceList<E> implements ToString, List<E> {
 	
 	@Override
 	public ListIterator<E> listIterator() {
-		return new ReferenceListIterator<E>(list.listIterator(), refCreator);
+		return new ReferenceListIterator<>(list.listIterator(), refCreator);
 	}
 	
 	@Override
 	public ListIterator<E> listIterator(int index) {
-		return new ReferenceListIterator<E>(list.listIterator(index), refCreator);
+		return new ReferenceListIterator<>(list.listIterator(index), refCreator);
 	}
 	
 	@Override
@@ -256,11 +259,13 @@ public class ReferenceList<E> implements ToString, List<E> {
 	}
 	
 	@Override
+	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (!(o instanceof ReferenceList))
 			return false;
+		
 		return list.equals(((ReferenceList<?>) o).list);
 	}
 	

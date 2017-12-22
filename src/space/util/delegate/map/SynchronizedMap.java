@@ -8,8 +8,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * This {@link Map} synchronizes over the entire {@link Map}, which on a frequently accessed {@link Map} can be problematic.
- * For that purpose, please use {@link java.util.concurrent.ConcurrentHashMap}, as it synchronizes on the buckets, not ht entire Map.
+ * This {@link Map} synchronizes over the entire {@link Map}. Frequent access on the {@link Map Maps} can be problematic.
+ * For that purpose, please use {@link java.util.concurrent.ConcurrentHashMap}, as it synchronizes on the buckets, not the entire Map.
  */
 public class SynchronizedMap<K, V> extends DelegatingMap<K, V> {
 	

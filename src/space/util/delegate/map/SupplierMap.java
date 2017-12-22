@@ -8,6 +8,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * A {@link Map} delegating all calls to it's Field {@link SupplierMap#map}, which is an {@link Supplier} of Type {@link Map}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ */
 public class SupplierMap<K, V> implements Map<K, V> {
 	
 	public Supplier<Map<K, V>> map;

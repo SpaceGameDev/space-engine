@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * The {@link UnmodifiableMap} makes the {@link Map} unmodifiable.
+ */
 public class UnmodifiableMap<K, V> extends DelegatingMap<K, V> {
 	
 	public UnmodifiableMap(Map<K, V> map) {

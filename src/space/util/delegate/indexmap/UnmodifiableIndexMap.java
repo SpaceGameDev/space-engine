@@ -7,6 +7,9 @@ import space.util.string.toStringHelper.ToStringHelper;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+/**
+ * The {@link UnmodifiableIndexMap} makes the {@link IndexMap} unmodifiable.
+ */
 public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	static {
