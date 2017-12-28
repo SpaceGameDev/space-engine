@@ -2,8 +2,11 @@ package space.util.vfs.virtual;
 
 import space.util.delegate.collection.SetCast;
 import space.util.vfs.AbstractEntry;
-import space.util.vfs.interfaces.Entry;
-import space.util.vfs.interfaces.Folder;
+import space.util.vfs.Entry;
+import space.util.vfs.File;
+import space.util.vfs.Folder;
+import space.util.vfs.Link;
+import space.util.vfs.exception.UnsupportedEntry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +26,24 @@ public class VirtualFolder extends AbstractEntry implements Folder {
 	}
 	
 	@Override
-	public void add(Entry entry) {
-		list.put(entry.name(), entry);
-		//no hard links, so this "works"
-		entry.setParent(this);
+	public File addFile(String name) {
+		VirtualFile file = new VirtualFile(name);
+		file.setParent(this);
+		return file;
+	}
+	
+	@Override
+	public Folder addFolder(String name) {
+		VirtualFolder file = new VirtualFolder(name);
+		file.setParent(this);
+		return file;
+	}
+	
+	@Override
+	public Link addLink(String name, Entry pointer) throws UnsupportedEntry {
+		VirtualLink file = VirtualLink.create(name, pointer);
+		file.setParent(this);
+		return file;
 	}
 	
 	@Override

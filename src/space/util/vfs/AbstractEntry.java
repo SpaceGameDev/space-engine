@@ -1,8 +1,5 @@
 package space.util.vfs;
 
-import space.util.vfs.interfaces.Entry;
-import space.util.vfs.interfaces.Folder;
-
 import java.util.Objects;
 
 public class AbstractEntry implements Entry {

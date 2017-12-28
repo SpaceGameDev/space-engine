@@ -1,4 +1,4 @@
-package space.util.vfs.interfaces;
+package space.util.vfs;
 
 public interface Link extends Entry {
 	
@@ -7,5 +7,5 @@ public interface Link extends Entry {
 	 *
 	 * @return the pointer to the linked file
 	 */
-	String[] getPointer();
+	Entry getPointer();
 }

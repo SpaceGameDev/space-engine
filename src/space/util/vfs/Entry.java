@@ -1,4 +1,4 @@
-package space.util.vfs.interfaces;
+package space.util.vfs;
 
 import java.io.IOException;
 
