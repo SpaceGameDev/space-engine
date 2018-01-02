@@ -1,30 +1,44 @@
 package space.util.baseobject;
 
 import space.util.baseobject.exceptions.MakeNotSupportedException;
+import space.util.delegate.map.BufferedMap;
 import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
-import space.util.mh.LambdaMetafactoryUtil;
+import space.util.methodhandle.LambdaMetafactoryUtil;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static space.util.GetClass.gClass;
 
 public final class Creatable {
 	
-	public static final ThreadLocalGlobalCachingMap<Class<?>, Supplier<?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
-		try {
-			return LambdaMetafactoryUtil.metafactoryConstructor(LambdaMetafactoryUtil.PUBLICLOOKUP, clazz);
-		} catch (Throwable ignore) {
-			return null;
-		}
-	});
+	//maps
+	private static volatile Map<Class<?>, Supplier<?>> WRITE_MAP = new BufferedMap<>(new HashMap<>());
+	public static ThreadLocalGlobalCachingMap<Class<?>, Supplier<?>> MAP;
 	
+	//init
 	static {
 		BaseObjectInit.init();
 	}
 	
 	static void init() {
-	
+		if (!(WRITE_MAP instanceof BufferedMap))
+			throw new IllegalStateException("already initialized!");
+		
+		MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
+			try {
+				return LambdaMetafactoryUtil.metafactoryConstructor(LambdaMetafactoryUtil.PUBLICLOOKUP, clazz);
+			} catch (Throwable ignore) {
+				return null;
+			}
+		});
+		
+		((BufferedMap<Class<?>, Supplier<?>>) WRITE_MAP).setSink(MAP.globalMap);
+		WRITE_MAP = MAP.globalMap;
 	}
+	
+	//function
 	
 	/**
 	 * add a manual entry to the create()-Function map
@@ -34,7 +48,7 @@ public final class Creatable {
 	 * @param <OBJ>    the Object-Type
 	 */
 	public static <OBJ> void manualEntry(Class<OBJ> clazz, Supplier<OBJ> supplier) {
-		MAP.globalMap.put(clazz, supplier);
+		WRITE_MAP.put(clazz, supplier);
 	}
 	
 	/**

@@ -43,14 +43,15 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 		for (IndexMapEntry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			CharSequence2D value = elem.getValue();
-			axis.put(new int[] {0, index}, new int[] {value.maxLength(), value.height()});
+			axis.put(new int[] {0, index}, new int[] {value.height(), value.maxLength()});
 		}
 		
 		//sizes
 		int separatorLength = separator.length();
-		int maxY = axis.getIndex(0, 1);
+		int maxY = axis.getIndex(0, 1) + 1;
 		int maxIndexX = axis.size(1);
-		int maxX = MathUtils.max(axis.getIndex(1, maxIndexX) + maxIndexX * separatorLength + 1, className.length() + 1);
+		int maxXEntry = axis.getIndex(1, maxIndexX) + maxIndexX * separatorLength;
+		int maxX = MathUtils.max(maxXEntry, className.length() + 1);
 		
 		//buffer creation
 		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
@@ -64,24 +65,30 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 		for (IndexMapEntry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;
-			int untilx = axis.getIndex(1, index + 1) + (index + 1) * separatorLength + 1;
+			int untilx = axis.getIndex(1, index + 1) + (index + 1) * separatorLength;
 			
 			buffer.setY(1).setX(startx).append(elem.getValue(), maxY, untilx, fillChar);
 		}
+		
+		//after entries
+		if (maxXEntry < maxX)
+			buffer.setY(1).setX(maxXEntry).fill(maxX - maxXEntry + 1, fillChar);
 		
 		//sides
 		fillDown(buffer, 0, 0, maxY, leftBound);
 		fillDown(buffer, maxX, 0, maxY, rightBound);
 		
 		//separator
-		for (int i = 0; i < maxIndexX; i++)
-			fillDown(buffer, axis.getIndex(1, i), 0, maxY, separator);
+		for (int i = 0; i < maxIndexX - 1; i++)
+			fillDown(buffer, axis.getIndex(1, i + 1) + i * separatorLength + 1, 1, maxY, separator);
 		
 		//last line
-		buffer.setY(maxY).setX(0).append(leftBound).fill(0, line).append(rightBound);
+		buffer.setY(maxY).setX(0).append(leftBound).fill(maxX, line).append(rightBound);
+		buffer.endEdit();
 		return buffer.toString2D();
 	}
 	
+	//fillDown
 	@SuppressWarnings("SameParameterValue")
 	protected static void fillDown(CharBufferBuilder2D<?> buffer, int x, int fromy, int toy, char c) {
 		for (int y = fromy; y < toy; y++) {

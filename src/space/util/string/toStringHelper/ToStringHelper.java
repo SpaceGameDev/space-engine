@@ -327,7 +327,7 @@ public interface ToStringHelper<T> {
 	
 	interface ToStringHelperTable<T> {
 		
-		T put(int[] pos, T object);
+		Object put(int[] pos, Object object);
 		
 		T build();
 	}

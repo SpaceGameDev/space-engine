@@ -1,6 +1,6 @@
-package space.util.mh;
+package space.util.methodhandle;
 
-import space.util.mh.capsule.PublicLookup;
+import space.util.methodhandle.capsule.PublicLookup;
 
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;

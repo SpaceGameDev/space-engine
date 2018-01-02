@@ -1,14 +1,16 @@
 package space.util.indexmap;
 
 import space.util.ArrayUtils;
+import space.util.baseobject.ToString;
 import space.util.delegate.impl.ArrayIterable.ArrayIterator;
 import space.util.delegate.iterator.Iteratorable;
+import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
+public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	public static int defaultCapacity = 4;
 	public static int expandShift = 1;
@@ -276,7 +278,12 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE> {
 	}
 	
 	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		return api.toString(array, 0, length);
+	}
+	
+	@Override
 	public String toString() {
-		return Arrays.toString(array);
+		return toString0();
 	}
 }

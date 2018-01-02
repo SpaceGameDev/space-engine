@@ -1,5 +1,7 @@
 package space.util.gui.monofont.tsh.elements;
 
+import space.util.gui.GuiElement;
+import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.elements.direction.MonofontTable;
 import space.util.gui.tsh.elements.GuiToStringHelperTableCreator;
@@ -24,6 +26,14 @@ public class MonofontTSHTable extends MonofontTable implements GuiToStringHelper
 	@Override
 	public GuiToStringHelperTableCreator getCreator() {
 		return CREATOR;
+	}
+	
+	//delegate
+	@Override
+	public GuiElement put(int[] pos, Object object) {
+		if (!(object instanceof GuiElement))
+			throw new IllegalGuiElementException(object.toString());
+		return put(pos, (GuiElement) object);
 	}
 	
 	//rebuild

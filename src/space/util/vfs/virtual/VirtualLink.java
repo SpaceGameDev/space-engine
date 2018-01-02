@@ -1,5 +1,6 @@
 package space.util.vfs.virtual;
 
+import space.util.string.toStringHelper.ToStringHelper;
 import space.util.vfs.AbstractEntry;
 import space.util.vfs.Entry;
 import space.util.vfs.File;
@@ -11,7 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
-import java.util.Set;
+import java.nio.file.OpenOption;
+import java.util.Map;
 
 public abstract class VirtualLink extends AbstractEntry implements Link {
 	
@@ -58,8 +60,13 @@ public abstract class VirtualLink extends AbstractEntry implements Link {
 		}
 		
 		@Override
-		public SeekableByteChannel getByteChannel() throws IOException {
-			return pointer.getByteChannel();
+		public SeekableByteChannel getByteChannel(OpenOption... options) throws IOException {
+			return pointer.getByteChannel(options);
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			return super.toTSH(api);
 		}
 	}
 	
@@ -79,7 +86,7 @@ public abstract class VirtualLink extends AbstractEntry implements Link {
 		
 		//delegate
 		@Override
-		public Set<Entry> getEntries() {
+		public Map<String, Entry> getEntries() {
 			return pointer.getEntries();
 		}
 		
@@ -101,6 +108,11 @@ public abstract class VirtualLink extends AbstractEntry implements Link {
 		@Override
 		public void delete(String name) throws IOException {
 			pointer.delete(name);
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			return super.toTSH(api);
 		}
 	}
 }

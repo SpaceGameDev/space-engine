@@ -113,7 +113,7 @@ public class IndexMultiMap2DInt {
 	public int size(int[] pos) {
 		if (pos.length == 0)
 			return height;
-		return length[pos[0]];
+		return pos[0] < length.length ? length[pos[0]] : 0;
 	}
 	
 	public boolean contains(int[] pos) {

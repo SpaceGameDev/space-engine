@@ -1,27 +1,26 @@
 package space.util.baseobject;
 
 import space.util.baseobject.exceptions.SetNotSupportedException;
+import space.util.delegate.map.BufferedMap;
 import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public interface Setable {
 	
+	//init
 	/**
 	 * used to have a static-init-function in the interface
 	 */
 	byte zero = BaseObjectInit.init2();
 	
-	ThreadLocalGlobalCachingMap<Class<?>, BiConsumer<?, ?>> MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
-		if (Setable.class.isAssignableFrom(clazz))
-			return (Setable obj, Setable to) -> obj.set(to);
-		
-		return null;
-	});
-	
 	static void init() {
-	
+		SetableClass.init();
 	}
+	
+	//functions
 	
 	/**
 	 * add a manual entry to the set()-Function map
@@ -31,7 +30,7 @@ public interface Setable {
 	 * @param <OBJ>       the Object-Type
 	 */
 	static <OBJ> void manualEntry(Class<OBJ> clazz, BiConsumer<OBJ, OBJ> setFunction) {
-		MAP.globalMap.put(clazz, setFunction);
+		SetableClass.WRITE_MAP.put(clazz, setFunction);
 	}
 	
 	/**
@@ -42,7 +41,12 @@ public interface Setable {
 	 * @throws SetNotSupportedException if setting failed
 	 */
 	static <OBJ> void set(OBJ obj, OBJ to) throws SetNotSupportedException {
-		BiConsumer<?, ?> function = MAP.get(obj.getClass());
+		if (obj instanceof Setable) {
+			((Setable) obj).set(to);
+			return;
+		}
+		
+		BiConsumer<?, ?> function = SetableClass.MAP.get(obj.getClass());
 		if (function != null) {
 			//noinspection unchecked
 			((BiConsumer<OBJ, OBJ>) function).accept(obj, to);
@@ -62,5 +66,29 @@ public interface Setable {
 		obj.set(to);
 	}
 	
+	//implementable
 	void set(Object obj) throws SetNotSupportedException;
+	
+	//class
+	class SetableClass {
+		
+		//maps
+		private static volatile Map<Class<?>, BiConsumer<?, ?>> WRITE_MAP = new BufferedMap<>(new HashMap<>());
+		public static ThreadLocalGlobalCachingMap<Class<?>, BiConsumer<?, ?>> MAP;
+		
+		//init
+		static {
+			BaseObjectInit.init();
+		}
+		
+		static void init() {
+			if (!(WRITE_MAP instanceof BufferedMap))
+				throw new IllegalStateException("already initialized!");
+			
+			MAP = new ThreadLocalGlobalCachingMap<>();
+			
+			((BufferedMap<Class<?>, BiConsumer<?, ?>>) WRITE_MAP).setSink(MAP.globalMap);
+			WRITE_MAP = MAP.globalMap;
+		}
+	}
 }

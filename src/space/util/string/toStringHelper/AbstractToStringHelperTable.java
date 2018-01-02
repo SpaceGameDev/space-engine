@@ -12,8 +12,9 @@ public abstract class AbstractToStringHelperTable<T> implements ToStringHelperTa
 	}
 	
 	@Override
-	public T put(int[] pos, T object) {
-		return map.put(pos, object);
+	@SuppressWarnings("unchecked")
+	public T put(int[] pos, Object object) {
+		return map.put(pos, (T) object);
 	}
 	
 	@Override

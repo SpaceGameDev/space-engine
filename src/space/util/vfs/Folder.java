@@ -1,16 +1,19 @@
 package space.util.vfs;
 
-import java.io.IOException;
-import java.util.Set;
+import space.util.baseobject.ToString;
+import space.util.string.toStringHelper.ToStringHelper;
 
-public interface Folder extends Entry {
+import java.io.IOException;
+import java.util.Map;
+
+public interface Folder extends Entry, ToString {
 	
 	/**
 	 * gets all {@link Entry}s of the {@link Folder}
 	 *
 	 * @return a collection with all {@link Entry}s of this {@link Folder}
 	 */
-	Set<Entry> getEntries();
+	Map<String, Entry> getEntries();
 	
 	/**
 	 * creates a new {@link File}
@@ -41,4 +44,15 @@ public interface Folder extends Entry {
 	
 	//delete
 	void delete(String name) throws IOException;
+	
+	static void add(Map<String, Entry> map, Entry ent) {
+		Entry old = map.put(ent.name(), ent);
+		if (old != null)
+			old.setParent(null);
+	}
+	
+	@Override
+	default <T> T toTSH(ToStringHelper<T> api) {
+		return api.createModifier(name(), getEntries().values());
+	}
 }

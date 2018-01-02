@@ -38,7 +38,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 	}
 	
 	@Override
-	public GuiElement put(int[] pos, GuiElement object) {
+	public GuiElement put(int[] pos, Object object) {
 		if (!(object instanceof MonofontGuiElement))
 			throw new IllegalGuiElementException();
 		MonofontGuiElement gui = (MonofontGuiElement) object;

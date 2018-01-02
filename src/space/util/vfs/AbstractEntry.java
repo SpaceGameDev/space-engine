@@ -11,6 +11,11 @@ public class AbstractEntry implements Entry {
 		this.name = name;
 	}
 	
+	protected AbstractEntry(String name, Folder parent) {
+		this.name = name;
+		this.parent = parent;
+	}
+	
 	//name
 	@Override
 	public String name() {
@@ -19,12 +24,14 @@ public class AbstractEntry implements Entry {
 	
 	@Override
 	public void rename(String newName) {
-		this.name = name;
+		this.name = newName;
 	}
 	
 	//parent
 	@Override
 	public void setParent(Folder parent) {
+		if (name.length() == 0)
+			throw new IllegalStateException("Folder is root directory!");
 		this.parent = parent;
 	}
 	
@@ -47,5 +54,10 @@ public class AbstractEntry implements Entry {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }

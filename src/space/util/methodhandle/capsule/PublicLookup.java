@@ -1,4 +1,4 @@
-package space.util.mh.capsule;
+package space.util.methodhandle.capsule;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;

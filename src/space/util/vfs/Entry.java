@@ -1,8 +1,12 @@
 package space.util.vfs;
 
+import space.util.baseobject.ToString;
+import space.util.string.builder.CharBufferBuilder1D;
+import space.util.string.toStringHelper.ToStringHelper;
+
 import java.io.IOException;
 
-public interface Entry {
+public interface Entry extends ToString {
 	
 	//name
 	
@@ -35,7 +39,18 @@ public interface Entry {
 	/**
 	 * @return the path to this file, in a POSIX-like way
 	 */
-	default String[] getPath() {
+	default String getPath() {
+		CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
+		for (String s : getPathArray())
+			b.append(s).append('/');
+		b.addLength(-1);
+		return b.toString();
+	}
+	
+	/**
+	 * @return the path to this file, separated in an array
+	 */
+	default String[] getPathArray() {
 		return resolvePathOfFile(1);
 	}
 	
@@ -51,5 +66,10 @@ public interface Entry {
 			str[str.length - depth] = name();
 			return str;
 		}
+	}
+	
+	@Override
+	default <T> T toTSH(ToStringHelper<T> api) {
+		return api.toString("?" + name());
 	}
 }

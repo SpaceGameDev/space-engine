@@ -1,17 +1,19 @@
 package space.util.baseobject;
 
 import space.util.baseobject.exceptions.CopyNotSupportedException;
+import space.util.delegate.map.BufferedMap;
 import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
-import space.util.mh.LambdaMetafactoryUtil;
+import space.util.methodhandle.LambdaMetafactoryUtil;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
 public final class Copyable {
 	
+	//constant
 	/**
 	 * this may shallow-copy objects, instead of deep-copy!
 	 */
@@ -26,16 +28,24 @@ public final class Copyable {
 		return ret;
 	};
 	
-	/**
-	 * used internally for adding some {@link Copyable#manualEntry(Class, UnaryOperator) Manual Entries} while {@link Copyable} is initializing
-	 */
-	private static volatile Map<Class<?>, UnaryOperator<?>> WRITE_MAP;
-	public static final ThreadLocalGlobalCachingMap<Class<?>, UnaryOperator<?>> MAP;
+	@SuppressWarnings("unchecked")
+	public static <OBJ extends Setable> UnaryOperator<OBJ> getCreateThenSetUnaryOperator() {
+		return (UnaryOperator<OBJ>) CREATE_THEN_SET_UNARY_OPERATOR;
+	}
 	
+	//maps
+	private static volatile Map<Class<?>, UnaryOperator<?>> WRITE_MAP = new BufferedMap<>(new HashMap<>());
+	public static ThreadLocalGlobalCachingMap<Class<?>, UnaryOperator<?>> MAP;
+	
+	//init
 	static {
-		Map<Class<?>, UnaryOperator<?>> startupMap = new ConcurrentHashMap<>();
+		BaseObjectInit.init();
+	}
+	
+	static void init() {
+		if (!(WRITE_MAP instanceof BufferedMap))
+			throw new IllegalStateException("already initialized!");
 		
-		WRITE_MAP = startupMap;
 		MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 			//constructor with same type as argument, see java.util.ArrayList
 			try {
@@ -53,16 +63,11 @@ public final class Copyable {
 			return null;
 		});
 		
-		//FIXME: not synchronized!!!
+		((BufferedMap<Class<?>, UnaryOperator<?>>) WRITE_MAP).setSink(MAP.globalMap);
 		WRITE_MAP = MAP.globalMap;
-		WRITE_MAP.putAll(startupMap);
-		
-		BaseObjectInit.init();
 	}
 	
-	static void init() {
-	
-	}
+	//functions
 	
 	/**
 	 * add a manual entry to the copy()-Function map
