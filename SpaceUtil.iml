@@ -9,7 +9,5 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.apache.commons:commons-vfs2:2.0" level="project" />
-    <orderEntry type="library" name="org.apache.commons:commons-math3:3.3" level="project" />
   </component>
 </module>

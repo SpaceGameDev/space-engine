@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class MountFolder extends AbstractMountEntry implements Folder {
 	
-	private Map<String, Entry> entries;
-	
 	public MountFolder(java.io.File path) {
 		super(path);
 	}
@@ -23,9 +21,6 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	
 	@Override
 	public Map<String, Entry> getEntries() {
-		if (entries != null)
-			return entries;
-		
 		java.io.File[] names = path.listFiles();
 		if (names == null)
 			return new HashMap<>(0);
@@ -37,33 +32,34 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 			else if (file.isFile())
 				Folder.add(ret, new MountFile(file, this));
 		}
-		
-		entries = ret;
 		return ret;
 	}
 	
 	@Override
 	public File addFile(String name) throws IOException {
+//		Files.
 		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
 		if (!file.createNewFile())
 			throw new IOException("File can not be created: " + file.getAbsolutePath());
-		
-		entries = null;
 		return new MountFile(file, this);
 	}
 	
 	@Override
-	public Folder addFolder(String name) {
-		return null;
+	public Folder addFolder(String name) throws IOException {
+		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
+		if (!file.mkdir())
+			throw new IOException("File can not be created: " + file.getAbsolutePath());
+		return new MountFolder(file, this);
 	}
 	
 	@Override
-	public Link addLink(String name, Entry pointer) {
-		return null;
+	@Deprecated
+	public Link addLink(String name, Entry pointer) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public void delete(String name) {
-	
+		path.
 	}
 }

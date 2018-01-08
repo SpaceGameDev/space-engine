@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface Folder extends Entry, ToString {
 	
+	//getEntries
 	/**
 	 * gets all {@link Entry}s of the {@link Folder}
 	 *
@@ -15,6 +16,7 @@ public interface Folder extends Entry, ToString {
 	 */
 	Map<String, Entry> getEntries();
 	
+	//add
 	/**
 	 * creates a new {@link File}
 	 *
@@ -40,11 +42,12 @@ public interface Folder extends Entry, ToString {
 	 * @return the new {@link Link} object or null if creation failed
 	 * @throws IOException when an IOError occurred
 	 */
-	Link addLink(String name, Entry pointer) throws IOException;
+	Link addLink(String name, Entry pointer) throws IOException, UnsupportedOperationException;
 	
 	//delete
 	void delete(String name) throws IOException;
 	
+	//utility
 	static void add(Map<String, Entry> map, Entry ent) {
 		Entry old = map.put(ent.name(), ent);
 		if (old != null)
