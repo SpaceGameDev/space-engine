@@ -8,8 +8,6 @@ import java.io.IOException;
 
 public interface Entry extends ToString {
 	
-	//name
-	
 	/**
 	 * @return the name of this entry
 	 */
@@ -22,12 +20,18 @@ public interface Entry extends ToString {
 	 */
 	void rename(String newName) throws IOException;
 	
-	//parent
+	/**
+	 * renames the entry and moves it to directory
+	 *
+	 * @param newParent the new parent folder
+	 * @param newName   the new name
+	 */
+	void renameAndMove(String newName, Folder newParent) throws IOException;
 	
 	/**
 	 * @param parent the new parent of this file
 	 */
-	void setParent(Folder parent);
+	void move(Folder parent) throws IOException;
 	
 	/**
 	 * @return the parent of this file, or null if it is the root

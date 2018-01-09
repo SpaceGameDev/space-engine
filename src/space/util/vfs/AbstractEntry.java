@@ -1,5 +1,6 @@
 package space.util.vfs;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class AbstractEntry implements Entry {
@@ -23,7 +24,7 @@ public class AbstractEntry implements Entry {
 	}
 	
 	@Override
-	public void rename(String newName) {
+	public void rename(String newName) throws IOException {
 		this.name = newName;
 	}
 	

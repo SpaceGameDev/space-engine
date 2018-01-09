@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class MountFolder extends AbstractMountEntry implements Folder {
 	
-	private Map<String, Entry> entries;
-	
 	public MountFolder(java.io.File path) {
 		super(path);
 	}
@@ -22,7 +20,7 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	}
 	
 	@Override
-	public synchronized Map<String, Entry> getEntries() {
+	public Map<String, Entry> getEntries() {
 		java.io.File[] names = path.listFiles();
 		if (names == null)
 			return new HashMap<>(0);
@@ -34,18 +32,15 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 			else if (file.isFile())
 				Folder.add(ret, new MountFile(file, this));
 		}
-		
-		entries = ret;
 		return ret;
 	}
 	
 	@Override
-	public synchronized File addFile(String name) throws IOException {
+	public File addFile(String name) throws IOException {
+//		Files.
 		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
 		if (!file.createNewFile())
 			throw new IOException("File can not be created: " + file.getAbsolutePath());
-		
-		entries = null;
 		return new MountFile(file, this);
 	}
 	
@@ -53,19 +48,18 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	public Folder addFolder(String name) throws IOException {
 		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
 		if (!file.mkdir())
-			throw new IOException("Folder can not be created: " + file.getAbsolutePath());
-		
-		entries = null;
+			throw new IOException("File can not be created: " + file.getAbsolutePath());
 		return new MountFolder(file, this);
 	}
 	
 	@Override
-	public Link addLink(String name, Entry pointer) {
-		return null;
+	@Deprecated
+	public Link addLink(String name, Entry pointer) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public void delete(String name) {
-	
+		path.
 	}
 }
