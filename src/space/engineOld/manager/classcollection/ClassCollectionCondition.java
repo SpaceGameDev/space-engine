@@ -1,4 +1,4 @@
-package space.engine.manager.classcollection;
+package space.engineOld.manager.classcollection;
 
 import space.util.ArrayUtils;
 import space.util.annotation.Self;
