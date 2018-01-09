@@ -3,9 +3,10 @@ package space.util.gui.monofont;
 import space.util.baseobject.ToString;
 import space.util.gui.GuiElement;
 import space.util.string.CharSequence2D;
+import space.util.string.ToString2D;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public abstract class MonofontGuiElement implements ToString, GuiElement {
+public abstract class MonofontGuiElement implements ToString, GuiElement, ToString2D {
 	
 	public MonofontGuiElement parent;
 	
@@ -27,6 +28,11 @@ public abstract class MonofontGuiElement implements ToString, GuiElement {
 	
 	//toString
 	public abstract CharSequence2D buildSequence2D();
+	
+	@Override
+	public CharSequence2D toString2D() {
+		return buildSequence2D();
+	}
 	
 	@Override
 	public String toString() {

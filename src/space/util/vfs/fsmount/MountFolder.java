@@ -22,10 +22,7 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	}
 	
 	@Override
-	public Map<String, Entry> getEntries() {
-		if (entries != null)
-			return entries;
-		
+	public synchronized Map<String, Entry> getEntries() {
 		java.io.File[] names = path.listFiles();
 		if (names == null)
 			return new HashMap<>(0);
@@ -43,7 +40,7 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	}
 	
 	@Override
-	public File addFile(String name) throws IOException {
+	public synchronized File addFile(String name) throws IOException {
 		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
 		if (!file.createNewFile())
 			throw new IOException("File can not be created: " + file.getAbsolutePath());
@@ -53,8 +50,13 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	}
 	
 	@Override
-	public Folder addFolder(String name) {
-		return null;
+	public Folder addFolder(String name) throws IOException {
+		java.io.File file = new java.io.File(path.getPath() + java.io.File.separatorChar + name);
+		if (!file.mkdir())
+			throw new IOException("Folder can not be created: " + file.getAbsolutePath());
+		
+		entries = null;
+		return new MountFolder(file, this);
 	}
 	
 	@Override

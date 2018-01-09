@@ -9,6 +9,7 @@ import space.util.sync.task.basic.AbstractRunnableTask;
 import space.util.sync.task.basic.ITask;
 import space.util.sync.task.basic.MultiTask;
 import space.util.sync.task.function.TypeHandlerTaskCreator;
+import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.ChainedTaskMultithreadedExecutor;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node;
 import space.util.sync.task.function.chained.ChainedTaskBuilder.ChainedTaskMultithreaded.Node.NodeTask;
 import space.util.sync.task.function.creator.IFunctionTaskCreator;
@@ -23,6 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUNCTION> implements ToString, Cache {
 	
+	/**
+	 * hides the cached values {@link ChainedTaskBuilder#singlethread} and {@link ChainedTaskBuilder#multithread} from the {@link ChainedTaskBuilder#toString()} call, as they are very complex and big objects to turn into a String
+	 */
 	public static boolean hideCacheValues = true;
 	
 	//boolean fields
@@ -38,7 +42,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 	public boolean keepMultithreaded;
 	
 	/**
-	 * resort the {@link List} of next {@link Node}s, in order to put Nodes with more Dependencies further at the top, and with less towards the end
+	 * resort the {@link List} of next {@link Node}s, in order to put Nodes with more Dependencies further at the top, and with less towards the end. Is only worth while if you have giant dependency lists.
 	 */
 	public boolean optimizeExecutionPriority;
 	
@@ -78,7 +82,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 	
 	//getter
 	public ChainedTaskSinglethreaded<FUNCTION> getSinglethread() {
-		return singlethread == null ? singlethread = new ChainedTaskSinglethreaded<>(ChainedTaskBuilder.this.list) : singlethread;
+		return singlethread == null ? singlethread = new ChainedTaskSinglethreaded<>(getMultithread()) : singlethread;
 	}
 	
 	public ChainedTaskMultithreaded<FUNCTION> getMultithread() {
@@ -106,15 +110,8 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		tsh.add("list", this.list);
 		
 		if (hideCacheValues) {
-			if (this.singlethread == null)
-				tsh.addNull("singlethread");
-			else {
-				tsh.add("singlethread", "exists");
-			}
-			if (this.multithread == null)
-				tsh.addNull("multithread");
-			else
-				tsh.add("multithread", "exists");
+			tsh.add("singlethread", this.singlethread == null ? "null" : "exists");
+			tsh.add("multithread", this.multithread == null ? "null" : "exists");
 		} else {
 			tsh.add("singlethread", this.singlethread);
 			tsh.add("multithread", this.multithread);
@@ -127,16 +124,21 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		return toString0();
 	}
 	
+	//singlethreaded
 	public static class ChainedTaskSinglethreaded<FUNCTION> implements ToString, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task;
 		
-		public ChainedTaskSinglethreaded(List<ChainedTaskEntry<FUNCTION>> list) {
-			List<ChainedTaskEntry<FUNCTION>> entryList = new ArrayList<>(list);
-			entryList.sort(ChainedTaskEntry.COMPARATOR);
-			
-			task = new ArrayList<>();
-			entryList.forEach(entry -> task.add(new TypeHandlerTaskCreator<>(entry.function)));
+		public ChainedTaskSinglethreaded(ChainedTaskMultithreaded<FUNCTION> multithreaded) {
+
+
+//			TypeHandlerTaskCreator<FUNCTION>
+
+//			List<ChainedTaskEntry<FUNCTION>> entryList = new ArrayList<>(list);
+//			entryList.sort(ChainedTaskEntry.COMPARATOR);
+//
+//			task = new ArrayList<>();
+//			entryList.forEach(entry -> task.add(new TypeHandlerTaskCreator<>(entry.function)));
 		}
 		
 		@Override
@@ -162,6 +164,48 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 		}
 	}
 	
+	public static class ToSinglethreadedTask<FUNCTION> implements ChainedTaskMultithreadedExecutor<FUNCTION>, ToString {
+		
+		public List<FUNCTION> resultingList = new ArrayList<>();
+		public Map<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node, NodeTask> map = new HashMap<>();
+		
+		public ToSinglethreadedTask() {
+			for (Node node : allNodes)
+				map.put(node, node.new NodeTask(handler).init(this));
+		}
+		
+		@Override
+		@SuppressWarnings("RedundantCast")
+		public void execute(ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node.NodeTask nodeTask) {
+			resultingList.add((FUNCTION) nodeTask.getNode().func);
+		}
+		
+		@Override
+		public void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> nodes) {
+			for (ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node node : nodes)
+				map.get(node).call();
+		}
+		
+		public List<FUNCTION> evaluate() {
+			map = null;
+			return resultingList;
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("resultingList", this.resultingList);
+			tsh.add("map", this.map);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
+		}
+	}
+	
+	//multithreaded
 	public static class ChainedTaskMultithreaded<FUNCTION> implements ToString, IFunctionTaskCreator<FUNCTION> {
 		
 		public List<Node> allNodes = new ArrayList<>();
@@ -182,11 +226,10 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				for (int k = i + 1; k < allNodes.size(); k++) {
 					Node test = allNodes.get(k);
 					int comp = IDependency.COMPARATOR.compare(node.dep, test.dep);
-					if (comp < 0) {
+					if (comp < 0)
 						node.addDependencyAndThen(test);
-					} else if (comp > 0) {
+					else if (comp > 0)
 						test.addDependencyAndThen(node);
-					}
 				}
 			}
 			
@@ -221,9 +264,9 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			return toString0();
 		}
 		
+		//Node
 		public class Node extends TypeHandlerTaskCreator<FUNCTION> implements ToString {
 			
-			public FUNCTION func;
 			public IDependency dep;
 			public int depCnt;
 			public List<Node> next = new ArrayList<>();
@@ -260,7 +303,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			
 			public class NodeTask extends TypeHandlerTask implements ToString {
 				
-				public ChainedTaskMultithreadedExecutor exec;
+				public ChainedTaskMultithreadedExecutor<FUNCTION> exec;
 				public AtomicInteger callCnt;
 				
 				public NodeTask(ITypeHandler<FUNCTION> handler) {
@@ -268,7 +311,7 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 					callCnt = new AtomicInteger(depCnt);
 				}
 				
-				public NodeTask init(ChainedTaskMultithreadedExecutor exec) {
+				public NodeTask init(ChainedTaskMultithreadedExecutor<FUNCTION> exec) {
 					this.exec = exec;
 					return this;
 				}
@@ -282,6 +325,10 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				protected synchronized void runHooks() {
 					super.runHooks();
 					exec.runNodes(next);
+				}
+				
+				public Node getNode() {
+					return Node.this;
 				}
 				
 				@Override
@@ -302,23 +349,31 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			}
 		}
 		
+		//executor
 		public interface ChainedTaskMultithreadedExecutor<FUNCTION> {
 			
-			void execute(ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node.NodeTask node);
+			/**
+			 * execute the {@link ChainedTaskBuilder.ChainedTaskMultithreaded.Node Node} directly, <b>don't</b> do anything else like handle dependencies.
+			 *
+			 * @param nodeTask the {@link ChainedTaskBuilder.ChainedTaskMultithreaded.Node Node} to execute
+			 */
+			void execute(ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node.NodeTask nodeTask);
 			
-			void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> node);
+			/**
+			 * Handles the Dependencies.
+			 * Call the {@link NodeTask#call() NodeTasks.call()} method of the corresponding {@link NodeTask NodeTasks} for all of these {@link ChainedTaskBuilder.ChainedTaskMultithreaded.Node Nodes}.
+			 *
+			 * @param nodes all the {@link ChainedTaskBuilder.ChainedTaskMultithreaded.Node Nodes} to do the descriped Operation on
+			 */
+			void runNodes(Iterable<ChainedTaskBuilder.ChainedTaskMultithreaded<FUNCTION>.Node> nodes);
 		}
 		
 		public class ChainedTaskMultithreadedTask extends MultiTask implements ChainedTaskMultithreadedExecutor<FUNCTION>, ToString {
 			
-			public ITypeHandler<FUNCTION> handler;
 			public Executor executor;
 			public Map<Node, NodeTask> map = new HashMap<>();
 			
 			public ChainedTaskMultithreadedTask(ITypeHandler<FUNCTION> handler) {
-				super();
-				this.handler = handler;
-				
 				for (Node node : allNodes)
 					map.put(node, node.new NodeTask(handler).init(this));
 				init(map.values());
@@ -350,7 +405,6 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 				tsh.add("subTasks", this.subTasks);
 				tsh.add("callCnt", this.callCnt);
 				tsh.add("exception", this.exception);
-				tsh.add("handler", this.handler);
 				tsh.add("executor", this.executor);
 				return tsh.build();
 			}
@@ -358,19 +412,6 @@ public class ChainedTaskBuilder<FUNCTION> extends AbstractChainedTaskBuilder<FUN
 			@Override
 			public String toString() {
 				return toString0();
-			}
-		}
-		
-		public class ToSinglethreadedTask implements ChainedTaskMultithreadedExecutor<FUNCTION> {
-			
-			@Override
-			public void execute(NodeTask node) {
-			
-			}
-			
-			@Override
-			public void runNodes(Iterable<Node> node) {
-			
 			}
 		}
 	}

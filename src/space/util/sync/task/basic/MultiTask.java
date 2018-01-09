@@ -1,5 +1,6 @@
 package space.util.sync.task.basic;
 
+import space.util.sync.task.CollectiveExecutionException;
 import space.util.sync.task.TaskResult;
 
 import java.util.concurrent.CancellationException;
@@ -100,24 +101,5 @@ public class MultiTask extends AbstractTask {
 	public void rethrowException() throws ExecutionException, CancellationException {
 		if (exception != null)
 			throw new ExecutionException(exception);
-	}
-	
-	public static class CollectiveExecutionException extends Exception {
-		
-		public CollectiveExecutionException() {
-			this(null, null);
-		}
-		
-		public CollectiveExecutionException(String message) {
-			this(message, null);
-		}
-		
-		public CollectiveExecutionException(Throwable cause) {
-			this(null, cause);
-		}
-		
-		public CollectiveExecutionException(String message, Throwable cause) {
-			super(message, cause, true, false);
-		}
 	}
 }

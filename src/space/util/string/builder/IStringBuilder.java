@@ -1,6 +1,7 @@
 package space.util.string.builder;
 
 import space.util.annotation.Self;
+import space.util.string.toStringHelper.ToStringHelper;
 
 public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
 	
@@ -15,35 +16,35 @@ public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
 	SELF append(String str);
 	
 	default SELF append(Object obj) {
-		return append(obj == null ? "null" : obj.toString());
+		return obj == null ? append("null") : append(ToStringHelper.getDefault().toString(obj).toString());
 	}
 	
 	default SELF append(byte v) {
-		return append(Byte.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(short v) {
-		return append(Short.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(char v) {
-		return append(Character.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(int v) {
-		return append(Integer.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(long v) {
-		return append(Long.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(float v) {
-		return append(Float.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(double v) {
-		return append(Double.toString(v));
+		return append(ToStringHelper.getDefault().toString(v));
 	}
 	
 	default SELF append(char[] str) {

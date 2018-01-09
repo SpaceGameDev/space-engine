@@ -3,6 +3,7 @@ package space.util.sync.task.function.chained;
 import space.util.baseobject.BaseObjectInit;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
+import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.sync.task.basic.ITask;
 import space.util.sync.task.function.typehandler.TypeConsumer;
@@ -14,11 +15,11 @@ import java.util.function.Consumer;
 
 public class ChainedTest {
 	
-	public static final int thCnt = 4;
-	public static final boolean prestart = false;
+	public static final int thCnt = 16;
+	public static final boolean prestart = true;
 	public static ThreadPoolExecutor pool = new ThreadPoolExecutor(thCnt, thCnt, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 	
-	public static final boolean doCancel = true;
+	public static final boolean doCancel = false;
 	public static final boolean workCheckInterrupt = true;
 	
 	public static void main(String[] args) throws Exception {
@@ -28,7 +29,7 @@ public class ChainedTest {
 			if (prestart)
 				pool.prestartAllCoreThreads();
 			
-			ChainedTaskBuilder<Consumer<Integer>> builder = new ChainedTaskBuilder<>();
+			ChainedTaskBuilder<Consumer<Integer>> builder = new ChainedTaskBuilder<>(true);
 			builder.addTask("last", 5, integer -> doWork("last", integer, ChainedTest::actualWork));
 			builder.addTask("require", new String[] {"no"}, integer -> doWork("require", integer, ChainedTest::actualWork));
 			builder.addTask("no", integer -> doWork("no", integer, ChainedTest::actualWork));
@@ -49,7 +50,7 @@ public class ChainedTest {
 			ITask task = builder.execute(pool, new TypeConsumer<>(42));
 			
 			if (doCancel) {
-				Thread.sleep(3500);
+				Thread.sleep(12000);
 				System.out.println("--- CANCEL!");
 				task.cancel(true);
 			}
@@ -72,11 +73,16 @@ public class ChainedTest {
 			System.out.println("[" + Thread.currentThread().getName() + "] [" + uuid + "] CRASH!!! " + e.getMessage());
 			throw e;
 		}
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		System.out.println("[" + Thread.currentThread().getName() + "] [" + uuid + "] Done! id is " + num);
 	}
 	
 	public static void actualWork() {
-		int n = (Integer.MAX_VALUE - 1) / 4;
+		int n = (int) (((long) Integer.MAX_VALUE + 1) / 8);
 		IntList list = new IntList();
 		int i = 1;
 		for (; i < n; i++) {
@@ -85,7 +91,7 @@ public class ChainedTest {
 			if (n % i == 0)
 				list.add(i);
 		}
-		System.out.println(i + " -> " + list);
+		System.out.println(new CharBufferBuilder2D<>().append(i).append(" -> ").append(list).toString());
 	}
 	
 	public static void actualWorkError() {

@@ -4,7 +4,7 @@ package space.util.string;
  * height: dimension[0]
  * length: dimension[1]
  */
-public interface CharSequence2D {
+public interface CharSequence2D extends ToString2D {
 	
 	//size
 	int height();
@@ -15,6 +15,12 @@ public interface CharSequence2D {
 	
 	//get result
 	char[][] getChars();
+	
+	//toString
+	@Override
+	default CharSequence2D toString2D() {
+		return this;
+	}
 	
 	default String toString0() {
 		char[][] chars = getChars();
