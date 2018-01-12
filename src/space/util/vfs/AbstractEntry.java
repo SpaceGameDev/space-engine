@@ -1,9 +1,9 @@
 package space.util.vfs;
 
-import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.util.Objects;
 
-public class AbstractEntry implements Entry {
+public abstract class AbstractEntry implements Entry {
 	
 	protected String name;
 	protected Folder parent;
@@ -17,23 +17,19 @@ public class AbstractEntry implements Entry {
 		this.parent = parent;
 	}
 	
-	//name
+	//name and parent
 	@Override
 	public String name() {
 		return name;
 	}
 	
 	@Override
-	public void rename(String newName) throws IOException {
-		this.name = newName;
-	}
-	
-	//parent
-	@Override
-	public void setParent(Folder parent) {
-		if (name.length() == 0)
-			throw new IllegalStateException("Folder is root directory!");
-		this.parent = parent;
+	public Entry move(String newName, Folder newParent, CopyOption... options) {
+		if (newName != null)
+			name = newName;
+		if (newParent != null)
+			parent = newParent;
+		return this;
 	}
 	
 	@Override

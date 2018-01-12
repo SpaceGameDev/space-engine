@@ -6,7 +6,7 @@ import space.util.vfs.Entry;
 import space.util.vfs.File;
 import space.util.vfs.Folder;
 import space.util.vfs.Link;
-import space.util.vfs.exception.UnsupportedEntry;
+import space.util.vfs.exception.UnsupportedEntryException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,12 +21,12 @@ public abstract class VirtualLink extends AbstractEntry implements Link {
 		super(name);
 	}
 	
-	public static VirtualLink create(String name, Entry entry) throws UnsupportedEntry {
+	public static VirtualLink create(String name, Folder parent, Entry entry) throws UnsupportedEntryException {
 		if (entry instanceof File)
-			return new VirtualFileLink(name, (File) entry);
+			return new VirtualFileLink(name, parent, (File) entry);
 		if (entry instanceof Folder)
-			return new VirtualFolderLink(name, (Folder) entry);
-		throw new UnsupportedEntry(entry);
+			return new VirtualFolderLink(name, parent, (Folder) entry);
+		throw new UnsupportedEntryException(entry);
 	}
 	
 	public static class VirtualFileLink extends VirtualLink implements File {
@@ -62,6 +62,16 @@ public abstract class VirtualLink extends AbstractEntry implements Link {
 		@Override
 		public SeekableByteChannel getByteChannel(OpenOption... options) throws IOException {
 			return pointer.getByteChannel(options);
+		}
+		
+		@Override
+		public void copyFrom(File from) throws IOException {
+			pointer.copyFrom(from);
+		}
+		
+		@Override
+		public void onDelete(Folder folder) {
+			pointer.onDelete(folder);
 		}
 		
 		@Override

@@ -1,6 +1,7 @@
 package space.util.string.builder;
 
 import space.util.annotation.Self;
+import space.util.string.toStringHelper.ToStringHelper;
 
 public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
 	
@@ -15,7 +16,7 @@ public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
 	SELF append(String str);
 	
 	default SELF append(Object obj) {
-		return append(obj == null ? "null" : obj.toString());
+		return append(obj == null ? "null" : ToStringHelper.getDefault().toString(obj).toString());
 	}
 	
 	default SELF append(byte v) {
