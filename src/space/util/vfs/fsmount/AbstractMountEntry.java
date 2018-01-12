@@ -26,7 +26,7 @@ public class AbstractMountEntry extends AbstractEntry {
 		if (!path.renameTo(newPath))
 			throw new IOException("unable to rename file '" + path.toString() + "' to '" + newPath + "'");
 		path = newPath;
-		super.rename(newName);
+		super.move(newName);
 	}
 	
 	@Override

@@ -1,9 +1,10 @@
 package space.util.vfs.virtual;
 
-import space.util.sync.lock.rwlock.IRWLock;
-import space.util.sync.lock.rwlock.RWLock;
+import space.util.concurrent.lock.rwlock.IRWLock;
+import space.util.concurrent.lock.rwlock.RWLock;
 import space.util.vfs.AbstractEntry;
 import space.util.vfs.File;
+import space.util.vfs.Folder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,8 +18,8 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.OpenOption;
 
 import static java.nio.file.StandardOpenOption.*;
+import static space.util.FlagUtil.hasFlag;
 import static space.util.math.MathUtils.min;
-import static space.util.vfs.File.containsOption;
 
 public class VirtualFile extends AbstractEntry implements File {
 	
@@ -27,6 +28,10 @@ public class VirtualFile extends AbstractEntry implements File {
 	
 	public VirtualFile(String name) {
 		super(name);
+	}
+	
+	public VirtualFile(String name, Folder parent) {
+		super(name, parent);
 	}
 	
 	@Override
@@ -163,14 +168,14 @@ public class VirtualFile extends AbstractEntry implements File {
 	//SeekableByteChannel
 	@Override
 	public SeekableByteChannel getByteChannel(OpenOption... options) {
-		if (containsOption(options, READ)) {
+		if (hasFlag(options, READ)) {
 			rwLock.writeLock().lock();
 			return new VirtualFileSeekableByteChannelRead(array);
 		}
 		
-		if (containsOption(options, WRITE)) {
+		if (hasFlag(options, WRITE)) {
 			rwLock.writeLock().lock();
-			return new VirtualFileSeekableByteChannelWrite(containsOption(options, APPEND) ? array : null, containsOption(options, SYNC) || containsOption(options, DSYNC));
+			return new VirtualFileSeekableByteChannelWrite(hasFlag(options, APPEND) ? array : null, hasFlag(options, SYNC) || hasFlag(options, DSYNC));
 		}
 		
 		throw new IllegalArgumentException("OpenOptions did not contain READ or WRITE");
@@ -320,6 +325,20 @@ public class VirtualFile extends AbstractEntry implements File {
 		public void close() throws IOException {
 			VirtualFile.this.array = array;
 			super.close();
+		}
+	}
+	
+	//copyFrom
+	@Override
+	public void copyFrom(File from) throws IOException {
+		try {
+			rwLock.writeLock().lock();
+			if (from instanceof VirtualFile)
+				array = ((VirtualFile) from).array;
+			else
+				from.getByteChannel(READ).read(ByteBuffer.wrap(array));
+		} finally {
+			rwLock.writeLock().unlock();
 		}
 	}
 }

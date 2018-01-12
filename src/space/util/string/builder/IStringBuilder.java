@@ -16,7 +16,7 @@ public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
 	SELF append(String str);
 	
 	default SELF append(Object obj) {
-		return obj == null ? append("null") : append(ToStringHelper.getDefault().toString(obj).toString());
+		return append(obj == null ? "null" : ToStringHelper.getDefault().toString(obj).toString());
 	}
 	
 	default SELF append(byte v) {

@@ -1,12 +1,16 @@
 package space.util.vfs.virtual;
 
+import space.util.FlagUtil;
 import space.util.vfs.AbstractEntry;
 import space.util.vfs.Entry;
 import space.util.vfs.File;
 import space.util.vfs.Folder;
 import space.util.vfs.Link;
-import space.util.vfs.exception.UnsupportedEntry;
 
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,37 +29,63 @@ public class VirtualFolder extends AbstractEntry implements Folder {
 		super(name);
 	}
 	
+	public VirtualFolder(String name, Folder parent) {
+		super(name, parent);
+	}
+	
 	@Override
 	public Map<String, Entry> getEntries() {
 		return map;
 	}
 	
 	@Override
-	public File addFile(String name) {
-		VirtualFile file = new VirtualFile(name);
-		file.setParent(this);
-		Folder.add(map, file);
+	public synchronized File addFile(String name, OpenOption... flag) throws IOException {
+		if (!FlagUtil.hasFlag(flag, StandardOpenOption.CREATE) && map.containsKey(name))
+			throw new IOException("File already exists!");
+		
+		VirtualFile file = new VirtualFile(name, this);
+		add(map, file);
 		return file;
 	}
 	
 	@Override
-	public Folder addFolder(String name) {
-		VirtualFolder file = new VirtualFolder(name);
-		file.setParent(this);
-		Folder.add(map, file);
+	public synchronized Folder addFolder(String name, OpenOption... flag) throws IOException {
+		if (!FlagUtil.hasFlag(flag, StandardOpenOption.CREATE) && map.containsKey(name))
+			throw new IOException("File already exists!");
+		
+		VirtualFolder file = new VirtualFolder(name, this);
+		add(map, file);
 		return file;
 	}
 	
 	@Override
-	public Link addLink(String name, Entry pointer) throws UnsupportedEntry {
-		VirtualLink file = VirtualLink.create(name, pointer);
-		file.setParent(this);
-		Folder.add(map, file);
+	public synchronized Link addLink(String name, Entry pointer, OpenOption... flag) throws IOException {
+		if (!FlagUtil.hasFlag(flag, StandardOpenOption.CREATE) && map.containsKey(name))
+			throw new IOException("File already exists!");
+		
+		VirtualLink file = VirtualLink.create(name, this, pointer);
+		add(map, file);
 		return file;
 	}
 	
+	void add(Map<String, Entry> map, Entry ent) {
+		Entry old = map.put(ent.name(), ent);
+		if (old != null)
+			old.onDelete(this);
+	}
+	
 	@Override
-	public void delete(String name) {
+	public Entry copy(String newName, Folder newParent, CopyOption... options) {
+		return null;
+	}
+	
+	@Override
+	public void onDelete(Folder folder) {
+	
+	}
+	
+	@Override
+	public synchronized void delete(String name) {
 		map.remove(name);
 	}
 }
