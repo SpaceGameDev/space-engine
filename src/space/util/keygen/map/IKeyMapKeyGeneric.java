@@ -5,7 +5,7 @@ import space.util.keygen.IKey;
 import java.util.function.Supplier;
 
 /**
- * every {@link IKey} is getting a Value, <b>DEPENDENT</b> on the generic V of the {@link IKey}
+ * every {@link IKey} is getting a VALUE, which is <b>THE SAME AS</b> the generic V of the {@link IKey}
  */
 public interface IKeyMapKeyGeneric<VALUE> extends IKeyMap<VALUE> {
 	

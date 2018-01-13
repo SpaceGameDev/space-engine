@@ -1,5 +1,6 @@
 package space.util.keygen.map;
 
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
@@ -7,8 +8,10 @@ import space.util.indexmap.IndexMapArray;
 import space.util.keygen.IKey;
 import space.util.keygen.IKeyGenerator;
 import space.util.keygen.IllegalKeyException;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class KeyMap<VALUE> implements IKeyMap<VALUE> {
+public class KeyMap<VALUE> implements IKeyMap<VALUE>, ToString {
 	
 	public IndexMap<VALUE> map;
 	public IKeyGenerator gen;
@@ -36,11 +39,6 @@ public class KeyMap<VALUE> implements IKeyMap<VALUE> {
 	}
 	
 	@Override
-	public IKeyGenerator getGen() {
-		return gen;
-	}
-	
-	@Override
 	public int size() {
 		return map.size();
 	}
@@ -58,5 +56,18 @@ public class KeyMap<VALUE> implements IKeyMap<VALUE> {
 	@Override
 	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
 		return map.tableIterator();
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("map", this.map);
+		tsh.add("gen", this.gen);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }

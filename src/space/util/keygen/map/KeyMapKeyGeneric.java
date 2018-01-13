@@ -89,4 +89,15 @@ public class KeyMapKeyGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMapKey
 		check(key);
 		return map.remove(key.getID(), v);
 	}
+	
+	public static class KeyMapKeyGenericWithGenerator<VALUE> extends KeyMapKeyGeneric<VALUE> implements IKeyGenerator {
+		
+		public <T> IKey<T> generateKey() {
+			return gen.generateKey();
+		}
+		
+		public boolean isKeyOf(IKey<?> key) {
+			return gen.isKeyOf(key);
+		}
+	}
 }

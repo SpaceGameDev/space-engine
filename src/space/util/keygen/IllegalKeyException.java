@@ -4,7 +4,7 @@ package space.util.keygen;
  * thrown when a {@link IKey} is used which is not allowed to be used
  * common reasons:
  * - the key is not made by a specific generator
- * - the key is invalid or was released
+ * - the key is invalid or was freed
  */
 public class IllegalKeyException extends RuntimeException {
 	

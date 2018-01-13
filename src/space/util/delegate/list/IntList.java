@@ -59,6 +59,14 @@ public class IntList implements ToString {
 			throw new IndexOutOfBoundsException();
 	}
 	
+	public int size() {
+		return size;
+	}
+	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
 	public void add(int i) {
 		ensureCapacityIndex(size);
 		array[size++] = i;
