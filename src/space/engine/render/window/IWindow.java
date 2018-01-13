@@ -1,8 +1,11 @@
 package space.engine.render.window;
 
 import space.util.baseobject.additional.Freeable;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 
 public interface IWindow extends Freeable {
+	
+	void update(IAttributeList format);
 	
 	void makeContextCurrent();
 	
@@ -16,6 +19,4 @@ public interface IWindow extends Freeable {
 	default void free() {
 		destroy();
 	}
-	
-	void update(WindowFormat format);
 }

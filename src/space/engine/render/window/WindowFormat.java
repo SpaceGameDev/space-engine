@@ -1,7 +1,6 @@
 package space.engine.render.window;
 
 import space.engine.render.window.callback.CharCallback;
-import space.engine.render.window.callback.JoystickCallback;
 import space.engine.render.window.callback.KeyCallback;
 import space.engine.render.window.callback.MouseClickCallback;
 import space.engine.render.window.callback.MousePositionCallback;
@@ -11,158 +10,56 @@ import space.engine.render.window.callback.WindowFBOResizeCallback;
 import space.engine.render.window.callback.WindowFocusCallback;
 import space.engine.render.window.callback.WindowPositionCallback;
 import space.engine.render.window.callback.WindowResizeCallback;
+import space.util.gui.monofont.MonofontGuiApi;
+import space.util.keygen.IKey;
+import space.util.keygen.attribute.AttributeListCreator;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.string.toStringHelper.ToStringHelper;
+
+import java.util.Arrays;
 
 public class WindowFormat {
 	
-	public int width = 800;
-	public int height = 600;
-	public WindowMode mode = WindowMode.WINDOWED;
+	public static final AttributeListCreator ATTRIBUTE_LIST_CREATOR = new AttributeListCreator();
 	
-	public boolean isVisible = true;
-	public int monitor = 0;
-	public String title = "No Title";
-	public boolean allowResize = false;
-	public boolean doubleDuffer = true;
+	//main window settings
+	public static final IKey<Integer> WINDOW_WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> WINDOW_HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowMode> WINDOW_MODE = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
-	public IWindow share = null;
-	public GLApiType GLApi = GLApiType.GL;
-	public int GLVersionMajor = 1;
-	public int GLVersionMinor = 1;
-	public boolean GLDeprecated = true;
+	//additional window settings
+	public static final IKey<Boolean> IS_VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> MONTIOR = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<String> TITLE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Boolean> ALLOW_RESIZE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Boolean> DOUBLE_BUFFER = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
-	public int r = 8;
-	public int g = 8;
-	public int b = 8;
-	public int a = 0;
-	public int depth = 24;
-	public int stencil = 8;
+	//gl window settings
+	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
-	public boolean asyncEventPoll = false;
+	//fbo
+	public static final IKey<Integer> FBO_R = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> FBO_G = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> FBO_B = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> FBO_A = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> FBO_DEPTH = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> FBO_STENCIL = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
-	public CharCallback charCallback;
-	public JoystickCallback joystickCallback;
-	public KeyCallback keyCallback;
-	public MouseClickCallback mouseClickCallback;
-	public MousePositionCallback mousePositionCallback;
-	public ScrollCallback scrollCallback;
-	public WindowCloseRequestedCallback windowCloseRequestedCallback;
-	public WindowFBOResizeCallback windowFBOResizeCallback;
-	public WindowFocusCallback windowFocusCallback;
-	public WindowPositionCallback windowPositionCallback;
-	public WindowResizeCallback windowResizeCallback;
-	
-	public WindowFormat setWindow(int width, int height, WindowMode mode) {
-		this.width = width;
-		this.height = height;
-		this.mode = mode;
-		return this;
-	}
-	
-	public WindowFormat setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
-		return this;
-	}
-	
-	public WindowFormat confContextOnly() {
-		setVisible(false);
-		setWindow(1, 1, WindowMode.WINDOWED);
-		setWindowSettings(0, "ContextOnly", false, false);
-		setOutputFBO(0, 0, 0, 0, 0, 0);
-		setAsyncEventPoll(true);
-		return this;
-	}
-	
-	public WindowFormat setWindowSettings(int monitor, String title, boolean allowResize, boolean doubleBuffer) {
-		this.monitor = monitor;
-		this.title = title;
-		this.allowResize = allowResize;
-		this.doubleDuffer = doubleBuffer;
-		return this;
-	}
-	
-	public WindowFormat setOutputFBO(int r, int g, int b, int a, int depth, int stencil) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = a;
-		this.depth = depth;
-		this.stencil = stencil;
-		return this;
-	}
-	
-	public WindowFormat setShare(IWindow share) {
-		this.share = share;
-		return this;
-	}
-	
-	public WindowFormat setContextConfig(GLApiType GLApiType, int GLVersionMajor, int GLVersionMinor, boolean GLDeprecated) {
-		setShare(null);
-		this.GLApi = GLApiType;
-		this.GLVersionMajor = GLVersionMajor;
-		this.GLVersionMinor = GLVersionMinor;
-		this.GLDeprecated = GLDeprecated;
-		return this;
-	}
-	
-	public WindowFormat setAsyncEventPoll(boolean asyncEventPoll) {
-		this.asyncEventPoll = asyncEventPoll;
-		return this;
-	}
-	
-	public WindowFormat setCharCallback(CharCallback charCallback) {
-		this.charCallback = charCallback;
-		return this;
-	}
-	
-	public WindowFormat setJoystickCallback(JoystickCallback joystickCallback) {
-		this.joystickCallback = joystickCallback;
-		return this;
-	}
-	
-	public WindowFormat setKeyCallback(KeyCallback keyCallback) {
-		this.keyCallback = keyCallback;
-		return this;
-	}
-	
-	public WindowFormat setMouseClickCallback(MouseClickCallback mouseClickCallback) {
-		this.mouseClickCallback = mouseClickCallback;
-		return this;
-	}
-	
-	public WindowFormat setMousePositionCallback(MousePositionCallback mousePositionCallback) {
-		this.mousePositionCallback = mousePositionCallback;
-		return this;
-	}
-	
-	public WindowFormat setScrollCallback(ScrollCallback scrollCallback) {
-		this.scrollCallback = scrollCallback;
-		return this;
-	}
-	
-	public WindowFormat setWindowCloseRequestedCallback(WindowCloseRequestedCallback windowCloseRequestedCallback) {
-		this.windowCloseRequestedCallback = windowCloseRequestedCallback;
-		return this;
-	}
-	
-	public WindowFormat setWindowFBOResizeCallback(WindowFBOResizeCallback windowFBOResizeCallback) {
-		this.windowFBOResizeCallback = windowFBOResizeCallback;
-		return this;
-	}
-	
-	public WindowFormat setWindowFocusCallback(WindowFocusCallback windowFocusCallback) {
-		this.windowFocusCallback = windowFocusCallback;
-		return this;
-	}
-	
-	public WindowFormat setWindowPositionCallback(WindowPositionCallback windowPositionCallback) {
-		this.windowPositionCallback = windowPositionCallback;
-		return this;
-	}
-	
-	public WindowFormat setWindowResizeCallback(WindowResizeCallback windowResizeCallback) {
-		this.windowResizeCallback = windowResizeCallback;
-		return this;
-	}
+	//callbacks
+	public static final IKey<CharCallback> CHAR_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<KeyCallback> KEY_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<MouseClickCallback> MOUSE_CLICK_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<MousePositionCallback> MOUSE_POSITION_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<ScrollCallback> MOUSE_SCROLL_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowCloseRequestedCallback> WINDOW_CLOSE_REQUESTED_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowFBOResizeCallback> WINDOW_FBO_RESIZE_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowFocusCallback> WINDOW_FOCUS_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowPositionCallback> WINDOW_POSITION_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowResizeCallback> WINDOW_RESIZE_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
 	public enum WindowMode {
 		
@@ -178,5 +75,18 @@ public class WindowFormat {
 		GLES,
 		NONE
 		
+	}
+	
+	public static void main(String[] args) {
+		ToStringHelper.setDefault(MonofontGuiApi.TSH);
+		
+		IAttributeList windowFormat = ATTRIBUTE_LIST_CREATOR.create();
+//		windowFormat.get(windowDimensions).set(1920, 1080, WindowMode.WINDOWED);
+		windowFormat.put(WINDOW_WIDTH, 800);
+		windowFormat.put(WINDOW_HEIGHT, 600);
+		windowFormat.put(WINDOW_MODE, WindowMode.WINDOWED);
+		System.out.println(windowFormat);
+		System.out.println(windowFormat.getClass());
+		System.out.println(Arrays.toString(windowFormat.getClass().getDeclaredConstructors()));
 	}
 }

@@ -109,7 +109,7 @@ public class WindowGLFWWindow implements IWindow {
 	
 	public static void setHints(WindowFormat f) {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		glfwWindowHint(GLFW_RESIZABLE, f.allowResize ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, WindowFormat.ALLOW_RESIZE ? GLFW_TRUE : GLFW_FALSE);
 		glfwWindowHint(GLFW_DOUBLEBUFFER, f.doubleDuffer ? GLFW_TRUE : GLFW_FALSE);
 		
 		glfwWindowHint(GLFW_RED_BITS, f.r);
@@ -139,7 +139,7 @@ public class WindowGLFWWindow implements IWindow {
 			}
 			
 			if (vidMode != null) {
-				storage.window = glfwCreateWindow(vidMode.width(), vidMode.height(), f.title, 0, getShareId());
+				storage.window = glfwCreateWindow(vidMode.width(), vidMode.height(), WindowFormat.TITLE, 0, getShareId());
 				glfwSetWindowMonitor(storage.window, mon, 0, 0, vidMode.width(), vidMode.height(), vidMode.refreshRate());
 				return;
 			}
@@ -147,12 +147,12 @@ public class WindowGLFWWindow implements IWindow {
 		
 		GLFWVidMode vidMode = glfwGetVideoMode(mon);
 		glfwWindowHint(GLFW_DECORATED, f.mode == WindowMode.BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
-		storage.window = glfwCreateWindow(f.width, f.height, f.title, 0, getShareId());
+		storage.window = glfwCreateWindow(f.width, f.height, WindowFormat.TITLE, 0, getShareId());
 		glfwSetWindowMonitor(storage.window, NULL, (vidMode.width() - f.width) / 2, (vidMode.height() - f.height) / 2, f.width, f.height, 0);
 	}
 	
 	public void copyCallbacks(WindowFormat f) {
-		this.charCallback = f.charCallback;
+		this.charCallback = WindowFormat.CHAR_CALLBACK;
 		this.joystickCallback = f.joystickCallback;
 		this.keyCallback = f.keyCallback;
 		this.mouseClickCallback = f.mouseClickCallback;
@@ -233,7 +233,7 @@ public class WindowGLFWWindow implements IWindow {
 			GLFWWindowResizeCallback = null;
 		}
 		
-		if (f.isVisible)
+		if (WindowFormat.IS_VISIBLE)
 			glfwShowWindow(storage.window);
 	}
 	
