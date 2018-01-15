@@ -1,4 +1,4 @@
-package space.util.sync.task;
+package space.util.task;
 
 public class CollectiveExecutionException extends Exception {
 	
