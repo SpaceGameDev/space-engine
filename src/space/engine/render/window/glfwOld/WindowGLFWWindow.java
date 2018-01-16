@@ -1,4 +1,4 @@
-package space.engine.render.window.glfw;
+package space.engine.render.window.glfwOld;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWCharCallbackI;
@@ -18,12 +18,12 @@ import space.engine.render.window.WindowException;
 import space.engine.render.window.WindowFormat;
 import space.engine.render.window.WindowFormat.GLApiType;
 import space.engine.render.window.WindowFormat.WindowMode;
-import space.engine.render.window.callback.CharCallback;
-import space.engine.render.window.callback.JoystickCallback;
-import space.engine.render.window.callback.KeyCallback;
+import space.engine.render.window.callback.JoystickConnectCallback;
+import space.engine.render.window.callback.KeyboardCharCallback;
+import space.engine.render.window.callback.KeyboardKeyCallback;
 import space.engine.render.window.callback.MouseClickCallback;
 import space.engine.render.window.callback.MousePositionCallback;
-import space.engine.render.window.callback.ScrollCallback;
+import space.engine.render.window.callback.MouseScrollCallback;
 import space.engine.render.window.callback.WindowCloseRequestedCallback;
 import space.engine.render.window.callback.WindowFBOResizeCallback;
 import space.engine.render.window.callback.WindowFocusCallback;
@@ -41,12 +41,12 @@ public class WindowGLFWWindow implements IWindow {
 	public WindowGLFWWindow glfwShare;
 	public WindowGLFWWindowStorage storage = new WindowGLFWWindowStorage();
 	
-	public CharCallback charCallback;
-	public JoystickCallback joystickCallback;
-	public KeyCallback keyCallback;
+	public KeyboardCharCallback charCallback;
+	public JoystickConnectCallback joystickCallback;
+	public KeyboardKeyCallback keyCallback;
 	public MouseClickCallback mouseClickCallback;
 	public MousePositionCallback mousePositionCallback;
-	public ScrollCallback scrollCallback;
+	public MouseScrollCallback scrollCallback;
 	public WindowCloseRequestedCallback windowCloseRequestedCallback;
 	public WindowFBOResizeCallback windowFBOResizeCallback;
 	public WindowFocusCallback windowFocusCallback;
@@ -308,7 +308,7 @@ public class WindowGLFWWindow implements IWindow {
 	public static class WindowGLFWWindowStorage implements IReleasable {
 		
 		long window;
-		JoystickCallback oldJoystickCallback;
+		JoystickConnectCallback oldJoystickCallback;
 		
 		@Override
 		public synchronized void release() {

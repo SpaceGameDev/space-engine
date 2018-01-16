@@ -1,18 +1,14 @@
-package space.engine.render.window.glfw;
+package space.engine.render.window.glfwOld;
 
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.render.window.IWindowFramework;
-import space.engine.render.window.WindowFormat;
-import space.engine.render.window.callback.JoystickCallback;
+import space.engine.render.window.callback.JoystickConnectCallback;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.logger.Logger;
 import spaceOld.engine.logger.LogLevel;
 import spaceOld.engine.logger.SubLogger;
-import spaceOld.engine.releasable.IReleasable;
 import spaceOld.util.map.TokenMap;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -22,43 +18,42 @@ public class WindowGLFWFramework implements IWindowFramework<WindowGLFWWindow> {
 	
 	public final Object windowCreationSync = new Object();
 	public WindowGLFWErrorCallback errorCallback;
-	
-	public final List<JoystickCallback> joystickCallbacks = Collections.synchronizedList(new ArrayList<>());
+
+//	ChainedTaskBuilder<Predicate<>>
 	
 	@Override
-	public void init(Logger logger) {
+	public void init(Logger logger) throws GLFWException {
 		errorCallback = new WindowGLFWErrorCallback(logger);
-		setErrorBallback();
+		setErrorCallback();
 		if (!glfwInit())
 			throw new GLFWException("GLFWInit failed!");
 		
 		glfwSetJoystickCallback((int joy, int event) -> {
 			boolean plugged = event == GLFW_CONNECTED;
 			synchronized (joystickCallbacks) {
-				for (JoystickCallback c : joystickCallbacks) {
+				for (JoystickConnectCallback c : joystickCallbacks)
 					c.joystickConnect(null, joy, plugged);
-				}
 			}
 		});
 	}
 	
 	@Override
-	public void newThread() {
-		setErrorBallback();
+	public void newWindowInteractingThread() {
+		setErrorCallback();
 	}
 	
-	public void setErrorBallback() {
+	public void setErrorCallback() {
 		glfwSetErrorCallback(errorCallback);
 	}
 	
 	@Override
-	public WindowGLFWWindow create(WindowFormat format) {
+	public WindowGLFWWindow create(IAttributeList format) {
 		return new WindowGLFWWindow(this, format);
 	}
 	
-	//destroy
+	//free
 	@Override
-	public void destroy() {
+	public void free() {
 	
 	}
 	
@@ -68,19 +63,6 @@ public class WindowGLFWFramework implements IWindowFramework<WindowGLFWWindow> {
 			free();
 		} finally {
 			super.finalize();
-		}
-	}
-	
-	public static class WindowGLFWFrameworkReleaseable implements IReleasable {
-		
-		public boolean released = false;
-		
-		@Override
-		public synchronized void release() {
-			if (released)
-				return;
-			glfwTerminate();
-			released = true;
 		}
 	}
 	

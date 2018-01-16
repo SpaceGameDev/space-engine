@@ -8,14 +8,10 @@ public interface IWindowFramework<W extends IWindow> extends Freeable {
 	
 	void init(Logger logger);
 	
-	void newThread();
+	void newWindowInteractingThread();
 	
 	W create(IAttributeList format);
 	
-	void destroy();
-	
 	@Override
-	default void free() {
-		destroy();
-	}
+	void free();
 }

@@ -1,4 +1,4 @@
-package space.engine.render.window.glfw;
+package space.engine.render.window.glfwOld;
 
 public class GLFWException extends RuntimeException {
 	
