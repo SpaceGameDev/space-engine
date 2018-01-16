@@ -12,14 +12,14 @@ import java.util.function.Supplier;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
-	public static int defaultCapacity = 4;
-	public static int expandShift = 1;
+	public static int DEFAULT_CAPACITY = 4;
+	public static int EXPAND_SHIFT = 1;
 	
 	public int length;
 	public VALUE[] array;
 	
 	public IndexMapArray() {
-		this(defaultCapacity);
+		this(DEFAULT_CAPACITY);
 	}
 	
 	public IndexMapArray(int initCapacity) {
@@ -35,11 +35,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	public boolean ensureCapacity(int capa) {
 		int oldl = array.length;
 		if (oldl < capa) {
-			
-			VALUE[] oldArray = array;
-			//noinspection unchecked
-			array = (VALUE[]) new Object[ArrayUtils.getOptimalArraySizeExpansion(oldl, capa, expandShift)];
-			System.arraycopy(oldArray, 0, array, 0, oldl);
+			array = Arrays.copyOf(array, ArrayUtils.getOptimalArraySizeExpansion(oldl, capa, EXPAND_SHIFT));
 			return true;
 		}
 		return false;
@@ -211,7 +207,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	//other
 	@Override
 	public void clear() {
-		Arrays.fill(array, null);
+		Arrays.fill(array, 0, length, null);
 	}
 	
 	@Override

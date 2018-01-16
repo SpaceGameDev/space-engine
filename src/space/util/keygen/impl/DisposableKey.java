@@ -7,18 +7,29 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 	
 	public final int id;
 	public DisposableKeyGenerator gen;
+	public Supplier<T> def;
 	
 	public DisposableKey(int id, DisposableKeyGenerator gen) {
+		this(id, gen, () -> null);
+	}
+	
+	public DisposableKey(int id, DisposableKeyGenerator gen, T def) {
+		this(id, gen, () -> def);
+	}
+	
+	public DisposableKey(int id, DisposableKeyGenerator gen, Supplier<T> def) {
 		if (id < 0)
 			throw new IllegalArgumentException("id cannot be negative, possible overflow?");
 		
 		this.id = id;
 		this.gen = gen;
+		this.def = def;
 	}
 	
 	//id
@@ -27,6 +38,11 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 		if (gen == null)
 			throw new IllegalStateException("Key disposed!");
 		return id;
+	}
+	
+	@Override
+	public T getDefaultValue() {
+		return def.get();
 	}
 	
 	//free

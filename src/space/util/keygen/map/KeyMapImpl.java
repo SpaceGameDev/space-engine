@@ -1,35 +1,45 @@
 package space.util.keygen.map;
 
+import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
+import space.util.indexmap.IndexMap.IndexMapEntry;
+import space.util.indexmap.IndexMapArray;
 import space.util.keygen.IKey;
 import space.util.keygen.IKeyGenerator;
+import space.util.keygen.IllegalKeyException;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.function.Supplier;
 
-public class KeyMapGlobalGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMapGeneralGeneric<VALUE> {
+public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, space.util.baseobject.ToString {
 	
-	public KeyMapGlobalGeneric() {
+	public IndexMap<VALUE> map;
+	public IKeyGenerator gen;
+	
+	public KeyMapImpl() {
+		this(new IndexMapArray<>());
 	}
 	
-	public KeyMapGlobalGeneric(IndexMap<VALUE> map) {
-		super(map);
+	public KeyMapImpl(IndexMap<VALUE> map) {
+		this.map = map;
 	}
 	
-	public KeyMapGlobalGeneric(IKeyGenerator gen) {
-		super(gen);
+	public KeyMapImpl(IKeyGenerator gen) {
+		this(new IndexMapArray<>(), gen);
 	}
 	
-	public KeyMapGlobalGeneric(IndexMap<VALUE> map, IKeyGenerator gen) {
-		super(map, gen);
+	public KeyMapImpl(IndexMap<VALUE> map, IKeyGenerator gen) {
+		this.map = map;
+		this.gen = gen;
+	}
+	
+	public void check(IKey<?> key) {
+		if (gen != null && !gen.isKeyOf(key))
+			throw new IllegalKeyException();
 	}
 	
 	//methods
-	@Override
-	public boolean contains(IKey<?> key) {
-		check(key);
-		return map.contains(key.getID());
-	}
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public VALUE get(IKey<?> key) {
@@ -90,10 +100,47 @@ public class KeyMapGlobalGeneric<VALUE> extends KeyMap<VALUE> implements IKeyMap
 		return map.remove(key.getID(), v);
 	}
 	
-	public static class KeyMapGlobalGenericWithGenerator<VALUE> extends KeyMapGlobalGeneric<VALUE> implements IKeyGenerator {
+	@Override
+	public int size() {
+		return map.size();
+	}
+	
+	@Override
+	public void clear() {
+		map.clear();
+	}
+	
+	@Override
+	public Iteratorable<VALUE> iterator() {
+		return map.iterator();
+	}
+	
+	@Override
+	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
+		return map.tableIterator();
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("map", this.map);
+		tsh.add("gen", this.gen);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
+	public static class KeyMapImplWithGenerator<VALUE> extends KeyMapImpl<VALUE> implements IKeyGenerator {
 		
 		public <T> IKey<T> generateKey() {
 			return gen.generateKey();
+		}
+		
+		public <T> IKey<T> generateKey(Supplier<T> def) {
+			return gen.generateKey(def);
 		}
 		
 		public boolean isKeyOf(IKey<?> key) {
