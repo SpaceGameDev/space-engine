@@ -17,6 +17,7 @@ import space.util.task.function.typehandler.ITypeHandler;
 import space.util.task.function.typehandler.TypeBiConsumer;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
 public class BaseLogger extends LoggerImpl {
@@ -43,19 +44,24 @@ public class BaseLogger extends LoggerImpl {
 	
 	@Override
 	public void logDirect(LogMessage msg) {
-		handler.execute(new ITypeHandler<Prefix>() {
-			@Override
-			public void accept(Prefix consumer) {
-				consumer.accept(msg);
-			}
-			
-			@Override
-			public boolean allowMultithreading() {
-				return false;
-			}
-		});
-		
-		printers.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D()));
+		try {
+			handler.execute(new ITypeHandler<Prefix>() {
+				@Override
+				public void accept(Prefix consumer) {
+					consumer.accept(msg);
+				}
+				
+				@Override
+				public boolean allowMultithreading() {
+					return false;
+				}
+			}).awaitAndRethrow();
+			printers.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D())).awaitAndRethrow();
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 	
 	@Override

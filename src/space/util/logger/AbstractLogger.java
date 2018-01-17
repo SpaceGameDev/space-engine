@@ -4,7 +4,7 @@ import space.util.string.CharSequence2D;
 
 public abstract class AbstractLogger implements Logger {
 	
-	public LogLevel minLevel;
+	public LogLevel minLevel = LogLevel.INFO;
 	
 	public void setMinLevel(LogLevel minLevel) {
 		this.minLevel = minLevel;

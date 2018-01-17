@@ -134,9 +134,9 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	
 	//static
 	public static int findNullCharacter(Buffer buffer) {
-		for (int i = (int) (buffer.capacity() - 1); i >= 0; i--)
-			if (buffer.getByte(i) != NULL_CHARACTER)
-				return i + 1;
+		for (int i = 0; i < buffer.capacity(); i++)
+			if (buffer.getByte(i) == NULL_CHARACTER)
+				return i;
 		return -1;
 	}
 }

@@ -51,13 +51,14 @@ public class NioByteBufferWrapper {
 	}
 	
 	public static ByteBuffer wrap(Buffer buffer, int length) {
-		if (length < buffer.capacity())
+		if (length > buffer.capacity())
 			throw new RuntimeException("length exceeds capacity: " + length + " > " + buffer.capacity());
 		try {
 			ByteBuffer b = (ByteBuffer) UNSAFE.allocateInstance(BYTE_BUFFER_CLASS);
 			UNSAFE.putLong(b, BYTE_BUFFER_ADDRESS, buffer.address());
 			UNSAFE.putInt(b, BYTE_BUFFER_CAPACITY, length);
 			UNSAFE.putObject(b, BYTE_BUFFER_PARENT, null);
+			b.clear();
 			return b;
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
