@@ -106,6 +106,14 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
+		public <V> V push(IKey<V> key, IAttributeList list) {
+			check(key);
+			V v = list.get(key);
+			indexMap.put(key.getID(), v);
+			return v;
+		}
+		
+		@Override
 		@SuppressWarnings("unchecked")
 		public <V> void reset(IKey<V> key) {
 			check(key);

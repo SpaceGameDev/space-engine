@@ -50,6 +50,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> void put(IKey<V> key, V v);
 		
 		/**
+		 * copies the value for a given {@link IKey} from another {@link IAttributeList}, returning the set value
+		 */
+		<V> V push(IKey<V> key, IAttributeList list);
+		
+		/**
 		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
 		 */
 		<V> void reset(IKey<V> key);

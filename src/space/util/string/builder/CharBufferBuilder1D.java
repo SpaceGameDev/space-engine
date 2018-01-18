@@ -28,9 +28,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 	@Override
 	public boolean ensureCapacity(int capa) {
 		if (capa > buffer.length) {
-			char[] n = new char[ArrayUtils.getOptimalArraySizeExpansion(buffer.length, capa, expandShift)];
-			System.arraycopy(buffer, 0, n, 0, buffer.length);
-			buffer = n;
+			buffer = Arrays.copyOf(buffer, ArrayUtils.getOptimalArraySizeExpansion(buffer.length, capa, expandShift));
 			return true;
 		}
 		return false;
@@ -104,7 +102,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 	//get result
 	@Override
 	public char[] getChars() {
-		return buffer;
+		return Arrays.copyOfRange(buffer, 0, pos);
 	}
 	
 	@Override
