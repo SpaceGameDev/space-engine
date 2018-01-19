@@ -1,5 +1,6 @@
 package space.engine.render.window.glfw;
 
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
 import space.engine.side.Side;
 import space.util.buffer.alloc.DefaultBufferAllocator;
@@ -17,6 +18,11 @@ public class GLFWTest {
 		BaseLogger.defaultPrinter(logger);
 		
 		GLFWWindowFramework frame = new GLFWWindowFramework(logger);
-		GLFW.glfwSwapInterval(-1);
+		PointerBuffer monitors = GLFW.glfwGetMonitors();
+		for (int i = 0; i < monitors.capacity(); i++) {
+			long l = monitors.get(i);
+			System.out.println(l + " - " + GLFW.glfwGetMonitorName(l));
+		}
+//		GLFW.glfwSwapInterval(-1);
 	}
 }

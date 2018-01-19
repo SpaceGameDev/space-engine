@@ -109,7 +109,7 @@ public class WindowGLFWWindow implements IWindow {
 	
 	public static void setHints(WindowFormat f) {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		glfwWindowHint(GLFW_RESIZABLE, WindowFormat.ALLOW_RESIZE ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, WindowFormat.RESIZEABLE ? GLFW_TRUE : GLFW_FALSE);
 		glfwWindowHint(GLFW_DOUBLEBUFFER, f.doubleDuffer ? GLFW_TRUE : GLFW_FALSE);
 		
 		glfwWindowHint(GLFW_RED_BITS, f.r);
@@ -233,7 +233,7 @@ public class WindowGLFWWindow implements IWindow {
 			GLFWWindowResizeCallback = null;
 		}
 		
-		if (WindowFormat.IS_VISIBLE)
+		if (WindowFormat.VISIBLE)
 			glfwShowWindow(storage.window);
 	}
 	
