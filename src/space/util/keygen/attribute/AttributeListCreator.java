@@ -83,7 +83,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return v != DEFAULT_OBJECT ? v : key.getDefaultValue();
 		}
 		
-		//overrides
+		//access
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> V getDirect(IKey<V> key) {
@@ -103,14 +103,6 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public <V> void put(IKey<V> key, V v) {
 			check(key);
 			indexMap.put(key.getID(), v);
-		}
-		
-		@Override
-		public <V> V push(IKey<V> key, IAttributeList list) {
-			check(key);
-			V v = list.get(key);
-			indexMap.put(key.getID(), v);
-			return v;
 		}
 		
 		@Override
@@ -170,7 +162,36 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.remove(key.getID(), v);
 		}
 		
-		//delegate
+		//across AttributeLists
+		@Override
+		public <V> V pull(IAttributeList list, IKey<V> key) {
+			check(key);
+			V v = list.get(key);
+			indexMap.put(key.getID(), v);
+			return v;
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public <V> void pull(IAttributeList list, IKey<V>... keys) {
+			for (IKey<V> key : keys) {
+				check(key);
+				indexMap.put(key.getID(), list.get(key));
+			}
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public <V> boolean anyDifference(IAttributeList list, IKey<V>... keys) {
+			for (IKey<V> key : keys) {
+				check(key);
+				if (indexMap.get(key.getID()) != list.get(key))
+					return true;
+			}
+			return false;
+		}
+		
+		//other
 		@Override
 		public int size() {
 			return indexMap.size();

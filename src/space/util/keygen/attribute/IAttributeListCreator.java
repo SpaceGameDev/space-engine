@@ -32,7 +32,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	
 	interface IAttributeList {
 		
-		//methods
+		//access
 		
 		/**
 		 * gets the value for a given {@link IKey} <b>without</b> checking if it's the default value
@@ -48,11 +48,6 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * sets the value to v for a given {@link IKey}
 		 */
 		<V> void put(IKey<V> key, V v);
-		
-		/**
-		 * copies the value for a given {@link IKey} from another {@link IAttributeList}, returning the set value
-		 */
-		<V> V push(IKey<V> key, IAttributeList list);
 		
 		/**
 		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
@@ -93,6 +88,25 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey} if the current value is equal to v
 		 */
 		<V> boolean reset(IKey<V> key, V v);
+		
+		//across AttributeLists
+		
+		/**
+		 * copies the value for a given {@link IKey} from another {@link IAttributeList}, returning the set value
+		 */
+		<V> V pull(IAttributeList list, IKey<V> key);
+		
+		/**
+		 * copies the value for a given {@link IKey} from another {@link IAttributeList}
+		 */
+		@SuppressWarnings("unchecked")
+		<V> void pull(IAttributeList list, IKey<V>... keys);
+		
+		/**
+		 * checks if there is any difference between this and the supplied {@link IAttributeList} for the supplied {@link IKey IKeys}
+		 */
+		@SuppressWarnings("unchecked")
+		<V> boolean anyDifference(IAttributeList list, IKey<V>... keys);
 		
 		//others
 		
