@@ -94,19 +94,25 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		/**
 		 * copies the value for a given {@link IKey} from another {@link IAttributeList}, returning the set value
 		 */
-		<V> V pull(IAttributeList list, IKey<V> key);
+		<V> V push(IAttributeList list, IKey<V> key);
 		
 		/**
 		 * copies the value for a given {@link IKey} from another {@link IAttributeList}
 		 */
 		@SuppressWarnings("unchecked")
-		<V> void pull(IAttributeList list, IKey<V>... keys);
+		<V> void push(IAttributeList list, IKey<V>... keys);
 		
 		/**
 		 * checks if there is any difference between this and the supplied {@link IAttributeList} for the supplied {@link IKey IKeys}
 		 */
 		@SuppressWarnings("unchecked")
 		<V> boolean anyDifference(IAttributeList list, IKey<V>... keys);
+		
+		/**
+		 * checks if there is any difference between this and the supplied {@link IAttributeList} for the supplied single {@link IKey IKey}
+		 */
+		@SuppressWarnings("unchecked")
+		<V> boolean anyDifference(IAttributeList list, IKey<V> key);
 		
 		//others
 		

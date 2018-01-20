@@ -75,8 +75,8 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		public void check(IKey<?> key) {
-			if (gen != null && !gen.isKeyOf(key))
-				throw new IllegalKeyException();
+			if (!gen.isKeyOf(key))
+				throw new IllegalKeyException(key);
 		}
 		
 		public <V> V correctDefault(V v, IKey<V> key) {
@@ -164,25 +164,57 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		//across AttributeLists
 		@Override
-		public <V> V pull(IAttributeList list, IKey<V> key) {
+		@SuppressWarnings("unchecked")
+		public <V> V push(IAttributeList list, IKey<V> key) {
 			check(key);
-			V v = list.get(key);
-			indexMap.put(key.getID(), v);
-			return v;
+			V v = (V) indexMap.get(key.getID());
+			list.put(key, v);
+			return correctDefault(v, key);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> void pull(IAttributeList list, IKey<V>... keys) {
+		public <V> void push(IAttributeList list, IKey<V>... keys) {
+			if (list instanceof AttributeList) {
+				AttributeList intList = (AttributeList) list;
+				boolean diffGen = intList.getGen() != gen;
+				for (IKey<V> key : keys) {
+					check(key);
+					if (diffGen)
+						intList.check(key);
+					intList.indexMap.put(key.getID(), indexMap.get(key.getID()));
+				}
+				return;
+			}
+			
 			for (IKey<V> key : keys) {
 				check(key);
-				indexMap.put(key.getID(), list.get(key));
+				list.put(key, (V) indexMap.get(key.getID()));
 			}
+		}
+		
+		@Override
+		public <V> boolean anyDifference(IAttributeList list, IKey<V> key) {
+			check(key);
+			return indexMap.get(key.getID()) != list.get(key);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> boolean anyDifference(IAttributeList list, IKey<V>... keys) {
+			if (list instanceof AttributeList) {
+				AttributeList intList = (AttributeList) list;
+				boolean diffGen = intList.getGen() != gen;
+				for (IKey<V> key : keys) {
+					check(key);
+					if (diffGen)
+						intList.check(key);
+					if (indexMap.get(key.getID()) != intList.indexMap.get(key.getID()))
+						return true;
+				}
+				return false;
+			}
+			
 			for (IKey<V> key : keys) {
 				check(key);
 				if (indexMap.get(key.getID()) != list.get(key))
@@ -210,6 +242,10 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		@Override
 		public Iteratorable<IndexMapEntry<Object>> tableIterator() {
 			return indexMap.tableIterator();
+		}
+		
+		protected IKeyGenerator getGen() {
+			return gen;
 		}
 		
 		//toString

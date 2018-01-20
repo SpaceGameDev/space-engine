@@ -26,4 +26,8 @@ public class IllegalKeyException extends RuntimeException {
 	public IllegalKeyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
+	
+	public IllegalKeyException(IKey<?> key) {
+		this("Key " + key + " is illegal!");
+	}
 }
