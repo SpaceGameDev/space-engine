@@ -27,24 +27,26 @@ public class WindowFormat {
 	public static final AttributeListCreator ATTRIBUTE_LIST_CREATOR = new AttributeListCreator();
 	
 	//main window settings
-	public static final IKey<Integer> WINDOW_WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey(800); //done
-	public static final IKey<Integer> WINDOW_HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey(600); //done
-	public static final IKey<WindowMode> WINDOW_MODE = ATTRIBUTE_LIST_CREATOR.generateKey(WINDOWED); //done
+	public static final IKey<Integer> WINDOW_POS_X = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> WINDOW_POS_Y = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> WINDOW_WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey(800);
+	public static final IKey<Integer> WINDOW_HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey(600);
+	public static final IKey<WindowMode> WINDOW_MODE = ATTRIBUTE_LIST_CREATOR.generateKey(WINDOWED);
 	
 	//additional window settings
-	public static final IKey<Boolean> VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE); //done
-	public static final IKey<String> MONITOR = ATTRIBUTE_LIST_CREATOR.generateKey(); //done
-	public static final IKey<String> TITLE = ATTRIBUTE_LIST_CREATOR.generateKey("Untitled Window"); //done
-	public static final IKey<Boolean> RESIZEABLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE); //done
-	public static final IKey<Boolean> DOUBLEBUFFER = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE); //done
+	public static final IKey<Boolean> VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
+	public static final IKey<String> MONITOR = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<String> TITLE = ATTRIBUTE_LIST_CREATOR.generateKey("Untitled Window");
+	public static final IKey<Boolean> RESIZEABLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE);
+	public static final IKey<Boolean> DOUBLEBUFFER = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
 	
 	//gl window settings
-	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey(GL); //done
-	public static final IKey<GLProfile> GL_PROFILE = ATTRIBUTE_LIST_CREATOR.generateKey(PROFILE_ANY); //done
-	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey(2); //done
-	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey(1); //done
-	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE); //done
-	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATTRIBUTE_LIST_CREATOR.generateKey(); //done
+	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey(GL);
+	public static final IKey<GLProfile> GL_PROFILE = ATTRIBUTE_LIST_CREATOR.generateKey(PROFILE_ANY);
+	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey(2);
+	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey(1);
+	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
+	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
 	//fbo
 	public static final IKey<Integer> FBO_R = ATTRIBUTE_LIST_CREATOR.generateKey(8);

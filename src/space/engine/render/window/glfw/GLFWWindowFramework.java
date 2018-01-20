@@ -59,25 +59,31 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 		
 		public GLFWWindow(IAttributeList format) {
 			synchronized (GLFW_SYNC) {
-				glfwWindowHint(GLFW_VISIBLE, curr.pull(format, VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
-				glfwWindowHint(GLFW_RESIZABLE, curr.pull(format, RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
-				glfwWindowHint(GLFW_DOUBLEBUFFER, curr.pull(format, DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_VISIBLE, format.push(curr, VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_RESIZABLE, format.push(curr, RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_DOUBLEBUFFER, format.push(curr, DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
 				
 				//GLApi
-				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(curr.pull(format, GL_API_TYPE)));
-				glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(curr.pull(format, GL_PROFILE)));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, curr.pull(format, GL_VERSION_MAJOR));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, curr.pull(format, GL_VERSION_MINOR));
-				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, curr.pull(format, GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(format.push(curr, GL_API_TYPE)));
+				glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.push(curr, GL_PROFILE)));
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.push(curr, GL_VERSION_MAJOR));
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.push(curr, GL_VERSION_MINOR));
+				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, format.push(curr, GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
 				
 				//FBO
+				glfwWindowHint(GLFW_RED_BITS, format.push(curr, FBO_R));
+				glfwWindowHint(GLFW_GREEN_BITS, format.push(curr, FBO_G));
+				glfwWindowHint(GLFW_BLUE_BITS, format.push(curr, FBO_B));
+				glfwWindowHint(GLFW_ALPHA_BITS, format.push(curr, FBO_A));
+				glfwWindowHint(GLFW_DEPTH_BITS, format.push(curr, FBO_DEPTH));
+				glfwWindowHint(GLFW_STENCIL_BITS, format.push(curr, FBO_STENCIL));
 				
 				//windowMode
 				long monitorPointer;
-				WindowMode windowMode = curr.pull(format, WINDOW_MODE);
+				WindowMode windowMode = format.push(curr, WINDOW_MODE);
 				if (windowMode == FULLSCREEN) {
 					glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-					monitorPointer = getMonitorPointer(curr.pull(format, MONITOR));
+					monitorPointer = getMonitorPointer(format.push(curr, MONITOR));
 				} else {
 					glfwWindowHint(GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
 					curr.reset(MONITOR);
@@ -85,13 +91,24 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				}
 				
 				//create
-				windowPointer = glfwCreateWindow(curr.pull(format, WINDOW_WIDTH), curr.pull(format, WINDOW_HEIGHT), curr.pull(format, TITLE), monitorPointer, getWindowSharePointer(curr.get(GL_CONTEXT_SHARE)));
+				windowPointer = glfwCreateWindow(format.push(curr, WINDOW_WIDTH), format.push(curr, WINDOW_HEIGHT), format.push(curr, TITLE), monitorPointer, getWindowSharePointer(curr.get(GL_CONTEXT_SHARE)));
 			}
 		}
 		
 		@Override
 		public void update(IAttributeList format) {
-		
+			if (format.anyDifference(curr, VISIBLE))
+				if (format.push(curr, VISIBLE)) {
+					glfwShowWindow(windowPointer);
+				} else {
+					glfwHideWindow(windowPointer);
+				}
+			if (format.anyDifference(curr, RESIZEABLE))
+				glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, format.push(curr, RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
+			if (format.anyDifference(curr, DOUBLEBUFFER))
+				glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, format.push(curr, DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
+
+//			glfwSetWindowMon
 		}
 		
 		@Override
@@ -141,36 +158,35 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	}
 	
 	protected static long getMonitorPointer(String monitorName) {
-		if (monitorName != null && !monitorName.isEmpty()) {
-			BufferAllocatorStack allocStack = Side.getSide().get(Side.BUFFER_STACK_ALLOC);
-			try {
-				allocStack.push();
-				Buffer sizeBuffer = allocStack.malloc(8);
-				long dest = nglfwGetMonitors(sizeBuffer.address());
-				long size = sizeBuffer.getLong(0);
-				Buffer list = allocStack.alloc(dest, size);
-				
-				for (long i = 0; i < size; i += 8) {
-					long monitorPointer = list.getLong(i);
-					if (monitorName.equals(glfwGetMonitorName(monitorPointer)))
-						return monitorPointer;
-				}
-				
-				throw new IllegalArgumentException("Monitor named '" + monitorName + "' not found!");
-			} finally {
-				allocStack.pop();
+		if (monitorName == null || monitorName.isEmpty())
+			return glfwGetPrimaryMonitor();
+		
+		BufferAllocatorStack allocStack = Side.getSide().get(Side.BUFFER_STACK_ALLOC);
+		try {
+			allocStack.push();
+			Buffer sizeBuffer = allocStack.malloc(8);
+			long dest = nglfwGetMonitors(sizeBuffer.address());
+			long size = sizeBuffer.getLong(0);
+			Buffer list = allocStack.alloc(dest, size);
+			
+			for (long i = 0; i < size; i += 8) {
+				long monitorPointer = list.getLong(i);
+				if (monitorName.equals(glfwGetMonitorName(monitorPointer)))
+					return monitorPointer;
 			}
+			throw new IllegalArgumentException("Monitor named '" + monitorName + "' not found!");
+		} finally {
+			allocStack.pop();
 		}
-		return glfwGetPrimaryMonitor();
 	}
 	
 	protected static long getWindowSharePointer(IWindow windowShare) {
-		if (windowShare != null) {
-			if (!(windowShare instanceof GLFWWindow))
-				throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
-			return ((GLFWWindow) windowShare).windowPointer;
-		}
-		return 0;
+		if (windowShare == null)
+			return 0;
+		
+		if (!(windowShare instanceof GLFWWindow))
+			throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
+		return ((GLFWWindow) windowShare).windowPointer;
 	}
 	
 	//free
