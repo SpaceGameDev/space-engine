@@ -68,7 +68,7 @@ public abstract class AbstractTask implements ITask {
 	}
 	
 	@Override
-	public void addHook(Consumer<? extends IEvent> func) {
+	public void addHook(Consumer<IEvent> func) {
 		addHook0(func);
 	}
 	

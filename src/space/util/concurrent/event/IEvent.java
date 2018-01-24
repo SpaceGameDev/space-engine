@@ -24,7 +24,7 @@ public interface IEvent extends IAwaitable {
 	 *
 	 * @param func the Hook as a {@link Consumer} of ? extends {@link IEvent}
 	 */
-	void addHook(Consumer<? extends IEvent> func);
+	void addHook(Consumer<IEvent> func);
 	
 	/**
 	 * runs a specific Hook.

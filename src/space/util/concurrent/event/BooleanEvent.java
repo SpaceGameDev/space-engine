@@ -12,17 +12,24 @@ public class BooleanEvent extends BooleanSignalable implements IEventRunnable {
 	
 	@Override
 	public synchronized void addHook(Runnable func) {
-		after.add(func);
+		if (after != null)
+			after.add(func);
+		else
+			func.run();
 	}
 	
 	@Override
-	public synchronized void addHook(Consumer<? extends IEvent> func) {
-		after.add(func);
+	public synchronized void addHook(Consumer<IEvent> func) {
+		if (after != null)
+			after.add(func);
+		else
+			func.accept(this);
 	}
 	
 	@Override
-	protected void doNotify() {
+	protected synchronized void doNotify() {
 		super.doNotify();
 		after.forEach(this::runEvent);
+		after = null;
 	}
 }

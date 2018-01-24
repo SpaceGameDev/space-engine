@@ -7,7 +7,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.concurrent.TimeUnit;
 
 /**
- * if signal() is getting called X-times, X Threads will leave the await()-Method
+ * if {@link OneToOneSignalable#signal()} is getting called X-times, X Threads will leave the await()-Method
  */
 public class OneToOneSignalable implements ToString, ISignalable {
 	

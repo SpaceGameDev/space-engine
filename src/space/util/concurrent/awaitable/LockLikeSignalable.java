@@ -7,8 +7,8 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.concurrent.TimeUnit;
 
 /**
- * The {@link LockLikeSignalable} allows you to "lock" with the signal()-Method and "unlock" with the reset()-Method.
- * Only when the amount of "locks" is zero, it is signaled and Threads in await()-Methods return
+ * The {@link LockLikeSignalable} allows you to "lock" with the {@link LockLikeSignalable#signal()} and "unlock" with the {@link LockLikeSignalable#reset()}.
+ * Only when the amount of "locks" turns zero, it is signaled
  */
 public class LockLikeSignalable implements ToString, IResetable {
 	

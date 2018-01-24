@@ -7,7 +7,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.concurrent.TimeUnit;
 
 /**
- * as soon as signal is being called, it will notify
+ * if {@link BooleanSignalable#signal()} is called, it will turn into signaled state and stay there
  */
 public class BooleanSignalable implements ToString, IResetable {
 	

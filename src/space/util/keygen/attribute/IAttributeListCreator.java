@@ -1,5 +1,6 @@
 package space.util.keygen.attribute;
 
+import space.util.concurrent.event.IEvent;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.keygen.IKey;
@@ -13,6 +14,12 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		@Override
 		public String toString() {
 			return "DEF";
+		}
+	};
+	Object UNCHANGED_OBJECT = new Object() {
+		@Override
+		public String toString() {
+			return "UNCH";
 		}
 	};
 	
@@ -30,9 +37,9 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	@Override
 	boolean isKeyOf(IKey<?> key);
 	
-	interface IAttributeList {
+	interface IAbstractAttributeList {
 		
-		//access
+		//get
 		
 		/**
 		 * gets the value for a given {@link IKey} <b>without</b> checking if it's the default value
@@ -45,29 +52,45 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> V get(IKey<V> key);
 		
 		/**
-		 * sets the value to v for a given {@link IKey}
-		 */
-		<V> void put(IKey<V> key, V v);
-		
-		/**
-		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
-		 */
-		<V> void reset(IKey<V> key);
-		
-		/**
 		 * gets the value for a given {@link IKey} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT_OBJECT}
 		 */
 		<V> V getOrDefault(IKey<V> key, V def);
 		
-		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
-		 */
-		<V> boolean putIfDefault(IKey<V> key, V v);
+		//others
 		
 		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 * returns the amount of entries
 		 */
-		<V> boolean putIfDefault(IKey<V> key, Supplier<? extends V> v);
+		int size();
+		
+		/**
+		 * gets an {@link java.util.Iterator} over all values
+		 */
+		Iteratorable<Object> iterator();
+		
+		/**
+		 * gets an {@link java.util.Iterator} over all index / value pairs
+		 */
+		Iteratorable<IndexMapEntry<Object>> tableIterator();
+	}
+	
+	interface IAttributeList extends IAbstractAttributeList {
+		
+		//change event
+		IEvent getChangeEvent();
+		
+		//modification
+		IAttributeListModification modify();
+	}
+	
+	interface IAttributeListModification extends IAbstractAttributeList {
+		
+		//put
+		
+		/**
+		 * sets the value to v for a given {@link IKey}
+		 */
+		<V> void put(IKey<V> key, V v);
 		
 		/**
 		 * sets the value for a given {@link IKey} and returns the previous value
@@ -85,55 +108,32 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);
 		
 		/**
+		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
+		 */
+		<V> void reset(IKey<V> key);
+		
+		/**
 		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey} if the current value is equal to v
 		 */
 		<V> boolean reset(IKey<V> key, V v);
 		
-		//across AttributeLists
+		/**
+		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 */
+		<V> boolean putIfDefault(IKey<V> key, V v);
 		
 		/**
-		 * copies the value for a given {@link IKey} from another {@link IAttributeList}, returning the set value
+		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
 		 */
-		<V> V push(IAttributeList list, IKey<V> key);
+		<V> boolean putIfDefault(IKey<V> key, Supplier<? extends V> v);
 		
-		/**
-		 * copies the value for a given {@link IKey} from another {@link IAttributeList}
-		 */
-		@SuppressWarnings("unchecked")
-		<V> void push(IAttributeList list, IKey<V>... keys);
-		
-		/**
-		 * checks if there is any difference between this and the supplied {@link IAttributeList} for the supplied {@link IKey IKeys}
-		 */
-		@SuppressWarnings("unchecked")
-		<V> boolean anyDifference(IAttributeList list, IKey<V>... keys);
-		
-		/**
-		 * checks if there is any difference between this and the supplied {@link IAttributeList} for the supplied single {@link IKey IKey}
-		 */
-		@SuppressWarnings("unchecked")
-		<V> boolean anyDifference(IAttributeList list, IKey<V> key);
-		
-		//others
-		
-		/**
-		 * returns the alount of entries
-		 */
-		int size();
+		//other
 		
 		/**
 		 * clears all entries
 		 */
 		void clear();
 		
-		/**
-		 * gets an {@link java.util.Iterator} over all values
-		 */
-		Iteratorable<Object> iterator();
-		
-		/**
-		 * gets an {@link java.util.Iterator} over all index / value pairs
-		 */
-		Iteratorable<IndexMapEntry<Object>> tableIterator();
+		void apply();
 	}
 }
