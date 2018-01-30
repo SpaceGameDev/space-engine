@@ -28,6 +28,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 */
 	IAttributeList create();
 	
+	/**
+	 * creates a new {@link IAttributeListModification}
+	 */
+	IAttributeListModification createModify();
+	
 	@Override
 	<T> IKey<T> generateKey();
 	
@@ -74,13 +79,22 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		Iteratorable<IndexMapEntry<Object>> tableIterator();
 	}
 	
+	/**
+	 * An {@link IAttributeList IAttributeList} holds values to all keys generated.<br>
+	 * It can be modified by creating a {@link IAttributeListModification IAttributeListModification} with {@link IAttributeListCreator#createModify()},
+	 * putting all the changing values there and than calling {@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)} to apply changes.
+	 * When applying changes the {@link IEvent} from {@link IAttributeList#getChangeEvent()} is triggered.
+	 *
+	 * @see IAttributeListModification the modification AttributeList
+	 */
 	interface IAttributeList extends IAbstractAttributeList {
 		
-		//change event
-		IEvent getChangeEvent();
+		/**
+		 * @return
+		 */
+		IAttributeListModifyEvent getChangeEvent();
 		
-		//modification
-		IAttributeListModification modify();
+		void apply(IAttributeListModification modification);
 	}
 	
 	interface IAttributeListModification extends IAbstractAttributeList {
@@ -134,6 +148,16 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 */
 		void clear();
 		
-		void apply();
+		/**
+		 * resets all entries
+		 */
+		void resetAll();
+	}
+	
+	interface IAttributeListModifyEvent extends IEvent {
+		
+		IAttributeList getAttributeList();
+		
+		IAttributeListModification getModification();
 	}
 }
