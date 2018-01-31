@@ -1,4 +1,4 @@
-package space.util.task.function.typehandler;
+package space.util.task.typehandler;
 
 public class TypeSingleThreadedOnly<FUNCTION> implements ITypeHandler<FUNCTION> {
 	

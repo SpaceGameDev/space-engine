@@ -1,18 +1,18 @@
-package space.util.task.basic;
+package space.util.task;
 
-import space.util.concurrent.event.IEvent;
-import space.util.task.TaskResult;
+import space.util.task.multi.IEvent;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * A {@link ITask} is something which is created to be executed by some thread in a protected environment,
  * signaling back it's execution, completion and error states. It also allows for Hooks to be added and to be awaited on.
  */
-public interface ITask extends IEvent {
+public interface ITask extends IEvent<Consumer<ITask>> {
 	
 	//run
 	
@@ -27,7 +27,7 @@ public interface ITask extends IEvent {
 	 * cancels the execution of the task
 	 *
 	 * @param mayInterrupt if it should set the interrupt flags on all currently executing threads
-	 * @return true if the task was canceled early enough to not have finished
+	 * @return true if the task was canceled early enough to not have finished, meant for informational purpose
 	 */
 	boolean cancel(boolean mayInterrupt);
 	

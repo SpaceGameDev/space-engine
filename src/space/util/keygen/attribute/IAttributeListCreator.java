@@ -89,9 +89,6 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 */
 	interface IAttributeList extends IAbstractAttributeList {
 		
-		/**
-		 * @return
-		 */
 		IAttributeListModifyEvent getChangeEvent();
 		
 		void apply(IAttributeListModification modification);

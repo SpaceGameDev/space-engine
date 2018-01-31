@@ -1,12 +1,12 @@
-package space.util.task.function.chained;
+package space.util.task.chained;
 
 import space.util.baseobject.BaseObjectInit;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.toStringHelper.ToStringHelper;
-import space.util.task.basic.ITask;
-import space.util.task.function.typehandler.TypeConsumer;
+import space.util.task.ITask;
+import space.util.task.typehandler.TypeConsumer;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

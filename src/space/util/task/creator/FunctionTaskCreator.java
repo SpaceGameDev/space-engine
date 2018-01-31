@@ -1,8 +1,8 @@
-package space.util.task.function.creator;
+package space.util.task.creator;
 
-import space.util.task.basic.ITask;
+import space.util.task.ITask;
 import space.util.task.basic.runnable.AbstractRunnableTask;
-import space.util.task.function.typehandler.ITypeHandler;
+import space.util.task.typehandler.ITypeHandler;
 
 public class FunctionTaskCreator<FUNCTION> implements IFunctionTaskCreator<FUNCTION> {
 	

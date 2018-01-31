@@ -1,7 +1,9 @@
 package space.util.task.basic.runnable;
 
+import space.util.task.ITask;
+
 /**
- * A full implementation of {@link space.util.task.basic.ITask} accepting a {@link Runnable}
+ * A full implementation of {@link ITask} accepting a {@link Runnable}
  */
 public class RunnableTask extends AbstractRunnableTask {
 	

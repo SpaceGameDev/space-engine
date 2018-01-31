@@ -1,7 +1,7 @@
 package space.util.task.basic.runnable;
 
+import space.util.task.ITask;
 import space.util.task.basic.AbstractTask;
-import space.util.task.basic.ITask;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -11,9 +11,9 @@ import static space.util.task.TaskResult.*;
 
 /**
  * An {@link ITask} Implementation which implements it as a {@link Runnable}.
- * If you do not want it as a {@link Runnable}, refer to {@link AbstractTask}.
  * It implements everything except a {@link AbstractRunnableTask#run0()} Method to implement for execution.
- * If you want to submit a Runnable directly, refer to {@link RunnableTask}
+ * If you want to submit a Runnable directly, refer to {@link RunnableTask}.
+ * If you do not want it as a {@link Runnable}, refer to {@link AbstractTask}.
  */
 public abstract class AbstractRunnableTask extends AbstractTask implements Runnable {
 	
@@ -43,6 +43,9 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 				else if (result == CANCELED)
 					//swallow the interrupt if Task was canceled, as it came from the cancellation and not anything other
 					Thread.currentThread().isInterrupted();
+				else
+					//noinspection ThrowFromFinallyBlock
+					throw new IllegalStateException("The Result was in an invalid state ( valid states: null, CANCELED): " + this, e);
 			}
 			runHooks();
 		}

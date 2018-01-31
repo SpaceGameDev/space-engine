@@ -1,7 +1,9 @@
-package space.util.task;
+package space.util.task.exitStatusDependency;
+
+import space.util.task.ITask;
 
 /**
- * allows for submitting a {@link Runnable} while also having a requiring a State of preceding {@link space.util.task.basic.ITask ITasks}
+ * allows for submitting a {@link Runnable} while also having a requiring a State of preceding {@link ITask ITasks}
  */
 public class TaskExecutionCompleteRunnable implements ITaskExecutionCompleteRunnable {
 	

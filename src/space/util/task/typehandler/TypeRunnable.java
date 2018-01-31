@@ -1,4 +1,4 @@
-package space.util.task.function.typehandler;
+package space.util.task.typehandler;
 
 import java.util.function.Supplier;
 

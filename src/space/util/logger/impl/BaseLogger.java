@@ -11,10 +11,10 @@ import space.util.logger.impl.printer.SeparatedPrinter;
 import space.util.logger.impl.printer.SimpleStringPrinter;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
-import space.util.task.function.chained.ChainedTaskBuilder;
-import space.util.task.function.chained.ChainedTaskEntry;
-import space.util.task.function.typehandler.ITypeHandler;
-import space.util.task.function.typehandler.TypeBiConsumer;
+import space.util.task.chained.ChainedTaskBuilder;
+import space.util.task.chained.ChainedTaskEntry;
+import space.util.task.typehandler.ITypeHandler;
+import space.util.task.typehandler.TypeBiConsumer;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutionException;

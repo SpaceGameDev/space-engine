@@ -1,5 +1,7 @@
 package space.util.task.basic;
 
+import space.util.task.CollectiveExecutionException;
+import space.util.task.ITask;
 import space.util.task.TaskResult;
 
 import java.util.concurrent.CancellationException;
@@ -31,12 +33,7 @@ public class MultiTask extends AbstractTask {
 		
 		int size = 0;
 		for (ITask task : subTasks) {
-			task.addHook((o) -> {
-				if (o instanceof ITask)
-					call(((ITask) o));
-				else
-					throw new IllegalArgumentException();
-			});
+			task.addHook(this::call);
 			size++;
 		}
 		callCnt = new AtomicInteger(size);
@@ -52,20 +49,28 @@ public class MultiTask extends AbstractTask {
 	
 	public void call(ITask task) {
 		TaskResult res = task.getResult();
-		if (res != DONE) {
-			synchronized (this) {
-				if (result == DONE)
-					throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
-				
-				if (res == CANCELED)
+		switch (res) {
+			case DONE:
+				break;
+			case CANCELED:
+				synchronized (this) {
+					if (result == DONE)
+						throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
 					result = CANCELED;
-				else if (res == EXCEPTION) {
-					if (result == null)
+				}
+				break;
+			case EXCEPTION:
+				synchronized (this) {
+					if (result == DONE)
+						throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
+					
+					if (result.mask < EXCEPTION.mask)
 						result = EXCEPTION;
 					addException(task.getException());
-				} else
-					throw new IllegalStateException("Invalid result State " + res);
-			}
+				}
+				break;
+			default:
+				throw new IllegalStateException("Invalid result State " + res);
 		}
 		
 		if (callCnt.decrementAndGet() == 0) {
@@ -100,24 +105,5 @@ public class MultiTask extends AbstractTask {
 	public void rethrowException() throws ExecutionException, CancellationException {
 		if (exception != null)
 			throw new ExecutionException(exception);
-	}
-	
-	public static class CollectiveExecutionException extends Exception {
-		
-		public CollectiveExecutionException() {
-			this(null, null);
-		}
-		
-		public CollectiveExecutionException(String message) {
-			this(message, null);
-		}
-		
-		public CollectiveExecutionException(Throwable cause) {
-			this(null, cause);
-		}
-		
-		public CollectiveExecutionException(String message, Throwable cause) {
-			super(message, cause, true, false);
-		}
 	}
 }

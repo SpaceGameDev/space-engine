@@ -1,4 +1,4 @@
-package space.util.task.function.chained;
+package space.util.task.chained;
 
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Cache;
@@ -6,14 +6,14 @@ import space.util.delegate.list.ModificationAwareList;
 import space.util.dependency.IDependency;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.task.ITask;
 import space.util.task.ITinyWorkload;
-import space.util.task.basic.ITask;
 import space.util.task.basic.MultiTask;
+import space.util.task.basic.TypeHandlerTaskCreator;
 import space.util.task.basic.runnable.AbstractRunnableTask;
-import space.util.task.function.TypeHandlerTaskCreator;
-import space.util.task.function.chained.ChainedTaskBuilder.ChainedTaskPart.Node;
-import space.util.task.function.creator.IFunctionTaskCreator;
-import space.util.task.function.typehandler.ITypeHandler;
+import space.util.task.chained.ChainedTaskBuilder.ChainedTaskPart.Node;
+import space.util.task.creator.IFunctionTaskCreator;
+import space.util.task.typehandler.ITypeHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

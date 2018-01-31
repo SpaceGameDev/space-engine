@@ -1,4 +1,4 @@
-package space.util.task;
+package space.util.task.exitStatusDependency;
 
 public interface ITaskExecutionCompleteRunnable extends Runnable {
 	

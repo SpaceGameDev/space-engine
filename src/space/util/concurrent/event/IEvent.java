@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 /**
  * An event accepting runnables. The order the Runnables are executed is undefined, they are NOT sorted.
  */
+@Deprecated
 public interface IEvent extends IAwaitable {
 	
 	/**

@@ -1,9 +1,9 @@
-package space.util.task.function.chained;
+package space.util.task.chained;
 
 import space.util.dependency.Dependency;
 import space.util.dependency.IDependency;
 import space.util.dependency.NoDepDependency;
-import space.util.task.function.creator.IFunctionTaskCreator;
+import space.util.task.creator.IFunctionTaskCreator;
 
 public interface IChainedTaskBuilder<FUNCTION> extends IFunctionTaskCreator<FUNCTION> {
 	
