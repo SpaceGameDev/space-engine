@@ -1,13 +1,12 @@
-package space.util.task.basic.runnable;
+package space.util.concurrent.task.impl;
 
-import space.util.task.ITask;
-import space.util.task.basic.AbstractTask;
+import space.util.concurrent.task.ITask;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-import static space.util.task.TaskResult.*;
+import static space.util.concurrent.task.TaskResult.*;
 
 /**
  * An {@link ITask} Implementation which implements it as a {@link Runnable}.

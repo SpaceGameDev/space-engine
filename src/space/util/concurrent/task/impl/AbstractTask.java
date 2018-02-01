@@ -1,15 +1,14 @@
-package space.util.task.basic;
+package space.util.concurrent.task.impl;
 
-import space.util.task.ITask;
-import space.util.task.TaskResult;
-import space.util.task.basic.runnable.AbstractRunnableTask;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.TaskResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static space.util.task.TaskResult.CANCELED;
+import static space.util.concurrent.task.TaskResult.CANCELED;
 
 /**
  * An abstract Implementation of {@link ITask}, providing basic functionality without Implementing how the execution, submitting, canceling (partially) and {@link Exception} handling works.

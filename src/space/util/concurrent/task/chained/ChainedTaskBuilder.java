@@ -1,19 +1,19 @@
-package space.util.task.chained;
+package space.util.concurrent.task.chained;
 
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Cache;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.ITinyWorkload;
+import space.util.concurrent.task.chained.ChainedTaskBuilder.ChainedTaskPart.Node;
+import space.util.concurrent.task.creator.ITaskCreator;
+import space.util.concurrent.task.impl.AbstractRunnableTask;
+import space.util.concurrent.task.impl.MultiTask;
+import space.util.concurrent.task.impl.TypeHandlerTaskCreator;
+import space.util.concurrent.task.typehandler.ITypeHandler;
 import space.util.delegate.list.ModificationAwareList;
 import space.util.dependency.IDependency;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
-import space.util.task.ITask;
-import space.util.task.ITinyWorkload;
-import space.util.task.basic.MultiTask;
-import space.util.task.basic.TypeHandlerTaskCreator;
-import space.util.task.basic.runnable.AbstractRunnableTask;
-import space.util.task.chained.ChainedTaskBuilder.ChainedTaskPart.Node;
-import space.util.task.creator.IFunctionTaskCreator;
-import space.util.task.typehandler.ITypeHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 	public volatile boolean multithreadedOptimizeExecutionPriority;
 	
 	/**
-	 * if Multithreaded Tasks marked as {@link space.util.task.ITinyWorkload} should be respected and executed directly instead of being submitted into a pool.
+	 * if Multithreaded Tasks marked as {@link space.util.concurrent.task.ITinyWorkload} should be respected and executed directly instead of being submitted into a pool.
 	 */
 	public volatile boolean multithreadedAllowTinyWorkload;
 	
@@ -75,14 +75,14 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 		return this;
 	}
 	
-	//task management
+	//hooks
 	@Override
-	public void addTask(ChainedTaskEntry<FUNCTION> task) {
+	public void addHook(ChainedTaskEntry<FUNCTION> task) {
 		list.add(task);
 	}
 	
 	@Override
-	public boolean removeTask(ChainedTaskEntry<FUNCTION> task) {
+	public boolean removeHook(ChainedTaskEntry<FUNCTION> task) {
 		return list.remove(task);
 	}
 	
@@ -245,10 +245,10 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 	}
 	
 	//ChainedTaskMultithreaded
-	private static class ChainedTaskMultithreaded<FUNCTION> extends ChainedTaskPart<FUNCTION> implements IFunctionTaskCreator<FUNCTION> {
+	private static class ChainedTaskMultithreaded<FUNCTION> extends ChainedTaskPart<FUNCTION> implements ITaskCreator<FUNCTION> {
 		
 		/**
-		 * if Multithreaded Tasks marked as {@link space.util.task.ITinyWorkload} should be respected and executed directly instead of being submitted into a pool.
+		 * if Multithreaded Tasks marked as {@link space.util.concurrent.task.ITinyWorkload} should be respected and executed directly instead of being submitted into a pool.
 		 */
 		public boolean allowTinyWorkload;
 		
@@ -354,7 +354,7 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 	}
 	
 	//ChainedTaskSinglethreaded
-	private static class ChainedTaskSinglethreaded<FUNCTION> implements IFunctionTaskCreator<FUNCTION>, ToString {
+	private static class ChainedTaskSinglethreaded<FUNCTION> implements ITaskCreator<FUNCTION>, ToString {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task = new ArrayList<>();
 		

@@ -1,16 +1,19 @@
-package space.util.task.basic;
+package space.util.concurrent.task.impl;
 
-import space.util.task.CollectiveExecutionException;
-import space.util.task.ITask;
-import space.util.task.TaskResult;
+import space.util.concurrent.task.CollectiveExecutionException;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.TaskResult;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static space.util.task.TaskResult.*;
+import static space.util.concurrent.task.TaskResult.*;
 
+/**
+ * A {@link ITask} which can have multiple sub-{@link ITask ITasks}, doing Cancellation, Exception handling / forwarding and Result calculations.
+ */
 public class MultiTask extends AbstractTask {
 	
 	public Iterable<? extends ITask> subTasks;

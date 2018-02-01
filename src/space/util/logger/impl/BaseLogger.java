@@ -1,5 +1,9 @@
 package space.util.logger.impl;
 
+import space.util.concurrent.task.chained.ChainedTaskBuilder;
+import space.util.concurrent.task.chained.ChainedTaskEntry;
+import space.util.concurrent.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.typehandler.TypeBiConsumer;
 import space.util.logger.LogLevel;
 import space.util.logger.Logger;
 import space.util.logger.impl.prefix.LogLevelPrefix;
@@ -11,10 +15,6 @@ import space.util.logger.impl.printer.SeparatedPrinter;
 import space.util.logger.impl.printer.SimpleStringPrinter;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
-import space.util.task.chained.ChainedTaskBuilder;
-import space.util.task.chained.ChainedTaskEntry;
-import space.util.task.typehandler.ITypeHandler;
-import space.util.task.typehandler.TypeBiConsumer;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutionException;
@@ -35,11 +35,11 @@ public class BaseLogger extends LoggerImpl {
 	}
 	
 	public ChainedTaskEntry<BiConsumer<LogMessage, CharSequence2D>> addPrinter(String uuid, BiConsumer<LogMessage, CharSequence2D> o) {
-		return printers.addTask(uuid, o);
+		return printers.addHook(uuid, o);
 	}
 	
 	public boolean removePrinter(ChainedTaskEntry<BiConsumer<LogMessage, CharSequence2D>> o) {
-		return printers.removeTask(o);
+		return printers.removeHook(o);
 	}
 	
 	@Override
@@ -73,10 +73,10 @@ public class BaseLogger extends LoggerImpl {
 	 * adds a {@link java.util.Date} (formatted with HH:mm:ss), {@link Thread}, {@link LogLevel} and {@link SubLogger} prefix to the {@link BaseLogger}
 	 */
 	public static BaseLogger defaultHandler(BaseLogger logger) {
-		logger.handler.addTask("time", 0, new TimePrefix(new SimpleDateFormat("HH:mm:ss")));
-		logger.handler.addTask("thread", 1, new ThreadPrefix());
-		logger.handler.addTask("loglevel", 2, new LogLevelPrefix());
-		logger.handler.addTask("sublogger", 3, new SubLoggerPrefix());
+		logger.handler.addHook("time", 0, new TimePrefix(new SimpleDateFormat("HH:mm:ss")));
+		logger.handler.addHook("thread", 1, new ThreadPrefix());
+		logger.handler.addHook("loglevel", 2, new LogLevelPrefix());
+		logger.handler.addHook("sublogger", 3, new SubLoggerPrefix());
 		return logger;
 	}
 	

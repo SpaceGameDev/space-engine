@@ -1,45 +1,32 @@
 package space.util.concurrent.event;
 
+import space.util.concurrent.task.typehandler.ITypeHandler;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
- * A simple Event not storing any state and notifies every time signal is called
+ * A simple Event running hooks every time {@link SimpleEvent#run(ITypeHandler)} is called.
  */
-public class SimpleEvent implements IEventRunnable {
+public class SimpleEvent<FUNCTION> implements IRunnableEvent<FUNCTION> {
 	
-	public List<Object> after = new ArrayList<>();
+	public List<FUNCTION> after = new ArrayList<>();
 	
+	//hook
 	@Override
-	public synchronized void addHook(Runnable func) {
+	public synchronized void addHook(FUNCTION func) {
 		after.add(func);
 	}
 	
 	@Override
-	public synchronized void addHook(Consumer<IEvent> func) {
-		after.add(func);
+	public synchronized boolean removeHook(FUNCTION hook) {
+		return after.remove(hook);
 	}
 	
+	//run
 	@Override
-	public synchronized void signal() {
+	public synchronized void run(ITypeHandler<FUNCTION> type) {
 		notifyAll();
-		after.forEach(this::runEvent);
-	}
-	
-	@Override
-	public boolean isSignaled() {
-		return false;
-	}
-	
-	@Override
-	public synchronized void await() throws InterruptedException {
-		wait();
-	}
-	
-	@Override
-	public synchronized void await(long time, TimeUnit unit) throws InterruptedException {
-		wait(unit.toMillis(time));
+		after.forEach(type);
 	}
 }

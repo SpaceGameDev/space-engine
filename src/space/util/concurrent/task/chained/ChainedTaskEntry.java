@@ -1,4 +1,4 @@
-package space.util.task.chained;
+package space.util.concurrent.task.chained;
 
 import space.util.baseobject.ToString;
 import space.util.dependency.IDependency;

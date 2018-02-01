@@ -1,12 +1,15 @@
-package space.util.task.creator;
+package space.util.concurrent.task.creator;
 
-import space.util.task.ITask;
-import space.util.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.typehandler.ITypeHandler;
 
 import java.util.concurrent.Executor;
 
+/**
+ * An interface having {@link ITaskCreator#create(ITypeHandler)} functions for creating {@link ITask ITasks}.
+ */
 @FunctionalInterface
-public interface IFunctionTaskCreator<FUNCTION> {
+public interface ITaskCreator<FUNCTION> {
 	
 	ITask create(ITypeHandler<FUNCTION> handler);
 	

@@ -6,6 +6,7 @@ import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.keygen.IKey;
 import space.util.keygen.IKeyGenerator;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public interface IAttributeListCreator extends IKeyGenerator {
@@ -89,7 +90,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 */
 	interface IAttributeList extends IAbstractAttributeList {
 		
-		IAttributeListModifyEvent getChangeEvent();
+		IEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> getChangeEvent();
 		
 		void apply(IAttributeListModification modification);
 	}
@@ -119,12 +120,12 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);
 		
 		/**
-		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
+		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey}
 		 */
 		<V> void reset(IKey<V> key);
 		
 		/**
-		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey} if the current value is equal to v
+		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey} if the current value is equal to v
 		 */
 		<V> boolean reset(IKey<V> key, V v);
 		
@@ -141,20 +142,8 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		//other
 		
 		/**
-		 * clears all entries
+		 * resets all entries to {@link IAttributeList#UNCHANGED_OBJECT}
 		 */
 		void clear();
-		
-		/**
-		 * resets all entries
-		 */
-		void resetAll();
-	}
-	
-	interface IAttributeListModifyEvent extends IEvent {
-		
-		IAttributeList getAttributeList();
-		
-		IAttributeListModification getModification();
 	}
 }

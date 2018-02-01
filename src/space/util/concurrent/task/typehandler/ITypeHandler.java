@@ -1,9 +1,9 @@
-package space.util.task.typehandler;
+package space.util.concurrent.task.typehandler;
 
 import java.util.function.Consumer;
 
 /**
- * A {@link ITypeHandler} handles the Execution of FUNCTIONs, abstracting that.
+ * A {@link ITypeHandler} handles the Execution of FUNCTIONs and abstracts that.
  *
  * @param <FUNCTION> the Function type
  */

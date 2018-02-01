@@ -1,46 +1,25 @@
 package space.util.concurrent.event;
 
-import space.util.concurrent.awaitable.IAwaitable;
-
-import java.util.function.Consumer;
-
 /**
- * An event accepting runnables. The order the Runnables are executed is undefined, they are NOT sorted.
+ * An {@link IEvent} is something you can {@link IEvent#addHook(Object)} and {@link IEvent#removeHook(Object)} Hooks,
+ * which called when the {@link IEvent} is triggered. <b>The way it will be triggered is not defined.</b>
+ * It is meant for fast singlethreaded event triggering, if you need Multithreaded Execution
+ * It is expected that the Method {@link IEvent#removeHook(Object)} will be called very rarely and mustn't be optimized via hashing or other techniques.
  */
-@Deprecated
-public interface IEvent extends IAwaitable {
+public interface IEvent<FUNCTION> {
 	
 	/**
-	 * adds a hook which is called when the {@link IEvent} is triggered
+	 * adds a Hook.
 	 *
-	 * @param func the Hook as a {@link Runnable}
+	 * @param hook the Hook to add
 	 */
-	void addHook(Runnable func);
+	void addHook(FUNCTION hook);
 	
 	/**
-	 * adds a hook which is called when the {@link IEvent} is triggered.
-	 * The consumed Object is the {@link IEvent} itself,
-	 * allowing for a hook to be submitted to multiple {@link IEvent IEvents}
-	 * while still being able to distinguish between them.
+	 * Removes a Hook.<br>
+	 * It is expected that the Method will be called very rarely and mustn't be optimized via hashing or other techniques.
 	 *
-	 * @param func the Hook as a {@link Consumer} of ? extends {@link IEvent}
+	 * @param hook the Hook to be removed
 	 */
-	void addHook(Consumer<IEvent> func);
-	
-	/**
-	 * runs a specific Hook.
-	 * if it is a {@link Runnable}, it will run() it.
-	 * if it is a {@link Consumer}, it will accept(this) it. It is not ensured that the {@link Consumer} is of type IEvent.
-	 *
-	 * @param obj the Object to "run"
-	 */
-	@SuppressWarnings("unchecked")
-	default void runEvent(Object obj) {
-		if (obj instanceof Runnable)
-			((Runnable) obj).run();
-		else if (obj instanceof Consumer<?>)
-			((Consumer) obj).accept(this);
-		else
-			throw new IllegalArgumentException();
-	}
+	boolean removeHook(FUNCTION hook);
 }

@@ -1,6 +1,7 @@
-package space.util.task;
+package space.util.concurrent.task;
 
-import space.util.task.multi.IEvent;
+import space.util.concurrent.awaitable.IAwaitable;
+import space.util.concurrent.event.IEvent;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +13,7 @@ import java.util.function.Consumer;
  * A {@link ITask} is something which is created to be executed by some thread in a protected environment,
  * signaling back it's execution, completion and error states. It also allows for Hooks to be added and to be awaited on.
  */
-public interface ITask extends IEvent<Consumer<ITask>> {
+public interface ITask extends IEvent<Consumer<ITask>>, IAwaitable {
 	
 	//run
 	

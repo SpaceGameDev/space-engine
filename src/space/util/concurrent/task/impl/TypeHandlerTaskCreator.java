@@ -1,11 +1,10 @@
-package space.util.task.basic;
+package space.util.concurrent.task.impl;
 
-import space.util.task.ITask;
-import space.util.task.basic.runnable.AbstractRunnableTask;
-import space.util.task.creator.IFunctionTaskCreator;
-import space.util.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.creator.ITaskCreator;
+import space.util.concurrent.task.typehandler.ITypeHandler;
 
-public class TypeHandlerTaskCreator<FUNCTION> implements IFunctionTaskCreator<FUNCTION> {
+public class TypeHandlerTaskCreator<FUNCTION> implements ITaskCreator<FUNCTION> {
 	
 	public FUNCTION func;
 	

@@ -1,12 +1,12 @@
-package space.util.task.chained;
+package space.util.concurrent.task.chained;
 
 import space.util.baseobject.BaseObjectInit;
+import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.typehandler.TypeConsumer;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.toStringHelper.ToStringHelper;
-import space.util.task.ITask;
-import space.util.task.typehandler.TypeConsumer;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,20 +31,20 @@ public class ChainedTest {
 				pool.prestartAllCoreThreads();
 			
 			ChainedTaskBuilder<Consumer<Integer>> builder = new ChainedTaskBuilder<>(singlethread);
-			builder.addTask("last", 5, integer -> doWork("last", integer, ChainedTest::actualWork));
-			builder.addTask("require", new String[] {"no"}, integer -> doWork("require", integer, ChainedTest::actualWork));
-			builder.addTask("no", integer -> doWork("no", integer, ChainedTest::actualWork));
-			builder.addTask("priority", -1, integer -> doWork("priority", integer, ChainedTest::actualWork));
-			builder.addTask("requiredBy", null, new String[] {"no"}, integer -> doWork("requiredBy", integer, ChainedTest::actualWork));
-			builder.addTask("no2", integer -> doWork("no2", integer, ChainedTest::actualWork));
-			builder.addTask("no1", integer -> doWork("no1", integer, ChainedTest::actualWork));
-			builder.addTask("no3", integer -> doWork("no3", integer, ChainedTest::actualWork));
-			builder.addTask("no4", integer -> doWork("no4", integer, ChainedTest::actualWork));
-			builder.addTask("ERROR", integer -> doWork("ERROR", integer, ChainedTest::actualWorkError));
-			builder.addTask("no5", integer -> doWork("no5", integer, ChainedTest::actualWork));
-			builder.addTask("no6", integer -> doWork("no6", integer, ChainedTest::actualWork));
-			builder.addTask("no42", integer -> doWork("no42", integer, ChainedTest::actualWork));
-			builder.addTask("requiredByPri", null, new String[] {"priority"}, integer -> doWork("requiredByPri", integer, ChainedTest::actualWork));
+			builder.addHook("last", 5, integer -> doWork("last", integer, ChainedTest::actualWork));
+			builder.addHook("require", new String[] {"no"}, integer -> doWork("require", integer, ChainedTest::actualWork));
+			builder.addHook("no", integer -> doWork("no", integer, ChainedTest::actualWork));
+			builder.addHook("priority", -1, integer -> doWork("priority", integer, ChainedTest::actualWork));
+			builder.addHook("requiredBy", null, new String[] {"no"}, integer -> doWork("requiredBy", integer, ChainedTest::actualWork));
+			builder.addHook("no2", integer -> doWork("no2", integer, ChainedTest::actualWork));
+			builder.addHook("no1", integer -> doWork("no1", integer, ChainedTest::actualWork));
+			builder.addHook("no3", integer -> doWork("no3", integer, ChainedTest::actualWork));
+			builder.addHook("no4", integer -> doWork("no4", integer, ChainedTest::actualWork));
+			builder.addHook("ERROR", integer -> doWork("ERROR", integer, ChainedTest::actualWorkError));
+			builder.addHook("no5", integer -> doWork("no5", integer, ChainedTest::actualWork));
+			builder.addHook("no6", integer -> doWork("no6", integer, ChainedTest::actualWork));
+			builder.addHook("no42", integer -> doWork("no42", integer, ChainedTest::actualWork));
+			builder.addHook("requiredByPri", null, new String[] {"priority"}, integer -> doWork("requiredByPri", integer, ChainedTest::actualWork));
 			
 			System.out.println(builder);
 			

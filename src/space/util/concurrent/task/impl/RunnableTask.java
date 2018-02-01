@@ -1,6 +1,6 @@
-package space.util.task.basic.runnable;
+package space.util.concurrent.task.impl;
 
-import space.util.task.ITask;
+import space.util.concurrent.task.ITask;
 
 /**
  * A full implementation of {@link ITask} accepting a {@link Runnable}

@@ -1,4 +1,4 @@
-package space.util.task;
+package space.util.concurrent.task;
 
 /**
  * A {@link TaskResult} is an enum having all results a ITask can have after executing.

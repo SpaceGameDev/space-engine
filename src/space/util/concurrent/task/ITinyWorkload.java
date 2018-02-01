@@ -1,4 +1,4 @@
-package space.util.task;
+package space.util.concurrent.task;
 
 /**
  * classes "marked" with {@link ITinyWorkload} will be executed directly instead of being submitted to an executor.
