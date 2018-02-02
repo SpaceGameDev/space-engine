@@ -12,6 +12,7 @@ import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.LogLevel;
 import space.util.logger.Logger;
 import space.util.string.builder.CharBufferBuilder1D;
@@ -55,58 +56,59 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	public class GLFWWindow implements IWindow {
 		
 		public long windowPointer;
-		public IAttributeList curr = ATTRIBUTE_LIST_CREATOR.create();
+		public IAttributeList format;
 		
 		public GLFWWindow(IAttributeList format) {
+			this.format = format;
+			format.getChangeEvent().addHook((list, mod) -> update(mod));
+			
 			synchronized (GLFW_SYNC) {
-				glfwWindowHint(GLFW_VISIBLE, format.push(curr, VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
-				glfwWindowHint(GLFW_RESIZABLE, format.push(curr, RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
-				glfwWindowHint(GLFW_DOUBLEBUFFER, format.push(curr, DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_VISIBLE, format.get(VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_RESIZABLE, format.get(RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_DOUBLEBUFFER, format.get(DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
 				
 				//GLApi
-				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(format.push(curr, GL_API_TYPE)));
-				glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.push(curr, GL_PROFILE)));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.push(curr, GL_VERSION_MAJOR));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.push(curr, GL_VERSION_MINOR));
-				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, format.push(curr, GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(format.get(GL_API_TYPE)));
+				glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.get(GL_PROFILE)));
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.get(GL_VERSION_MAJOR));
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.get(GL_VERSION_MINOR));
+				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, format.get(GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
 				
 				//FBO
-				glfwWindowHint(GLFW_RED_BITS, format.push(curr, FBO_R));
-				glfwWindowHint(GLFW_GREEN_BITS, format.push(curr, FBO_G));
-				glfwWindowHint(GLFW_BLUE_BITS, format.push(curr, FBO_B));
-				glfwWindowHint(GLFW_ALPHA_BITS, format.push(curr, FBO_A));
-				glfwWindowHint(GLFW_DEPTH_BITS, format.push(curr, FBO_DEPTH));
-				glfwWindowHint(GLFW_STENCIL_BITS, format.push(curr, FBO_STENCIL));
+				glfwWindowHint(GLFW_RED_BITS, format.get(FBO_R));
+				glfwWindowHint(GLFW_GREEN_BITS, format.get(FBO_G));
+				glfwWindowHint(GLFW_BLUE_BITS, format.get(FBO_B));
+				glfwWindowHint(GLFW_ALPHA_BITS, format.get(FBO_A));
+				glfwWindowHint(GLFW_DEPTH_BITS, format.get(FBO_DEPTH));
+				glfwWindowHint(GLFW_STENCIL_BITS, format.get(FBO_STENCIL));
 				
 				//windowMode
 				long monitorPointer;
-				WindowMode windowMode = format.push(curr, WINDOW_MODE);
+				WindowMode windowMode = format.get(WINDOW_MODE);
 				if (windowMode == FULLSCREEN) {
 					glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-					monitorPointer = getMonitorPointer(format.push(curr, MONITOR));
+					monitorPointer = getMonitorPointer(format.get(MONITOR));
 				} else {
 					glfwWindowHint(GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
-					curr.reset(MONITOR);
 					monitorPointer = 0;
 				}
 				
 				//create
-				windowPointer = glfwCreateWindow(format.push(curr, WINDOW_WIDTH), format.push(curr, WINDOW_HEIGHT), format.push(curr, TITLE), monitorPointer, getWindowSharePointer(curr.get(GL_CONTEXT_SHARE)));
+				windowPointer = glfwCreateWindow(format.get(WINDOW_WIDTH), format.get(WINDOW_HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(curr.get(GL_CONTEXT_SHARE)));
 			}
 		}
 		
-		@Override
-		public void update(IAttributeList format) {
+		public void update(IAttributeListModification mod) {
 			if (format.anyDifference(curr, VISIBLE))
-				if (format.push(curr, VISIBLE)) {
+				if (format.get(VISIBLE)) {
 					glfwShowWindow(windowPointer);
 				} else {
 					glfwHideWindow(windowPointer);
 				}
 			if (format.anyDifference(curr, RESIZEABLE))
-				glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, format.push(curr, RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
+				glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, format.get(RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
 			if (format.anyDifference(curr, DOUBLEBUFFER))
-				glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, format.push(curr, DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
+				glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, format.get(DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
 
 //			glfwSetWindowMon
 		}

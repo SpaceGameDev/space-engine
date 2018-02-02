@@ -10,11 +10,8 @@ import space.engine.render.window.callback.WindowFBOResizeCallback;
 import space.engine.render.window.callback.WindowFocusCallback;
 import space.engine.render.window.callback.WindowPositionCallback;
 import space.engine.render.window.callback.WindowResizeCallback;
-import space.util.gui.monofont.MonofontGuiApi;
 import space.util.keygen.IKey;
 import space.util.keygen.attribute.AttributeListCreator;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
-import space.util.string.toStringHelper.ToStringHelper;
 
 import static java.lang.Boolean.*;
 import static space.engine.render.window.WindowFormat.GLApiType.GL;
@@ -90,23 +87,5 @@ public class WindowFormat {
 		PROFILE_CORE,
 		PROFILE_COMPAT
 		
-	}
-	
-	public static void main(String[] args) {
-		ToStringHelper.setDefault(MonofontGuiApi.TSH);
-		
-		IAttributeList windowFormat = ATTRIBUTE_LIST_CREATOR.create();
-		windowFormat.put(WINDOW_WIDTH, 800);
-		windowFormat.put(WINDOW_HEIGHT, 600);
-		windowFormat.put(WINDOW_MODE, WINDOWED);
-		
-		windowFormat.put(FBO_R, 8);
-		windowFormat.put(FBO_G, 8);
-		windowFormat.put(FBO_B, 8);
-		windowFormat.put(FBO_A, 0);
-		windowFormat.put(FBO_DEPTH, 24);
-		windowFormat.put(FBO_STENCIL, 0);
-		
-		System.out.println(windowFormat);
 	}
 }
