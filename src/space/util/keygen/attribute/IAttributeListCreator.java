@@ -70,6 +70,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		int size();
 		
 		/**
+		 * gets the {@link IAttributeListCreator} of this AttributeList
+		 */
+		IAttributeListCreator getCreator();
+		
+		/**
 		 * gets an {@link java.util.Iterator} over all values
 		 */
 		Iteratorable<Object> iterator();
@@ -92,7 +97,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		
 		IEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> getChangeEvent();
 		
-		void apply(IAttributeListModification modification);
+		void apply(IAttributeListModification mod);
 	}
 	
 	interface IAttributeListModification extends IAbstractAttributeList {
@@ -105,21 +110,6 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> void put(IKey<V> key, V v);
 		
 		/**
-		 * sets the value for a given {@link IKey} and returns the previous value
-		 */
-		<V> V replace(IKey<V> key, V v);
-		
-		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to the old value
-		 */
-		<V> boolean replace(IKey<V> key, V oldValue, V newValue);
-		
-		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to the old value
-		 */
-		<V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);
-		
-		/**
 		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey}
 		 */
 		<V> void reset(IKey<V> key);
@@ -130,14 +120,29 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> boolean reset(IKey<V> key, V v);
 		
 		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey}
 		 */
-		<V> boolean putIfDefault(IKey<V> key, V v);
+		<V> void setDefault(IKey<V> key);
 		
 		/**
-		 * sets the value for a given {@link IKey} if the current value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey} if the current value is equal to v
 		 */
-		<V> boolean putIfDefault(IKey<V> key, Supplier<? extends V> v);
+		<V> boolean setDefault(IKey<V> key, V v);
+		
+		/**
+		 * sets the value for a given {@link IKey} and returns the previous value
+		 */
+		<V> V putAndGet(IKey<V> key, V v);
+		
+		/**
+		 * sets the value for a given {@link IKey} if the current value is equal to the old value
+		 */
+		<V> boolean replace(IKey<V> key, V oldValue, V newValue);
+		
+		/**
+		 * sets the value for a given {@link IKey} if the current value is equal to the old value
+		 */
+		<V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);
 		
 		//other
 		

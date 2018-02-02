@@ -2,8 +2,8 @@ package space.util.keygen.attribute;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
+import space.util.concurrent.event.IEvent;
 import space.util.concurrent.event.SimpleEvent;
-import space.util.concurrent.eventOld.IEvent;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
@@ -15,6 +15,7 @@ import space.util.keygen.impl.DisposableKeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class AttributeListCreator implements IAttributeListCreator, ToString {
@@ -70,6 +71,11 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		return new AttributeList();
 	}
 	
+	@Override
+	public IAttributeListModification createModify() {
+		return new AttributeListModification();
+	}
+	
 	public abstract class AbstractAttributeList implements IAbstractAttributeList, ToString {
 		
 		public IndexMap<Object> indexMap;
@@ -112,6 +118,11 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
+		public IAttributeListCreator getCreator() {
+			return AttributeListCreator.this;
+		}
+		
+		@Override
 		public Iteratorable<Object> iterator() {
 			return indexMap.iterator();
 		}
@@ -138,7 +149,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	
 	public class AttributeList extends AbstractAttributeList implements IAttributeList {
 		
-		SimpleEvent changeEvent = new SimpleEvent();
+		SimpleEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
 			super(DEFAULT_OBJECT);
@@ -153,13 +164,15 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
-		public IEvent getChangeEvent() {
+		public IEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> getChangeEvent() {
 			return changeEvent;
 		}
 		
 		@Override
-		public IAttributeListModification modify() {
-			return new AttributeListModification();
+		public void apply(IAttributeListModification mod) {
+			//replace with same checks
+			//trigger events
+			//copy values
 		}
 	}
 	
@@ -189,26 +202,32 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		@SuppressWarnings("unchecked")
 		public <V> void reset(IKey<V> key) {
 			check(key);
+			indexMap.put(key.getID(), UNCHANGED_OBJECT);
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public <V> boolean reset(IKey<V> key, V v) {
+			check(key);
+			return indexMap.replace(key.getID(), v, UNCHANGED_OBJECT);
+		}
+		
+		@Override
+		public <V> void setDefault(IKey<V> key) {
+			check(key);
 			indexMap.put(key.getID(), DEFAULT_OBJECT);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean putIfDefault(IKey<V> key, V v) {
+		public <V> boolean setDefault(IKey<V> key, V v) {
 			check(key);
-			return indexMap.replace(key.getID(), DEFAULT_OBJECT, v);
+			return indexMap.replace(key.getID(), v, DEFAULT_OBJECT);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean putIfDefault(IKey<V> key, Supplier<? extends V> v) {
-			check(key);
-			return indexMap.replace(key.getID(), DEFAULT_OBJECT, v);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V replace(IKey<V> key, V v) {
+		public <V> V putAndGet(IKey<V> key, V v) {
 			check(key);
 			return correctDefault((V) indexMap.put(key.getID(), v), key);
 		}
@@ -225,13 +244,6 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public <V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue) {
 			check(key);
 			return indexMap.replace(key.getID(), oldValue, newValue);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> boolean reset(IKey<V> key, V v) {
-			check(key);
-			return indexMap.remove(key.getID(), v);
 		}
 		
 		@Override
