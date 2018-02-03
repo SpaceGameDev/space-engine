@@ -15,7 +15,8 @@ import space.util.keygen.impl.DisposableKeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.function.BiConsumer;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AttributeListCreator implements IAttributeListCreator, ToString {
@@ -67,24 +68,24 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	
 	//create
 	@Override
-	public IAttributeList create() {
+	public AttributeList create() {
 		return new AttributeList();
 	}
 	
 	@Override
-	public IAttributeListModification createModify() {
+	public AttributeListModification createModify() {
 		return new AttributeListModification();
 	}
 	
 	public abstract class AbstractAttributeList implements IAbstractAttributeList, ToString {
 		
-		public IndexMap<Object> indexMap;
+		public IndexMapArrayWithDefault<Object> indexMap;
 		
 		protected AbstractAttributeList(Object defaultObject) {
 			this(gen instanceof DisposableKeyGenerator ? new IndexMapArrayWithDefault<>(((DisposableKeyGenerator) gen).counter, defaultObject) : new IndexMapArrayWithDefault<>(defaultObject));
 		}
 		
-		private AbstractAttributeList(IndexMap<Object> indexMap) {
+		private AbstractAttributeList(IndexMapArrayWithDefault<Object> indexMap) {
 			this.indexMap = indexMap;
 		}
 		
@@ -108,7 +109,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public <V> V getOrDefault(IKey<V> key, V def) {
 			check(key);
 			Object o = indexMap.get(key.getID());
-			return o != DEFAULT_OBJECT ? (V) o : def;
+			return o == DEFAULT_OBJECT ? def : (V) o;
 		}
 		
 		//other
@@ -149,30 +150,45 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	
 	public class AttributeList extends AbstractAttributeList implements IAttributeList {
 		
-		SimpleEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> changeEvent = new SimpleEvent<>();
+		SimpleEvent<Consumer<AttributeListChangeEvent>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
 			super(DEFAULT_OBJECT);
 		}
 		
-		private AttributeList(IndexMap<Object> indexMap) {
+		private AttributeList(IndexMapArrayWithDefault<Object> indexMap) {
 			super(indexMap);
 		}
 		
 		private AttributeList copy() {
-			return new AttributeList(Copyable.copy(indexMap));
+			return new AttributeList(new IndexMapArrayWithDefault<>(indexMap.toArray(), DEFAULT_OBJECT));
 		}
 		
 		@Override
-		public IEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> getChangeEvent() {
+		public IEvent<Consumer<AttributeListChangeEvent>> getChangeEvent() {
 			return changeEvent;
 		}
 		
 		@Override
-		public void apply(IAttributeListModification mod) {
-			//replace with same checks
+		public void apply(IAttributeListModification mod2) {
+			//same check
+			AttributeListModification mod = AttributeListCreator.this.createModify();
+			mod2.tableIterator().forEach(entry -> {
+				int index = entry.getIndex();
+				Object value = entry.getValue();
+				mod.indexMap.put(index, Objects.equals(value, this.indexMap.get(index)) ? UNCHANGED_OBJECT : value);
+			});
+			
 			//trigger events
-			//copy values
+			AttributeListChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
+			changeEvent.run(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
+			
+			//apply values
+			mod.tableIterator().forEach(entry -> {
+				Object value = entry.getValue();
+				if (value != UNCHANGED_OBJECT)
+					this.indexMap.put(entry.getIndex(), value);
+			});
 		}
 	}
 	
@@ -187,7 +203,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		private AttributeListModification copy() {
-			return new AttributeListModification(Copyable.copy(indexMap));
+			return new AttributeListModification(new IndexMapArrayWithDefault<>(indexMap.toArray(), UNCHANGED_OBJECT));
 		}
 		
 		//put

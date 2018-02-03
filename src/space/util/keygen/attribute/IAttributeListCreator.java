@@ -6,7 +6,7 @@ import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.keygen.IKey;
 import space.util.keygen.IKeyGenerator;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface IAttributeListCreator extends IKeyGenerator {
@@ -25,12 +25,12 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	};
 	
 	/**
-	 * creates a new {@link IAttributeList}
+	 * creates a new {@link IAttributeList IAttributeList}
 	 */
 	IAttributeList create();
 	
 	/**
-	 * creates a new {@link IAttributeListModification}
+	 * creates a new {@link IAttributeListModification IAttributeListModification}
 	 */
 	IAttributeListModification createModify();
 	
@@ -75,6 +75,14 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		IAttributeListCreator getCreator();
 		
 		/**
+		 * creates a new {@link IAttributeListModification IAttributeListModification}.
+		 * Calls <code>this.{@link IAbstractAttributeList#getCreator()}.{@link IAttributeListCreator#createModify()}</code> by default.
+		 */
+		default IAttributeListModification createModify() {
+			return getCreator().createModify();
+		}
+		
+		/**
 		 * gets an {@link java.util.Iterator} over all values
 		 */
 		Iteratorable<Object> iterator();
@@ -95,7 +103,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 */
 	interface IAttributeList extends IAbstractAttributeList {
 		
-		IEvent<BiConsumer<? extends IAttributeList, ? extends IAttributeListModification>> getChangeEvent();
+		IEvent<Consumer<AttributeListChangeEvent>> getChangeEvent();
 		
 		void apply(IAttributeListModification mod);
 	}
@@ -110,6 +118,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> void put(IKey<V> key, V v);
 		
 		/**
+		 * sets the value for a given {@link IKey} and returns the previous value
+		 */
+		<V> V putAndGet(IKey<V> key, V v);
+		
+		/**
 		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey}
 		 */
 		<V> void reset(IKey<V> key);
@@ -120,19 +133,14 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		<V> boolean reset(IKey<V> key, V v);
 		
 		/**
-		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey}
+		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey}
 		 */
 		<V> void setDefault(IKey<V> key);
 		
 		/**
-		 * sets the value to {@link IAttributeList#UNCHANGED_OBJECT} for a given {@link IKey} if the current value is equal to v
+		 * sets the value to {@link IAttributeList#DEFAULT_OBJECT} for a given {@link IKey} if the current value is equal to v
 		 */
 		<V> boolean setDefault(IKey<V> key, V v);
-		
-		/**
-		 * sets the value for a given {@link IKey} and returns the previous value
-		 */
-		<V> V putAndGet(IKey<V> key, V v);
 		
 		/**
 		 * sets the value for a given {@link IKey} if the current value is equal to the old value
@@ -150,5 +158,29 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * resets all entries to {@link IAttributeList#UNCHANGED_OBJECT}
 		 */
 		void clear();
+	}
+	
+	class AttributeListChangeEvent {
+		
+		public final IAttributeList oldList;
+		public final IAttributeListModification mod;
+		
+		public AttributeListChangeEvent(IAttributeList oldList, IAttributeListModification mod) {
+			this.oldList = oldList;
+			this.mod = mod;
+		}
+		
+		public <V> V getOld(IKey<V> key) {
+			return oldList.get(key);
+		}
+		
+		public <V> V getMod(IKey<V> key) {
+			return mod.get(key);
+		}
+		
+		public <V> V getNew(IKey<V> key) {
+			V v = mod.get(key);
+			return v == UNCHANGED_OBJECT ? oldList.get(key) : v;
+		}
 	}
 }

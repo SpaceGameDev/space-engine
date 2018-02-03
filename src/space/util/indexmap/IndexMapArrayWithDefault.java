@@ -18,6 +18,11 @@ public class IndexMapArrayWithDefault<VALUE> extends IndexMapArray<VALUE> {
 		this.defaultFiller = defaultFiller;
 	}
 	
+	public IndexMapArrayWithDefault(VALUE[] array, VALUE defaultFiller) {
+		super(array);
+		this.defaultFiller = defaultFiller;
+	}
+	
 	@Override
 	public boolean ensureCapacity(int capa) {
 		int oldl = array.length;

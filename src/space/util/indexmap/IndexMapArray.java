@@ -24,7 +24,12 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	public IndexMapArray(int initCapacity) {
 		//noinspection unchecked
-		array = (VALUE[]) new Object[initCapacity];
+		this.array = (VALUE[]) new Object[initCapacity];
+	}
+	
+	public IndexMapArray(VALUE[] array) {
+		this.array = array;
+		this.length = array.length;
 	}
 	
 	//capacity
