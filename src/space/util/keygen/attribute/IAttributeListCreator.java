@@ -48,19 +48,15 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		//get
 		
 		/**
-		 * gets the value for a given {@link IKey} <b>without</b> checking if it's the default value
+		 * gets the value for a given {@link IKey} <b>without</b> checking if it's the default value.<br>
+		 * Possible Values:
+		 * <ul>
+		 * <li>{@link IAttributeList#DEFAULT_OBJECT} the default object</li>
+		 * <li>{@link IAttributeList#UNCHANGED_OBJECT} the unchanged object</li>
+		 * <li>an actual value Object of type V</li>
+		 * </ul>
 		 */
-		<V> V getDirect(IKey<V> key);
-		
-		/**
-		 * gets the value for a given {@link IKey} or the default value if the value is equal to {@link IAttributeList#DEFAULT_OBJECT}
-		 */
-		<V> V get(IKey<V> key);
-		
-		/**
-		 * gets the value for a given {@link IKey} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT_OBJECT}
-		 */
-		<V> V getOrDefault(IKey<V> key, V def);
+		<V> Object getDirect(IKey<V> key);
 		
 		//others
 		
@@ -103,8 +99,36 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 */
 	interface IAttributeList extends IAbstractAttributeList {
 		
-		IEvent<Consumer<AttributeListChangeEvent>> getChangeEvent();
+		//get
 		
+		/**
+		 * Gets the value for a given {@link IKey} or the default value if the value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 */
+		<V> V get(IKey<V> key);
+		
+		/**
+		 * Gets the value for a given {@link IKey} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT_OBJECT}
+		 */
+		<V> V getOrDefault(IKey<V> key, V def);
+		
+		//other
+		
+		/**
+		 * Gets the {@link IEvent} to use {@link IEvent#addHook(Object)} to add Hooks.
+		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
+		 */
+		IEvent<Consumer<IAttributeListChangeEvent>> getChangeEvent();
+		
+		/**
+		 * Applies a certain modification.<br>
+		 * It should be handled like this:
+		 * <ul>
+		 * <li>copy the mod</li>
+		 * <li>replace all "replacements" with the same entry with {@link IAttributeList#UNCHANGED_OBJECT}</li>
+		 * <li>trigger the {@link IEvent} gotten from {@link IAttributeList#getChangeEvent()}</li>
+		 * <li>apply the changes to this object</li>
+		 * </ul>
+		 */
 		void apply(IAttributeListModification mod);
 	}
 	
@@ -116,6 +140,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * sets the value to v for a given {@link IKey}
 		 */
 		<V> void put(IKey<V> key, V v);
+		
+		/**
+		 * sets the value to v for a given {@link IKey}, directly so you can use {@link IAttributeList#UNCHANGED_OBJECT} or {@link IAttributeList#DEFAULT_OBJECT}
+		 */
+		<V> void putDirect(IKey<V> key, Object v);
 		
 		/**
 		 * sets the value for a given {@link IKey} and returns the previous value
@@ -160,27 +189,42 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		void clear();
 	}
 	
-	class AttributeListChangeEvent {
+	/**
+	 * Contains information about ANY change of an {@link IAttributeList IAttributeList}.
+	 * It is used in the {@link IEvent} gotten from {@link IAttributeList#getChangeEvent()}.
+	 * Use {@link IAttributeListChangeEvent#getEntry(IKey)} to get the Entry of one {@link IKey}.
+	 */
+	interface IAttributeListChangeEvent {
 		
-		public final IAttributeList oldList;
-		public final IAttributeListModification mod;
+		IAttributeList getOldList();
 		
-		public AttributeListChangeEvent(IAttributeList oldList, IAttributeListModification mod) {
-			this.oldList = oldList;
-			this.mod = mod;
-		}
+		IAttributeListModification getMod();
 		
-		public <V> V getOld(IKey<V> key) {
-			return oldList.get(key);
-		}
+		<V> IAttributeListChangeEventEntry<V> getEntry(IKey<V> key);
+	}
+	
+	/**
+	 * Contains information about A SINGLE change of an {@link IAttributeList IAttributeList}.
+	 * You can get the old state, the mod and calculate the new state it will be in.
+	 * "Normal" Methods will calculate the default Value, "Direct" Methods will not and can return {@link IAttributeList#DEFAULT_OBJECT DEFAULT_OBJECT} or {@link IAttributeList#UNCHANGED_OBJECT UNCHANGED_OBJECT}.
+	 * You can also set the mod to something else with {@link IAttributeListChangeEventEntry#setMod(Object)}.
+	 */
+	interface IAttributeListChangeEventEntry<V> {
 		
-		public <V> V getMod(IKey<V> key) {
-			return mod.get(key);
-		}
+		//get
+		IKey<V> getKey();
 		
-		public <V> V getNew(IKey<V> key) {
-			V v = mod.get(key);
-			return v == UNCHANGED_OBJECT ? oldList.get(key) : v;
-		}
+		Object getOldDirect();
+		
+		V getOld();
+		
+		Object getMod();
+		
+		Object getNewDirect();
+		
+		V getNew();
+		
+		//set
+		void setMod(Object newmod);
 	}
 }

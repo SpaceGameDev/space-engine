@@ -77,6 +77,19 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		return new AttributeListModification();
 	}
 	
+	//toString
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("gen", this.gen);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
 	public abstract class AbstractAttributeList implements IAbstractAttributeList, ToString {
 		
 		public IndexMapArrayWithDefault<Object> indexMap;
@@ -92,24 +105,9 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		//get
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> V getDirect(IKey<V> key) {
+		public <V> Object getDirect(IKey<V> key) {
 			check(key);
-			return (V) indexMap.get(key.getID());
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V get(IKey<V> key) {
-			check(key);
-			return correctDefault((V) indexMap.get(key.getID()), key);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V getOrDefault(IKey<V> key, V def) {
-			check(key);
-			Object o = indexMap.get(key.getID());
-			return o == DEFAULT_OBJECT ? def : (V) o;
+			return indexMap.get(key.getID());
 		}
 		
 		//other
@@ -150,7 +148,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	
 	public class AttributeList extends AbstractAttributeList implements IAttributeList {
 		
-		SimpleEvent<Consumer<AttributeListChangeEvent>> changeEvent = new SimpleEvent<>();
+		public SimpleEvent<Consumer<IAttributeListChangeEvent>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
 			super(DEFAULT_OBJECT);
@@ -164,13 +162,30 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return new AttributeList(new IndexMapArrayWithDefault<>(indexMap.toArray(), DEFAULT_OBJECT));
 		}
 		
+		//get
 		@Override
-		public IEvent<Consumer<AttributeListChangeEvent>> getChangeEvent() {
+		@SuppressWarnings("unchecked")
+		public <V> V get(IKey<V> key) {
+			check(key);
+			return correctDefault((V) indexMap.get(key.getID()), key);
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public <V> V getOrDefault(IKey<V> key, V def) {
+			check(key);
+			Object o = indexMap.get(key.getID());
+			return o == DEFAULT_OBJECT ? def : (V) o;
+		}
+		
+		//other
+		@Override
+		public IEvent<Consumer<IAttributeListChangeEvent>> getChangeEvent() {
 			return changeEvent;
 		}
 		
 		@Override
-		public void apply(IAttributeListModification mod2) {
+		public synchronized void apply(IAttributeListModification mod2) {
 			//same check
 			AttributeListModification mod = AttributeListCreator.this.createModify();
 			mod2.tableIterator().forEach(entry -> {
@@ -180,7 +195,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			});
 			
 			//trigger events
-			AttributeListChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
+			IAttributeListChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
 			changeEvent.run(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
 			
 			//apply values
@@ -215,6 +230,13 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
+		public <V> void putDirect(IKey<V> key, Object v) {
+			check(key);
+			indexMap.put(key.getID(), v);
+		}
+		
+		//set to UNCHANGED_OBJECT
+		@Override
 		@SuppressWarnings("unchecked")
 		public <V> void reset(IKey<V> key) {
 			check(key);
@@ -228,6 +250,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.replace(key.getID(), v, UNCHANGED_OBJECT);
 		}
 		
+		//set to DEFAULT_OBJECT
 		@Override
 		public <V> void setDefault(IKey<V> key) {
 			check(key);
@@ -241,6 +264,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.replace(key.getID(), v, DEFAULT_OBJECT);
 		}
 		
+		//putAndGet
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> V putAndGet(IKey<V> key, V v) {
@@ -248,6 +272,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return correctDefault((V) indexMap.put(key.getID(), v), key);
 		}
 		
+		//replace
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> boolean replace(IKey<V> key, V oldValue, V newValue) {
@@ -262,21 +287,81 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.replace(key.getID(), oldValue, newValue);
 		}
 		
+		//clear
 		@Override
 		public void clear() {
 			indexMap.clear();
 		}
 	}
 	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("gen", this.gen);
-		return tsh.build();
-	}
-	
-	@Override
-	public String toString() {
-		return toString0();
+	class AttributeListChangeEvent implements IAttributeListChangeEvent {
+		
+		public final IAttributeList oldList;
+		public final IAttributeListModification mod;
+		
+		public AttributeListChangeEvent(IAttributeList oldList, IAttributeListModification mod) {
+			this.oldList = oldList;
+			this.mod = mod;
+		}
+		
+		@Override
+		public IAttributeList getOldList() {
+			return oldList;
+		}
+		
+		@Override
+		public IAttributeListModification getMod() {
+			return mod;
+		}
+		
+		@Override
+		public <V> IAttributeListChangeEventEntry<V> getEntry(IKey<V> key) {
+			return new IAttributeListChangeEventEntry<V>() {
+				
+				//get
+				@Override
+				public IKey<V> getKey() {
+					return key;
+				}
+				
+				@Override
+				public Object getOldDirect() {
+					return oldList.getDirect(key);
+				}
+				
+				@Override
+				public V getOld() {
+					return oldList.get(key);
+				}
+				
+				@Override
+				public Object getMod() {
+					return mod.getDirect(key);
+				}
+				
+				@Override
+				public Object getNewDirect() {
+					Object v = mod.getDirect(key);
+					return v == UNCHANGED_OBJECT ? oldList.getDirect(key) : v;
+				}
+				
+				@Override
+				public V getNew() {
+					Object v = mod.getDirect(key);
+					if (v == UNCHANGED_OBJECT)
+						return oldList.get(key);
+					if (v == DEFAULT_OBJECT)
+						return key.getDefaultValue();
+					//noinspection unchecked
+					return (V) v;
+				}
+				
+				//set
+				@Override
+				public void setMod(Object newmod) {
+					mod.putDirect(key, newmod);
+				}
+			};
+		}
 	}
 }
