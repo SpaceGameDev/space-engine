@@ -42,7 +42,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	}
 	
 	public static <V> V correctDefault(V v, IKey<V> key) {
-		return v != DEFAULT_OBJECT ? v : key.getDefaultValue();
+		return v != DEFAULT ? v : key.getDefaultValue();
 	}
 	
 	//delegate to gen
@@ -59,6 +59,11 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 	@Override
 	public <T> IKey<T> generateKey(Supplier<T> def) {
 		return gen.generateKey(def);
+	}
+	
+	@Override
+	public IKey<?> getKey(int id) {
+		return gen.getKey(id);
 	}
 	
 	@Override
@@ -126,11 +131,6 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.iterator();
 		}
 		
-		@Override
-		public Iteratorable<IndexMapEntry<Object>> tableIterator() {
-			return indexMap.tableIterator();
-		}
-		
 		//toString
 		@Override
 		public <T> T toTSH(ToStringHelper<T> api) {
@@ -144,6 +144,39 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public String toString() {
 			return toString0();
 		}
+		
+		protected abstract class AbstractEntryIteratorImpl<T> implements Iteratorable<T> {
+			
+			protected Iteratorable<IndexMapEntry<Object>> iter = indexMap.tableIterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+			
+			protected IKey<?> nextKey() {
+				return gen.getKey(iter.next().getIndex());
+			}
+		}
+		
+		protected abstract class AbstractEntryImpl<V> implements AbstractEntry<V> {
+			
+			protected IKey<V> key;
+			
+			public AbstractEntryImpl(IKey<V> key) {
+				this.key = key;
+			}
+			
+			@Override
+			public IKey<V> getKey() {
+				return key;
+			}
+			
+			@Override
+			public Object getValueDirect() {
+				return AbstractAttributeList.this.getDirect(key);
+			}
+		}
 	}
 	
 	public class AttributeList extends AbstractAttributeList implements IAttributeList {
@@ -151,7 +184,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public SimpleEvent<Consumer<IAttributeListChangeEvent>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
-			super(DEFAULT_OBJECT);
+			super(DEFAULT);
 		}
 		
 		private AttributeList(IndexMapArrayWithDefault<Object> indexMap) {
@@ -159,7 +192,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		private AttributeList copy() {
-			return new AttributeList(new IndexMapArrayWithDefault<>(indexMap.toArray(), DEFAULT_OBJECT));
+			return new AttributeList(new IndexMapArrayWithDefault<>(indexMap.toArray(), DEFAULT));
 		}
 		
 		//get
@@ -175,7 +208,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		public <V> V getOrDefault(IKey<V> key, V def) {
 			check(key);
 			Object o = indexMap.get(key.getID());
-			return o == DEFAULT_OBJECT ? def : (V) o;
+			return o == DEFAULT ? def : (V) o;
 		}
 		
 		//other
@@ -189,9 +222,9 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			//same check
 			AttributeListModification mod = AttributeListCreator.this.createModify();
 			mod2.tableIterator().forEach(entry -> {
-				int index = entry.getIndex();
-				Object value = entry.getValue();
-				mod.indexMap.put(index, Objects.equals(value, this.indexMap.get(index)) ? UNCHANGED_OBJECT : value);
+				IKey<?> key = entry.getKey();
+				Object value = entry.getValueDirect();
+				mod.putDirect(key, Objects.equals(value, this.getDirect(key)) ? UNCHANGED : value);
 			});
 			
 			//trigger events
@@ -200,17 +233,39 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			
 			//apply values
 			mod.tableIterator().forEach(entry -> {
-				Object value = entry.getValue();
-				if (value != UNCHANGED_OBJECT)
-					this.indexMap.put(entry.getIndex(), value);
+				Object value = entry.getValueDirect();
+				if (value != UNCHANGED)
+					this.indexMap.put(entry.getKey().getID(), value);
 			});
+		}
+		
+		@Override
+		public Iteratorable<? extends EntryList<?>> tableIterator() {
+			return new AbstractEntryIteratorImpl<EntryList<?>>() {
+				@Override
+				public EntryList<?> next() {
+					return new EntryListImpl<>(nextKey());
+				}
+			};
+		}
+		
+		protected class EntryListImpl<V> extends AbstractEntryImpl<V> implements EntryList<V> {
+			
+			public EntryListImpl(IKey<V> key) {
+				super(key);
+			}
+			
+			@Override
+			public V getValue() {
+				return AttributeList.this.get(key);
+			}
 		}
 	}
 	
 	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification {
 		
 		public AttributeListModification() {
-			super(UNCHANGED_OBJECT);
+			super(UNCHANGED);
 		}
 		
 		private AttributeListModification(IndexMap<Object> indexMap) {
@@ -218,7 +273,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		private AttributeListModification copy() {
-			return new AttributeListModification(new IndexMapArrayWithDefault<>(indexMap.toArray(), UNCHANGED_OBJECT));
+			return new AttributeListModification(new IndexMapArrayWithDefault<>(indexMap.toArray(), UNCHANGED));
 		}
 		
 		//put
@@ -235,33 +290,33 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			indexMap.put(key.getID(), v);
 		}
 		
-		//set to UNCHANGED_OBJECT
+		//set to UNCHANGED
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> void reset(IKey<V> key) {
 			check(key);
-			indexMap.put(key.getID(), UNCHANGED_OBJECT);
+			indexMap.put(key.getID(), UNCHANGED);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> boolean reset(IKey<V> key, V v) {
 			check(key);
-			return indexMap.replace(key.getID(), v, UNCHANGED_OBJECT);
+			return indexMap.replace(key.getID(), v, UNCHANGED);
 		}
 		
-		//set to DEFAULT_OBJECT
+		//set to DEFAULT
 		@Override
 		public <V> void setDefault(IKey<V> key) {
 			check(key);
-			indexMap.put(key.getID(), DEFAULT_OBJECT);
+			indexMap.put(key.getID(), DEFAULT);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> boolean setDefault(IKey<V> key, V v) {
 			check(key);
-			return indexMap.replace(key.getID(), v, DEFAULT_OBJECT);
+			return indexMap.replace(key.getID(), v, DEFAULT);
 		}
 		
 		//putAndGet
@@ -291,6 +346,43 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		@Override
 		public void clear() {
 			indexMap.clear();
+		}
+		
+		@Override
+		public Iteratorable<? extends EntryListModification<?>> tableIterator() {
+			return new AbstractEntryIteratorImpl<EntryListModification<?>>() {
+				@Override
+				public EntryListModification<?> next() {
+					return new EntryListModificationImpl<>(nextKey());
+				}
+			};
+		}
+		
+		protected class EntryListModificationImpl<V> extends AbstractEntryImpl<V> implements EntryListModification<V> {
+			
+			public EntryListModificationImpl(IKey<V> key) {
+				super(key);
+			}
+			
+			@Override
+			public void put(V v) {
+				AttributeListModification.this.put(key, v);
+			}
+			
+			@Override
+			public void putDirect(Object v) {
+				AttributeListModification.this.putDirect(key, v);
+			}
+			
+			@Override
+			public void setDefault() {
+				AttributeListModification.this.setDefault(key);
+			}
+			
+			@Override
+			public void reset() {
+				AttributeListModification.this.reset(key);
+			}
 		}
 	}
 	
@@ -342,15 +434,15 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 				@Override
 				public Object getNewDirect() {
 					Object v = mod.getDirect(key);
-					return v == UNCHANGED_OBJECT ? oldList.getDirect(key) : v;
+					return v == UNCHANGED ? oldList.getDirect(key) : v;
 				}
 				
 				@Override
 				public V getNew() {
 					Object v = mod.getDirect(key);
-					if (v == UNCHANGED_OBJECT)
+					if (v == UNCHANGED)
 						return oldList.get(key);
-					if (v == DEFAULT_OBJECT)
+					if (v == DEFAULT)
 						return key.getDefaultValue();
 					//noinspection unchecked
 					return (V) v;

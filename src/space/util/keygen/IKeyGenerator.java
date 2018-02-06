@@ -33,6 +33,8 @@ public interface IKeyGenerator {
 	 */
 	<T> IKey<T> generateKey(Supplier<T> def);
 	
+	IKey<?> getKey(int id);
+	
 	/**
 	 * @return true if the key was made by this generator and is valid
 	 */
@@ -65,6 +67,11 @@ public interface IKeyGenerator {
 				IKey<T> key = IKeyGenerator.this.generateKey(def);
 				onGen.accept(key);
 				return key;
+			}
+			
+			@Override
+			public IKey<?> getKey(int id) {
+				return IKeyGenerator.this.getKey(id);
 			}
 			
 			@Override

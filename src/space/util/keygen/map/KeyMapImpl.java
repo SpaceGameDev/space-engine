@@ -143,6 +143,11 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, space.util.baseobject.
 			return gen.generateKey(def);
 		}
 		
+		@Override
+		public IKey<?> getKey(int id) {
+			return gen.getKey(id);
+		}
+		
 		public boolean isKeyOf(IKey<?> key) {
 			return gen.isKeyOf(key);
 		}

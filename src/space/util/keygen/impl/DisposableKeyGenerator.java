@@ -1,18 +1,23 @@
 package space.util.keygen.impl;
 
 import space.util.baseobject.ToString;
+import space.util.delegate.indexmap.ReferenceIndexMap;
 import space.util.delegate.list.IntList;
+import space.util.indexmap.IndexMap;
+import space.util.indexmap.IndexMapArray;
 import space.util.keygen.IKey;
 import space.util.keygen.IKeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
 public class DisposableKeyGenerator implements IKeyGenerator, ToString {
 	
 	public int counter;
 	public IntList disposed;
+	public IndexMap<IKey<?>> allKeys = new ReferenceIndexMap<>(new IndexMapArray<>(), WeakReference::new);
 	
 	public DisposableKeyGenerator(boolean allowReuse) {
 		if (allowReuse)
@@ -30,6 +35,11 @@ public class DisposableKeyGenerator implements IKeyGenerator, ToString {
 		return new DisposableKey<>(disposed != null && !disposed.isEmpty() ? disposed.poll() : counter++, this, def);
 	}
 	
+	@Override
+	public IKey<?> getKey(int id) {
+		return allKeys.get(id);
+	}
+	
 	//isKeyOf
 	@Override
 	public boolean isKeyOf(IKey<?> key) {
@@ -38,8 +48,10 @@ public class DisposableKeyGenerator implements IKeyGenerator, ToString {
 	
 	//dispose
 	protected synchronized void dispose(IKey<?> key) {
+		int id = key.getID();
+		allKeys.remove(id);
 		if (disposed != null)
-			disposed.add(key.getID());
+			disposed.add(id);
 	}
 	
 	//toString

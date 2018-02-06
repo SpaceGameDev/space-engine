@@ -8,26 +8,36 @@ import space.util.keygen.map.KeyMapImpl;
 
 import java.util.function.Consumer;
 
-import static space.util.keygen.attribute.IAttributeListCreator.UNCHANGED_OBJECT;
+import static space.util.keygen.attribute.IAttributeListCreator.UNCHANGED;
 
-public class AttributeListChangeEventHelper<V> implements Consumer<IAttributeListChangeEvent> {
+public class AttributeListChangeEventHelper implements Consumer<IAttributeListChangeEvent> {
 	
 	public boolean filterOutUnchanged;
-	public KeyMapImpl<Consumer<IAttributeListChangeEventEntry<V>>> callMap = new KeyMapImpl<>();
+	public KeyMapImpl<Consumer<IAttributeListChangeEventEntry<?>>> callMap = new KeyMapImpl<>();
 	
-	public void put(IKey<V> key, Consumer<IAttributeListChangeEventEntry<V>> consumer) {
-		callMap.put(key, consumer);
+	public AttributeListChangeEventHelper() {
+		this(true);
+	}
+	
+	public AttributeListChangeEventHelper(boolean filterOutUnchanged) {
+		this.filterOutUnchanged = filterOutUnchanged;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <V> void put(IKey<V> key, Consumer<IAttributeListChangeEventEntry<V>> consumer) {
+		callMap.put(key, (Consumer<IAttributeListChangeEventEntry<?>>) (Object) consumer);
 	}
 	
 	@Override
 	public void accept(IAttributeListChangeEvent changeEvent) {
 		IAttributeListModification mod = changeEvent.getMod();
 		mod.tableIterator().forEach(entry -> {
-			Object value = entry.getValue();
-			if (filterOutUnchanged && value == UNCHANGED_OBJECT)
+			Object value = entry.getValueDirect();
+			if (filterOutUnchanged && value == UNCHANGED)
 				return;
 			
-			callMap.map.get(entry.getIndex())//.accept();
+			final IKey<?> key = entry.getKey();
+			callMap.get(key).accept(changeEvent.getEntry(key));
 		});
 	}
 }
