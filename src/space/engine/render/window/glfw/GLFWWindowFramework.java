@@ -11,8 +11,8 @@ import space.util.buffer.buffers.BufferImpl;
 import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
+import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.LogLevel;
 import space.util.logger.Logger;
 import space.util.string.builder.CharBufferBuilder1D;
@@ -57,10 +57,14 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 		
 		public long windowPointer;
 		public IAttributeList format;
+		public AttributeListChangeEventHelper changeEventHelper;
 		
 		public GLFWWindow(IAttributeList format) {
 			this.format = format;
-			format.getChangeEvent().addHook((list, mod) -> update(mod));
+			
+			changeEventHelper = new AttributeListChangeEventHelper();
+			setupChangeEventHelper();
+			format.getChangeEvent().addHook(changeEventHelper);
 			
 			synchronized (GLFW_SYNC) {
 				glfwWindowHint(GLFW_VISIBLE, format.get(VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
@@ -94,23 +98,20 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				}
 				
 				//create
-				windowPointer = glfwCreateWindow(format.get(WINDOW_WIDTH), format.get(WINDOW_HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(curr.get(GL_CONTEXT_SHARE)));
+				windowPointer = glfwCreateWindow(format.get(WINDOW_WIDTH), format.get(WINDOW_HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE)));
 			}
 		}
 		
-		public void update(IAttributeListModification mod) {
-			if (format.anyDifference(curr, VISIBLE))
-				if (format.get(VISIBLE)) {
+		public void setupChangeEventHelper() {
+			changeEventHelper.put(VISIBLE, entry -> {
+				if (entry.getNew()) {
 					glfwShowWindow(windowPointer);
 				} else {
 					glfwHideWindow(windowPointer);
 				}
-			if (format.anyDifference(curr, RESIZEABLE))
-				glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, format.get(RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
-			if (format.anyDifference(curr, DOUBLEBUFFER))
-				glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, format.get(DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
-
-//			glfwSetWindowMon
+			});
+			changeEventHelper.put(RESIZEABLE, entry -> glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
+			changeEventHelper.put(DOUBLEBUFFER, entry -> glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
 		}
 		
 		@Override
