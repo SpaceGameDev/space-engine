@@ -10,10 +10,6 @@ public interface IWindow extends Freeable {
 	
 	void pollEvents();
 	
-	void destroy();
-	
 	@Override
-	default void free() {
-		destroy();
-	}
+	void free();
 }

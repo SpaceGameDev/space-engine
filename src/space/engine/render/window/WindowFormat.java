@@ -24,11 +24,12 @@ public class WindowFormat {
 	public static final AttributeListCreator ATTRIBUTE_LIST_CREATOR = new AttributeListCreator();
 	
 	//main window settings
-	public static final IKey<Integer> WINDOW_POS_X = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<Integer> WINDOW_POS_Y = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<Integer> WINDOW_WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey(800);
-	public static final IKey<Integer> WINDOW_HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey(600);
-	public static final IKey<WindowMode> WINDOW_MODE = ATTRIBUTE_LIST_CREATOR.generateKey(WINDOWED);
+	public static final IKey<Integer> POSX = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> POSY = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<Integer> WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey(800);
+	public static final IKey<Integer> HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey(600);
+	public static final IKey<Integer> REFRESH_RATE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<WindowMode> MODE = ATTRIBUTE_LIST_CREATOR.generateKey(WINDOWED);
 	
 	//additional window settings
 	public static final IKey<Boolean> VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
@@ -42,7 +43,7 @@ public class WindowFormat {
 	public static final IKey<GLProfile> GL_PROFILE = ATTRIBUTE_LIST_CREATOR.generateKey(PROFILE_ANY);
 	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey(2);
 	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey(1);
-	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
+	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE);
 	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
 	//fbo

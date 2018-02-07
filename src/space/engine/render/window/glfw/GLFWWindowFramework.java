@@ -9,13 +9,18 @@ import space.engine.side.Side;
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.BufferImpl;
 import space.util.buffer.stack.BufferAllocatorStack;
+import space.util.concurrent.event.IEvent;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
 import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEvent;
+import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.LogLevel;
 import space.util.logger.Logger;
 import space.util.string.builder.CharBufferBuilder1D;
+
+import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.render.window.WindowFormat.*;
@@ -50,7 +55,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	//create Window
 	@Override
 	public GLFWWindow create(IAttributeList format) {
-		return null;
+		return new GLFWWindow(format);
 	}
 	
 	public class GLFWWindow implements IWindow {
@@ -61,10 +66,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 		
 		public GLFWWindow(IAttributeList format) {
 			this.format = format;
-			
-			changeEventHelper = new AttributeListChangeEventHelper();
 			setupChangeEventHelper();
-			format.getChangeEvent().addHook(changeEventHelper);
 			
 			synchronized (GLFW_SYNC) {
 				glfwWindowHint(GLFW_VISIBLE, format.get(VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
@@ -88,7 +90,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				
 				//windowMode
 				long monitorPointer;
-				WindowMode windowMode = format.get(WINDOW_MODE);
+				WindowMode windowMode = format.get(MODE);
 				if (windowMode == FULLSCREEN) {
 					glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 					monitorPointer = getMonitorPointer(format.get(MONITOR));
@@ -98,40 +100,72 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				}
 				
 				//create
-				windowPointer = glfwCreateWindow(format.get(WINDOW_WIDTH), format.get(WINDOW_HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE)));
+				windowPointer = glfwCreateWindow(format.get(WIDTH), format.get(HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE)));
 			}
 		}
 		
 		public void setupChangeEventHelper() {
+			changeEventHelper = new AttributeListChangeEventHelper();
 			changeEventHelper.put(VISIBLE, entry -> {
-				if (entry.getNew()) {
+				if (entry.getNew())
 					glfwShowWindow(windowPointer);
-				} else {
+				else
 					glfwHideWindow(windowPointer);
-				}
 			});
 			changeEventHelper.put(RESIZEABLE, entry -> glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
 			changeEventHelper.put(DOUBLEBUFFER, entry -> glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
+			
+			IEvent<Consumer<IAttributeListChangeEvent>> hookable = format.getChangeEvent();
+			hookable.addHook(changeEventHelper);
+			
+			//windowMode
+			hookable.addHook(changeEvent -> {
+				IAttributeListModification mod = changeEvent.getMod();
+				if (mod.isNotUnchanged(WIDTH) || mod.isNotUnchanged(HEIGHT) || mod.isNotUnchanged(MODE) || mod.isNotUnchanged(MONITOR)) {
+					long monitorPointer;
+					WindowMode windowMode = format.get(MODE);
+					if (windowMode == FULLSCREEN) {
+						glfwSetWindowAttrib(windowPointer, GLFW_DECORATED, GLFW_TRUE);
+						monitorPointer = getMonitorPointer(format.get(MONITOR));
+					} else {
+						glfwSetWindowAttrib(windowPointer, GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
+						monitorPointer = 0;
+					}
+					//FIXME: default refresh rate
+					glfwSetWindowMonitor(windowPointer, monitorPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew(), changeEvent.getEntry(WIDTH).getNew(), changeEvent.getEntry(HEIGHT).getNew(), changeEvent.getEntry(REFRESH_RATE).getNew());
+				} else if (mod.isNotUnchanged(POSX) || mod.isNotUnchanged(POSX)) {
+					glfwSetWindowPos(windowPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew());
+				}
+			});
 		}
 		
 		@Override
 		public void makeContextCurrent() {
-		
+			glfwMakeContextCurrent(windowPointer);
 		}
 		
 		@Override
 		public void swapBuffers() {
-		
+			glfwSwapBuffers(windowPointer);
 		}
 		
 		@Override
 		public void pollEvents() {
-		
+			glfwPollEvents();
 		}
 		
 		@Override
-		public void destroy() {
+		public void free() {
+			glfwDestroyWindow(windowPointer);
+		}
 		
+		@Override
+		protected void finalize() throws Throwable {
+			try {
+				free();
+			} finally {
+				super.finalize();
+			}
 		}
 	}
 	
