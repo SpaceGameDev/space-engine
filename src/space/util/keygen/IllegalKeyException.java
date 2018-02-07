@@ -28,6 +28,6 @@ public class IllegalKeyException extends RuntimeException {
 	}
 	
 	public IllegalKeyException(IKey<?> key) {
-		this("Key " + key + " is illegal!");
+		this(key == null ? "a NULL Key!" : "Key " + key + " is illegal!");
 	}
 }
