@@ -58,6 +58,14 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 */
 		<V> Object getDirect(IKey<V> key);
 		
+		default <V> boolean isDefault(IKey<V> key) {
+			return getDirect(key) == DEFAULT;
+		}
+		
+		default <V> boolean isNotDefault(IKey<V> key) {
+			return getDirect(key) != DEFAULT;
+		}
+		
 		//others
 		
 		/**
@@ -154,6 +162,15 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	
 	interface IAttributeListModification extends IAbstractAttributeList {
 		
+		//get
+		default <V> boolean isUnchanged(IKey<V> key) {
+			return getDirect(key) == UNCHANGED;
+		}
+		
+		default <V> boolean isNotUnchanged(IKey<V> key) {
+			return getDirect(key) != UNCHANGED;
+		}
+		
 		//put
 		
 		/**
@@ -207,6 +224,8 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * resets all entries to {@link IAttributeList#UNCHANGED}
 		 */
 		void clear();
+		
+		IAttributeList createNewList();
 		
 		@Override
 		Iteratorable<? extends EntryListModification<?>> tableIterator();

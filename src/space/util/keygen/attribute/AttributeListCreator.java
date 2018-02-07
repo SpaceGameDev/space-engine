@@ -349,6 +349,17 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
+		public IAttributeList createNewList() {
+			AttributeList list = new AttributeList();
+			this.tableIterator().forEach(entry -> {
+				Object value = entry.getValueDirect();
+				if (value != UNCHANGED)
+					list.indexMap.put(entry.getKey().getID(), value);
+			});
+			return list;
+		}
+		
+		@Override
 		public Iteratorable<? extends EntryListModification<?>> tableIterator() {
 			return new AbstractEntryIteratorImpl<EntryListModification<?>>() {
 				@Override

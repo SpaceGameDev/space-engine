@@ -30,6 +30,7 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 		this.id = id;
 		this.gen = gen;
 		this.def = def;
+		gen.allKeys.put(id, this);
 	}
 	
 	//id
