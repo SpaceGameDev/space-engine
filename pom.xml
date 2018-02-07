@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <artifactId>space</artifactId>
+        <groupId>firestar99</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>spaceengine</artifactId>
+    <version>1.0</version>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>firestar99</groupId>
+            <artifactId>spaceutil</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-assimp</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-vulkan</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>3.1.6</version>
+        </dependency>
+
+        <!--&lt;!&ndash; Natives &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>org.lwjgl</groupId>-->
+        <!--<artifactId>lwjgl</artifactId>-->
+        <!--<version>${lwjgl.version}</version>-->
+        <!--<classifier>${native.target}</classifier>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.lwjgl</groupId>-->
+        <!--<artifactId>lwjgl-glfw</artifactId>-->
+        <!--<version>${lwjgl.version}</version>-->
+        <!--<classifier>${native.target}</classifier>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.lwjgl</groupId>-->
+        <!--<artifactId>lwjgl-opengl</artifactId>-->
+        <!--<version>${lwjgl.version}</version>-->
+        <!--<classifier>${native.target}</classifier>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+    </dependencies>
+
+</project>
