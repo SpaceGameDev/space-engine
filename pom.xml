@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>spaceutil</artifactId>
-    <version>1.0</version>
+    <version>${spacegame.version}</version>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
