@@ -17,9 +17,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GLFWTest {
 	
-	public static final double MULTIPLIER = 3 * 60 / (PI * 2);
+	public static final double MULTIPLIER = (2 * PI) / (3 * 60);
 	public static final double OFFSET0 = 0;
-	public static final double OFFSET1 = MULTIPLIER / 3;
+	public static final double OFFSET1 = (2 * PI) / 3;
 	public static final double OFFSET2 = OFFSET1 * 2;
 	
 	public static void main(String[] args) throws Exception {
@@ -42,15 +42,16 @@ public class GLFWTest {
 		IAttributeList attList = attListMod.createNewList();
 		IWindow window = frame.create(attList);
 		
+		window.makeContextCurrent();
+		GL.createCapabilities();
 		for (int i = 0; i < 5 * 60; i++) {
-			
-			GL.createCapabilities();
+			glClear(GL_COLOR_BUFFER_BIT);
 			
 			glColor3f((float) sin(i * MULTIPLIER + OFFSET0), (float) sin(i * MULTIPLIER + OFFSET1), (float) sin(i * MULTIPLIER + OFFSET2));
 			glBegin(GL_TRIANGLES);
-			glVertex2f(0.0f, 0.0f);
-			glVertex2f(0.0f, 0.0f);
-			glVertex2f(0.0f, 0.0f);
+			glVertex2f(0.0f, 0.5f);
+			glVertex2f(0.5f, -0.5f);
+			glVertex2f(-0.5f, -0.5f);
 			glEnd();
 			
 			window.swapBuffers();
