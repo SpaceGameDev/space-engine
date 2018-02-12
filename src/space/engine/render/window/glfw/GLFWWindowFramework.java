@@ -18,8 +18,10 @@ import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEve
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.LogLevel;
 import space.util.logger.Logger;
+import space.util.ref.FreeableReference;
 import space.util.string.builder.CharBufferBuilder1D;
 
+import java.lang.ref.ReferenceQueue;
 import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -60,7 +62,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	
 	public class GLFWWindow implements IWindow {
 		
-		public long windowPointer;
+		public GLFWWindowCleaner cleaner;
 		public IAttributeList format;
 		public AttributeListChangeEventHelper changeEventHelper;
 		
@@ -74,11 +76,19 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				glfwWindowHint(GLFW_DOUBLEBUFFER, format.get(DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
 				
 				//GLApi
-				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(format.get(GL_API_TYPE)));
-				glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.get(GL_PROFILE)));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.get(GL_VERSION_MAJOR));
-				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.get(GL_VERSION_MINOR));
-				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, format.get(GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
+				GLApiType glApiType = format.get(GL_API_TYPE);
+				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(glApiType));
+				switch (glApiType) {
+					case GL:
+						glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.get(GL_PROFILE)));
+						glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, format.get(GL_FORWARD_COMPATIBLE) ? GLFW_TRUE : GLFW_FALSE);
+					case GL_ES:
+						glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.get(GL_VERSION_MAJOR));
+						glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.get(GL_VERSION_MINOR));
+						break;
+					case NONE:
+						break;
+				}
 				
 				//FBO
 				glfwWindowHint(GLFW_RED_BITS, format.get(FBO_R));
@@ -100,7 +110,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 				}
 				
 				//create
-				windowPointer = glfwCreateWindow(format.get(WIDTH), format.get(HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE)));
+				cleaner = new GLFWWindowCleaner(this, null, glfwCreateWindow(format.get(WIDTH), format.get(HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE))));
 			}
 		}
 		
@@ -108,12 +118,12 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 			changeEventHelper = new AttributeListChangeEventHelper();
 			changeEventHelper.put(VISIBLE, entry -> {
 				if (entry.getNew())
-					glfwShowWindow(windowPointer);
+					glfwShowWindow(cleaner.windowPointer);
 				else
-					glfwHideWindow(windowPointer);
+					glfwHideWindow(cleaner.windowPointer);
 			});
-			changeEventHelper.put(RESIZEABLE, entry -> glfwSetWindowAttrib(windowPointer, GLFW_RESIZABLE, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
-			changeEventHelper.put(DOUBLEBUFFER, entry -> glfwSetWindowAttrib(windowPointer, GLFW_DOUBLEBUFFER, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
+			changeEventHelper.put(RESIZEABLE, entry -> glfwSetWindowAttrib(cleaner.windowPointer, GLFW_RESIZABLE, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
+			changeEventHelper.put(DOUBLEBUFFER, entry -> glfwSetWindowAttrib(cleaner.windowPointer, GLFW_DOUBLEBUFFER, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
 			
 			IEvent<Consumer<IAttributeListChangeEvent>> hookable = format.getChangeEvent();
 			hookable.addHook(changeEventHelper);
@@ -125,28 +135,28 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 					long monitorPointer;
 					WindowMode windowMode = format.get(MODE);
 					if (windowMode == FULLSCREEN) {
-						glfwSetWindowAttrib(windowPointer, GLFW_DECORATED, GLFW_TRUE);
+						glfwSetWindowAttrib(cleaner.windowPointer, GLFW_DECORATED, GLFW_TRUE);
 						monitorPointer = getMonitorPointer(format.get(MONITOR));
 					} else {
-						glfwSetWindowAttrib(windowPointer, GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
+						glfwSetWindowAttrib(cleaner.windowPointer, GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
 						monitorPointer = 0;
 					}
 					//FIXME: default refresh rate
-					glfwSetWindowMonitor(windowPointer, monitorPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew(), changeEvent.getEntry(WIDTH).getNew(), changeEvent.getEntry(HEIGHT).getNew(), changeEvent.getEntry(REFRESH_RATE).getNew());
+					glfwSetWindowMonitor(cleaner.windowPointer, monitorPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew(), changeEvent.getEntry(WIDTH).getNew(), changeEvent.getEntry(HEIGHT).getNew(), changeEvent.getEntry(REFRESH_RATE).getNew());
 				} else if (mod.isNotUnchanged(POSX) || mod.isNotUnchanged(POSX)) {
-					glfwSetWindowPos(windowPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew());
+					glfwSetWindowPos(cleaner.windowPointer, changeEvent.getEntry(POSX).getNew(), changeEvent.getEntry(POSY).getNew());
 				}
 			});
 		}
 		
 		@Override
 		public void makeContextCurrent() {
-			glfwMakeContextCurrent(windowPointer);
+			glfwMakeContextCurrent(cleaner.windowPointer);
 		}
 		
 		@Override
 		public void swapBuffers() {
-			glfwSwapBuffers(windowPointer);
+			glfwSwapBuffers(cleaner.windowPointer);
 		}
 		
 		@Override
@@ -156,16 +166,22 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 		
 		@Override
 		public void free() {
-			glfwDestroyWindow(windowPointer);
+			cleaner.free();
+		}
+	}
+	
+	public static class GLFWWindowCleaner extends FreeableReference {
+		
+		public long windowPointer;
+		
+		public GLFWWindowCleaner(Object referent, ReferenceQueue<? super Object> q, long windowPointer) {
+			super(referent, q);
+			this.windowPointer = windowPointer;
 		}
 		
 		@Override
-		protected void finalize() throws Throwable {
-			try {
-				free();
-			} finally {
-				super.finalize();
-			}
+		public void free() {
+			glfwDestroyWindow(windowPointer);
 		}
 	}
 	
@@ -223,7 +239,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 		
 		if (!(windowShare instanceof GLFWWindow))
 			throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
-		return ((GLFWWindow) windowShare).windowPointer;
+		return ((GLFWWindow) windowShare).cleaner.windowPointer;
 	}
 	
 	//free
