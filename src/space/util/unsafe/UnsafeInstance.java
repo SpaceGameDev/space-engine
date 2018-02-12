@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 
 public class UnsafeInstance {
 	
-	public static final Unsafe UNSAFE;
+	private static final Unsafe UNSAFE;
 	
 	static {
 		Unsafe u = null;

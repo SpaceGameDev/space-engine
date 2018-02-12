@@ -19,7 +19,7 @@ public class LambdaMetafactoryUtil {
 	 * the {@link MethodHandles#publicLookup()} does not work in {@link LambdaMetafactory}, so we have a lonely class in a package to solve this
 	 */
 	@SuppressWarnings("unused")
-	public static final Lookup PUBLICLOOKUP = PublicLookup.lookup();
+	public static final Lookup PUBLIC_LOOKUP = PublicLookup.lookup();
 	
 	//native
 	@SuppressWarnings("unused")
@@ -132,7 +132,7 @@ public class LambdaMetafactoryUtil {
 	/**
 	 * A {@link LambdaMetafactory} wrapper with other and better argument names and {@link Class}-arguments instead of {@link MethodType}.
 	 *
-	 * @param caller            a MethodHandles.Lookup-Object (obtained from MethodHandles.Lookup.lookup())
+	 * @param caller            a MethodHandles.Lookup-Object (obtained from {@link Lookup#lookup()} or {@link LambdaMetafactoryUtil#PUBLIC_LOOKUP})
 	 * @param lambdaType        the Type of Lambda, like Runnable or Consumer
 	 * @param lambdaMethodName  the Name of the Method to be overridden, like "run" or "accept"
 	 * @param lambdaRetType     the return type of the Lambda, without generics. If there is no return type, it should be void.class.

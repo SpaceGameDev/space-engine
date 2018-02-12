@@ -28,7 +28,7 @@ public final class Creatable {
 		
 		MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 			try {
-				return LambdaMetafactoryUtil.metafactoryConstructor(LambdaMetafactoryUtil.PUBLICLOOKUP, clazz);
+				return LambdaMetafactoryUtil.metafactoryConstructor(LambdaMetafactoryUtil.PUBLIC_LOOKUP, clazz);
 			} catch (Throwable ignore) {
 				return null;
 			}

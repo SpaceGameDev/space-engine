@@ -241,7 +241,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		@Override
 		public Iteratorable<? extends EntryList<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<EntryList<?>>() {
+			return new AbstractEntryIteratorImpl<>() {
 				@Override
 				public EntryList<?> next() {
 					return new EntryListImpl<>(nextKey());
@@ -361,7 +361,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		@Override
 		public Iteratorable<? extends EntryListModification<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<EntryListModification<?>>() {
+			return new AbstractEntryIteratorImpl<>() {
 				@Override
 				public EntryListModification<?> next() {
 					return new EntryListModificationImpl<>(nextKey());
@@ -419,7 +419,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		@Override
 		public <V> IAttributeListChangeEventEntry<V> getEntry(IKey<V> key) {
-			return new IAttributeListChangeEventEntry<V>() {
+			return new IAttributeListChangeEventEntry<>() {
 				
 				//get
 				@Override

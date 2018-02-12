@@ -49,9 +49,9 @@ public final class Copyable {
 		MAP = new ThreadLocalGlobalCachingMap<>(clazz -> {
 			//constructor with same type as argument, see java.util.ArrayList
 			try {
-				MethodHandle constructor = LambdaMetafactoryUtil.PUBLICLOOKUP.findConstructor(clazz, MethodType.methodType(clazz));
+				MethodHandle constructor = LambdaMetafactoryUtil.PUBLIC_LOOKUP.findConstructor(clazz, MethodType.methodType(clazz));
 				if (constructor != null)
-					return LambdaMetafactoryUtil.metafactoryUnaryOperator(LambdaMetafactoryUtil.PUBLICLOOKUP, constructor, clazz);
+					return LambdaMetafactoryUtil.metafactoryUnaryOperator(LambdaMetafactoryUtil.PUBLIC_LOOKUP, constructor, clazz);
 			} catch (Throwable ignore) {
 			}
 			

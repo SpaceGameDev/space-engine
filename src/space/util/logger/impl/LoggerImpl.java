@@ -27,5 +27,5 @@ public abstract class LoggerImpl extends AbstractLogger {
 		return subLogger(this, name);
 	}
 	
-	public abstract Logger subLogger(LoggerImpl parent, String name);
+	protected abstract Logger subLogger(LoggerImpl parent, String name);
 }
