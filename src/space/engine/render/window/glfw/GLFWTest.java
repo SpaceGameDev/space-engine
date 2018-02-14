@@ -11,6 +11,7 @@ import space.util.keygen.attribute.AttributeListCreator.AttributeListModificatio
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.impl.BaseLogger;
+import space.util.ref.freeable.FreeableReferenceCleaner;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -34,8 +35,13 @@ public class GLFWTest {
 		BaseLogger.defaultHandler(logger);
 		BaseLogger.defaultPrinter(logger);
 		
+		//cleaner
+		FreeableReferenceCleaner.cleanupLogger = logger.subLogger("Cleanup");
+		FreeableReferenceCleaner.startCleanupThread();
+		
 		//framework
-		IWindowFramework<?> frame = new GLFWWindowFramework(logger);
+		GLFWWindowFramework.setLogger(logger);
+		IWindowFramework<?> frame = new GLFWWindowFramework();
 		
 		//window
 		AttributeListModification attListMod = WindowFormat.ATTRIBUTE_LIST_CREATOR.createModify();
@@ -44,7 +50,8 @@ public class GLFWTest {
 		
 		window.makeContextCurrent();
 		GL.createCapabilities();
-		for (int i = 0; i < 5 * 60; i++) {
+		//noinspection PointlessArithmeticExpression
+		for (int i = 0; i < 1 * 60; i++) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			
 			glColor3f((float) sin(i * MULTIPLIER + OFFSET0), (float) sin(i * MULTIPLIER + OFFSET1), (float) sin(i * MULTIPLIER + OFFSET2));
@@ -61,5 +68,12 @@ public class GLFWTest {
 		
 		window.free();
 		frame.free();
+//		FreeableReferenceCleaner.LIST_ROOT.free();
+		
+		System.gc();
+		System.runFinalization();
+		
+		Thread.sleep(1000);
+		FreeableReferenceCleaner.stopCleanupThread();
 	}
 }
