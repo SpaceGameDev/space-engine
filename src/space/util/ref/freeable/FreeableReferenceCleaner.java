@@ -1,4 +1,4 @@
-package space.util.ref;
+package space.util.ref.freeable;
 
 import space.util.baseobject.additional.Freeable;
 import space.util.concurrent.event.SimpleEvent;
@@ -22,7 +22,7 @@ public final class FreeableReferenceCleaner {
 	public static String cleanupThreadName = "FreeableReferenceCleaner";
 	public static int cleanupThreadPriority = 8;
 	public static SimpleEvent<Runnable> cleanupThreadInitCall = new SimpleEvent<>();
-	public static boolean cleanupThreadDaemon = true;
+	public static boolean cleanupThreadDaemon = false;
 	
 	//instant apply
 	public static volatile Consumer<Reference<?>> cleanupThreadIllegalReference = ref -> {

@@ -1,4 +1,8 @@
-package space.util.ref;
+package space.util.ref.freeable.types;
+
+import space.util.ref.freeable.FreeableReferenceCleaner;
+import space.util.ref.freeable.FreeableReferenceList;
+import space.util.ref.freeable.IFreeableReference;
 
 import java.lang.ref.PhantomReference;
 
@@ -9,26 +13,14 @@ public abstract class FreeableReference extends PhantomReference<Object> impleme
 	public IFreeableReference next;
 	private FreeableReferenceList subList;
 	
-	public FreeableReference(Object referent, FreeableReference parent) {
-		this(referent, parent.getSubList());
-	}
-	
-	public FreeableReference(Object referent, FreeableReferenceList parent) {
+	public FreeableReference(Object referent, IFreeableReference getSubList) {
 		super(referent, FreeableReferenceCleaner.QUEUE);
-		this.parent = parent;
+		this.parent = getSubList.getSubList();
 		
 		parent.insert(this);
 	}
 	
-	/**
-	 * here for testing only!
-	 */
-	FreeableReference(Object referent) {
-		super(referent, FreeableReferenceCleaner.QUEUE);
-		this.parent = null;
-	}
-	
-	//getter setter prev next list
+	//getter setter prev next
 	@Override
 	public IFreeableReference getPrev() {
 		return prev;
@@ -49,16 +41,6 @@ public abstract class FreeableReference extends PhantomReference<Object> impleme
 		this.next = next;
 	}
 	
-	@Override
-	public FreeableReferenceList getParent() {
-		return parent;
-	}
-	
-	@Override
-	public int rootDistance() {
-		return parent.rootDistance() + 1;
-	}
-	
 	//free
 	@Override
 	public final void free() {
@@ -76,8 +58,24 @@ public abstract class FreeableReference extends PhantomReference<Object> impleme
 	
 	protected abstract void handleFree();
 	
-	//children
+	@Override
+	public boolean isFreed() {
+		return prev == null;
+	}
 	
+	//other
+	@Override
+	public FreeableReferenceList getParent() {
+		return parent;
+	}
+	
+	@Override
+	public int rootDistance() {
+		return parent.rootDistance() + 1;
+	}
+	
+	//children
+	@Override
 	public synchronized FreeableReferenceList getSubList() {
 		return subList != null ? subList : (subList = new FreeableReferenceList(rootDistance()));
 	}

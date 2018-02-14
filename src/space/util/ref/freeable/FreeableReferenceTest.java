@@ -1,6 +1,7 @@
-package space.util.ref;
+package space.util.ref.freeable;
 
 import space.util.logger.impl.BaseLogger;
+import space.util.ref.freeable.types.FreeableReference;
 import space.util.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
@@ -16,7 +17,7 @@ public class FreeableReferenceTest {
 	public static final int GC_RUNS_AFTER_CREATION = 0;
 	public static final int GC_RUNS_AFTER_NULLING = 4;
 	
-	public static boolean ALLOC_THING_FIRST = false;
+	//	public static boolean ALLOC_THING_FIRST = false;
 	public static boolean CLEAR_PARENT = true;
 	public static boolean CLEAR_ARRAY = true;
 	
@@ -28,22 +29,22 @@ public class FreeableReferenceTest {
 		
 		Parent p;
 		ArrayList<Thing> array;
-		if (ALLOC_THING_FIRST) {
-			array = new ArrayList<>();
-			for (int i = 0; i < THING_CNT; i++)
-				array.add(new Thing());
-			runGC(GC_RUNS_BEFORE_ARRAY_CREATION);
-			
-			Parent p2 = p = new Parent();
-			array.forEach(thing -> thing.init(p2));
-		} else {
-			p = new Parent();
-			runGC(GC_RUNS_BEFORE_ARRAY_CREATION);
-			
-			array = new ArrayList<>();
-			for (int i = 0; i < THING_CNT; i++)
-				array.add(new Thing(p));
-		}
+//		if (ALLOC_THING_FIRST) {
+//			array = new ArrayList<>();
+//			for (int i = 0; i < THING_CNT; i++)
+//				array.add(new Thing());
+//			runGC(GC_RUNS_BEFORE_ARRAY_CREATION);
+//
+//			Parent p2 = p = new Parent();
+//			array.forEach(thing -> thing.init(p2));
+//		} else {
+		p = new Parent();
+		runGC(GC_RUNS_BEFORE_ARRAY_CREATION);
+		
+		array = new ArrayList<>();
+		for (int i = 0; i < THING_CNT; i++)
+			array.add(new Thing(p));
+//		}
 		
 		System.out.println(FreeableReferenceCleaner.LIST_ROOT);
 		
@@ -58,7 +59,7 @@ public class FreeableReferenceTest {
 		
 		System.out.println(FreeableReferenceCleaner.LIST_ROOT);
 		
-		Thread.sleep(10000000);
+		Thread.sleep(1000);
 		FreeableReferenceCleaner.stopCleanupThread();
 	}
 	
@@ -82,7 +83,7 @@ public class FreeableReferenceTest {
 		
 		int id;
 		
-		public ParentFreeable(Object referent, FreeableReference parent, int id) {
+		public ParentFreeable(Object referent, IFreeableReference parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -116,10 +117,10 @@ public class FreeableReferenceTest {
 			this.parent = parent;
 			freeable = new ThingFreeable(this, parent.freeable, idGen.getAndIncrement());
 		}
-		
-		public Thing() {
-			freeable = new ThingFreeable(this, idGen.getAndIncrement());
-		}
+
+//		public Thing() {
+//			freeable = new ThingFreeable(this, idGen.getAndIncrement());
+//		}
 		
 		public void init(Parent parent) {
 			this.parent = parent;
@@ -134,7 +135,7 @@ public class FreeableReferenceTest {
 		
 		int id;
 		
-		public ThingFreeable(Object referent, FreeableReference parent, int id) {
+		public ThingFreeable(Object referent, IFreeableReference parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -143,11 +144,11 @@ public class FreeableReferenceTest {
 			super(referent, parent);
 			this.id = id;
 		}
-		
-		public ThingFreeable(Object referent, int id) {
-			super(referent);
-			this.id = id;
-		}
+
+//		public ThingFreeable(Object referent, int id) {
+//			super(referent);
+//			this.id = id;
+//		}
 		
 		@Override
 		protected void handleFree() {

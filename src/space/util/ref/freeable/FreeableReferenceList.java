@@ -1,4 +1,4 @@
-package space.util.ref;
+package space.util.ref.freeable;
 
 import space.util.baseobject.ToString;
 import space.util.string.builder.CharBufferBuilder2D;
@@ -10,11 +10,17 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 	public IFreeableReference next;
 	public IFreeableReference tail = this;
 	//makes remove() not remove anything, as it is pointless when free()-ing everything
-	public boolean wasFreed = false;
+	public boolean isFreed = false;
 	//to prevent any IFreeableReferences to remove themselves twice
 	public boolean duringFree = true;
 	public int rootDistance;
 	
+	/**
+	 * If you have a {@link IFreeableReference}, attach to the List you get when calling {@link IFreeableReference#getSubList()}
+	 * <p>
+	 * Make sure that all {@link FreeableReferenceList FreeableReferenceLists} are rooted!
+	 * Use only when you know what your're doing!
+	 */
 	public FreeableReferenceList(int rootDistance) {
 		this.rootDistance = rootDistance;
 	}
@@ -22,7 +28,7 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 	//getter setter prev next list
 	@Override
 	public IFreeableReference getPrev() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
@@ -42,12 +48,22 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 	
 	@Override
 	public FreeableReferenceList getParent() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public int rootDistance() {
 		return rootDistance;
+	}
+	
+	@Override
+	public boolean isFreed() {
+		return isFreed;
+	}
+	
+	@Override
+	public FreeableReferenceList getSubList() {
+		return this;
 	}
 	
 	//list operations
@@ -58,7 +74,7 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 	 * @param ref the reference to insert
 	 */
 	public synchronized void insert(IFreeableReference ref) {
-		if (wasFreed)
+		if (isFreed)
 			throwWasFreed();
 		
 		ref.setPrev(tail);
@@ -77,7 +93,7 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 			throwWrongRefList(ref.getParent());
 		
 		//no actual removal during this.free() operation, removal done there
-		if (wasFreed)
+		if (isFreed)
 			return duringFree;
 		
 		IFreeableReference prev = ref.getPrev();
@@ -105,9 +121,9 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 	 */
 	@Override
 	public synchronized void free() {
-		if (wasFreed)
+		if (isFreed)
 			throwWasFreed();
-		wasFreed = true;
+		isFreed = true;
 		
 		IFreeableReference ref = next;
 		//help gc a little
@@ -131,8 +147,8 @@ public class FreeableReferenceList implements IFreeableReference, ToString {
 		
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("size", size);
-		tsh.add("wasFreed", this.wasFreed);
-		if (wasFreed)
+		tsh.add("isFreed", this.isFreed);
+		if (isFreed)
 			tsh.add("duringFree", this.duringFree);
 		tsh.add("rootDistance", this.rootDistance);
 		return tsh.build();

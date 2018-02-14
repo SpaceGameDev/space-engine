@@ -6,16 +6,14 @@ import space.util.math.MathUtils;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.unsafe.UnsafeInstance;
+import sun.misc.Unsafe;
 
 import static space.util.math.MathUtils.min;
-import static space.util.unsafe.UnsafeInstance.UNSAFE;
 import static sun.misc.Unsafe.*;
 
 public class BufferImpl implements Buffer, Freeable, Dumpable {
 	
-	static {
-		UnsafeInstance.throwIfUnavailable();
-	}
+	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
 	public long address;
 	public long capacity;

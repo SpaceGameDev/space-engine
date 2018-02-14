@@ -1,9 +1,13 @@
 package space.util.buffer.buffers;
 
-import static space.util.unsafe.UnsafeInstance.UNSAFE;
+import space.util.unsafe.UnsafeInstance;
+import sun.misc.Unsafe;
+
 import static sun.misc.Unsafe.ARRAY_BOOLEAN_BASE_OFFSET;
 
 public class AllowBooleanArrayCopy {
+	
+	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
 	public static final boolean ALLOWBOOLEANARRAYCOPY;
 	
