@@ -13,34 +13,36 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-public final class FreeableReferenceCleaner {
+public final class FreeableStorageCleaner {
 	
 	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
-	public static final FreeableReferenceList LIST_ROOT = new FreeableReferenceList(0);
-	
-	//require restart
-	public static String cleanupThreadName = "FreeableReferenceCleaner";
-	public static int cleanupThreadPriority = 8;
-	public static SimpleEvent<Runnable> cleanupThreadInitCall = new SimpleEvent<>();
-	public static boolean cleanupThreadDaemon = false;
-	
-	//instant apply
+	public static final SimpleEvent<Runnable> CLEANUP_THREAD_INIT_CALL = new SimpleEvent<>();
+	public static volatile Logger cleanupLogger;
+	public static volatile boolean cleanupLoggerDebug = false;
 	public static volatile Consumer<Reference<?>> cleanupThreadIllegalReference = ref -> {
 		throw new IllegalArgumentException("Inappropriate Reference of type " + ref.getClass().getName() + ": " + ref);
 	};
-	public static volatile Logger cleanupLogger;
-	public static volatile boolean cleanupLoggerDebug = false;
 	
 	//instance
 	public static ThreadInfo cleanupThreadInfo;
 	
+	public static void setCleanupLogger(Logger cleanupLogger) {
+		setCleanupLogger(cleanupLogger, false);
+	}
+	
+	public static void setCleanupLogger(Logger cleanupLogger, boolean debug) {
+		FreeableStorageCleaner.cleanupLogger = cleanupLogger.subLogger("Cleanup");
+		FreeableStorageCleaner.cleanupLoggerDebug = debug;
+	}
+	
+	//start
 	public static synchronized void startCleanupThread() throws IllegalStateException {
 		if (cleanupThreadInfo != null)
-			throw new IllegalStateException("Cleaner already started!");
+			stopCleanupThread();
 		
 		ThreadInfo info = new ThreadInfo();
 		Thread thread = info.thread = new Thread(() -> {
-			cleanupThreadInitCall.run(TypeRunnable.INSTANCE);
+			CLEANUP_THREAD_INIT_CALL.run(TypeRunnable.INSTANCE);
 			
 			while (info.doRun) {
 				try {
@@ -58,7 +60,7 @@ public final class FreeableReferenceCleaner {
 					
 					//more than two references
 					//-> collect
-					ArrayList<IFreeableReference> list = new ArrayList<>();
+					ArrayList<IFreeableStorage> list = new ArrayList<>();
 					handleReferenceOrAdd(list, ref1);
 					handleReferenceOrAdd(list, ref2);
 					Reference<?> ref;
@@ -67,7 +69,7 @@ public final class FreeableReferenceCleaner {
 					}
 					
 					//-> sort
-					list.sort(Comparator.comparingInt(IFreeableReference::rootDistance));
+					list.sort(Comparator.comparingInt(IFreeableStorage::freePriority).reversed());
 					
 					//-> log if logger exists
 					if (cleanupLogger != null) {
@@ -86,50 +88,45 @@ public final class FreeableReferenceCleaner {
 				}
 			}
 		});
-		thread.setName(cleanupThreadName);
-		thread.setPriority(cleanupThreadPriority);
-		thread.setDaemon(cleanupThreadDaemon);
+		thread.setName("FreeableStorageCleaner");
+		thread.setPriority(8);
+		thread.setDaemon(false);
 		thread.start();
 		
 		cleanupThreadInfo = info;
-	}
-	
-	public static void handleReference(Reference<?> ref) {
-		if (ref instanceof IFreeableReference)
-			((IFreeableReference) ref).free();
-		else
-			cleanupThreadIllegalReference.accept(ref);
-	}
-	
-	private static void handleReferenceOrAdd(ArrayList<IFreeableReference> array, Reference<?> ref) {
-		if (ref instanceof IFreeableReference)
-			array.add((IFreeableReference) ref);
-		else
-			cleanupThreadIllegalReference.accept(ref);
-	}
-	
-	public static synchronized void stopCleanupThread() {
-		if (cleanupThreadInfo == null)
-			throw new IllegalStateException("");
-		
-		cleanupThreadInfo.doRun = false;
-		cleanupThreadInfo.thread.interrupt();
-		cleanupThreadInfo = null;
-	}
-	
-	public static synchronized void restartCleanupThread() {
-		if (cleanupThreadInfo != null)
-			stopCleanupThread();
-		startCleanupThread();
-	}
-	
-	public static synchronized boolean hasCleanupThread() {
-		return cleanupThreadInfo != null;
 	}
 	
 	private static final class ThreadInfo {
 		
 		Thread thread;
 		volatile boolean doRun = true;
+	}
+	
+	private static void handleReference(Reference<?> ref) {
+		if (ref instanceof IFreeableStorage)
+			((IFreeableStorage) ref).free();
+		else
+			cleanupThreadIllegalReference.accept(ref);
+	}
+	
+	private static void handleReferenceOrAdd(ArrayList<IFreeableStorage> array, Reference<?> ref) {
+		if (ref instanceof IFreeableStorage)
+			array.add((IFreeableStorage) ref);
+		else
+			cleanupThreadIllegalReference.accept(ref);
+	}
+	
+	//stop
+	public static synchronized void stopCleanupThread() {
+		if (cleanupThreadInfo == null)
+			throw new IllegalStateException("No CleanupThread started!");
+		
+		cleanupThreadInfo.doRun = false;
+		cleanupThreadInfo.thread.interrupt();
+		cleanupThreadInfo = null;
+	}
+	
+	public static synchronized boolean hasCleanupThread() {
+		return cleanupThreadInfo != null;
 	}
 }

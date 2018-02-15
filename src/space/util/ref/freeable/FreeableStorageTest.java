@@ -1,15 +1,13 @@
 package space.util.ref.freeable;
 
 import space.util.logger.impl.BaseLogger;
-import space.util.ref.freeable.types.FreeableReference;
-import space.util.unsafe.UnsafeInstance;
-import sun.misc.Unsafe;
+import space.util.ref.freeable.types.FreeableStorage;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("UnusedAssignment")
-public class FreeableReferenceTest {
+public class FreeableStorageTest {
 	
 	public static final int THING_CNT = 8;
 	public static final int GC_TIME_BETWEEN_RUNS = 100;
@@ -18,14 +16,16 @@ public class FreeableReferenceTest {
 	public static final int GC_RUNS_AFTER_NULLING = 4;
 	
 	//	public static boolean ALLOC_THING_FIRST = false;
-	public static boolean CLEAR_PARENT = true;
+	public static boolean CLEAR_PARENT = false;
 	public static boolean CLEAR_ARRAY = true;
+	
+	public static FreeableStorageList LIST_ROOT = new FreeableStorageList(0);
 	
 	public static void main(String[] args) throws Exception {
 		BaseLogger logger = BaseLogger.defaultPrinter(BaseLogger.defaultHandler(new BaseLogger()));
-		FreeableReferenceCleaner.cleanupLogger = logger.subLogger("Cleanup");
-		FreeableReferenceCleaner.cleanupLoggerDebug = true;
-		FreeableReferenceCleaner.startCleanupThread();
+		FreeableStorageCleaner.cleanupLogger = logger.subLogger("Cleanup");
+		FreeableStorageCleaner.cleanupLoggerDebug = true;
+		FreeableStorageCleaner.startCleanupThread();
 		
 		Parent p;
 		ArrayList<Thing> array;
@@ -46,7 +46,8 @@ public class FreeableReferenceTest {
 			array.add(new Thing(p));
 //		}
 		
-		System.out.println(FreeableReferenceCleaner.LIST_ROOT);
+		System.out.println("LIST_ROOT: " + LIST_ROOT);
+		System.out.println("p.freeable.getSubList(): " + p.freeable.getSubList());
 		
 		runGC(GC_RUNS_AFTER_CREATION);
 		
@@ -57,10 +58,12 @@ public class FreeableReferenceTest {
 		
 		runGC(GC_RUNS_AFTER_NULLING);
 		
-		System.out.println(FreeableReferenceCleaner.LIST_ROOT);
+		System.out.println("LIST_ROOT: " + LIST_ROOT);
+		if (p != null)
+			System.out.println("p.freeable.getSubList(): " + p.freeable.getSubList());
 		
 		Thread.sleep(1000);
-		FreeableReferenceCleaner.stopCleanupThread();
+		FreeableStorageCleaner.stopCleanupThread();
 	}
 	
 	public static void runGC(int cnt) throws InterruptedException {
@@ -76,19 +79,19 @@ public class FreeableReferenceTest {
 		
 		static final AtomicInteger idGen = new AtomicInteger();
 		
-		ParentFreeable freeable = new ParentFreeable(this, FreeableReferenceCleaner.LIST_ROOT, idGen.getAndIncrement());
+		ParentFreeable freeable = new ParentFreeable(this, LIST_ROOT, idGen.getAndIncrement());
 	}
 	
-	public static class ParentFreeable extends FreeableReference {
+	public static class ParentFreeable extends FreeableStorage {
 		
 		int id;
 		
-		public ParentFreeable(Object referent, IFreeableReference parent, int id) {
+		public ParentFreeable(Object referent, IFreeableStorage parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
 		
-		public ParentFreeable(Object referent, FreeableReferenceList parent, int id) {
+		public ParentFreeable(Object referent, FreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -100,15 +103,15 @@ public class FreeableReferenceTest {
 		
 		@Override
 		public String toString() {
-			return "P" + id;
+			return "P" + id + "#" + freePriority();
 		}
 	}
 	
 	public static class Thing {
 		
 		static final AtomicInteger idGen = new AtomicInteger();
-		private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
-		static final long OFFSET_PARENT = UnsafeInstance.objectFieldOffset(FreeableReference.class, "parent");
+//		private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
+//		static final long OFFSET_PARENT = UnsafeInstance.objectFieldOffset(FreeableStorage.class, "parent");
 		
 		Parent parent;
 		ThingFreeable freeable;
@@ -121,26 +124,26 @@ public class FreeableReferenceTest {
 //		public Thing() {
 //			freeable = new ThingFreeable(this, idGen.getAndIncrement());
 //		}
-		
-		public void init(Parent parent) {
-			this.parent = parent;
-			
-			FreeableReferenceList subList = parent.freeable.getSubList();
-			UNSAFE.putObject(freeable, OFFSET_PARENT, subList);
-			subList.insert(freeable);
-		}
+//
+//		public void init(Parent parent) {
+//			this.parent = parent;
+//
+//			IFreeableStorageList subList = parent.freeable.getSubList();
+//			UNSAFE.putObject(freeable, OFFSET_PARENT, subList);
+//			subList.insert(freeable);
+//		}
 	}
 	
-	public static class ThingFreeable extends FreeableReference {
+	public static class ThingFreeable extends FreeableStorage {
 		
 		int id;
 		
-		public ThingFreeable(Object referent, IFreeableReference parent, int id) {
+		public ThingFreeable(Object referent, IFreeableStorage parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
 		
-		public ThingFreeable(Object referent, FreeableReferenceList parent, int id) {
+		public ThingFreeable(Object referent, FreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -157,7 +160,7 @@ public class FreeableReferenceTest {
 		
 		@Override
 		public String toString() {
-			return "T" + id;
+			return "T" + id + "#" + freePriority();
 		}
 	}
 }

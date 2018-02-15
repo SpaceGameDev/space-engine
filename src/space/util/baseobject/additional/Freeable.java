@@ -1,10 +1,15 @@
 package space.util.baseobject.additional;
 
+import space.util.baseobject.exceptions.FreedException;
+
 public interface Freeable {
 	
-	/**
-	 * May be called by any thread any time.
-	 * It has to be synchronized internally and ensured that multiple calls don't cause problems.
-	 */
 	void free();
+	
+	boolean isFreed();
+	
+	default void throwIfFreed() throws FreedException {
+		if (isFreed())
+			throw new FreedException(this);
+	}
 }
