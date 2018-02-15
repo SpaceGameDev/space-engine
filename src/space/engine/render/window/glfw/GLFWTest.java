@@ -11,7 +11,7 @@ import space.util.keygen.attribute.AttributeListCreator.AttributeListModificatio
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.impl.BaseLogger;
-import space.util.ref.freeable.FreeableReferenceCleaner;
+import space.util.ref.freeable.FreeableStorageCleaner;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -36,8 +36,8 @@ public class GLFWTest {
 		BaseLogger.defaultPrinter(logger);
 		
 		//cleaner
-		FreeableReferenceCleaner.cleanupLogger = logger.subLogger("Cleanup");
-		FreeableReferenceCleaner.startCleanupThread();
+		FreeableStorageCleaner.cleanupLogger = logger.subLogger("Cleanup");
+		FreeableStorageCleaner.startCleanupThread();
 		
 		//framework
 		GLFWWindowFramework.setLogger(logger);
@@ -68,12 +68,12 @@ public class GLFWTest {
 		
 		window.free();
 		frame.free();
-//		FreeableReferenceCleaner.LIST_ROOT.free();
+//		FreeableStorageCleaner.LIST_ROOT.free();
 		
 		System.gc();
 		System.runFinalization();
 		
 		Thread.sleep(1000);
-		FreeableReferenceCleaner.stopCleanupThread();
+		FreeableStorageCleaner.stopCleanupThread();
 	}
 }

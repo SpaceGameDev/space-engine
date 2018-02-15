@@ -2,6 +2,7 @@ package space.engine.render.window.glfw;
 
 import space.engine.render.window.IWindow;
 import space.engine.side.Side;
+import space.util.baseobject.exceptions.FreedException;
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.concurrent.event.IEvent;
@@ -9,9 +10,8 @@ import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEvent;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
-import space.util.ref.freeable.IFreeableReference;
-import space.util.ref.freeable.exception.FreedException;
-import space.util.ref.freeable.types.FreeableReference;
+import space.util.ref.freeable.IFreeableStorage;
+import space.util.ref.freeable.types.FreeableStorage;
 
 import java.util.function.Consumer;
 
@@ -27,7 +27,7 @@ public class GLFWWindow implements IWindow {
 	public IAttributeList format;
 	public AttributeListChangeEventHelper changeEventHelper;
 	
-	public GLFWWindow(GLFWWindowFramework windowFramework, IFreeableReference getSubList, IAttributeList format) {
+	public GLFWWindow(GLFWWindowFramework windowFramework, IFreeableStorage getSubList, IAttributeList format) {
 		this.windowFramework = windowFramework;
 		this.format = format;
 		setupChangeEventHelper();
@@ -131,11 +131,11 @@ public class GLFWWindow implements IWindow {
 		storage.free();
 	}
 	
-	public static class Storage extends FreeableReference {
+	public static class Storage extends FreeableStorage {
 		
 		private long windowPointer;
 		
-		public Storage(Object referent, IFreeableReference getSubList, long windowPointer) {
+		public Storage(Object referent, IFreeableStorage getSubList, long windowPointer) {
 			super(referent, getSubList);
 			this.windowPointer = windowPointer;
 		}
