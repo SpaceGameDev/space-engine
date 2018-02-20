@@ -1,9 +1,5 @@
-package space.util.ref.freeable.types;
+package space.util.ref.freeable;
 
-import space.util.ref.freeable.FreeableStorageCleaner;
-import space.util.ref.freeable.FreeableStorageList;
-import space.util.ref.freeable.IFreeableStorage;
-import space.util.ref.freeable.IFreeableStorageList;
 import space.util.ref.freeable.IFreeableStorageList.Entry;
 
 import java.lang.ref.PhantomReference;
@@ -13,7 +9,7 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	private volatile boolean isFreed = false;
 	private final IFreeableStorageList.Entry[] entries;
 	private final int freePriority;
-	private FreeableStorageList subList;
+	private IFreeableStorageList subList;
 	
 	public FreeableStorage(Object referent, IFreeableStorage... lists) {
 		super(referent, FreeableStorageCleaner.QUEUE);
@@ -62,6 +58,6 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	//children
 	@Override
 	public synchronized IFreeableStorageList getSubList() {
-		return subList != null ? subList : (subList = new FreeableStorageList(freePriority));
+		return subList != null ? subList : (subList = FreeableStorageList.createList(freePriority));
 	}
 }

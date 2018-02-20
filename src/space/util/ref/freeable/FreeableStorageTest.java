@@ -1,7 +1,6 @@
 package space.util.ref.freeable;
 
 import space.util.logger.impl.BaseLogger;
-import space.util.ref.freeable.types.FreeableStorage;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +18,7 @@ public class FreeableStorageTest {
 	public static boolean CLEAR_PARENT = false;
 	public static boolean CLEAR_ARRAY = true;
 	
-	public static FreeableStorageList LIST_ROOT = new FreeableStorageList(0);
+	public static IFreeableStorageList LIST_ROOT = FreeableStorageList.createList(0);
 	
 	public static void main(String[] args) throws Exception {
 		BaseLogger logger = BaseLogger.defaultPrinter(BaseLogger.defaultHandler(new BaseLogger()));
@@ -91,7 +90,7 @@ public class FreeableStorageTest {
 			this.id = id;
 		}
 		
-		public ParentFreeable(Object referent, FreeableStorageList parent, int id) {
+		public ParentFreeable(Object referent, IFreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -143,7 +142,7 @@ public class FreeableStorageTest {
 			this.id = id;
 		}
 		
-		public ThingFreeable(Object referent, FreeableStorageList parent, int id) {
+		public ThingFreeable(Object referent, IFreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}

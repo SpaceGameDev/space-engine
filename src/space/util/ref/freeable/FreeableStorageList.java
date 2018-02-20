@@ -1,88 +1,120 @@
 package space.util.ref.freeable;
 
 import space.util.baseobject.ToString;
+import space.util.baseobject.additional.Freeable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class FreeableStorageList extends FreeableStorageListBase implements IFreeableStorageList, ToString {
+public abstract class FreeableStorageList implements Freeable {
 	
-	public int freePriority;
-	
-	public FreeableStorageList(int freePriority) {
-		this.freePriority = freePriority;
-		prev = this;
-		next = this;
+	static IFreeableStorageList createList(int freePriority) {
+		return new List(freePriority);
 	}
 	
-	@Override
-	public FreeableStorageListEntry insert(IFreeableStorage storage) {
-		return new FreeableStorageListEntry(storage);
+	public FreeableStorageList prev;
+	public FreeableStorageList next;
+	
+	protected void insertBefore(FreeableStorageList base) {
+		prev = base.prev;
+		next = base;
+		prev.next = this;
+		next.prev = this;
 	}
 	
-	@Override
-	public int freePriority() {
-		return freePriority;
-	}
-	
-	@Override
-	public synchronized void free() {
-		if (isFreed())
-			return;
-		remove(true);
-		
-		FreeableStorageListBase next = this.next;
-		while (next != this) {
-			next.free();
-			next = next.next;
+	protected void remove(boolean quickRemove) {
+		if (!quickRemove) {
+			prev.next = next;
+			next.prev = prev;
+			next = null;
 		}
+		prev = null;
 	}
 	
-	private class FreeableStorageListEntry extends FreeableStorageListBase implements IFreeableStorageList.Entry {
+	@Override
+	public boolean isFreed() {
+		return prev == null;
+	}
+	
+	private static class List extends FreeableStorageList implements IFreeableStorageList, ToString {
 		
-		final IFreeableStorage freeableStorage;
+		public int freePriority;
 		
-		public FreeableStorageListEntry(IFreeableStorage freeableStorage) {
-			this.freeableStorage = freeableStorage;
-			synchronized (FreeableStorageList.this) {
-				insertBefore(FreeableStorageList.this);
-			}
+		private List(int freePriority) {
+			this.freePriority = freePriority;
+			prev = this;
+			next = this;
 		}
 		
 		@Override
-		public void remove() {
-			synchronized (FreeableStorageList.this) {
-				remove(FreeableStorageList.this.isFreed());
+		public FreeableStorageListEntry insert(IFreeableStorage storage) {
+			return new FreeableStorageListEntry(storage);
+		}
+		
+		@Override
+		public int freePriority() {
+			return freePriority;
+		}
+		
+		@Override
+		public synchronized void free() {
+			if (isFreed())
+				return;
+			remove(true);
+			
+			FreeableStorageList next = this.next;
+			while (next != this) {
+				next.free();
+				next = next.next;
 			}
 		}
 		
-		//free
-		@Override
-		public void free() {
-			synchronized (FreeableStorageList.this) {
-				if (isFreed())
-					return;
-				remove(FreeableStorageList.this.isFreed());
+		private class FreeableStorageListEntry extends FreeableStorageList implements Entry {
+			
+			final IFreeableStorage freeableStorage;
+			
+			public FreeableStorageListEntry(IFreeableStorage freeableStorage) {
+				this.freeableStorage = freeableStorage;
+				synchronized (List.this) {
+					insertBefore(List.this);
+				}
 			}
 			
-			freeableStorage.free();
+			@Override
+			public void remove() {
+				synchronized (List.this) {
+					remove(List.this.isFreed());
+				}
+			}
+			
+			//free
+			@Override
+			public void free() {
+				synchronized (List.this) {
+					if (isFreed())
+						return;
+					remove(List.this.isFreed());
+				}
+				
+				freeableStorage.free();
+			}
 		}
-	}
-	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		int size = 0;
-		FreeableStorageListBase next = this;
-		while ((next = next.next) != this)
-			size++;
 		
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("size", size);
-		tsh.add("freePriority", this.freePriority);
-		return tsh.build();
-	}
-	
-	@Override
-	public String toString() {
-		return toString0();
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			int size = 0;
+			FreeableStorageList next = this;
+			while ((next = next.next) != this)
+				size++;
+			
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("size", size);
+			tsh.add("freePriority", this.freePriority);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
+		}
 	}
 }
