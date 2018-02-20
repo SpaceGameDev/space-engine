@@ -10,8 +10,8 @@ import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEvent;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
+import space.util.ref.freeable.FreeableStorage;
 import space.util.ref.freeable.IFreeableStorage;
-import space.util.ref.freeable.types.FreeableStorage;
 
 import java.util.function.Consumer;
 
@@ -127,7 +127,7 @@ public class GLFWWindow implements IWindow {
 	}
 	
 	@Override
-	public void free() {
+	public void destroy() {
 		storage.free();
 	}
 	

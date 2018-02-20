@@ -51,7 +51,7 @@ public class GLFWTest {
 		window.makeContextCurrent();
 		GL.createCapabilities();
 		//noinspection PointlessArithmeticExpression
-		for (int i = 0; i < 1 * 60; i++) {
+		for (int i = 0; i < 5 * 60; i++) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			
 			glColor3f((float) sin(i * MULTIPLIER + OFFSET0), (float) sin(i * MULTIPLIER + OFFSET1), (float) sin(i * MULTIPLIER + OFFSET2));
@@ -66,14 +66,8 @@ public class GLFWTest {
 			Thread.sleep(1000 / 60);
 		}
 		
-		window.free();
+		window.destroy();
 		frame.free();
-//		FreeableStorageCleaner.LIST_ROOT.free();
-		
-		System.gc();
-		System.runFinalization();
-		
-		Thread.sleep(1000);
-		FreeableStorageCleaner.stopCleanupThread();
+		System.out.println("Exit!");
 	}
 }

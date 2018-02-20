@@ -1,8 +1,6 @@
 package space.engine.render.window;
 
-import space.util.baseobject.additional.Freeable;
-
-public interface IWindow extends Freeable {
+public interface IWindow {
 	
 	void makeContextCurrent();
 	
@@ -10,6 +8,5 @@ public interface IWindow extends Freeable {
 	
 	void pollEvents();
 	
-	@Override
-	void free();
+	void destroy();
 }
