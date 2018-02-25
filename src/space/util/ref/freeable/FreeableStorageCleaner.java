@@ -1,8 +1,8 @@
 package space.util.ref.freeable;
 
 import space.util.baseobject.additional.Freeable;
-import space.util.logger.LogLevel;
 import space.util.logger.Logger;
+import space.util.logger.NullLogger;
 import space.util.string.builder.CharBufferBuilder2D;
 
 import java.lang.ref.Reference;
@@ -10,6 +10,8 @@ import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Consumer;
+
+import static space.util.logger.LogLevel.*;
 
 public final class FreeableStorageCleaner {
 	
@@ -22,7 +24,7 @@ public final class FreeableStorageCleaner {
 	
 	//instance
 	public static ThreadInfo cleanupThreadInfo;
-	public static volatile Logger cleanupLogger;
+	public static volatile Logger cleanupLogger = NullLogger.NULL_LOGGER;
 	public static volatile boolean cleanupLoggerDebug = false;
 	public static volatile Consumer<Reference<?>> cleanupThreadIllegalReference = ref -> {
 		throw new IllegalArgumentException("Inappropriate Reference of type " + ref.getClass().getName() + ": " + ref);
@@ -35,41 +37,13 @@ public final class FreeableStorageCleaner {
 	}
 	
 	//logger
-	public static void setCleanupLogger(Logger cleanupLogger) {
-		setCleanupLogger(cleanupLogger, false);
+	public static void setCleanupLogger(Logger baseLogger) {
+		setCleanupLogger(baseLogger, false);
 	}
 	
-	public static void setCleanupLogger(Logger cleanupLogger, boolean debug) {
-		FreeableStorageCleaner.cleanupLogger = cleanupLogger.subLogger("Cleanup");
+	public static void setCleanupLogger(Logger baseLogger, boolean debug) {
+		FreeableStorageCleaner.cleanupLogger = baseLogger.subLogger("Cleanup");
 		FreeableStorageCleaner.cleanupLoggerDebug = debug;
-	}
-	
-	//stop
-	public static synchronized void stopCleanupThread() {
-		if (cleanupThreadInfo == null)
-			throw new IllegalStateException("No CleanupThread started!");
-		
-		cleanupThreadInfo.doRun = false;
-		cleanupThreadInfo.thread.interrupt();
-		cleanupThreadInfo = null;
-	}
-	
-	public static void stopAndJoinCleanupThread() throws InterruptedException {
-		Thread thread;
-		synchronized (FreeableStorageCleaner.class) {
-			if (cleanupThreadInfo == null)
-				return;
-			
-			cleanupThreadInfo.doRun = false;
-			thread = cleanupThreadInfo.thread;
-			thread.interrupt();
-			cleanupThreadInfo = null;
-		}
-		thread.join();
-	}
-	
-	public static synchronized boolean hasCleanupThread() {
-		return cleanupThreadInfo != null;
 	}
 	
 	//start
@@ -130,9 +104,9 @@ public final class FreeableStorageCleaner {
 		//-> log if logger exists
 		if (cleanupLogger != null) {
 			if (cleanupLoggerDebug)
-				cleanupLogger.log(LogLevel.INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects: ").append(list).toString());
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects: ").append(list).toString());
 			else
-				cleanupLogger.log(LogLevel.INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects").toString());
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects").toString());
 		}
 		
 		//-> handle
@@ -153,6 +127,35 @@ public final class FreeableStorageCleaner {
 			cleanupThreadIllegalReference.accept(ref);
 	}
 	
+	//stop
+	public static synchronized void stopCleanupThread() {
+		if (cleanupThreadInfo == null)
+			throw new IllegalStateException("No CleanupThread started!");
+		
+		cleanupThreadInfo.doRun = false;
+		cleanupThreadInfo.thread.interrupt();
+		cleanupThreadInfo = null;
+	}
+	
+	public static void stopAndJoinCleanupThread() throws InterruptedException {
+		Thread thread;
+		synchronized (FreeableStorageCleaner.class) {
+			if (cleanupThreadInfo == null)
+				return;
+			
+			cleanupThreadInfo.doRun = false;
+			thread = cleanupThreadInfo.thread;
+			thread.interrupt();
+			cleanupThreadInfo = null;
+		}
+		thread.join();
+	}
+	
+	//isRunning
+	public static synchronized boolean hasCleanupThread() {
+		return cleanupThreadInfo != null;
+	}
+	
 	//finalCleanup
 	static void initFinalCleanup() {
 		synchronized (FreeableStorageCleaner.class) {
@@ -162,16 +165,22 @@ public final class FreeableStorageCleaner {
 		}
 		
 		Thread thread = new Thread(() -> {
+			cleanupLogger.log(INFO, "Starting final cleanup...");
 			try {
 				stopAndJoinCleanupThread();
-				FreeableStorageTest.LIST_ROOT.free();
+			} catch (InterruptedException ignore) {
 				
-				System.gc();
-				System.runFinalization();
-				
+			}
+			FreeableStorageTest.LIST_ROOT.free();
+			
+			System.gc();
+			System.runFinalization();
+			
+			try {
 				handle(100);
+				cleanupLogger.log(INFO, "Final cleanup complete!");
 			} catch (InterruptedException e) {
-				System.out.println("FreeableStorageShutdown was interrupted! Not all resources may have been freed!");
+				cleanupLogger.log(ERROR, "FreeableStorageCleanup shutdown procedure was interrupted! Not all resources may have been freed!");
 			}
 		});
 		thread.setName("FreeableStorageShutdown");

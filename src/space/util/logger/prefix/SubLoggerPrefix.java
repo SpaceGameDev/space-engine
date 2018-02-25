@@ -1,8 +1,7 @@
-package space.util.logger.impl.prefix;
+package space.util.logger.prefix;
 
-import space.util.logger.impl.LogMessage;
-import space.util.logger.impl.LoggerImpl;
-import space.util.logger.impl.SubLogger;
+import space.util.logger.LogMessage;
+import space.util.logger.Logger;
 import space.util.string.builder.CharBufferBuilder1DBackwards;
 
 public class SubLoggerPrefix extends AbstractPrefix {
@@ -16,12 +15,17 @@ public class SubLoggerPrefix extends AbstractPrefix {
 	
 	@Override
 	public void accept(LogMessage logMessage) {
+		Logger logger = logMessage.logger;
+		if (logger == null)
+			return;
+		
 		CharBufferBuilder1DBackwards<?> b = new CharBufferBuilder1DBackwards<>();
-		LoggerImpl logger = logMessage.logger;
-		while (logger instanceof SubLogger) {
-			SubLogger subLogger = (SubLogger) logger;
-			b.append(endChar).append(subLogger.name).append(startChar);
-			logger = subLogger.parent;
+		while (true) {
+			String name = logger.name();
+			logger = logger.parentLogger();
+			if (logger == null)
+				break;
+			b.append(endChar).append(name).append(startChar);
 		}
 		logMessage.prefix.append(b);
 	}

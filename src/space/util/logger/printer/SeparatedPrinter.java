@@ -1,7 +1,7 @@
-package space.util.logger.impl.printer;
+package space.util.logger.printer;
 
 import space.util.logger.LogLevel;
-import space.util.logger.impl.LogMessage;
+import space.util.logger.LogMessage;
 import space.util.string.CharSequence2D;
 
 import java.util.function.BiConsumer;

@@ -1,4 +1,4 @@
-package space.util.logger.impl.prefix;
+package space.util.logger.prefix;
 
 public abstract class AbstractPrefix implements Prefix {
 	

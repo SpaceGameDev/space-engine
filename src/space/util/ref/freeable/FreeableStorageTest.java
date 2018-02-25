@@ -1,6 +1,6 @@
 package space.util.ref.freeable;
 
-import space.util.logger.impl.BaseLogger;
+import space.util.logger.BaseLogger;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -1,6 +1,6 @@
-package space.util.logger.impl.prefix;
+package space.util.logger.prefix;
 
-import space.util.logger.impl.LogMessage;
+import space.util.logger.LogMessage;
 
 import java.util.function.Consumer;
 

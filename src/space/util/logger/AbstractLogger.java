@@ -1,7 +1,5 @@
 package space.util.logger;
 
-import space.util.string.CharSequence2D;
-
 public abstract class AbstractLogger implements Logger {
 	
 	public LogLevel minLevel = LogLevel.INFO;
@@ -10,20 +8,10 @@ public abstract class AbstractLogger implements Logger {
 		this.minLevel = minLevel;
 	}
 	
-	//log
-	@Override
-	public void log(LogLevel level, String str) {
-		if (minLevel.allowLog(level))
-			log0(level, str);
+	public final void logDirect(LogMessage msg) {
+		if (minLevel.allowLog(msg.level))
+			logDirect0(msg);
 	}
 	
-	@Override
-	public void log(LogLevel level, CharSequence2D str) {
-		if (minLevel.allowLog(level))
-			log0(level, str);
-	}
-	
-	protected abstract void log0(LogLevel level, String str);
-	
-	protected abstract void log0(LogLevel level, CharSequence2D str);
+	public abstract void logDirect0(LogMessage msg);
 }
