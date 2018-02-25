@@ -10,7 +10,8 @@ import space.util.buffer.string.DefaultStringConverter;
 import space.util.keygen.attribute.AttributeListCreator.AttributeListModification;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
-import space.util.logger.impl.BaseLogger;
+import space.util.logger.BaseLogger;
+import space.util.logger.LogLevel;
 import space.util.ref.freeable.FreeableStorageCleaner;
 
 import static java.lang.Math.*;
@@ -36,17 +37,16 @@ public class GLFWTest {
 		BaseLogger.defaultPrinter(logger);
 		
 		//cleaner
-		FreeableStorageCleaner.cleanupLogger = logger.subLogger("Cleanup");
+		FreeableStorageCleaner.setCleanupLogger(logger);
 		FreeableStorageCleaner.startCleanupThread();
 		
 		//framework
-		GLFWWindowFramework.setLogger(logger);
-		IWindowFramework<?> frame = new GLFWWindowFramework();
+		IWindowFramework<?> windowfw = new GLFWWindowFramework();
 		
 		//window
 		AttributeListModification attListMod = WindowFormat.ATTRIBUTE_LIST_CREATOR.createModify();
 		IAttributeList attList = attListMod.createNewList();
-		IWindow window = frame.create(attList);
+		IWindow window = windowfw.create(attList);
 		
 		window.makeContextCurrent();
 		GL.createCapabilities();
@@ -67,7 +67,7 @@ public class GLFWTest {
 		}
 		
 		window.destroy();
-		frame.free();
-		System.out.println("Exit!");
+		windowfw.free();
+		logger.log(LogLevel.INFO, "Exit!");
 	}
 }
