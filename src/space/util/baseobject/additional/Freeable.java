@@ -1,6 +1,7 @@
 package space.util.baseobject.additional;
 
 import space.util.baseobject.exceptions.FreedException;
+import space.util.ref.freeable.IFreeableStorage;
 
 public interface Freeable {
 	
@@ -11,5 +12,20 @@ public interface Freeable {
 	default void throwIfFreed() throws FreedException {
 		if (isFreed())
 			throw new FreedException(this);
+	}
+	
+	interface FreeableWithStorage extends Freeable {
+		
+		IFreeableStorage getStorage();
+		
+		@Override
+		default void free() {
+			getStorage().free();
+		}
+		
+		@Override
+		default boolean isFreed() {
+			return getStorage().isFreed();
+		}
 	}
 }

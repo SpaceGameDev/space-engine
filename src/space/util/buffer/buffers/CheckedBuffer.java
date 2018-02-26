@@ -2,6 +2,7 @@ package space.util.buffer.buffers;
 
 import space.util.buffer.buffers.exception.BufferOutOfBoundsException;
 import space.util.buffer.buffers.exception.NullBufferException;
+import space.util.ref.freeable.IFreeableStorage;
 import space.util.string.String2D;
 
 public class CheckedBuffer implements Buffer {
@@ -35,6 +36,11 @@ public class CheckedBuffer implements Buffer {
 	
 	//delegates
 	@Override
+	public IFreeableStorage getStorage() {
+		return buffer.getStorage();
+	}
+	
+	@Override
 	public long address() {
 		return buffer.address();
 	}
@@ -42,11 +48,6 @@ public class CheckedBuffer implements Buffer {
 	@Override
 	public long capacity() {
 		return buffer.capacity();
-	}
-	
-	@Override
-	public void free() {
-		buffer.free();
 	}
 	
 	@Override

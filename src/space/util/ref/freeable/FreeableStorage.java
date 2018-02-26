@@ -1,10 +1,20 @@
 package space.util.ref.freeable;
 
+import space.util.baseobject.exceptions.FreedException;
 import space.util.ref.freeable.IFreeableStorageList.Entry;
 
 import java.lang.ref.PhantomReference;
 
 public abstract class FreeableStorage extends PhantomReference<Object> implements IFreeableStorage {
+	
+	public static FreeableStorage createAnonymous(IFreeableStorage... lists) {
+		return new FreeableStorage(null, lists) {
+			@Override
+			protected void handleFree() {
+			
+			}
+		};
+	}
 	
 	private volatile boolean isFreed = false;
 	private final IFreeableStorageList.Entry[] entries;
@@ -44,9 +54,16 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	
 	protected abstract void handleFree();
 	
+	//isFreed
 	@Override
 	public boolean isFreed() {
 		return isFreed;
+	}
+	
+	@Override
+	public void throwIfFreed() throws FreedException {
+		if (isFreed)
+			throw new FreedException(this);
 	}
 	
 	//other

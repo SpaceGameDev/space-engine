@@ -5,45 +5,51 @@ import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Dumpable;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.BufferImpl;
 import space.util.buffer.buffers.SubBuffer;
+import space.util.ref.freeable.FreeableStorage;
+import space.util.ref.freeable.IFreeableStorage;
 import space.util.stack.PointerList;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+
+import java.util.Arrays;
 
 public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString, Dumpable {
 	
 	public static final long DEFAULT_CAPACITY = 1024;
 	
 	public BufferAllocator alloc;
-	public BufferImpl buffer;
+	public FreeableStorage storage;
+	public Buffer buffer;
 	public long topOfStack = 0;
 	public PointerList pointerList;
 	
 	//constructor
-	public BufferAllocatorStackOneBuffer(BufferAllocator alloc) {
-		this(alloc, DEFAULT_CAPACITY);
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, IFreeableStorage... lists) {
+		this(alloc, DEFAULT_CAPACITY, lists);
 	}
 	
-	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity) {
-		this(alloc, initCapacity, new PointerList());
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, IFreeableStorage... lists) {
+		this(alloc, initCapacity, new PointerList(), lists);
 	}
 	
-	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList) {
+	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList, IFreeableStorage[] lists) {
 		this.alloc = alloc;
+		this.storage = FreeableStorage.createAnonymous(lists);
 		makeInternalBuffer(initCapacity);
 		this.pointerList = pointerList;
 	}
 	
 	//expansion
 	public void ensureCapacity(long capacity) {
-		if (buffer.capacity < capacity)
-			makeInternalBuffer(ArrayUtils.getOptimalArraySizeExpansion(buffer.capacity, capacity, 1));
+		long bufferCapa = buffer.capacity();
+		if (bufferCapa < capacity)
+			makeInternalBuffer(ArrayUtils.getOptimalArraySizeExpansion(bufferCapa, capacity, 1));
 	}
 	
 	public void makeInternalBuffer(long capacity) {
-		buffer = new BufferImpl(capacity);
+		buffer = alloc.malloc(capacity, storage);
 	}
 	
 	//push
@@ -79,17 +85,19 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	protected long allocInternal(long capacity) {
 		long oldTopOfStack = topOfStack;
 		ensureCapacity(topOfStack += capacity);
-		return buffer.address + oldTopOfStack;
+		return buffer.address() + oldTopOfStack;
 	}
 	
 	@Override
-	public Buffer malloc(long capacity) {
-		return new SubBuffer(allocInternal(capacity), capacity, buffer);
+	public Buffer malloc(long capacity, IFreeableStorage... lists) {
+		IFreeableStorage[] list2 = Arrays.copyOf(lists, lists.length + 1);
+		list2[lists.length] = buffer.getStorage();
+		return new SubBuffer(allocInternal(capacity), capacity, buffer, list2);
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity) {
-		return alloc.alloc(address, capacity);
+	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
+		return alloc.alloc(address, capacity, lists);
 	}
 	
 	//dump
@@ -104,7 +112,6 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 		tsh.add("buffer", this.buffer);
 		tsh.add("topOfStack", this.topOfStack);
 		tsh.add("pointerList", this.pointerList);
-		tsh.add("dump", dump());
 		return tsh.build();
 	}
 	

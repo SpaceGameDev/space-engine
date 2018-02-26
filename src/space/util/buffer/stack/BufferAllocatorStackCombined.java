@@ -2,6 +2,7 @@ package space.util.buffer.stack;
 
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
+import space.util.ref.freeable.IFreeableStorage;
 import space.util.stack.IStack;
 import space.util.stack.Stack;
 
@@ -21,11 +22,11 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack {
 		this(alloc, DEFAULT_LARGE_THRESHOLD);
 	}
 	
-	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold) {
+	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold, IFreeableStorage... lists) {
 		this.largeThreshold = largeThreshold;
 		
 		this.alloc = alloc;
-		this.oneBuffer = new BufferAllocatorStackOneBuffer(alloc, BufferAllocatorStackOneBuffer.DEFAULT_CAPACITY, null);
+		this.oneBuffer = new BufferAllocatorStackOneBuffer(alloc, BufferAllocatorStackOneBuffer.DEFAULT_CAPACITY, null, lists);
 		this.bufferList = new BufferAllocatorStackBufferList(alloc, null);
 	}
 	
@@ -35,7 +36,7 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack {
 		return this;
 	}
 	
-	public BufferAllocatorStackCombined setLargeThresholdInfinite() {
+	public BufferAllocatorStackCombined setLargeThresholdEverythingOnStack() {
 		return setLargeThreshold(Long.MAX_VALUE);
 	}
 	
@@ -70,13 +71,13 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack {
 	
 	//alloc
 	@Override
-	public Buffer alloc(long address, long capacity) {
-		return bufferList.alloc(address, capacity);
+	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
+		return bufferList.alloc(address, capacity, lists);
 	}
 	
 	@Override
-	public Buffer malloc(long capacity) {
-		return capacity > largeThreshold ? bufferList.malloc(capacity) : oneBuffer.malloc(capacity);
+	public Buffer malloc(long capacity, IFreeableStorage... lists) {
+		return capacity > largeThreshold ? bufferList.malloc(capacity, lists) : oneBuffer.malloc(capacity, lists);
 	}
 	
 	//entry

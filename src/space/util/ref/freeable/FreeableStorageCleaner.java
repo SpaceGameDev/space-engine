@@ -104,9 +104,9 @@ public final class FreeableStorageCleaner {
 		//-> log if logger exists
 		if (cleanupLogger != null) {
 			if (cleanupLoggerDebug)
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects: ").append(list).toString());
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC: ").append(list).toString());
 			else
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects").toString());
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC").toString());
 		}
 		
 		//-> handle
@@ -165,22 +165,26 @@ public final class FreeableStorageCleaner {
 		}
 		
 		Thread thread = new Thread(() -> {
-			cleanupLogger.log(INFO, "Starting final cleanup...");
+			Logger logger = cleanupLogger.subLogger("final");
+			logger.log(INFO, "Final cleanup...");
+			logger.log(INFO, "1. Stopping cleanup thread");
 			try {
 				stopAndJoinCleanupThread();
 			} catch (InterruptedException ignore) {
 				
 			}
+			logger.log(INFO, "2. direct free");
 			FreeableStorageTest.LIST_ROOT.free();
 			
+			logger.log(INFO, "3. gc free");
 			System.gc();
 			System.runFinalization();
 			
 			try {
 				handle(100);
-				cleanupLogger.log(INFO, "Final cleanup complete!");
+				logger.log(INFO, "Final cleanup complete!");
 			} catch (InterruptedException e) {
-				cleanupLogger.log(ERROR, "FreeableStorageCleanup shutdown procedure was interrupted! Not all resources may have been freed!");
+				logger.log(ERROR, "FreeableStorageCleanup shutdown procedure was interrupted! Not all resources may have been freed!");
 			}
 		});
 		thread.setName("FreeableStorageShutdown");

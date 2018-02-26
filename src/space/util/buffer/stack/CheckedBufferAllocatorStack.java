@@ -2,6 +2,7 @@ package space.util.buffer.stack;
 
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.CheckedBuffer;
+import space.util.ref.freeable.IFreeableStorage;
 
 public class CheckedBufferAllocatorStack implements BufferAllocatorStack {
 	
@@ -13,13 +14,13 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack {
 	
 	//BufferAllocator
 	@Override
-	public Buffer malloc(long capacity) {
-		return new CheckedBuffer(alloc.malloc(capacity));
+	public Buffer malloc(long capacity, IFreeableStorage... lists) {
+		return new CheckedBuffer(alloc.malloc(capacity, lists));
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity) {
-		return new CheckedBuffer(alloc.alloc(address, capacity));
+	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
+		return new CheckedBuffer(alloc.alloc(address, capacity, lists));
 	}
 	
 	//MultiStack

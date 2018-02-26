@@ -36,19 +36,18 @@ public class DisposableKeyGenerator implements IKeyGenerator, ToString {
 	}
 	
 	@Override
-	public IKey<?> getKey(int id) {
+	public synchronized IKey<?> getKey(int id) {
 		return allKeys.get(id);
 	}
 	
 	//isKeyOf
 	@Override
 	public boolean isKeyOf(IKey<?> key) {
-		return key instanceof DisposableKey && ((DisposableKey) key).gen == this;
+		return key instanceof DisposableKey && ((DisposableKey) key).storage.gen == this;
 	}
 	
 	//dispose
-	protected synchronized void dispose(IKey<?> key) {
-		int id = key.getID();
+	protected synchronized void dispose(int id) {
 		allKeys.remove(id);
 		if (disposed != null)
 			disposed.add(id);

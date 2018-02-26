@@ -1,18 +1,19 @@
 package space.util.keygen.impl;
 
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.keygen.IKey;
+import space.util.ref.freeable.FreeableStorage;
+import space.util.ref.freeable.IFreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
+public class DisposableKey<T> implements IKey<T>, FreeableWithStorage, ToString {
 	
-	public final int id;
-	public DisposableKeyGenerator gen;
+	public final Storage storage;
 	public Supplier<T> def;
 	
 	public DisposableKey(int id, DisposableKeyGenerator gen) {
@@ -27,18 +28,44 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 		if (id < 0)
 			throw new IllegalArgumentException("id cannot be negative, possible overflow?");
 		
-		this.id = id;
-		this.gen = gen;
+		this.storage = new Storage(this, id, gen);
 		this.def = def;
 		gen.allKeys.put(id, this);
+	}
+	
+	//storage
+	public static class Storage extends FreeableStorage {
+		
+		private final int id;
+		public DisposableKeyGenerator gen;
+		
+		public Storage(Object referent, int id, DisposableKeyGenerator gen, IFreeableStorage... lists) {
+			super(referent, lists);
+			this.id = id;
+			this.gen = gen;
+		}
+		
+		public int getID() {
+			if (isFreed())
+				throw new IllegalStateException("Key disposed!");
+			return id;
+		}
+		
+		@Override
+		protected void handleFree() {
+			gen.dispose(id);
+		}
+	}
+	
+	@Override
+	public IFreeableStorage getStorage() {
+		return storage;
 	}
 	
 	//id
 	@Override
 	public int getID() {
-		if (gen == null)
-			throw new IllegalStateException("Key disposed!");
-		return id;
+		return storage.getID();
 	}
 	
 	@Override
@@ -46,28 +73,10 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 		return def.get();
 	}
 	
-	//free
-	@Override
-	public synchronized void free() {
-		if (gen == null)
-			return;
-		gen.dispose(this);
-		gen = null;
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			free();
-		} finally {
-			super.finalize();
-		}
-	}
-	
 	//equals and hashcode
 	@Override
 	public int hashCode() {
-		return Integer.hashCode(id);
+		return Integer.hashCode(getID());
 	}
 	
 	@Override
@@ -77,7 +86,7 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 		if (!(o instanceof DisposableKey))
 			return false;
 		DisposableKey<?> that = (DisposableKey<?>) o;
-		return id == that.id && Objects.equals(gen, that.gen);
+		return storage.getID() == that.storage.getID() && Objects.equals(storage.gen, that.storage.gen);
 	}
 	
 	//toString
@@ -85,7 +94,7 @@ public class DisposableKey<T> implements IKey<T>, Freeable, ToString {
 	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("id", this.id);
+		tsh.add("id", storage.getID());
 		return tsh.build();
 	}
 	

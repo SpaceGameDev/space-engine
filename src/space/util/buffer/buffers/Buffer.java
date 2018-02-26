@@ -1,17 +1,14 @@
 package space.util.buffer.buffers;
 
 import space.util.baseobject.additional.Dumpable;
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.string.String2D;
 
-public interface Buffer extends Freeable, Dumpable {
+public interface Buffer extends FreeableWithStorage, Dumpable {
 	
 	long address();
 	
 	long capacity();
-	
-	@Override
-	void free();
 	
 	void clear();
 	

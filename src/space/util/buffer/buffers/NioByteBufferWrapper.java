@@ -30,13 +30,20 @@ public class NioByteBufferWrapper {
 	}
 	
 	//wrap methods
+	
+	/**
+	 * Note that a Reference to buffer should be kept during the existance of the returned ByteBuffer, otherwise you risk a SegFault!
+	 */
 	public static ByteBuffer wrap(Buffer buffer) {
 		long capacity = buffer.capacity();
 		if (capacity > Integer.MAX_VALUE)
-			throw new RuntimeException("buffer capacity " + capacity + " above int size limit");
+			throw new RuntimeException("buffer capacity " + capacity + " above int size limits of ByteBuffer");
 		return wrap(buffer, (int) capacity);
 	}
 	
+	/**
+	 * Note that a Reference to buffer should be kept during the existance of the returned ByteBuffer, otherwise you risk a SegFault!
+	 */
 	public static ByteBuffer wrap(Buffer buffer, int length) {
 		if (length > buffer.capacity())
 			throw new RuntimeException("length exceeds capacity: " + length + " > " + buffer.capacity());

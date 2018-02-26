@@ -9,9 +9,9 @@ public class AllowBooleanArrayCopy {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
-	public static final boolean ALLOWBOOLEANARRAYCOPY;
+	public static final boolean ALLOW_BOOLEAN_ARRAY_COPY;
 	
 	static {
-		ALLOWBOOLEANARRAYCOPY = (UNSAFE.getByte(new boolean[] {true}, (long) ARRAY_BOOLEAN_BASE_OFFSET) != (byte) 0) && (UNSAFE.getByte(new boolean[] {false}, (long) ARRAY_BOOLEAN_BASE_OFFSET) == (byte) 0);
+		ALLOW_BOOLEAN_ARRAY_COPY = (UNSAFE.getByte(new boolean[] {true}, (long) ARRAY_BOOLEAN_BASE_OFFSET) != (byte) 0) && (UNSAFE.getByte(new boolean[] {false}, (long) ARRAY_BOOLEAN_BASE_OFFSET) == (byte) 0);
 	}
 }
