@@ -77,7 +77,8 @@ public class GLFWWindow implements IWindow {
 	}
 	
 	public void setupChangeEventHelper() {
-		changeEventHelper = new AttributeListChangeEventHelper();
+		IEvent<Consumer<IAttributeListChangeEvent>> hookable = format.getChangeEvent();
+		AttributeListChangeEventHelper changeEventHelper = new AttributeListChangeEventHelper();
 		changeEventHelper.put(VISIBLE, entry -> {
 			if (entry.getNew())
 				glfwShowWindow(storage.getWindowPointer());
@@ -86,9 +87,8 @@ public class GLFWWindow implements IWindow {
 		});
 		changeEventHelper.put(RESIZEABLE, entry -> glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_RESIZABLE, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
 		changeEventHelper.put(DOUBLEBUFFER, entry -> glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_DOUBLEBUFFER, entry.getNew() ? GLFW_TRUE : GLFW_FALSE));
-		
-		IEvent<Consumer<IAttributeListChangeEvent>> hookable = format.getChangeEvent();
-		hookable.addHook(changeEventHelper);
+		changeEventHelper.put(TITLE, entry -> glfwSetWindowTitle(storage.getWindowPointer(), entry.getNew()));
+		hookable.addHook(this.changeEventHelper = changeEventHelper);
 		
 		//windowMode
 		hookable.addHook(changeEvent -> {

@@ -19,6 +19,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GLFWTest {
 	
+	public static boolean CRASH = false;
+	public static int SECONDS = 5;
+	
 	public static final double MULTIPLIER = (2 * PI) / (3 * 60);
 	public static final double OFFSET0 = 0;
 	public static final double OFFSET1 = (2 * PI) / 3;
@@ -48,10 +51,12 @@ public class GLFWTest {
 		IAttributeList attList = attListMod.createNewList();
 		IWindow window = windowfw.create(attList);
 		
+		if (CRASH)
+			throw new RuntimeException("Crash!");
+		
 		window.makeContextCurrent();
 		GL.createCapabilities();
-		//noinspection PointlessArithmeticExpression
-		for (int i = 0; i < 5 * 60; i++) {
+		for (int i = 0; i < SECONDS * 60; i++) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			
 			glColor3f((float) sin(i * MULTIPLIER + OFFSET0), (float) sin(i * MULTIPLIER + OFFSET1), (float) sin(i * MULTIPLIER + OFFSET2));
