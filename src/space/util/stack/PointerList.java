@@ -2,6 +2,9 @@ package space.util.stack;
 
 import static java.lang.Math.*;
 
+/**
+ * Allows for {@link PointerList#push(long)} and {@link PointerList#pop()} of longs. Can be used to eg. store {@link IStack} or {@link space.util.stack.multistack.IMultiStack} pointers.
+ */
 public class PointerList {
 	
 	public static final int defaultSize = 10;

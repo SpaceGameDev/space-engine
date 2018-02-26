@@ -1,19 +1,25 @@
 package space.util.buffer.buffers;
 
+import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Dumpable;
 import space.util.baseobject.additional.Freeable.FreeableWithStorage;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.math.MathUtils;
-import space.util.ref.freeable.FreeableStorage;
-import space.util.ref.freeable.IFreeableStorage;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder2D;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
 import static space.util.math.MathUtils.min;
 import static sun.misc.Unsafe.*;
 
-public class BufferImpl implements Buffer, FreeableWithStorage, Dumpable {
+/**
+ * A simple <b>UNCHECKED</b> implementation of {@link Buffer}
+ */
+public class BufferImpl implements Buffer, FreeableWithStorage, Dumpable, ToString {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
@@ -22,22 +28,22 @@ public class BufferImpl implements Buffer, FreeableWithStorage, Dumpable {
 	protected BufferImpl() {
 	}
 	
-	public BufferImpl(long capacity, IFreeableStorage... lists) {
-		this(UNSAFE.allocateMemory(capacity), capacity, lists);
+	public BufferImpl(long capacity, IFreeableStorage... parents) {
+		this(UNSAFE.allocateMemory(capacity), capacity, parents);
 	}
 	
-	public BufferImpl(long address, long capacity, IFreeableStorage... lists) {
-		this.storage = new Storage(this, address, capacity, lists);
+	public BufferImpl(long address, long capacity, IFreeableStorage... parents) {
+		this.storage = new Storage(this, address, capacity, parents);
 	}
 	
 	//storage
-	public static class Storage extends FreeableStorage {
+	public static class Storage extends FreeableStorage implements ToString {
 		
-		private long address;
-		private long capacity;
+		protected long address;
+		protected long capacity;
 		
-		public Storage(Object referent, long address, long capacity, IFreeableStorage... lists) {
-			super(referent, lists);
+		public Storage(Object referent, long address, long capacity, IFreeableStorage... parents) {
+			super(referent, parents);
 			this.address = address;
 			this.capacity = capacity;
 		}
@@ -55,6 +61,20 @@ public class BufferImpl implements Buffer, FreeableWithStorage, Dumpable {
 		public long capacity() {
 			throwIfFreed();
 			return capacity;
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("isFreed", this.isFreed());
+			tsh.add("address", this.address);
+			tsh.add("capacity", this.capacity);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
 		}
 	}
 	
@@ -337,5 +357,19 @@ public class BufferImpl implements Buffer, FreeableWithStorage, Dumpable {
 	@Override
 	public void copyFrom(Buffer src, long srcPos, long length, long offset) {
 		UNSAFE.copyMemory(src.address() + srcPos, storage.address() + offset, length);
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("isFreed", this.storage.isFreed());
+		tsh.add("address", this.storage.address);
+		tsh.add("capacity", this.storage.capacity);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }

@@ -1,4 +1,4 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Freeable;

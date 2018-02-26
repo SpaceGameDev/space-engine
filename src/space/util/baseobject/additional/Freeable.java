@@ -1,7 +1,8 @@
 package space.util.baseobject.additional;
 
 import space.util.baseobject.exceptions.FreedException;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorageList;
 
 public interface Freeable {
 	
@@ -14,7 +15,7 @@ public interface Freeable {
 			throw new FreedException(this);
 	}
 	
-	interface FreeableWithStorage extends Freeable {
+	interface FreeableWithStorage extends IFreeableStorage {
 		
 		IFreeableStorage getStorage();
 		
@@ -26,6 +27,16 @@ public interface Freeable {
 		@Override
 		default boolean isFreed() {
 			return getStorage().isFreed();
+		}
+		
+		@Override
+		default int freePriority() {
+			return getStorage().freePriority();
+		}
+		
+		@Override
+		default IFreeableStorageList getSubList() {
+			return getStorage().getSubList();
 		}
 	}
 }

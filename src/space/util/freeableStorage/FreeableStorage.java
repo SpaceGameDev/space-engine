@@ -1,24 +1,25 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
-import space.util.ref.freeable.IFreeableStorageList.Entry;
+import space.util.baseobject.exceptions.FreedException;
+import space.util.freeableStorage.IFreeableStorageList.Entry;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.PhantomReference;
 
-public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements IFreeableStorage {
+public abstract class FreeableStorage extends PhantomReference<Object> implements IFreeableStorage {
 	
 	private volatile boolean isFreed = false;
 	private final IFreeableStorageList.Entry[] entries;
 	private final int freePriority;
 	private IFreeableStorageList subList;
 	
-	public FreeableStorageWeak(T referent, IFreeableStorage... lists) {
+	public FreeableStorage(Object referent, IFreeableStorage... parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
 		
 		int freePriority = Integer.MIN_VALUE;
-		entries = new IFreeableStorageList.Entry[lists.length];
-		for (int i = 0; i < lists.length; i++) {
-			entries[i] = lists[i].getSubList().insert(this);
-			int lfp = lists[i].freePriority();
+		entries = new IFreeableStorageList.Entry[parents.length];
+		for (int i = 0; i < parents.length; i++) {
+			entries[i] = parents[i].getSubList().insert(this);
+			int lfp = parents[i].freePriority();
 			if (lfp > freePriority)
 				freePriority = lfp;
 		}
@@ -44,9 +45,16 @@ public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements
 	
 	protected abstract void handleFree();
 	
+	//isFreed
 	@Override
 	public boolean isFreed() {
 		return isFreed;
+	}
+	
+	@Override
+	public void throwIfFreed() throws FreedException {
+		if (isFreed)
+			throw new FreedException(this);
 	}
 	
 	//other

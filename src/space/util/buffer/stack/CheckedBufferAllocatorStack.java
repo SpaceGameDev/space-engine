@@ -1,10 +1,16 @@
 package space.util.buffer.stack;
 
+import space.util.baseobject.ToString;
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.CheckedBuffer;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class CheckedBufferAllocatorStack implements BufferAllocatorStack {
+/**
+ * wraps every created buffer in a {@link CheckedBuffer}
+ */
+public class CheckedBufferAllocatorStack implements BufferAllocatorStack, ToString {
 	
 	public BufferAllocatorStack alloc;
 	
@@ -14,13 +20,13 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack {
 	
 	//BufferAllocator
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... lists) {
-		return new CheckedBuffer(alloc.malloc(capacity, lists));
+	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+		return new CheckedBuffer(alloc.malloc(capacity, parents));
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
-		return new CheckedBuffer(alloc.alloc(address, capacity, lists));
+	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return new CheckedBuffer(alloc.alloc(address, capacity, parents));
 	}
 	
 	//MultiStack
@@ -47,5 +53,12 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack {
 	@Override
 	public void popPointer(long pointer) {
 		alloc.popPointer(pointer);
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("alloc", this.alloc);
+		return tsh.build();
 	}
 }

@@ -6,8 +6,8 @@ import space.util.baseobject.additional.Dumpable;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.SubBuffer;
-import space.util.ref.freeable.FreeableStorage;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.stack.PointerList;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -15,6 +15,9 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 import java.util.Arrays;
 
+/**
+ * A {@link BufferAllocatorStack} which has one big {@link Buffer} and will create {@link SubBuffer SubBuffers} of that {@link Buffer}, also increasing it in size if necessary.
+ */
 public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString, Dumpable {
 	
 	public static final long DEFAULT_CAPACITY = 1024;
@@ -36,7 +39,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	
 	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList, IFreeableStorage[] lists) {
 		this.alloc = alloc;
-		this.storage = FreeableStorage.createAnonymous(lists);
+		this.storage = IFreeableStorage.createAnonymous(lists);
 		makeInternalBuffer(initCapacity);
 		this.pointerList = pointerList;
 	}
@@ -89,15 +92,15 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... lists) {
-		IFreeableStorage[] list2 = Arrays.copyOf(lists, lists.length + 1);
-		list2[lists.length] = buffer.getStorage();
+	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+		IFreeableStorage[] list2 = Arrays.copyOf(parents, parents.length + 1);
+		list2[parents.length] = buffer.getStorage();
 		return new SubBuffer(allocInternal(capacity), capacity, buffer, list2);
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
-		return alloc.alloc(address, capacity, lists);
+	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return alloc.alloc(address, capacity, parents);
 	}
 	
 	//dump
@@ -109,6 +112,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
+		tsh.add("storage", this.storage);
 		tsh.add("buffer", this.buffer);
 		tsh.add("topOfStack", this.topOfStack);
 		tsh.add("pointerList", this.pointerList);

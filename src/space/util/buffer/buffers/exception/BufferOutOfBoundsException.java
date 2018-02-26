@@ -2,7 +2,7 @@ package space.util.buffer.buffers.exception;
 
 import space.util.string.builder.CharBufferBuilder1D;
 
-public class BufferOutOfBoundsException extends RuntimeException {
+public class BufferOutOfBoundsException extends BufferException {
 	
 	public BufferOutOfBoundsException() {
 		super();

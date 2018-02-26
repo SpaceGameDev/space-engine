@@ -2,9 +2,9 @@ package space.util.keygen.impl;
 
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Freeable.FreeableWithStorage;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.keygen.IKey;
-import space.util.ref.freeable.FreeableStorage;
-import space.util.ref.freeable.IFreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 

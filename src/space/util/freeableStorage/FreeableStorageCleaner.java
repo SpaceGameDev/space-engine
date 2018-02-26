@@ -1,4 +1,4 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
 import space.util.baseobject.additional.Freeable;
 import space.util.logger.Logger;
@@ -16,7 +16,7 @@ import static space.util.logger.LogLevel.*;
 public final class FreeableStorageCleaner {
 	
 	static {
-		initFinalCleanup();
+		initialize();
 	}
 	
 	private static boolean initWasCalled = false;
@@ -157,12 +157,14 @@ public final class FreeableStorageCleaner {
 	}
 	
 	//finalCleanup
-	static void initFinalCleanup() {
+	static void initialize() {
 		synchronized (FreeableStorageCleaner.class) {
 			if (initWasCalled)
 				return;
 			initWasCalled = true;
 		}
+		
+		startCleanupThread();
 		
 		Thread thread = new Thread(() -> {
 			Logger logger = cleanupLogger.subLogger("final");

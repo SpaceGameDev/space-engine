@@ -1,10 +1,13 @@
 package space.util.buffer.buffers;
 
+import space.util.buffer.buffers.exception.BufferAddressNullException;
 import space.util.buffer.buffers.exception.BufferOutOfBoundsException;
-import space.util.buffer.buffers.exception.NullBufferException;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.string.String2D;
 
+/**
+ * wraps a {@link Buffer} and checks all parameters, throwing exceptions when going {@link BufferOutOfBoundsException} or {@link BufferAddressNullException}.
+ */
 public class CheckedBuffer implements Buffer {
 	
 	public Buffer buffer;
@@ -19,7 +22,7 @@ public class CheckedBuffer implements Buffer {
 		long capacity = buffer.capacity();
 		
 		if (address == 0)
-			throw new NullBufferException();
+			throw new BufferAddressNullException();
 		if (!(0 <= offset && offset < capacity))
 			throw new BufferOutOfBoundsException(address, capacity, offset);
 	}
@@ -29,7 +32,7 @@ public class CheckedBuffer implements Buffer {
 		long capacity = buffer.capacity();
 		
 		if (address == 0)
-			throw new NullBufferException();
+			throw new BufferAddressNullException();
 		if (!(0 <= offset && length + offset <= capacity))
 			throw new BufferOutOfBoundsException(address, capacity, offset, length);
 	}

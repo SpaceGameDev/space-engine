@@ -1,12 +1,20 @@
 package space.util.buffer.stack;
 
+import space.util.baseobject.ToString;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.buffers.Buffer;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.stack.IStack;
 import space.util.stack.Stack;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class BufferAllocatorStackCombined implements BufferAllocatorStack {
+/**
+ * Combines both {@link BufferAllocatorStackBufferList} and {@link BufferAllocatorStackOneBuffer}.
+ * Any to be allocated {@link Buffer} below or equal the {@link BufferAllocatorStackCombined#largeThreshold} will be delegated to {@link BufferAllocatorStackOneBuffer OneBuffer},
+ * anything larger will be delegated to {@link BufferAllocatorStackBufferList BufferList}.
+ */
+public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToString {
 	
 	public static final int DEFAULT_LARGE_THRESHOLD = 64;
 	
@@ -71,13 +79,29 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack {
 	
 	//alloc
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
-		return bufferList.alloc(address, capacity, lists);
+	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return bufferList.alloc(address, capacity, parents);
 	}
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... lists) {
-		return capacity > largeThreshold ? bufferList.malloc(capacity, lists) : oneBuffer.malloc(capacity, lists);
+	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("alloc", this.alloc);
+		tsh.add("oneBuffer", this.oneBuffer);
+		tsh.add("bufferList", this.bufferList);
+		tsh.add("largeThreshold", this.largeThreshold);
+		tsh.add("stack", this.stack);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 	
 	//entry

@@ -1,17 +1,17 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
-import space.util.ref.freeable.IFreeableStorageList.Entry;
+import space.util.freeableStorage.IFreeableStorageList.Entry;
 
-import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 
-public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements IFreeableStorage {
+public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements IFreeableStorage {
 	
 	private volatile boolean isFreed = false;
 	private final IFreeableStorageList.Entry[] entries;
 	private final int freePriority;
 	private IFreeableStorageList subList;
 	
-	public FreeableStorageSoft(T referent, IFreeableStorage... lists) {
+	public FreeableStorageWeak(T referent, IFreeableStorage... lists) {
 		super(referent, FreeableStorageCleaner.QUEUE);
 		
 		int freePriority = Integer.MIN_VALUE;

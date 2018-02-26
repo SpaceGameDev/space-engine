@@ -1,4 +1,4 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
 import space.util.logger.BaseLogger;
 

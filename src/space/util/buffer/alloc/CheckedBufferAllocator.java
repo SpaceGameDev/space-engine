@@ -2,7 +2,7 @@ package space.util.buffer.alloc;
 
 import space.util.buffer.buffers.Buffer;
 import space.util.buffer.buffers.CheckedBuffer;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 
 public class CheckedBufferAllocator implements BufferAllocator {
 	
@@ -13,12 +13,12 @@ public class CheckedBufferAllocator implements BufferAllocator {
 	}
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... lists) {
-		return new CheckedBuffer(alloc.malloc(capacity, lists));
+	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+		return new CheckedBuffer(alloc.malloc(capacity, parents));
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... lists) {
-		return new CheckedBuffer(alloc.alloc(address, capacity, lists));
+	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return new CheckedBuffer(alloc.alloc(address, capacity, parents));
 	}
 }

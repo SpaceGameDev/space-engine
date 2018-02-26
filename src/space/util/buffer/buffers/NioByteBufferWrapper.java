@@ -32,7 +32,8 @@ public class NioByteBufferWrapper {
 	//wrap methods
 	
 	/**
-	 * Note that a Reference to buffer should be kept during the existance of the returned ByteBuffer, otherwise you risk a SegFault!
+	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
 	 */
 	public static ByteBuffer wrap(Buffer buffer) {
 		long capacity = buffer.capacity();
@@ -42,7 +43,8 @@ public class NioByteBufferWrapper {
 	}
 	
 	/**
-	 * Note that a Reference to buffer should be kept during the existance of the returned ByteBuffer, otherwise you risk a SegFault!
+	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
 	 */
 	public static ByteBuffer wrap(Buffer buffer, int length) {
 		if (length > buffer.capacity())

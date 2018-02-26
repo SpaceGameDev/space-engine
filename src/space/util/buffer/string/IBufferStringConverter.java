@@ -2,6 +2,15 @@ package space.util.buffer.string;
 
 import space.util.buffer.buffers.Buffer;
 
+/**
+ * A utility class for converting:
+ * <ul>
+ * <li>Strings into C-like Null-terminated Buffers</li>
+ * <li>C-like Null-terminated Buffers into Strings</li>
+ * <li>getting the length of C-like Null-terminated Buffers</li>
+ * </ul>
+ * Supported Charsets: UTF8, UTF16, ASCII
+ */
 public interface IBufferStringConverter {
 	
 	//memString from String

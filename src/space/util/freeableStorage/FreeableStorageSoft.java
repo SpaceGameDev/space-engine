@@ -1,27 +1,17 @@
-package space.util.ref.freeable;
+package space.util.freeableStorage;
 
-import space.util.baseobject.exceptions.FreedException;
-import space.util.ref.freeable.IFreeableStorageList.Entry;
+import space.util.freeableStorage.IFreeableStorageList.Entry;
 
-import java.lang.ref.PhantomReference;
+import java.lang.ref.SoftReference;
 
-public abstract class FreeableStorage extends PhantomReference<Object> implements IFreeableStorage {
-	
-	public static FreeableStorage createAnonymous(IFreeableStorage... lists) {
-		return new FreeableStorage(null, lists) {
-			@Override
-			protected void handleFree() {
-			
-			}
-		};
-	}
+public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements IFreeableStorage {
 	
 	private volatile boolean isFreed = false;
 	private final IFreeableStorageList.Entry[] entries;
 	private final int freePriority;
 	private IFreeableStorageList subList;
 	
-	public FreeableStorage(Object referent, IFreeableStorage... lists) {
+	public FreeableStorageSoft(T referent, IFreeableStorage... lists) {
 		super(referent, FreeableStorageCleaner.QUEUE);
 		
 		int freePriority = Integer.MIN_VALUE;
@@ -54,16 +44,9 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	
 	protected abstract void handleFree();
 	
-	//isFreed
 	@Override
 	public boolean isFreed() {
 		return isFreed;
-	}
-	
-	@Override
-	public void throwIfFreed() throws FreedException {
-		if (isFreed)
-			throw new FreedException(this);
 	}
 	
 	//other

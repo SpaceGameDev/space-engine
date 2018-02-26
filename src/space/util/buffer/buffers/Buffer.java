@@ -4,6 +4,19 @@ import space.util.baseobject.additional.Dumpable;
 import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.string.String2D;
 
+/**
+ * A {@link Buffer} interface, allowing you to
+ * <ul>
+ * <li>get the {@link Buffer#address()}</li>
+ * <li>get the {@link Buffer#capacity()}</li>
+ * <li>{@link Buffer#clear()} the {@link Buffer}</li>
+ * <li>{@link Buffer#dump()} the {@link Buffer} into a nice {@link String2D} representation</li>
+ * <li>{@link Buffer#getByte(long) getTYPE()} and {@link Buffer#putByte(long, byte) putTYPE()} individual primitive types at offsets</li>
+ * <li>{@link Buffer#copyFrom(byte[]) copyFrom()} and {@link Buffer#copyInto(byte[]) copyInto()} arrays of primitive types or {@link Buffer Buffers} at offsets</li>
+ * <li>{@link Buffer#fillByte(long, byte, long) fillTYPE()} at an offset some primitive type for a certain length</li>
+ * </ul>
+ * Everything is <b>calculated with OFFSET</b> - not index!
+ */
 public interface Buffer extends FreeableWithStorage, Dumpable {
 	
 	long address();
