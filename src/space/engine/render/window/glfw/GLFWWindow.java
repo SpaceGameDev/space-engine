@@ -10,8 +10,8 @@ import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEvent;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
-import space.util.ref.freeable.FreeableStorage;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 
 import java.util.function.Consumer;
 

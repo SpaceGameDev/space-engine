@@ -14,7 +14,7 @@ import space.util.keygen.IKey;
 import space.util.keygen.attribute.AttributeListCreator;
 
 import static java.lang.Boolean.*;
-import static space.engine.render.window.WindowFormat.GLApiType.GL;
+import static space.engine.render.window.WindowFormat.GLApiType.NONE;
 import static space.engine.render.window.WindowFormat.GLProfile.PROFILE_ANY;
 import static space.engine.render.window.WindowFormat.WindowMode.WINDOWED;
 
@@ -39,7 +39,7 @@ public class WindowFormat {
 	public static final IKey<Boolean> DOUBLEBUFFER = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
 	
 	//gl window settings
-	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey(GL);
+	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey(NONE);
 	public static final IKey<GLProfile> GL_PROFILE = ATTRIBUTE_LIST_CREATOR.generateKey(PROFILE_ANY);
 	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey(2);
 	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey(1);

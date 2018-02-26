@@ -12,10 +12,11 @@ import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
-import space.util.ref.freeable.FreeableStorageCleaner;
+import space.util.freeableStorage.FreeableStorageCleaner;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
+import static space.engine.render.window.WindowFormat.*;
 
 public class GLFWTest {
 	
@@ -48,6 +49,10 @@ public class GLFWTest {
 		
 		//window
 		AttributeListModification attListMod = WindowFormat.ATTRIBUTE_LIST_CREATOR.createModify();
+		attListMod.put(WIDTH, 1920);
+		attListMod.put(HEIGHT, 1080);
+		attListMod.put(TITLE, "GLFWTest Window");
+		attListMod.put(GL_API_TYPE, GLApiType.GL);
 		IAttributeList attList = attListMod.createNewList();
 		IWindow window = windowfw.create(attList);
 		

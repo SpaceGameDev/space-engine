@@ -2,8 +2,8 @@ package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.render.window.exception.WindowFrameworkInitializationException;
-import space.util.ref.freeable.FreeableStorageWeak;
-import space.util.ref.freeable.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorageWeak;
+import space.util.freeableStorage.IFreeableStorage;
 
 import static org.lwjgl.glfw.GLFW.*;
 
