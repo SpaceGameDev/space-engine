@@ -1,12 +1,12 @@
 package space.engine.render.window;
 
-public interface IWindow {
+import space.util.baseobject.additional.Freeable;
+
+public interface IWindow extends Freeable {
 	
 	void makeContextCurrent();
 	
 	void swapBuffers();
 	
 	void pollEvents();
-	
-	void destroy();
 }

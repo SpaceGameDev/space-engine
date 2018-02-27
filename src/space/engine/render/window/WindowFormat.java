@@ -33,7 +33,7 @@ public class WindowFormat {
 	
 	//additional window settings
 	public static final IKey<Boolean> VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
-	public static final IKey<String> MONITOR = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<IMonitor> MONITOR = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final IKey<String> TITLE = ATTRIBUTE_LIST_CREATOR.generateKey("Untitled Window");
 	public static final IKey<Boolean> RESIZEABLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE);
 	public static final IKey<Boolean> DOUBLEBUFFER = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
@@ -51,7 +51,7 @@ public class WindowFormat {
 	public static final IKey<Integer> FBO_G = ATTRIBUTE_LIST_CREATOR.generateKey(8);
 	public static final IKey<Integer> FBO_B = ATTRIBUTE_LIST_CREATOR.generateKey(8);
 	public static final IKey<Integer> FBO_A = ATTRIBUTE_LIST_CREATOR.generateKey(0);
-	public static final IKey<Integer> FBO_DEPTH = ATTRIBUTE_LIST_CREATOR.generateKey(24);
+	public static final IKey<Integer> FBO_DEPTH = ATTRIBUTE_LIST_CREATOR.generateKey(0);
 	public static final IKey<Integer> FBO_STENCIL = ATTRIBUTE_LIST_CREATOR.generateKey(0);
 	
 	//callbacks

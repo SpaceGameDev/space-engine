@@ -1,17 +1,18 @@
 package space.engine.render.window.glfw;
 
+import space.engine.render.window.IMonitor;
 import space.engine.render.window.IWindow;
-import space.engine.side.Side;
+import space.engine.render.window.exception.WindowException;
+import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.baseobject.exceptions.FreedException;
-import space.util.buffer.buffers.Buffer;
-import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.concurrent.event.IEvent;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.freeableStorage.IFreeableStorage;
 import space.util.keygen.attribute.AttributeListChangeEventHelper;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListChangeEvent;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
-import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.string.builder.CharBufferBuilder2D;
 
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.render.window.WindowFormat.*;
 import static space.engine.render.window.WindowFormat.WindowMode.*;
 
-public class GLFWWindow implements IWindow {
+public class GLFWWindow implements IWindow, FreeableWithStorage {
 	
 	public GLFWWindowFramework windowFramework;
 	public Storage storage;
@@ -112,6 +113,11 @@ public class GLFWWindow implements IWindow {
 	}
 	
 	@Override
+	public IFreeableStorage getStorage() {
+		return storage;
+	}
+	
+	@Override
 	public void makeContextCurrent() {
 		glfwMakeContextCurrent(storage.getWindowPointer());
 	}
@@ -124,11 +130,6 @@ public class GLFWWindow implements IWindow {
 	@Override
 	public void pollEvents() {
 		glfwPollEvents();
-	}
-	
-	@Override
-	public void destroy() {
-		storage.free();
 	}
 	
 	public static class Storage extends FreeableStorage {
@@ -176,35 +177,19 @@ public class GLFWWindow implements IWindow {
 		throw new IllegalArgumentException("Invalid type: " + type);
 	}
 	
-	protected static long getMonitorPointer(String monitorName) {
-		if (monitorName == null || monitorName.isEmpty())
+	protected static long getMonitorPointer(IMonitor monitor) {
+		if (monitor == null)
 			return glfwGetPrimaryMonitor();
-		
-		BufferAllocatorStack allocStack = Side.getSide().get(Side.BUFFER_STACK_ALLOC);
-		try {
-			allocStack.push();
-			Buffer sizeBuffer = allocStack.malloc(8);
-			long dest = nglfwGetMonitors(sizeBuffer.address());
-			long size = sizeBuffer.getLong(0);
-			Buffer list = allocStack.alloc(dest, size);
-			
-			for (long i = 0; i < size; i += 8) {
-				long monitorPointer = list.getLong(i);
-				if (monitorName.equals(glfwGetMonitorName(monitorPointer)))
-					return monitorPointer;
-			}
-			throw new IllegalArgumentException("Monitor named '" + monitorName + "' not found!");
-		} finally {
-			allocStack.pop();
-		}
+		if (monitor instanceof GLFWMonitor)
+			return ((GLFWMonitor) monitor).monitor;
+		throw new WindowException(new CharBufferBuilder2D<>().append("MONITOR was not of Type GLFWMonitor, instead was ").append(monitor.getClass().getName()).append(": ").append(monitor).toString());
 	}
 	
 	protected static long getWindowSharePointer(IWindow windowShare) {
 		if (windowShare == null)
 			return 0;
-		
-		if (!(windowShare instanceof GLFWWindow))
-			throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
-		return ((GLFWWindow) windowShare).storage.getWindowPointer();
+		if ((windowShare instanceof GLFWWindow))
+			return ((GLFWWindow) windowShare).storage.getWindowPointer();
+		throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
 	}
 }

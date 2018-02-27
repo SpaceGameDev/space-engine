@@ -7,12 +7,12 @@ import space.engine.render.window.WindowFormat;
 import space.engine.side.Side;
 import space.util.buffer.alloc.DefaultBufferAllocator;
 import space.util.buffer.string.DefaultStringConverter;
+import space.util.freeableStorage.FreeableStorageCleaner;
 import space.util.keygen.attribute.AttributeListCreator.AttributeListModification;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
-import space.util.freeableStorage.FreeableStorageCleaner;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -22,6 +22,7 @@ public class GLFWTest {
 	
 	public static boolean CRASH = false;
 	public static int SECONDS = 5;
+	public static boolean FREE_WINDOW = false;
 	
 	public static final double MULTIPLIER = (2 * PI) / (3 * 60);
 	public static final double OFFSET0 = 0;
@@ -51,6 +52,7 @@ public class GLFWTest {
 		AttributeListModification attListMod = WindowFormat.ATTRIBUTE_LIST_CREATOR.createModify();
 		attListMod.put(WIDTH, 1920);
 		attListMod.put(HEIGHT, 1080);
+		attListMod.put(MODE, WindowMode.WINDOWED);
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);
 		IAttributeList attList = attListMod.createNewList();
@@ -61,6 +63,8 @@ public class GLFWTest {
 		
 		window.makeContextCurrent();
 		GL.createCapabilities();
+		
+		System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
 		for (int i = 0; i < SECONDS * 60; i++) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			
@@ -76,8 +80,10 @@ public class GLFWTest {
 			Thread.sleep(1000 / 60);
 		}
 		
-		window.destroy();
-		windowfw.free();
+		if (FREE_WINDOW) {
+			window.free();
+			windowfw.free();
+		}
 		logger.log(LogLevel.INFO, "Exit!");
 	}
 }

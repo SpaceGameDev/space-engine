@@ -7,6 +7,7 @@ public interface IWindowFramework<W extends IWindow> extends Freeable {
 	
 	W create(IAttributeList format);
 	
-	@Override
-	void free();
+	IMonitor[] getMonitors();
+	
+	IMonitor getPrimaryMonitor();
 }
