@@ -1,14 +1,14 @@
 package space.util.buffer.stack;
 
 import space.util.baseobject.ToString;
-import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.CheckedBuffer;
+import space.util.buffer.direct.CheckedDirectBuffer;
+import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.IFreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 /**
- * wraps every created buffer in a {@link CheckedBuffer}
+ * wraps every created buffer in a {@link CheckedDirectBuffer}
  */
 public class CheckedBufferAllocatorStack implements BufferAllocatorStack, ToString {
 	
@@ -20,18 +20,23 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack, ToStri
 	
 	//BufferAllocator
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... parents) {
-		return new CheckedBuffer(alloc.malloc(capacity, parents));
+	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
+		return new CheckedDirectBuffer(alloc.malloc(capacity, parents));
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
-		return new CheckedBuffer(alloc.alloc(address, capacity, parents));
+	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return new CheckedDirectBuffer(alloc.alloc(address, capacity, parents));
+	}
+	
+	@Override
+	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+		return new CheckedDirectBuffer(alloc.allocNoFree(address, capacity, parents));
 	}
 	
 	//MultiStack
 	@Override
-	public <X extends Buffer> X put(X t) {
+	public <X extends DirectBuffer> X put(X t) {
 		return alloc.put(t);
 	}
 	
@@ -60,5 +65,10 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack, ToStri
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
 		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }

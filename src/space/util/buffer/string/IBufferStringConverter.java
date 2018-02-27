@@ -1,6 +1,6 @@
 package space.util.buffer.string;
 
-import space.util.buffer.buffers.Buffer;
+import space.util.buffer.direct.DirectBuffer;
 
 /**
  * A utility class for converting:
@@ -14,11 +14,11 @@ import space.util.buffer.buffers.Buffer;
 public interface IBufferStringConverter {
 	
 	//memString from String
-	Buffer memStringUTF8(String str, boolean nullTerm);
+	DirectBuffer memStringUTF8(String str, boolean nullTerm);
 	
-	Buffer memStringUTF16(String str, boolean nullTerm);
+	DirectBuffer memStringUTF16(String str, boolean nullTerm);
 	
-	Buffer memStringASCII(String str, boolean nullTerm);
+	DirectBuffer memStringASCII(String str, boolean nullTerm);
 	
 	//memString length
 	int memStringUTF8Length(String str, boolean nullTerm);
@@ -28,16 +28,16 @@ public interface IBufferStringConverter {
 	int memStringASCIILength(String str, boolean nullTerm);
 	
 	//memString from Buffer
-	String memUTF8String(Buffer buffer);
+	String memUTF8String(DirectBuffer buffer);
 	
-	String memUTF16String(Buffer buffer);
+	String memUTF16String(DirectBuffer buffer);
 	
-	String memASCIIString(Buffer buffer);
+	String memASCIIString(DirectBuffer buffer);
 	
 	//memString from Buffer with length
-	String memUTF8String(Buffer buffer, int length);
+	String memUTF8String(DirectBuffer buffer, int length);
 	
-	String memUTF16String(Buffer buffer, int length);
+	String memUTF16String(DirectBuffer buffer, int length);
 	
-	String memASCIIString(Buffer buffer, int length);
+	String memASCIIString(DirectBuffer buffer, int length);
 }

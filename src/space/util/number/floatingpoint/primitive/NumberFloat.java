@@ -6,7 +6,7 @@ import space.util.number.base.NumberComplex;
 import space.util.number.exception.IllegalNumberOperationException;
 import space.util.number.floatingpoint.FloatingPointGeneral;
 import space.util.number.floatingpoint.FloatingPointSpecialNumber;
-import space.util.primitive.PrimitiveFloatingPoint;
+import space.util.primitive.FloatingPointConst;
 import spaceOld.util.math.MathUtils;
 
 public class NumberFloat extends IFloatingPointPrimitive<NumberFloat> implements NumberComplex<NumberFloat> {
@@ -30,9 +30,9 @@ public class NumberFloat extends IFloatingPointPrimitive<NumberFloat> implements
 	public FloatingPointGeneral get(FloatingPointGeneral ret) {
 		int i = Float.floatToRawIntBits(f);
 		
-		boolean rawSign = (i & PrimitiveFloatingPoint.float32SignMask) == 0;
-		int rawFraction = i & PrimitiveFloatingPoint.float32FractionMask;
-		int rawExponent = (i & PrimitiveFloatingPoint.float32ExponentMask) >>> PrimitiveFloatingPoint.float32ExponentShift;
+		boolean rawSign = (i & FloatingPointConst.float32SignMask) == 0;
+		int rawFraction = i & FloatingPointConst.float32FractionMask;
+		int rawExponent = (i & FloatingPointConst.float32ExponentMask) >>> FloatingPointConst.float32ExponentShift;
 		byte exp;
 		
 		switch (rawExponent) {
@@ -47,7 +47,7 @@ public class NumberFloat extends IFloatingPointPrimitive<NumberFloat> implements
 				//subnormal
 				ret.type = FloatingPointSpecialNumber.NORMAL;
 				ret.sign = rawSign;
-				ret.fraction.number = BigPrimitiveMath.intArrayFromIntFixed(rawFraction << (32 - PrimitiveFloatingPoint.float32FractionFullSize));
+				ret.fraction.number = BigPrimitiveMath.intArrayFromIntFixed(rawFraction << (32 - FloatingPointConst.float32FractionFullSize));
 				ret.fraction.bits = 32;
 				exp = (byte) (rawExponent - 126);
 				ret.exponent.number = BigPrimitiveMath.intArrayFromByteSigned(exp);
@@ -70,7 +70,7 @@ public class NumberFloat extends IFloatingPointPrimitive<NumberFloat> implements
 				ret.type = FloatingPointSpecialNumber.NORMAL;
 				ret.sign = rawSign;
 				
-				ret.fraction.number = BigPrimitiveMath.intArrayFromIntFixed((PrimitiveFloatingPoint.float32FractionFullBit ^ rawFraction) << (32 - PrimitiveFloatingPoint.float32FractionFullSize));
+				ret.fraction.number = BigPrimitiveMath.intArrayFromIntFixed((FloatingPointConst.float32FractionFullBit ^ rawFraction) << (32 - FloatingPointConst.float32FractionFullSize));
 				ret.fraction.bits = 32;
 				exp = (byte) (rawExponent - 126);
 				ret.exponent.number = BigPrimitiveMath.intArrayFromByteSigned(exp);
@@ -120,7 +120,7 @@ public class NumberFloat extends IFloatingPointPrimitive<NumberFloat> implements
 				}
 				
 				//normal
-				f = Float.intBitsToFloat((get.sign ? 0 : PrimitiveFloatingPoint.float32SignMask) | ((exponent << PrimitiveFloatingPoint.float32ExponentShift) & PrimitiveFloatingPoint.float32ExponentMask) | ((fraction >>> (32 - PrimitiveFloatingPoint.float32SizeFractionFull)) & PrimitiveFloatingPoint.float32MaskFraction));
+				f = Float.intBitsToFloat((get.sign ? 0 : FloatingPointConst.float32SignMask) | ((exponent << FloatingPointConst.float32ExponentShift) & FloatingPointConst.float32ExponentMask) | ((fraction >>> (32 - FloatingPointConst.float32SizeFractionFull)) & FloatingPointConst.float32MaskFraction));
 				return this;
 		}
 		throw new IllegalArgumentException();

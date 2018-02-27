@@ -1,4 +1,4 @@
-package space.util.buffer.buffers;
+package space.util.buffer.direct;
 
 import space.util.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
@@ -32,10 +32,10 @@ public class NioByteBufferWrapper {
 	//wrap methods
 	
 	/**
-	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
 	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
 	 */
-	public static ByteBuffer wrap(Buffer buffer) {
+	public static ByteBuffer wrap(DirectBuffer buffer) {
 		long capacity = buffer.capacity();
 		if (capacity > Integer.MAX_VALUE)
 			throw new RuntimeException("buffer capacity " + capacity + " above int size limits of ByteBuffer");
@@ -43,10 +43,10 @@ public class NioByteBufferWrapper {
 	}
 	
 	/**
-	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
 	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
 	 */
-	public static ByteBuffer wrap(Buffer buffer, int length) {
+	public static ByteBuffer wrap(DirectBuffer buffer, int length) {
 		if (length > buffer.capacity())
 			throw new RuntimeException("length exceeds capacity: " + length + " > " + buffer.capacity());
 		

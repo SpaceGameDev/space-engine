@@ -4,8 +4,8 @@ import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Dumpable;
 import space.util.buffer.alloc.BufferAllocator;
-import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.SubBuffer;
+import space.util.buffer.direct.DirectBuffer;
+import space.util.buffer.direct.SubDirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.IFreeableStorage;
 import space.util.stack.PointerList;
@@ -16,7 +16,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.Arrays;
 
 /**
- * A {@link BufferAllocatorStack} which has one big {@link Buffer} and will create {@link SubBuffer SubBuffers} of that {@link Buffer}, also increasing it in size if necessary.
+ * A {@link BufferAllocatorStack} which has one big {@link DirectBuffer} and will create {@link SubDirectBuffer SubBuffers} of that {@link DirectBuffer}, also increasing it in size if necessary.
  */
 public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToString, Dumpable {
 	
@@ -24,7 +24,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	
 	public BufferAllocator alloc;
 	public FreeableStorage storage;
-	public Buffer buffer;
+	public DirectBuffer buffer;
 	public long topOfStack = 0;
 	public PointerList pointerList;
 	
@@ -80,7 +80,7 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	//put
 	@Override
 	@Deprecated
-	public <X extends Buffer> X put(X t) {
+	public <X extends DirectBuffer> X put(X t) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -92,15 +92,20 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
 		IFreeableStorage[] list2 = Arrays.copyOf(parents, parents.length + 1);
 		list2[parents.length] = buffer.getStorage();
-		return new SubBuffer(allocInternal(capacity), capacity, buffer, list2);
+		return new SubDirectBuffer(allocInternal(capacity), capacity, buffer, list2);
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
 		return alloc.alloc(address, capacity, parents);
+	}
+	
+	@Override
+	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+		return alloc.allocNoFree(address, capacity, parents);
 	}
 	
 	//dump

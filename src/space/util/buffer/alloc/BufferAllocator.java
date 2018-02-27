@@ -1,11 +1,11 @@
 package space.util.buffer.alloc;
 
-import space.util.buffer.buffers.Buffer;
+import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.IFreeableStorage;
-import space.util.primitive.PrimitiveType;
+import space.util.primitive.NativeType;
 
 /**
- * An Allocator for {@link Buffer Buffers}. It can:
+ * An Allocator for {@link DirectBuffer Buffers}. It can:
  * <ul>
  * <li>{@link BufferAllocator#alloc(long, long, IFreeableStorage...)} create a Buffer-Object with address and capacity</li>
  * <li>{@link BufferAllocator#malloc(long, IFreeableStorage...)} allocate a Buffer containing uninitialized memory</li>
@@ -17,122 +17,132 @@ import space.util.primitive.PrimitiveType;
  */
 public interface BufferAllocator {
 	
-	Buffer malloc(long capacity, IFreeableStorage... parents);
+	DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents);
 	
-	Buffer alloc(long address, long capacity, IFreeableStorage... parents);
+	DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents);
 	
-	default Buffer calloc(long capacity, IFreeableStorage... parents) {
-		Buffer b = malloc(capacity, parents);
+	DirectBuffer malloc(long capacity, IFreeableStorage... parents);
+	
+	default DirectBuffer calloc(long capacity, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(capacity, parents);
 		b.clear();
 		return b;
 	}
 	
-	default Buffer allocByte(byte[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocByte(byte[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocShort(short[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocShort(short[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocInt(int[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocInt(int[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocLong(long[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocLong(long[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocFloat(float[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocFloat(float[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocDouble(double[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocDouble(double[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer allocBoolean(boolean[] v, IFreeableStorage... parents) {
-		Buffer b = malloc(v.length, parents);
+	default DirectBuffer allocBoolean(boolean[] v, IFreeableStorage... parents) {
+		DirectBuffer b = malloc(v.length, parents);
 		b.copyFrom(v);
 		return b;
 	}
 	
-	default Buffer mallocByte(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.BYTE.SHIFT, parents);
+	default DirectBuffer mallocByte(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.BYTE.SHIFT, parents);
 	}
 	
-	default Buffer mallocShort(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.INT16.SHIFT, parents);
+	default DirectBuffer mallocShort(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.INT16.SHIFT, parents);
 	}
 	
-	default Buffer mallocInt(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.INT32.SHIFT, parents);
+	default DirectBuffer mallocInt(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.INT32.SHIFT, parents);
 	}
 	
-	default Buffer mallocLong(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.INT64.SHIFT, parents);
+	default DirectBuffer mallocLong(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.INT64.SHIFT, parents);
 	}
 	
-	default Buffer mallocFloat(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.FP32.SHIFT, parents);
+	default DirectBuffer mallocFloat(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.FP32.SHIFT, parents);
 	}
 	
-	default Buffer mallocDouble(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.FP64.SHIFT, parents);
+	default DirectBuffer mallocDouble(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.FP64.SHIFT, parents);
 	}
 	
-	default Buffer mallocBoolean(long capacity, IFreeableStorage... parents) {
-		return malloc(capacity << PrimitiveType.BOOLEAN.SHIFT, parents);
+	default DirectBuffer mallocBoolean(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.BOOLEAN.SHIFT, parents);
 	}
 	
-	default Buffer callocByte(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.BYTE.SHIFT, parents);
+	default DirectBuffer mallocPointer(long capacity, IFreeableStorage... parents) {
+		return malloc(capacity << NativeType.POINTER.SHIFT, parents);
 	}
 	
-	default Buffer callocShort(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.INT16.SHIFT, parents);
+	default DirectBuffer callocByte(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.BYTE.SHIFT, parents);
 	}
 	
-	default Buffer callocInt(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.INT32.SHIFT, parents);
+	default DirectBuffer callocShort(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.INT16.SHIFT, parents);
 	}
 	
-	default Buffer callocLong(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.INT64.SHIFT, parents);
+	default DirectBuffer callocInt(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.INT32.SHIFT, parents);
 	}
 	
-	default Buffer callocFloat(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.FP32.SHIFT, parents);
+	default DirectBuffer callocLong(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.INT64.SHIFT, parents);
 	}
 	
-	default Buffer callocDouble(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.FP64.SHIFT, parents);
+	default DirectBuffer callocFloat(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.FP32.SHIFT, parents);
 	}
 	
-	default Buffer callocBoolean(long capacity, IFreeableStorage... parents) {
-		return calloc(capacity << PrimitiveType.BOOLEAN.SHIFT, parents);
+	default DirectBuffer callocDouble(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.FP64.SHIFT, parents);
 	}
 	
-	default Buffer mallocByteN1(long capacity, IFreeableStorage... parents) {
-		Buffer buffer = mallocByte(capacity + 1, parents);
+	default DirectBuffer callocBoolean(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.BOOLEAN.SHIFT, parents);
+	}
+	
+	default DirectBuffer callocPointer(long capacity, IFreeableStorage... parents) {
+		return calloc(capacity << NativeType.POINTER.SHIFT, parents);
+	}
+	
+	default DirectBuffer mallocByteN1(long capacity, IFreeableStorage... parents) {
+		DirectBuffer buffer = mallocByte(capacity + 1, parents);
 		buffer.putByte(capacity, (byte) 0);
 		return buffer;
 	}
 	
-	default Buffer mallocByteN2(long capacity, IFreeableStorage... parents) {
-		Buffer buffer = mallocByte(capacity + 2, parents);
+	default DirectBuffer mallocByteN2(long capacity, IFreeableStorage... parents) {
+		DirectBuffer buffer = mallocByte(capacity + 2, parents);
 		buffer.putShort(capacity, (short) 0);
 		return buffer;
 	}

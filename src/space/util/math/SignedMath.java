@@ -1,6 +1,6 @@
 package space.util.math;
 
-@SuppressWarnings("SameParameterValue")
+@SuppressWarnings({"SameParameterValue", "UseCompareMethod"})
 public class SignedMath {
 	
 	//casts

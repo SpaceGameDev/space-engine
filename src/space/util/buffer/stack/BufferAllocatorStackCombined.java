@@ -2,7 +2,7 @@ package space.util.buffer.stack;
 
 import space.util.baseobject.ToString;
 import space.util.buffer.alloc.BufferAllocator;
-import space.util.buffer.buffers.Buffer;
+import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.IFreeableStorage;
 import space.util.stack.IStack;
 import space.util.stack.Stack;
@@ -11,7 +11,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 /**
  * Combines both {@link BufferAllocatorStackBufferList} and {@link BufferAllocatorStackOneBuffer}.
- * Any to be allocated {@link Buffer} below or equal the {@link BufferAllocatorStackCombined#largeThreshold} will be delegated to {@link BufferAllocatorStackOneBuffer OneBuffer},
+ * Any to be allocated {@link DirectBuffer} below or equal the {@link BufferAllocatorStackCombined#largeThreshold} will be delegated to {@link BufferAllocatorStackOneBuffer OneBuffer},
  * anything larger will be delegated to {@link BufferAllocatorStackBufferList BufferList}.
  */
 public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToString {
@@ -73,18 +73,23 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 	//put
 	@Override
 	@Deprecated
-	public <X extends Buffer> X put(X t) {
+	public <X extends DirectBuffer> X put(X t) {
 		throw new UnsupportedOperationException();
 	}
 	
 	//alloc
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
 		return bufferList.alloc(address, capacity, parents);
 	}
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... parents) {
+	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+		return alloc.allocNoFree(address, capacity, parents);
+	}
+	
+	@Override
+	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
 		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
 	}
 	

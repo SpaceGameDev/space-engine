@@ -1,18 +1,24 @@
 package space.util.buffer.alloc;
 
-import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.BufferImpl;
+import space.util.buffer.direct.DirectBuffer;
+import space.util.buffer.direct.DirectBufferImpl;
+import space.util.buffer.direct.NotFreeableDirectBuffer;
 import space.util.freeableStorage.IFreeableStorage;
 
 public class DefaultBufferAllocator implements BufferAllocator {
 	
 	@Override
-	public Buffer malloc(long capacity, IFreeableStorage... parents) {
-		return new BufferImpl(capacity, parents);
+	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
+		return new DirectBufferImpl(address, capacity, parents);
 	}
 	
 	@Override
-	public Buffer alloc(long address, long capacity, IFreeableStorage... parents) {
-		return new BufferImpl(address, capacity, parents);
+	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+		return new NotFreeableDirectBuffer(address, capacity, parents);
+	}
+	
+	@Override
+	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
+		return new DirectBufferImpl(capacity, parents);
 	}
 }

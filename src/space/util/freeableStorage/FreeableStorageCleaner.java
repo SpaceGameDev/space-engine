@@ -102,21 +102,23 @@ public final class FreeableStorageCleaner {
 		list.sort(Comparator.comparingInt(IFreeableStorage::freePriority).reversed());
 		
 		//-> log if logger exists
-		if (cleanupLogger != null) {
-			if (cleanupLoggerDebug)
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC: ").append(list).toString());
-			else
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC").toString());
-		}
+		if (cleanupLoggerDebug)
+			cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC: ").append(list).toString());
+		else
+			cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC").toString());
 		
 		//-> handle
 		list.forEach(Freeable::free);
 	}
 	
 	private static void handleReference(Reference<?> ref) {
-		if (ref instanceof IFreeableStorage)
+		if (ref instanceof IFreeableStorage) {
+			if (cleanupLoggerDebug)
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC: [").append(ref).append(']').toString());
+			else
+				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC").toString());
 			((IFreeableStorage) ref).free();
-		else
+		} else
 			cleanupThreadIllegalReference.accept(ref);
 	}
 	

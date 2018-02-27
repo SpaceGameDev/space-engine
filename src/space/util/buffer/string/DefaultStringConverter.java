@@ -1,8 +1,8 @@
 package space.util.buffer.string;
 
 import space.util.buffer.alloc.BufferAllocator;
-import space.util.buffer.buffers.Buffer;
-import space.util.buffer.buffers.NioByteBufferWrapper;
+import space.util.buffer.direct.DirectBuffer;
+import space.util.buffer.direct.NioByteBufferWrapper;
 
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -35,9 +35,9 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	
 	//memString from String
 	@Override
-	public Buffer memStringUTF8(String str, boolean nullTerm) {
+	public DirectBuffer memStringUTF8(String str, boolean nullTerm) {
 		int length = memStringUTF8Length(str, nullTerm);
-		Buffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length);
 		UTF8_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
 			buffer.putByte(length - 1, NULL_CHARACTER);
@@ -45,9 +45,9 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public Buffer memStringUTF16(String str, boolean nullTerm) {
+	public DirectBuffer memStringUTF16(String str, boolean nullTerm) {
 		int length = memStringUTF16Length(str, nullTerm);
-		Buffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length);
 		UTF16_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm) {
 			buffer.putByte(length - 2, NULL_CHARACTER);
@@ -57,9 +57,9 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public Buffer memStringASCII(String str, boolean nullTerm) {
+	public DirectBuffer memStringASCII(String str, boolean nullTerm) {
 		int length = memStringASCIILength(str, nullTerm);
-		Buffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length);
 		ASCII_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
 			buffer.putByte(length - 1, NULL_CHARACTER);
@@ -84,23 +84,23 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	
 	//memString from Buffer
 	@Override
-	public String memUTF8String(Buffer buffer) {
+	public String memUTF8String(DirectBuffer buffer) {
 		return memUTF8String(buffer, findNullCharacter(buffer));
 	}
 	
 	@Override
-	public String memUTF16String(Buffer buffer) {
+	public String memUTF16String(DirectBuffer buffer) {
 		return memUTF16String(buffer, findNullCharacter(buffer));
 	}
 	
 	@Override
-	public String memASCIIString(Buffer buffer) {
+	public String memASCIIString(DirectBuffer buffer) {
 		return memASCIIString(buffer, findNullCharacter(buffer));
 	}
 	
 	//memString from Buffer with length
 	@Override
-	public String memUTF8String(Buffer buffer, int length) {
+	public String memUTF8String(DirectBuffer buffer, int length) {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
@@ -111,7 +111,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memUTF16String(Buffer buffer, int length) {
+	public String memUTF16String(DirectBuffer buffer, int length) {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
@@ -122,7 +122,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	@Override
-	public String memASCIIString(Buffer buffer, int length) {
+	public String memASCIIString(DirectBuffer buffer, int length) {
 		if (length == -1)
 			throw new IllegalArgumentException("Illegal length");
 		try {
@@ -133,7 +133,7 @@ public class DefaultStringConverter implements IBufferStringConverter {
 	}
 	
 	//static
-	public static int findNullCharacter(Buffer buffer) {
+	public static int findNullCharacter(DirectBuffer buffer) {
 		for (int i = 0; i < buffer.capacity(); i++)
 			if (buffer.getByte(i) == NULL_CHARACTER)
 				return i;

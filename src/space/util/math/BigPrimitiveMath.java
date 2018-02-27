@@ -1,6 +1,6 @@
 package space.util.math;
 
-import space.util.primitive.PrimitiveType;
+import space.util.primitive.IntegerConst;
 
 public class BigPrimitiveMath {
 	
@@ -117,19 +117,19 @@ public class BigPrimitiveMath {
 	
 	//signed
 	public static byte byteFromIntArraySigned(int[] v, boolean sign) {
-		return (byte) ((intFromIntArrayUnsigned(v) & PrimitiveType.INT8.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT8.MASK_SIGN));
+		return (byte) ((intFromIntArrayUnsigned(v) & IntegerConst.INT8MaskNumber) | (sign ? 0 : IntegerConst.INT8MaskSign));
 	}
 	
 	public static short shortFromIntArraySigned(int[] v, boolean sign) {
-		return (short) ((intFromIntArrayUnsigned(v) & PrimitiveType.INT16.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT16.MASK_SIGN));
+		return (short) ((intFromIntArrayUnsigned(v) & IntegerConst.INT16MaskNumber) | (sign ? 0 : IntegerConst.INT16MaskSign));
 	}
 	
 	public static int intFromIntArraySigned(int[] v, boolean sign) {
-		return (intFromIntArrayUnsigned(v) & PrimitiveType.INT32.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT32.MASK_SIGN);
+		return (intFromIntArrayUnsigned(v) & IntegerConst.INT32MaskNumber) | (sign ? 0 : IntegerConst.INT32MaskSign);
 	}
 	
 	public static long longFromIntArraySigned(int[] v, boolean sign) {
-		return (longFromIntArrayUnsigned(v) & PrimitiveType.INT64.MASK_NUMBER) | (sign ? 0 : PrimitiveType.INT64.MASK_SIGN);
+		return (longFromIntArrayUnsigned(v) & IntegerConst.INT64MaskNumber) | (sign ? 0 : IntegerConst.INT64MaskSign);
 	}
 	
 	//fixed
@@ -158,18 +158,18 @@ public class BigPrimitiveMath {
 	
 	//getSign
 	public static boolean getSign(byte b) {
-		return (b & PrimitiveType.INT8.MASK_SIGN) == 0;
+		return (b & IntegerConst.INT8MaskSign) == 0;
 	}
 	
 	public static boolean getSign(short b) {
-		return (b & PrimitiveType.INT16.MASK_SIGN) == 0;
+		return (b & IntegerConst.INT16MaskSign) == 0;
 	}
 	
 	public static boolean getSign(int b) {
-		return (b & PrimitiveType.INT32.MASK_SIGN) == 0;
+		return (b & IntegerConst.INT32MaskSign) == 0;
 	}
 	
 	public static boolean getSign(long b) {
-		return (b & PrimitiveType.INT64.MASK_SIGN) == 0;
+		return (b & IntegerConst.INT64MaskSign) == 0;
 	}
 }

@@ -1,7 +1,7 @@
 package space.util.primitive;
 
 @SuppressWarnings("unused")
-public class PrimitiveFloatingPoint {
+public class FloatingPointConst {
 	
 	//@formatter:off
 	public static final int float32SignSize = 1;

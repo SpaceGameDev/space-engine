@@ -6,7 +6,7 @@ import space.util.number.base.NumberComplex;
 import space.util.number.exception.IllegalNumberOperationException;
 import space.util.number.floatingpoint.FloatingPointGeneral;
 import space.util.number.floatingpoint.FloatingPointSpecialNumber;
-import space.util.primitive.PrimitiveFloatingPoint;
+import space.util.primitive.FloatingPointConst;
 import spaceOld.util.math.MathUtils;
 
 public class NumberDouble extends IFloatingPointPrimitive<NumberDouble> implements NumberComplex<NumberDouble> {
@@ -30,9 +30,9 @@ public class NumberDouble extends IFloatingPointPrimitive<NumberDouble> implemen
 	public FloatingPointGeneral get(FloatingPointGeneral ret) {
 		long i = Double.doubleToRawLongBits(d);
 		
-		boolean rawSign = (i & PrimitiveFloatingPoint.float64SignMask) == 0;
-		long rawFraction = i & PrimitiveFloatingPoint.float64FractionMask;
-		int rawExponent = (int) ((i & PrimitiveFloatingPoint.float64ExponentMask) >>> PrimitiveFloatingPoint.float64ExponentShift);
+		boolean rawSign = (i & FloatingPointConst.float64SignMask) == 0;
+		long rawFraction = i & FloatingPointConst.float64FractionMask;
+		int rawExponent = (int) ((i & FloatingPointConst.float64ExponentMask) >>> FloatingPointConst.float64ExponentShift);
 		short exp;
 		
 		switch (rawExponent) {
@@ -47,7 +47,7 @@ public class NumberDouble extends IFloatingPointPrimitive<NumberDouble> implemen
 				ret.type = FloatingPointSpecialNumber.NORMAL;
 				ret.sign = rawSign;
 				
-				ret.fraction.number = BigPrimitiveMath.intArrayFromLongFixed(rawFraction << (64 - PrimitiveFloatingPoint.float64FractionFullSize));
+				ret.fraction.number = BigPrimitiveMath.intArrayFromLongFixed(rawFraction << (64 - FloatingPointConst.float64FractionFullSize));
 				ret.fraction.bits = 64;
 				exp = (short) (rawExponent - 1022);
 				ret.exponent.number = BigPrimitiveMath.intArrayFromShortSigned(exp);
@@ -69,7 +69,7 @@ public class NumberDouble extends IFloatingPointPrimitive<NumberDouble> implemen
 				//normal
 				ret.type = FloatingPointSpecialNumber.NORMAL;
 				ret.sign = rawSign;
-				ret.fraction.number = BigPrimitiveMath.intArrayFromLongFixed((PrimitiveFloatingPoint.float64FractionFullBit ^ rawFraction) << (64 - PrimitiveFloatingPoint.float64FractionFullSize));
+				ret.fraction.number = BigPrimitiveMath.intArrayFromLongFixed((FloatingPointConst.float64FractionFullBit ^ rawFraction) << (64 - FloatingPointConst.float64FractionFullSize));
 				ret.fraction.bits = 64;
 				exp = (short) (rawExponent - 1022);
 				ret.exponent.number = BigPrimitiveMath.intArrayFromShortSigned(exp);
@@ -120,7 +120,7 @@ public class NumberDouble extends IFloatingPointPrimitive<NumberDouble> implemen
 				}
 				
 				//normal
-				d = Double.longBitsToDouble((get.sign ? 0 : PrimitiveFloatingPoint.float64SignMask) | ((exponent << PrimitiveFloatingPoint.float64ExponentShift) & PrimitiveFloatingPoint.float64ExponentMask) | ((fraction >>> (64 - PrimitiveFloatingPoint.float64FractionFullSize)) & PrimitiveFloatingPoint.float64FractionMask));
+				d = Double.longBitsToDouble((get.sign ? 0 : FloatingPointConst.float64SignMask) | ((exponent << FloatingPointConst.float64ExponentShift) & FloatingPointConst.float64ExponentMask) | ((fraction >>> (64 - FloatingPointConst.float64FractionFullSize)) & FloatingPointConst.float64FractionMask));
 				return this;
 		}
 		throw new IllegalArgumentException();

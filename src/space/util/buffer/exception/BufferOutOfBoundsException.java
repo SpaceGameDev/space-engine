@@ -1,4 +1,4 @@
-package space.util.buffer.buffers.exception;
+package space.util.buffer.exception;
 
 import space.util.string.builder.CharBufferBuilder1D;
 

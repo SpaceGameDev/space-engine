@@ -1,9 +1,9 @@
-package space.util.buffer.buffers.exception;
+package space.util.buffer.exception;
 
 public class BufferAddressNullException extends BufferException {
 	
 	public BufferAddressNullException() {
-		this("Buffer address was 0!");
+		this("DirectBuffer address was 0!");
 	}
 	
 	public BufferAddressNullException(String message) {

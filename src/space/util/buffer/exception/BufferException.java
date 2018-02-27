@@ -1,4 +1,4 @@
-package space.util.buffer.buffers.exception;
+package space.util.buffer.exception;
 
 public class BufferException extends RuntimeException {
 	

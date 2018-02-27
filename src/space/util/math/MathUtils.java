@@ -2,7 +2,7 @@ package space.util.math;
 
 import java.util.Arrays;
 
-@SuppressWarnings("SameParameterValue")
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class MathUtils {
 	
 	/**
