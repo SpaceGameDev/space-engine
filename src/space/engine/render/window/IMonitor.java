@@ -22,7 +22,9 @@ public interface IMonitor {
 	
 	IVideoMode[] getAvailableVideoModes();
 	
-	interface IVideoMode {
+	interface IVideoMode<MONITOR extends IMonitor> {
+		
+		MONITOR getMonitor();
 		
 		int width();
 		
@@ -37,7 +39,7 @@ public interface IMonitor {
 		int bitsB();
 	}
 	
-	class VideoMode implements IVideoMode {
+	class VideoMode implements IVideoMode<IMonitor> {
 		
 		public int width;
 		public int height;
@@ -49,6 +51,13 @@ public interface IMonitor {
 		public VideoMode() {
 		}
 		
+		/**
+		 * use for windowed enviroments
+		 */
+		public VideoMode(int width, int height) {
+			this(width, height, 0, 0, 0, 0);
+		}
+		
 		public VideoMode(int width, int height, int refreshRate, int bitsR, int bitsG, int bitsB) {
 			this.width = width;
 			this.height = height;
@@ -56,6 +65,11 @@ public interface IMonitor {
 			this.bitsR = bitsR;
 			this.bitsG = bitsG;
 			this.bitsB = bitsB;
+		}
+		
+		@Override
+		public IMonitor getMonitor() {
+			return null;
 		}
 		
 		@Override

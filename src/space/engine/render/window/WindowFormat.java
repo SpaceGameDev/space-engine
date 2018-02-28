@@ -1,5 +1,7 @@
 package space.engine.render.window;
 
+import space.engine.render.window.IMonitor.IVideoMode;
+import space.engine.render.window.IMonitor.VideoMode;
 import space.engine.render.window.callback.KeyboardCharCallback;
 import space.engine.render.window.callback.KeyboardKeyCallback;
 import space.engine.render.window.callback.MouseClickCallback;
@@ -21,50 +23,45 @@ import static space.engine.render.window.WindowFormat.WindowMode.WINDOWED;
 @SuppressWarnings("unused")
 public class WindowFormat {
 	
-	public static final AttributeListCreator ATTRIBUTE_LIST_CREATOR = new AttributeListCreator();
+	public static final AttributeListCreator ATT_CREATOR = new AttributeListCreator();
 	
 	//main window settings
-	public static final IKey<Integer> POSX = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<Integer> POSY = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<Integer> WIDTH = ATTRIBUTE_LIST_CREATOR.generateKey(800);
-	public static final IKey<Integer> HEIGHT = ATTRIBUTE_LIST_CREATOR.generateKey(600);
-	public static final IKey<Integer> REFRESH_RATE = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowMode> MODE = ATTRIBUTE_LIST_CREATOR.generateKey(WINDOWED);
+	public static final IKey<Integer> POSX = ATT_CREATOR.generateKey();
+	public static final IKey<Integer> POSY = ATT_CREATOR.generateKey();
+	public static final IKey<WindowMode> WINDOW_MODE = ATT_CREATOR.generateKey(WINDOWED);
+	public static final IKey<IVideoMode> VIDEO_MODE = ATT_CREATOR.generateKey(new VideoMode(800, 600));
 	
 	//additional window settings
-	public static final IKey<Boolean> VISIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
-	public static final IKey<IMonitor> MONITOR = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<String> TITLE = ATTRIBUTE_LIST_CREATOR.generateKey("Untitled Window");
-	public static final IKey<Boolean> RESIZEABLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE);
-	public static final IKey<Boolean> DOUBLEBUFFER = ATTRIBUTE_LIST_CREATOR.generateKey(TRUE);
+	public static final IKey<String> TITLE = ATT_CREATOR.generateKey("Untitled Window");
+	public static final IKey<Boolean> VISIBLE = ATT_CREATOR.generateKey(TRUE);
+	public static final IKey<Boolean> RESIZEABLE = ATT_CREATOR.generateKey(FALSE);
+	public static final IKey<Boolean> DOUBLEBUFFER = ATT_CREATOR.generateKey(TRUE);
 	
-	//gl window settings
-	public static final IKey<GLApiType> GL_API_TYPE = ATTRIBUTE_LIST_CREATOR.generateKey(NONE);
-	public static final IKey<GLProfile> GL_PROFILE = ATTRIBUTE_LIST_CREATOR.generateKey(PROFILE_ANY);
-	public static final IKey<Integer> GL_VERSION_MAJOR = ATTRIBUTE_LIST_CREATOR.generateKey(2);
-	public static final IKey<Integer> GL_VERSION_MINOR = ATTRIBUTE_LIST_CREATOR.generateKey(1);
-	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATTRIBUTE_LIST_CREATOR.generateKey(FALSE);
-	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATTRIBUTE_LIST_CREATOR.generateKey();
+	//gl api settings
+	public static final IKey<GLApiType> GL_API_TYPE = ATT_CREATOR.generateKey(NONE);
+	public static final IKey<GLProfile> GL_PROFILE = ATT_CREATOR.generateKey(PROFILE_ANY);
+	public static final IKey<Integer> GL_VERSION_MAJOR = ATT_CREATOR.generateKey(2);
+	public static final IKey<Integer> GL_VERSION_MINOR = ATT_CREATOR.generateKey(1);
+	public static final IKey<Boolean> GL_FORWARD_COMPATIBLE = ATT_CREATOR.generateKey(FALSE);
+	public static final IKey<IWindow> GL_CONTEXT_SHARE = ATT_CREATOR.generateKey();
 	
 	//fbo
-	public static final IKey<Integer> FBO_R = ATTRIBUTE_LIST_CREATOR.generateKey(8);
-	public static final IKey<Integer> FBO_G = ATTRIBUTE_LIST_CREATOR.generateKey(8);
-	public static final IKey<Integer> FBO_B = ATTRIBUTE_LIST_CREATOR.generateKey(8);
-	public static final IKey<Integer> FBO_A = ATTRIBUTE_LIST_CREATOR.generateKey(0);
-	public static final IKey<Integer> FBO_DEPTH = ATTRIBUTE_LIST_CREATOR.generateKey(0);
-	public static final IKey<Integer> FBO_STENCIL = ATTRIBUTE_LIST_CREATOR.generateKey(0);
+	//RGB are defined with VIDEO_MODE
+	public static final IKey<Integer> FBO_A = ATT_CREATOR.generateKey(0);
+	public static final IKey<Integer> FBO_DEPTH = ATT_CREATOR.generateKey(0);
+	public static final IKey<Integer> FBO_STENCIL = ATT_CREATOR.generateKey(0);
 	
 	//callbacks
-	public static final IKey<KeyboardCharCallback> CHAR_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<KeyboardKeyCallback> KEY_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<MouseClickCallback> MOUSE_CLICK_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<MousePositionCallback> MOUSE_POSITION_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<MouseScrollCallback> MOUSE_SCROLL_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowCloseRequestedCallback> WINDOW_CLOSE_REQUESTED_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowFBOResizeCallback> WINDOW_FBO_RESIZE_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowFocusCallback> WINDOW_FOCUS_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowPositionCallback> WINDOW_POSITION_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final IKey<WindowResizeCallback> WINDOW_RESIZE_CALLBACK = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final IKey<KeyboardCharCallback> CHAR_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<KeyboardKeyCallback> KEY_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<MouseClickCallback> MOUSE_CLICK_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<MousePositionCallback> MOUSE_POSITION_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<MouseScrollCallback> MOUSE_SCROLL_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<WindowCloseRequestedCallback> WINDOW_CLOSE_REQUESTED_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<WindowFBOResizeCallback> WINDOW_FBO_RESIZE_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<WindowFocusCallback> WINDOW_FOCUS_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<WindowPositionCallback> WINDOW_POSITION_CALLBACK = ATT_CREATOR.generateKey();
+	public static final IKey<WindowResizeCallback> WINDOW_RESIZE_CALLBACK = ATT_CREATOR.generateKey();
 	
 	public enum WindowMode {
 		

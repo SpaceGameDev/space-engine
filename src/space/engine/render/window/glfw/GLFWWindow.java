@@ -1,8 +1,9 @@
 package space.engine.render.window.glfw;
 
-import space.engine.render.window.IMonitor;
+import space.engine.render.window.IMonitor.IVideoMode;
 import space.engine.render.window.IWindow;
 import space.engine.render.window.exception.WindowException;
+import space.engine.render.window.glfw.GLFWMonitor.GLFWVideoMode;
 import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.concurrent.event.IEvent;
@@ -33,14 +34,33 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 		this.format = format;
 		setupChangeEventHelper();
 		
+		//main window settings
+		WindowMode windowMode = format.get(WINDOW_MODE);
+		boolean fullscreen = windowMode == FULLSCREEN;
+		
+		IVideoMode videoMode = format.get(VIDEO_MODE);
+		GLFWMonitor monitor = null;
+		if (fullscreen) {
+			if (!(videoMode instanceof GLFWVideoMode))
+				throw new WindowException(new CharBufferBuilder2D<>().append("VIDEO_MODE was not of Type GLFWVideoMode, instead was").append(videoMode.getClass().getName()).append(": ").append(videoMode).toString());
+			monitor = ((GLFWVideoMode) videoMode).getMonitor();
+		}
+		
 		synchronized (GLFWInstance.GLFW_SYNC) {
+			//main window settings
+			glfwWindowHint(GLFW_REFRESH_RATE, fullscreen ? videoMode.refreshRate() : GLFW_DONT_CARE);
+			glfwWindowHint(GLFW_DECORATED, fullscreen ? GLFW_DONT_CARE : windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
+			
+			//additional window settings
+			String title = format.get(TITLE);
 			glfwWindowHint(GLFW_VISIBLE, format.get(VISIBLE) ? GLFW_TRUE : GLFW_FALSE);
 			glfwWindowHint(GLFW_RESIZABLE, format.get(RESIZEABLE) ? GLFW_TRUE : GLFW_FALSE);
 			glfwWindowHint(GLFW_DOUBLEBUFFER, format.get(DOUBLEBUFFER) ? GLFW_TRUE : GLFW_FALSE);
 			
-			//GLApi
+			//gl api settings
 			GLApiType glApiType = format.get(GL_API_TYPE);
 			glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(glApiType));
+			long windowSharePointer = 0;
 			switch (glApiType) {
 				case GL:
 					glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.get(GL_PROFILE)));
@@ -48,32 +68,22 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 				case GL_ES:
 					glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.get(GL_VERSION_MAJOR));
 					glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.get(GL_VERSION_MINOR));
+					windowSharePointer = getWindowSharePointer(format.get(GL_CONTEXT_SHARE));
 					break;
 				case NONE:
 					break;
 			}
 			
-			//FBO
-			glfwWindowHint(GLFW_RED_BITS, format.get(FBO_R));
-			glfwWindowHint(GLFW_GREEN_BITS, format.get(FBO_G));
-			glfwWindowHint(GLFW_BLUE_BITS, format.get(FBO_B));
+			//fbo
+			glfwWindowHint(GLFW_RED_BITS, fullscreen ? videoMode.bitsR() : GLFW_DONT_CARE);
+			glfwWindowHint(GLFW_GREEN_BITS, fullscreen ? videoMode.bitsG() : GLFW_DONT_CARE);
+			glfwWindowHint(GLFW_BLUE_BITS, fullscreen ? videoMode.bitsB() : GLFW_DONT_CARE);
 			glfwWindowHint(GLFW_ALPHA_BITS, format.get(FBO_A));
 			glfwWindowHint(GLFW_DEPTH_BITS, format.get(FBO_DEPTH));
 			glfwWindowHint(GLFW_STENCIL_BITS, format.get(FBO_STENCIL));
 			
-			//windowMode
-			long monitorPointer;
-			WindowMode windowMode = format.get(MODE);
-			if (windowMode == FULLSCREEN) {
-				glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-				monitorPointer = getMonitorPointer(format.get(MONITOR));
-			} else {
-				glfwWindowHint(GLFW_DECORATED, windowMode == BORDERLESS ? GLFW_FALSE : GLFW_TRUE);
-				monitorPointer = 0;
-			}
-			
 			//create
-			storage = new Storage(this, getSubList, glfwCreateWindow(format.get(WIDTH), format.get(HEIGHT), format.get(TITLE), monitorPointer, getWindowSharePointer(format.get(GL_CONTEXT_SHARE))));
+			storage = new Storage(this, getSubList, glfwCreateWindow(videoMode.width(), videoMode.height(), title, monitor != null ? monitor.pointer : 0, windowSharePointer));
 		}
 	}
 	
@@ -94,9 +104,9 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 		//windowMode
 		hookable.addHook(changeEvent -> {
 			IAttributeListModification mod = changeEvent.getMod();
-			if (mod.isNotUnchanged(WIDTH) || mod.isNotUnchanged(HEIGHT) || mod.isNotUnchanged(MODE) || mod.isNotUnchanged(MONITOR)) {
+			if (mod.isNotUnchanged(WIDTH) || mod.isNotUnchanged(HEIGHT) || mod.isNotUnchanged(WINDOW_MODE) || mod.isNotUnchanged(MONITOR)) {
 				long monitorPointer;
-				WindowMode windowMode = format.get(MODE);
+				WindowMode windowMode = format.get(WINDOW_MODE);
 				if (windowMode == FULLSCREEN) {
 					glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_DECORATED, GLFW_TRUE);
 					monitorPointer = getMonitorPointer(format.get(MONITOR));
@@ -175,14 +185,6 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 				return GLFW_OPENGL_COMPAT_PROFILE;
 		}
 		throw new IllegalArgumentException("Invalid type: " + type);
-	}
-	
-	protected static long getMonitorPointer(IMonitor monitor) {
-		if (monitor == null)
-			return glfwGetPrimaryMonitor();
-		if (monitor instanceof GLFWMonitor)
-			return ((GLFWMonitor) monitor).monitor;
-		throw new WindowException(new CharBufferBuilder2D<>().append("MONITOR was not of Type GLFWMonitor, instead was ").append(monitor.getClass().getName()).append(": ").append(monitor).toString());
 	}
 	
 	protected static long getWindowSharePointer(IWindow windowShare) {

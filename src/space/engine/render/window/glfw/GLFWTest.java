@@ -1,6 +1,8 @@
 package space.engine.render.window.glfw;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
+import space.engine.render.window.IMonitor.VideoMode;
 import space.engine.render.window.IWindow;
 import space.engine.render.window.IWindowFramework;
 import space.engine.render.window.WindowFormat;
@@ -13,6 +15,8 @@ import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
 import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
+
+import java.util.Arrays;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -49,10 +53,10 @@ public class GLFWTest {
 		IWindowFramework<?> windowfw = new GLFWWindowFramework();
 		
 		//window
-		AttributeListModification attListMod = WindowFormat.ATTRIBUTE_LIST_CREATOR.createModify();
-		attListMod.put(WIDTH, 1920);
-		attListMod.put(HEIGHT, 1080);
-		attListMod.put(MODE, WindowMode.WINDOWED);
+		AttributeListModification attListMod = WindowFormat.ATT_CREATOR.createModify();
+		attListMod.put(WINDOW_MODE, WindowMode.WINDOWED);
+		attListMod.put(VIDEO_MODE, new VideoMode(800, 600));
+		
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);
 		IAttributeList attList = attListMod.createNewList();
@@ -64,7 +68,16 @@ public class GLFWTest {
 		window.makeContextCurrent();
 		GL.createCapabilities();
 		
+		int[] viewport = new int[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		System.out.println(Arrays.toString(viewport));
 		System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
+		
+		int[] w = new int[1];
+		int[] h = new int[1];
+		GLFW.glfwGetWindowSize(((GLFWWindow) window).storage.getWindowPointer(), w, h);
+		System.out.println(w[0] + "x" + h[0]);
+		
 		for (int i = 0; i < SECONDS * 60; i++) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			

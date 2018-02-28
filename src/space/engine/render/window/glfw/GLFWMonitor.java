@@ -8,7 +8,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class GLFWMonitor implements IMonitor {
 	
-	public long monitor;
+	public long pointer;
 	public String name;
 	public int physicalWidth;
 	public int physicalHeight;
@@ -17,27 +17,27 @@ public class GLFWMonitor implements IMonitor {
 	public IVideoMode currentVideoMode;
 	public IVideoMode[] availableVideoModes;
 	
-	public GLFWMonitor(long monitor) {
-		this.monitor = monitor;
+	public GLFWMonitor(long pointer) {
+		this.pointer = pointer;
 		int[] x = new int[1];
 		int[] y = new int[1];
 		
 		//name
-		name = glfwGetMonitorName(monitor);
+		name = glfwGetMonitorName(pointer);
 		
 		//physicalSize
-		glfwGetMonitorPhysicalSize(monitor, x, y);
+		glfwGetMonitorPhysicalSize(pointer, x, y);
 		physicalWidth = x[0];
 		physicalHeight = y[0];
 		
 		//pos
-		glfwGetMonitorPos(monitor, x, y);
+		glfwGetMonitorPos(pointer, x, y);
 		posX = x[0];
 		posY = y[0];
 		
 		//videoMode
-		currentVideoMode = new GLFWVideoMode(glfwGetVideoMode(monitor));
-		Buffer modes = glfwGetVideoModes(monitor);
+		currentVideoMode = new GLFWVideoMode(glfwGetVideoMode(pointer));
+		Buffer modes = glfwGetVideoModes(pointer);
 		IVideoMode[] array = new IVideoMode[modes.remaining()];
 		for (GLFWVidMode mode : modes)
 			array[modes.position()] = new GLFWVideoMode(mode);
@@ -79,12 +79,17 @@ public class GLFWMonitor implements IMonitor {
 		return availableVideoModes;
 	}
 	
-	public static class GLFWVideoMode implements IVideoMode {
+	public class GLFWVideoMode implements IVideoMode<GLFWMonitor> {
 		
 		public GLFWVidMode mode;
 		
 		public GLFWVideoMode(GLFWVidMode mode) {
 			this.mode = mode;
+		}
+		
+		@Override
+		public GLFWMonitor getMonitor() {
+			return GLFWMonitor.this;
 		}
 		
 		@Override
