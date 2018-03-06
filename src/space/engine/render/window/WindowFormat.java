@@ -1,7 +1,6 @@
 package space.engine.render.window;
 
 import space.engine.render.window.IMonitor.IVideoMode;
-import space.engine.render.window.IMonitor.VideoMode;
 import space.engine.render.window.callback.KeyboardCharCallback;
 import space.engine.render.window.callback.KeyboardKeyCallback;
 import space.engine.render.window.callback.MouseClickCallback;
@@ -12,14 +11,15 @@ import space.engine.render.window.callback.WindowFBOResizeCallback;
 import space.engine.render.window.callback.WindowFocusCallback;
 import space.engine.render.window.callback.WindowPositionCallback;
 import space.engine.render.window.callback.WindowResizeCallback;
-import space.util.keygen.IKey;
-import space.util.keygen.attribute.AttributeListCreator;
+import space.util.key.IKey;
+import space.util.key.attribute.AttributeListCreator;
 
 import static java.lang.Boolean.*;
 import static space.engine.render.window.WindowFormat.GLApiType.NONE;
 import static space.engine.render.window.WindowFormat.GLProfile.PROFILE_ANY;
 import static space.engine.render.window.WindowFormat.WindowMode.WINDOWED;
 
+@Deprecated
 @SuppressWarnings("unused")
 public class WindowFormat {
 	
@@ -29,7 +29,7 @@ public class WindowFormat {
 	public static final IKey<Integer> POSX = ATT_CREATOR.generateKey();
 	public static final IKey<Integer> POSY = ATT_CREATOR.generateKey();
 	public static final IKey<WindowMode> WINDOW_MODE = ATT_CREATOR.generateKey(WINDOWED);
-	public static final IKey<IVideoMode> VIDEO_MODE = ATT_CREATOR.generateKey(new VideoMode(800, 600));
+	public static final IKey<IVideoMode<?>> VIDEO_MODE = ATT_CREATOR.generateKey(IMonitor.createVideoModeWindowed(800, 600));
 	
 	//additional window settings
 	public static final IKey<String> TITLE = ATT_CREATOR.generateKey("Untitled Window");

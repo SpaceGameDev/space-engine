@@ -7,7 +7,7 @@ import space.util.buffer.array.ArrayBufferLong;
 import space.util.buffer.array.ArrayBufferLong.ArrayBufferLongSingle;
 import space.util.buffer.array.ArrayBufferPointer;
 import space.util.buffer.stack.BufferAllocatorStack;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.attribute.IAttributeListCreator.IAttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.side.Side.*;

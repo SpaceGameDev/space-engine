@@ -1,11 +1,13 @@
 package space.engine.render.window;
 
 import space.util.baseobject.additional.Freeable;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.attribute.IAttributeListCreator.IAttributeList;
 
-public interface IWindowFramework<W extends IWindow> extends Freeable {
+public interface IWindowFramework extends Freeable {
 	
-	W create(IAttributeList format);
+	IContext createContext(IAttributeList<IContext> format);
+	
+	IWindow createWindow(IAttributeList<IWindow> format);
 	
 	IMonitor[] getMonitors();
 	

@@ -3,10 +3,10 @@ package space.engine.side;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.buffer.string.IBufferStringConverter;
-import space.util.keygen.IKey;
-import space.util.keygen.attribute.AttributeListCreator;
-import space.util.keygen.attribute.IAttributeListCreator;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.IKey;
+import space.util.key.attribute.AttributeListCreator;
+import space.util.key.attribute.IAttributeListCreator;
+import space.util.key.attribute.IAttributeListCreator.IAttributeList;
 
 @SuppressWarnings("unused")
 public class Side {

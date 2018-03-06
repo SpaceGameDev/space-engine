@@ -2,7 +2,7 @@ package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import space.engine.render.window.IMonitor.VideoMode;
+import space.engine.render.window.IMonitor;
 import space.engine.render.window.IWindow;
 import space.engine.render.window.IWindowFramework;
 import space.engine.render.window.WindowFormat;
@@ -10,9 +10,9 @@ import space.engine.side.Side;
 import space.util.buffer.alloc.DefaultBufferAllocator;
 import space.util.buffer.string.DefaultStringConverter;
 import space.util.freeableStorage.FreeableStorageCleaner;
-import space.util.keygen.attribute.AttributeListCreator.AttributeListModification;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeList;
-import space.util.keygen.attribute.IAttributeListCreator.IAttributeListModification;
+import space.util.key.attribute.AttributeListCreator.AttributeListModification;
+import space.util.key.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.attribute.IAttributeListCreator.IAttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
 
@@ -55,7 +55,7 @@ public class GLFWTest {
 		//window
 		AttributeListModification attListMod = WindowFormat.ATT_CREATOR.createModify();
 		attListMod.put(WINDOW_MODE, WindowMode.WINDOWED);
-		attListMod.put(VIDEO_MODE, new VideoMode(800, 600));
+		attListMod.put(VIDEO_MODE, IMonitor.createVideoModeWindowed(800, 600));
 		
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);
