@@ -129,13 +129,13 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return indexMap.iterator();
+	public Iteratorable<VALUE> values() {
+		return indexMap.values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return indexMap.tableIterator();
+	public Iteratorable<IndexMapEntry<VALUE>> table() {
+		return indexMap.table();
 	}
 	
 	@Override

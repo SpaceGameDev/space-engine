@@ -1,14 +1,14 @@
-package space.util.keygen.attribute;
+package space.util.key.attribute;
 
 import space.util.concurrent.event.IEvent;
 import space.util.delegate.iterator.Iteratorable;
-import space.util.keygen.IKey;
-import space.util.keygen.IKeyGenerator;
+import space.util.key.IKey;
+import space.util.key.IKeyGenerator;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface IAttributeListCreator extends IKeyGenerator {
+public interface IAttributeListCreator<TYPE> extends IKeyGenerator {
 	
 	Object DEFAULT = new Object() {
 		@Override
@@ -26,12 +26,12 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	/**
 	 * creates a new {@link IAttributeList IAttributeList}
 	 */
-	IAttributeList create();
+	IAttributeList<TYPE> create();
 	
 	/**
 	 * creates a new {@link IAttributeListModification IAttributeListModification}
 	 */
-	IAttributeListModification createModify();
+	IAttributeListModification<TYPE> createModify();
 	
 	@Override
 	<T> IKey<T> generateKey();
@@ -43,7 +43,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	boolean isKeyOf(IKey<?> key);
 	
 	//abstract version
-	interface IAbstractAttributeList {
+	interface IAbstractAttributeList<TYPE> {
 		
 		//get
 		
@@ -82,7 +82,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * creates a new {@link IAttributeListModification IAttributeListModification}.
 		 * Calls <code>this.{@link IAbstractAttributeList#getCreator()}.{@link IAttributeListCreator#createModify()}</code> by default.
 		 */
-		default IAttributeListModification createModify() {
+		default IAttributeListModification<TYPE> createModify() {
 			return getCreator().createModify();
 		}
 		
@@ -115,7 +115,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	 *
 	 * @see IAttributeListModification the modification AttributeList
 	 */
-	interface IAttributeList extends IAbstractAttributeList {
+	interface IAttributeList<TYPE> extends IAbstractAttributeList<TYPE> {
 		
 		//get
 		
@@ -135,7 +135,7 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * Gets the {@link IEvent} to use {@link IEvent#addHook(Object)} to add Hooks.
 		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
 		 */
-		IEvent<Consumer<IAttributeListChangeEvent>> getChangeEvent();
+		IEvent<Consumer<ChangeEvent>> getChangeEvent();
 		
 		/**
 		 * Applies a certain modification.<br>
@@ -147,27 +147,27 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 * <li>apply the changes to this object</li>
 		 * </ul>
 		 */
-		void apply(IAttributeListModification mod);
+		void apply(IAttributeListModification<TYPE> mod);
 		
 		@Override
-		Iteratorable<? extends EntryList<?>> tableIterator();
+		Iteratorable<? extends ListEntry<?>> tableIterator();
 	}
 	
-	interface EntryList<V> extends AbstractEntry<V> {
+	interface ListEntry<V> extends AbstractEntry<V> {
 		
 		V getValue();
 	}
 	
 	//modification
 	
-	interface IAttributeListModification extends IAbstractAttributeList {
+	interface IAttributeListModification<TYPE> extends IAbstractAttributeList<TYPE> {
 		
 		//get
 		default <V> boolean isUnchanged(IKey<V> key) {
 			return getDirect(key) == UNCHANGED;
 		}
 		
-		default <V> boolean isNotUnchanged(IKey<V> key) {
+		default <V> boolean hasChanged(IKey<V> key) {
 			return getDirect(key) != UNCHANGED;
 		}
 		
@@ -218,6 +218,11 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 */
 		<V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue);
 		
+		/**
+		 * copies from either an {@link IAttributeList} or {@link IAttributeListModification} all the {@link IKey IKeys} over
+		 */
+		void copyOver(IAbstractAttributeList list, IKey<?>... keys);
+		
 		//other
 		
 		/**
@@ -225,13 +230,13 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		 */
 		void clear();
 		
-		IAttributeList createNewList();
+		IAttributeList<TYPE> createNewList();
 		
 		@Override
-		Iteratorable<? extends EntryListModification<?>> tableIterator();
+		Iteratorable<? extends ListModificationEntry<?>> tableIterator();
 	}
 	
-	interface EntryListModification<V> extends AbstractEntry<V> {
+	interface ListModificationEntry<V> extends AbstractEntry<V> {
 		
 		void put(V v);
 		
@@ -240,6 +245,14 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		void setDefault();
 		
 		void reset();
+		
+		default boolean isUnchanged() {
+			return getValueDirect() == UNCHANGED;
+		}
+		
+		default boolean hasChanged() {
+			return getValueDirect() != UNCHANGED;
+		}
 	}
 	
 	//change event
@@ -247,25 +260,25 @@ public interface IAttributeListCreator extends IKeyGenerator {
 	/**
 	 * Contains information about ANY change of an {@link IAttributeList IAttributeList}.
 	 * It is used in the {@link IEvent} gotten from {@link IAttributeList#getChangeEvent()}.
-	 * Use {@link IAttributeListChangeEvent#getEntry(IKey)} to get the Entry of one {@link IKey}.
+	 * Use {@link ChangeEvent#getEntry(IKey)} to get the Entry of one {@link IKey}.
 	 */
-	interface IAttributeListChangeEvent {
+	interface ChangeEvent {
 		
 		//get lists
 		IAttributeList getOldList();
 		
 		IAttributeListModification getMod();
 		
-		<V> IAttributeListChangeEventEntry<V> getEntry(IKey<V> key);
+		<V> ChangeEventEntry<V> getEntry(IKey<V> key);
 	}
 	
 	/**
 	 * Contains information about A SINGLE change of an {@link IAttributeList IAttributeList}.
 	 * You can get the old state, the mod and calculate the new state it will be in.
 	 * "Normal" Methods will calculate the default Value, "Direct" Methods will not and can return {@link IAttributeList#DEFAULT DEFAULT} or {@link IAttributeList#UNCHANGED UNCHANGED}.
-	 * You can also set the mod to something else with {@link IAttributeListChangeEventEntry#setMod(Object)}.
+	 * You can also set the mod to something else with {@link ChangeEventEntry#setMod(Object)}.
 	 */
-	interface IAttributeListChangeEventEntry<V> {
+	interface ChangeEventEntry<V> {
 		
 		//get
 		IKey<V> getKey();
@@ -282,5 +295,13 @@ public interface IAttributeListCreator extends IKeyGenerator {
 		
 		//set
 		void setMod(Object newmod);
+		
+		default boolean isUnchanged() {
+			return getNewDirect() == UNCHANGED;
+		}
+		
+		default boolean hasChanged() {
+			return getNewDirect() != UNCHANGED;
+		}
 	}
 }

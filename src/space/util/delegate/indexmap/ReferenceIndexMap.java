@@ -152,14 +152,14 @@ public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return new ReferenceIterator<>(indexMap.iterator());
+	public Iteratorable<VALUE> values() {
+		return new ReferenceIterator<>(indexMap.values());
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
+	public Iteratorable<IndexMapEntry<VALUE>> table() {
 		return new Iteratorable<IndexMapEntry<VALUE>>() {
-			Iteratorable<IndexMapEntry<Reference<? extends VALUE>>> i = indexMap.tableIterator();
+			Iteratorable<IndexMapEntry<Reference<? extends VALUE>>> i = indexMap.table();
 			
 			@Override
 			public boolean hasNext() {

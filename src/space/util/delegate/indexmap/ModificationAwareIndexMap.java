@@ -113,13 +113,13 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return new ModificationAwareIterator<>(super.iterator(), onModification);
+	public Iteratorable<VALUE> values() {
+		return new ModificationAwareIterator<>(super.values(), onModification);
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return new ModificationAwareIterator<IndexMapEntry<VALUE>>(super.tableIterator(), onModification) {
+	public Iteratorable<IndexMapEntry<VALUE>> table() {
+		return new ModificationAwareIterator<IndexMapEntry<VALUE>>(super.table(), onModification) {
 			
 			@Override
 			public void remove() {

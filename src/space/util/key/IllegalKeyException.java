@@ -1,4 +1,4 @@
-package space.util.keygen;
+package space.util.key;
 
 /**
  * thrown when a {@link IKey} is used which is not allowed to be used

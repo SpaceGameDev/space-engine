@@ -1,12 +1,11 @@
 package space.util.indexmap.multi;
 
-import space.util.delegate.iterator.Iteratorable;
-import space.util.delegate.iterator.UnmodifiableIterator;
+import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
-import space.util.indexmap.IndexMapFromList;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 import static space.util.ArrayUtils.getSafeO;
 
@@ -17,7 +16,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	public int[] relativePos;
 	
 	public IndexMultiMapFrom1DIndexMap() {
-		this((IndexMap<VALUE>) null);
+		this(null);
 	}
 	
 	public IndexMultiMapFrom1DIndexMap(IndexMap<VALUE> indexMap) {
@@ -36,22 +35,6 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		this.indexMap = indexMap;
 		this.modifiable = modifiable;
 		this.relativePos = relativePos;
-	}
-	
-	public IndexMultiMapFrom1DIndexMap(List<VALUE> list) {
-		this(list, true);
-	}
-	
-	public IndexMultiMapFrom1DIndexMap(List<VALUE> list, boolean modifiable) {
-		this(list, modifiable, EMPTYINT);
-	}
-	
-	public IndexMultiMapFrom1DIndexMap(List<VALUE> list, boolean modifiable, int dimensionalDepth) {
-		this(list, modifiable, new int[dimensionalDepth]);
-	}
-	
-	public IndexMultiMapFrom1DIndexMap(List<VALUE> list, boolean modifiable, int[] relativePos) {
-		this(new IndexMapFromList<>(list), modifiable, relativePos);
 	}
 	
 	//index
@@ -135,38 +118,91 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		indexMap.clear();
 	}
 	
-	//iterator
+	//values
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return modifiable ? Iteratorable.toIteratorable(indexMap.iterator()) : new UnmodifiableIterator<>(indexMap.iterator());
+	public Collection<VALUE> values() {
+		return modifiable ? indexMap.values() : new UnmodifiableCollection<>(indexMap.values());
 	}
 	
 	@Override
-	public Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator() {
-		return new Iteratorable<IndexMultiMapEntry<VALUE>>() {
-			
-			Iteratorable<IndexMapEntry<VALUE>> iter = indexMap.tableIterator();
-			
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			@Override
-			public IndexMultiMapEntry<VALUE> next() {
-				return new IndexMultiMapFrom1DIndexMapEntry(iter.next().getIndex());
-			}
-		};
-	}
-	
-	@Override
-	public Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos) {
+	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
 		if (isListIndexValid(pos)) {
 			if (pos.length == relativePos.length)
-				return tableIterator();
-			return Iteratorable.single(new IndexMultiMapFrom1DIndexMapEntry(pos[relativePos.length]));
+				return tableInternal();
+			return Collections.singleton(new IndexMultiMapFrom1DIndexMapEntry(pos[relativePos.length]));
 		}
-		return Iteratorable.empty();
+		return Collections.emptyList();
+	}
+	
+	public Collection<IndexMultiMapEntry<VALUE>> tableInternal() {
+		return new Collection<>() {
+			Collection<IndexMapEntry<VALUE>> coll = indexMap.table();
+			
+			@Override
+			public int size() {
+				return coll.size();
+			}
+			
+			@Override
+			public boolean isEmpty() {
+				return coll.isEmpty();
+			}
+
+//			@Override
+//			public boolean contains(Object o) {
+//				return coll.contains(o);
+//			}
+//
+//			@Override
+//			public Iterator<IndexMultiMapEntry<VALUE>> iterator() {
+//				return null;
+//			}
+//
+//			@Override
+//			public Object[] toArray() {
+//				return new Object[0];
+//			}
+//
+//			@Override
+//			public <T> T[] toArray(T[] a) {
+//				return null;
+//			}
+//
+//			@Override
+//			public boolean add(IndexMultiMapEntry<VALUE> valueIndexMultiMapEntry) {
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean remove(Object o) {
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean containsAll(Collection<?> c) {
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean addAll(Collection<? extends IndexMultiMapEntry<VALUE>> c) {
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean removeAll(Collection<?> c) {
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean retainAll(Collection<?> c) {
+//				return false;
+//			}
+//
+//			@Override
+//			public void clear() {
+//
+//			}
+		};
 	}
 	
 	protected class IndexMultiMapFrom1DIndexMapEntry implements IndexMultiMapEntry<VALUE> {

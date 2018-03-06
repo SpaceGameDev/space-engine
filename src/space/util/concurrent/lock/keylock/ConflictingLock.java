@@ -6,9 +6,9 @@ import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap2D;
-import space.util.keygen.IKey;
-import space.util.keygen.IKeyGenerator;
-import space.util.keygen.IllegalKeyException;
+import space.util.key.IKey;
+import space.util.key.IKeyGenerator;
+import space.util.key.IllegalKeyException;
 
 import java.util.concurrent.TimeUnit;
 

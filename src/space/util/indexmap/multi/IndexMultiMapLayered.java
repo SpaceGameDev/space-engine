@@ -23,7 +23,7 @@ public interface IndexMultiMapLayered<VALUE> extends IndexMultiMap<VALUE> {
 	
 	void clear(int[] pos, int offset);
 	
-	Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos, int offset);
+	Iteratorable<IndexMultiMapEntry<VALUE>> table(int[] pos, int offset);
 	
 	@Override
 	default boolean isExpandable(int[] pos) {
@@ -61,8 +61,8 @@ public interface IndexMultiMapLayered<VALUE> extends IndexMultiMap<VALUE> {
 	}
 	
 	@Override
-	default Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos) {
-		return tableIterator(pos, 0);
+	default Iteratorable<IndexMultiMapEntry<VALUE>> table(int[] pos) {
+		return table(pos, 0);
 	}
 	
 	class IndexMultiMapLayeredImpl<VALUE> implements IndexMultiMapLayered<VALUE> {
@@ -317,22 +317,22 @@ public interface IndexMultiMapLayered<VALUE> extends IndexMultiMap<VALUE> {
 		}
 		
 		@Override
-		public Iteratorable<VALUE> iterator() {
-			return new IndexMultiMapTableIteratorToNormalIterator<>(tableIterator());
+		public Iteratorable<VALUE> values() {
+			return new IndexMultiMapTableIteratorToNormalIterator<>(table());
 		}
 		
 		@Override
-		public IndexMultiMapMultiArrayElementIteratorImpl tableIterator(int[] pos) {
-			return tableIterator(pos, 0);
+		public IndexMultiMapMultiArrayElementIteratorImpl table(int[] pos) {
+			return table(pos, 0);
 		}
 		
 		@Override
-		public IndexMultiMapMultiArrayElementIteratorImpl tableIterator() {
-			return tableIterator(EMPTYINT, 0);
+		public IndexMultiMapMultiArrayElementIteratorImpl table() {
+			return table(EMPTYINT, 0);
 		}
 		
 		@Override
-		public IndexMultiMapMultiArrayElementIteratorImpl tableIterator(int[] pos, int offset) {
+		public IndexMultiMapMultiArrayElementIteratorImpl table(int[] pos, int offset) {
 			return new IndexMultiMapMultiArrayElementIteratorImpl();
 		}
 		
@@ -340,7 +340,7 @@ public interface IndexMultiMapLayered<VALUE> extends IndexMultiMap<VALUE> {
 //	@Override
 //	public String toString() {
 //		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>();
-//		Iteratorable<IndexMultiMapEntry<VALUE>> iter = tableIterator();
+//		Iteratorable<IndexMultiMapEntry<VALUE>> iter = table();
 //		boolean hasNext = iter.hasNext();
 //
 //		while (hasNext) {
@@ -434,7 +434,7 @@ public interface IndexMultiMapLayered<VALUE> extends IndexMultiMap<VALUE> {
 				}
 				
 				//noinspection unchecked
-				nextIter = ((IndexMultiMapLayeredImpl<VALUE>) o).tableIterator();
+				nextIter = ((IndexMultiMapLayeredImpl<VALUE>) o).table();
 				calcNext();
 			}
 		}

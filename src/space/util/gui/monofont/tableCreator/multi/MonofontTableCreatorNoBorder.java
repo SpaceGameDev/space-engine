@@ -33,14 +33,14 @@ public class MonofontTableCreatorNoBorder implements MonofontTableCreator {
 		//axis size
 		int[] size = new int[] {valueTable.size(), valueTable.maxSize(1)};
 		IndexAxisMapInt axis = new IndexAxisMapInt(); //content index
-		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.tableIterator())
+		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.table())
 			if (elem.getValue() != null)
 				axis.put(new int[] {getSafeO(elem.getIndex(), 0, 0), getSafeO(elem.getIndex(), 1, 0)}, new int[] {elem.getValue().height(), elem.getValue().maxLength()});
 		
 		//buffer building content
 		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
 		buffer.startEdit();
-		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.tableIterator()) {
+		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.table()) {
 			int indexy = getSafeO(elem.getIndex(), 0, 0);
 			int indexx = getSafeO(elem.getIndex(), 1, 0);
 			buffer.setY(axis.getIndex(0, indexy));

@@ -109,12 +109,12 @@ public class IndexMultiMapSingleArray<VALUE> implements IndexMultiMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
+	public Iteratorable<VALUE> values() {
 		return new ArrayIterable.ArrayIterator<>(array);
 	}
 	
 	@Override
-	public Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos) {
+	public Iteratorable<IndexMultiMapEntry<VALUE>> table(int[] pos) {
 		return new Iteratorable<IndexMultiMapEntry<VALUE>>() {
 			
 			int index = 0;

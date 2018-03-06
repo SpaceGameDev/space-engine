@@ -1,13 +1,12 @@
 package space.util.indexmap;
 
 import space.util.Empties;
-import space.util.delegate.iterator.Iteratorable;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public interface IndexMap<VALUE> extends Iterable<VALUE> {
+public interface IndexMap<VALUE> {
 	
 	int[] EMPTYINT = Empties.EMPTYINTARRAY;
 	
@@ -47,11 +46,11 @@ public interface IndexMap<VALUE> extends Iterable<VALUE> {
 	}
 	
 	default void putAll(IndexMap<VALUE> indexMap) {
-		indexMap.tableIterator().forEach(entry -> put(entry.getIndex(), entry.getValue()));
+		indexMap.table().forEach(entry -> put(entry.getIndex(), entry.getValue()));
 	}
 	
 	default void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-		indexMap.tableIterator().forEach(entry -> putIfAbsent(entry.getIndex(), entry::getValue));
+		indexMap.table().forEach(entry -> putIfAbsent(entry.getIndex(), entry::getValue));
 	}
 	
 	//advanced access
@@ -110,10 +109,9 @@ public interface IndexMap<VALUE> extends Iterable<VALUE> {
 	//other
 	void clear();
 	
-	@Override
-	Iteratorable<VALUE> iterator();
+	Collection<VALUE> values();
 	
-	Iteratorable<IndexMapEntry<VALUE>> tableIterator();
+	Collection<IndexMapEntry<VALUE>> table();
 	
 	interface IndexMapEntry<VALUE> {
 		

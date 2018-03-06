@@ -1,4 +1,4 @@
-package space.util.keygen;
+package space.util.key;
 
 @FunctionalInterface
 @SuppressWarnings("unused")

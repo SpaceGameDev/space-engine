@@ -1,9 +1,12 @@
-package space.util.keygen;
+package space.util.key;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface IKeyGenerator {
+	
+	//generate
 	
 	/**
 	 * generates a new {@link IKey}
@@ -33,12 +36,23 @@ public interface IKeyGenerator {
 	 */
 	<T> IKey<T> generateKey(Supplier<T> def);
 	
+	//key
+	
+	/**
+	 * @param id the id of the {@link IKey}
+	 * @return the {@link IKey} associated with the id
+	 */
 	IKey<?> getKey(int id);
 	
 	/**
 	 * @return true if the key was made by this generator and is valid
 	 */
 	boolean isKeyOf(IKey<?> key);
+	
+	/**
+	 * @return all {@link IKey IKeys} available
+	 */
+	Collection<IKey<?>> getKeys();
 	
 	/**
 	 * every key generated will be submitted to the Consumer
@@ -77,6 +91,11 @@ public interface IKeyGenerator {
 			@Override
 			public boolean isKeyOf(IKey<?> key) {
 				return IKeyGenerator.this.isKeyOf(key);
+			}
+			
+			@Override
+			public Collection<IKey<?>> getKeys() {
+				return IKeyGenerator.this.getKeys();
 			}
 		};
 	}

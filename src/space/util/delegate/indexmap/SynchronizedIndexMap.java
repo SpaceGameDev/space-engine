@@ -125,13 +125,13 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public synchronized Iteratorable<VALUE> iterator() {
-		return super.iterator();
+	public synchronized Iteratorable<VALUE> values() {
+		return super.values();
 	}
 	
 	@Override
-	public synchronized Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return super.tableIterator();
+	public synchronized Iteratorable<IndexMapEntry<VALUE>> table() {
+		return super.table();
 	}
 	
 	@Override

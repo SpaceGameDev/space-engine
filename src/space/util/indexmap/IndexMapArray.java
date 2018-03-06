@@ -2,12 +2,13 @@ package space.util.indexmap;
 
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
-import space.util.delegate.impl.ArrayIterable.ArrayIterator;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
 
+import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Supplier;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
@@ -216,64 +217,88 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return new Iteratorable<VALUE>() {
-			ArrayIterator<VALUE> iter = new ArrayIterator<>(array, 0, length);
-			
+	public Collection<VALUE> values() {
+		return new AbstractCollection<>() {
 			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			@Override
-			public VALUE next() {
-				return iter.next();
-			}
-			
-			@Override
-			public void remove() {
-				IndexMapArray.this.remove(iter.index);
-			}
-		};
-	}
-	
-	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return new Iteratorable<IndexMapEntry<VALUE>>() {
-			ArrayIterator<VALUE> iter = new ArrayIterator<>(array, 0, length);
-			
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			@Override
-			public IndexMapEntry<VALUE> next() {
-				return new IndexMapEntry<VALUE>() {
-					int index = iter.index;
-					VALUE next = iter.next();
+			public Iterator<VALUE> iterator() {
+				return new Iteratorable<>() {
+					int index;
 					
 					@Override
-					public int getIndex() {
-						return index;
+					public boolean hasNext() {
+						return index < length;
 					}
 					
 					@Override
-					public VALUE getValue() {
-						return next;
+					public VALUE next() {
+						return array[index++];
 					}
 					
 					@Override
-					public void setValue(VALUE v) {
-						next = v;
-						put(iter.index, v);
+					public void remove() {
+						IndexMapArray.this.remove(index - 1);
 					}
 				};
 			}
 			
 			@Override
-			public void remove() {
-				IndexMapArray.this.remove(iter.index);
+			public int size() {
+				return IndexMapArray.this.length;
+			}
+		};
+	}
+	
+	@Override
+	public Collection<IndexMapEntry<VALUE>> table() {
+		return new AbstractCollection<>() {
+			@Override
+			public Iterator<IndexMapEntry<VALUE>> iterator() {
+				return new Iteratorable<>() {
+					int index;
+					
+					@Override
+					public boolean hasNext() {
+						return index < length;
+					}
+					
+					@Override
+					public IndexMapEntry<VALUE> next() {
+						return new IndexMapEntry<>() {
+							int index2 = index++;
+							
+							@Override
+							public int getIndex() {
+								return index2;
+							}
+							
+							@Override
+							public VALUE getValue() {
+								return array[index2];
+							}
+							
+							@Override
+							public void setValue(VALUE v) {
+								array[index2] = v;
+							}
+						};
+					}
+					
+					@Override
+					public void remove() {
+						IndexMapArray.this.remove(index - 1);
+					}
+				};
+			}
+			
+			@Override
+			public int size() {
+				return IndexMapArray.this.length;
+			}
+			
+			@Override
+			public boolean add(IndexMapEntry<VALUE> entry) {
+				IndexMapArray.this.put(entry.getIndex(), entry.getValue());
+				return true;
 			}
 		};
 	}

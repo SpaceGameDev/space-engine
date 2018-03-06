@@ -153,26 +153,26 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	
 	//iterators
 	@Override
-	public Iteratorable<VALUE> iterator() {
+	public Iteratorable<VALUE> values() {
 		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
-			return indexMap.iterator();
+			return indexMap.values();
 		
 		IndexMap<VALUE> map = new IndexMapArray<>();
 		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
 		map.putAll(indexMap);
-		return map.iterator();
+		return map.values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
+	public Iteratorable<IndexMapEntry<VALUE>> table() {
 		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
-			return indexMap.tableIterator();
+			return indexMap.table();
 		
 		IndexMapArray<VALUE> map = new IndexMapArray<>();
 		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
 		map.putAll(indexMap);
 		return new Iteratorable<IndexMapEntry<VALUE>>() {
-			Iteratorable<IndexMapEntry<VALUE>> iter = map.tableIterator();
+			Iteratorable<IndexMapEntry<VALUE>> iter = map.table();
 			IndexMapEntry<VALUE> curr;
 			
 			@Override

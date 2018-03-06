@@ -1,9 +1,11 @@
 package space.util.indexmap.multi;
 
 import space.util.ArrayUtils;
-import space.util.delegate.iterator.Iteratorable;
 
+import java.util.AbstractCollection;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
@@ -242,16 +244,32 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return new IndexMultiMap.IndexMultiMapTableIteratorToNormalIterator<>(tableIterator());
+	public Collection<VALUE> values() {
+		return new IndexMultiMap.IndexMultiMapTableIteratorToNormalIterator<>(table());
 	}
 	
 	@Override
-	public Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos) {
-		return new IndexMultiMap2DIterator();
+	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
+		return new Table();
 	}
 	
-	public class IndexMultiMap2DIterator implements Iteratorable<IndexMultiMapEntry<VALUE>> {
+	public class Table extends AbstractCollection<IndexMultiMapEntry<VALUE>> {
+		
+		@Override
+		public Iterator<IndexMultiMapEntry<VALUE>> iterator() {
+			return new Iter();
+		}
+		
+		@Override
+		public int size() {
+			int size = 0;
+			for (int i = 0; i < height; i++)
+				size += length[i];
+			return size;
+		}
+	}
+	
+	public class Iter implements Iterator<IndexMultiMapEntry<VALUE>> {
 		
 		public boolean hasNext = true;
 		
@@ -261,7 +279,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		public int nh;
 		public int nx = -1;
 		
-		public IndexMultiMap2DIterator() {
+		public Iter() {
 			calcNextPos();
 		}
 		
@@ -276,7 +294,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 				throw new NoSuchElementException();
 			
 			calcNext();
-			return new IndexMultiMapEntry<VALUE>() {
+			return new IndexMultiMapEntry<>() {
 				int[] pos = new int[] {h, x};
 				VALUE v = buffer[h][x];
 				

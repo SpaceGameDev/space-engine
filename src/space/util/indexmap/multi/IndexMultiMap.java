@@ -1,12 +1,14 @@
 package space.util.indexmap.multi;
 
-import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public interface IndexMultiMap<VALUE> extends Iterable<VALUE> {
+public interface IndexMultiMap<VALUE> {
 	
 	int[] EMPTYINT = IndexMap.EMPTYINT;
 	
@@ -139,15 +141,13 @@ public interface IndexMultiMap<VALUE> extends Iterable<VALUE> {
 	
 	void clear(int[] pos);
 	
-	//iterator
-	@Override
-	Iteratorable<VALUE> iterator();
+	Collection<VALUE> values();
 	
-	default Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator() {
-		return tableIterator(EMPTYINT);
+	default Collection<IndexMultiMapEntry<VALUE>> table() {
+		return table(EMPTYINT);
 	}
 	
-	Iteratorable<IndexMultiMapEntry<VALUE>> tableIterator(int[] pos);
+	Collection<IndexMultiMapEntry<VALUE>> table(int[] pos);
 	
 	interface IndexMultiMapEntry<VALUE> {
 		
@@ -158,22 +158,34 @@ public interface IndexMultiMap<VALUE> extends Iterable<VALUE> {
 		void setValue(VALUE v);
 	}
 	
-	class IndexMultiMapTableIteratorToNormalIterator<VALUE> implements Iteratorable<VALUE> {
+	class IndexMultiMapTableIteratorToNormalIterator<VALUE> extends AbstractCollection<VALUE> {
 		
-		Iteratorable<IndexMultiMapEntry<VALUE>> iter;
+		Collection<IndexMultiMapEntry<VALUE>> coll;
 		
-		public IndexMultiMapTableIteratorToNormalIterator(Iteratorable<IndexMultiMapEntry<VALUE>> iter) {
-			this.iter = iter;
+		public IndexMultiMapTableIteratorToNormalIterator(Collection<IndexMultiMapEntry<VALUE>> coll) {
+			this.coll = coll;
 		}
 		
 		@Override
-		public boolean hasNext() {
-			return iter.hasNext();
+		public Iterator<VALUE> iterator() {
+			return new Iterator<>() {
+				Iterator<IndexMultiMapEntry<VALUE>> iter = coll.iterator();
+				
+				@Override
+				public boolean hasNext() {
+					return iter.hasNext();
+				}
+				
+				@Override
+				public VALUE next() {
+					return iter.next().getValue();
+				}
+			};
 		}
 		
 		@Override
-		public VALUE next() {
-			return iter.next().getValue();
+		public int size() {
+			return coll.size();
 		}
 	}
 }

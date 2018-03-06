@@ -1,4 +1,4 @@
-package space.util.keygen.attribute;
+package space.util.key.attribute;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
@@ -8,10 +8,10 @@ import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArrayWithDefault;
-import space.util.keygen.IKey;
-import space.util.keygen.IKeyGenerator;
-import space.util.keygen.IllegalKeyException;
-import space.util.keygen.impl.DisposableKeyGenerator;
+import space.util.key.IKey;
+import space.util.key.IKeyGenerator;
+import space.util.key.IllegalKeyException;
+import space.util.key.impl.DisposableKeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -19,11 +19,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class AttributeListCreator implements IAttributeListCreator, ToString {
+public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, ToString {
 	
 	static {
-		Copyable.manualEntry(AttributeList.class, AttributeList::copy);
-		Copyable.manualEntry(AttributeListModification.class, AttributeListModification::copy);
+		Copyable.manualEntry(AttributeListCreator.AttributeList.class, AttributeListCreator.AttributeList::copy);
+		Copyable.manualEntry(AttributeListCreator.AttributeListModification.class, AttributeListCreator.AttributeListModification::copy);
 	}
 	
 	public final IKeyGenerator gen;
@@ -95,7 +95,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		return toString0();
 	}
 	
-	public abstract class AbstractAttributeList implements IAbstractAttributeList, ToString {
+	public abstract class AbstractAttributeList implements IAbstractAttributeList<TYPE>, ToString {
 		
 		public IndexMapArrayWithDefault<Object> indexMap;
 		
@@ -128,7 +128,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		@Override
 		public Iteratorable<Object> iterator() {
-			return indexMap.iterator();
+			return indexMap.values();
 		}
 		
 		//toString
@@ -147,7 +147,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		protected abstract class AbstractEntryIteratorImpl<T> implements Iteratorable<T> {
 			
-			protected Iteratorable<IndexMapEntry<Object>> iter = indexMap.tableIterator();
+			protected Iteratorable<IndexMapEntry<Object>> iter = indexMap.table();
 			
 			@Override
 			public boolean hasNext() {
@@ -179,9 +179,9 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 	}
 	
-	public class AttributeList extends AbstractAttributeList implements IAttributeList {
+	public class AttributeList extends AbstractAttributeList implements IAttributeList<TYPE> {
 		
-		public SimpleEvent<Consumer<IAttributeListChangeEvent>> changeEvent = new SimpleEvent<>();
+		public SimpleEvent<Consumer<ChangeEvent>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
 			super(DEFAULT);
@@ -213,12 +213,12 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		
 		//other
 		@Override
-		public IEvent<Consumer<IAttributeListChangeEvent>> getChangeEvent() {
+		public IEvent<Consumer<ChangeEvent>> getChangeEvent() {
 			return changeEvent;
 		}
 		
 		@Override
-		public synchronized void apply(IAttributeListModification mod2) {
+		public synchronized void apply(IAttributeListModification<TYPE> mod2) {
 			//same check
 			AttributeListModification mod = AttributeListCreator.this.createModify();
 			mod2.tableIterator().forEach(entry -> {
@@ -228,7 +228,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			});
 			
 			//trigger events
-			IAttributeListChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
+			ChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
 			changeEvent.run(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
 			
 			//apply values
@@ -240,18 +240,18 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
-		public Iteratorable<? extends EntryList<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<>() {
+		public Iteratorable<? extends ListEntry<?>> tableIterator() {
+			return new AbstractEntryIteratorImpl<ListEntry<?>>() {
 				@Override
-				public EntryList<?> next() {
-					return new EntryListImpl<>(nextKey());
+				public ListEntry<?> next() {
+					return new ListEntryImpl<>(nextKey());
 				}
 			};
 		}
 		
-		protected class EntryListImpl<V> extends AbstractEntryImpl<V> implements EntryList<V> {
+		protected class ListEntryImpl<V> extends AbstractEntryImpl<V> implements ListEntry<V> {
 			
-			public EntryListImpl(IKey<V> key) {
+			public ListEntryImpl(IKey<V> key) {
 				super(key);
 			}
 			
@@ -262,7 +262,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 	}
 	
-	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification {
+	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification<TYPE> {
 		
 		public AttributeListModification() {
 			super(UNCHANGED);
@@ -342,6 +342,17 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 			return indexMap.replace(key.getID(), oldValue, newValue);
 		}
 		
+		@Override
+		public void copyOver(IAbstractAttributeList list, IKey<?>... keys) {
+			if (list.getCreator() != AttributeListCreator.this)
+				throw new IllegalKeyException("List not of same generator type");
+			
+			for (IKey<?> key : keys) {
+				check(key);
+				indexMap.put(key.getID(), list.getDirect(key));
+			}
+		}
+		
 		//clear
 		@Override
 		public void clear() {
@@ -349,7 +360,7 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
-		public IAttributeList createNewList() {
+		public IAttributeList<TYPE> createNewList() {
 			AttributeList list = new AttributeList();
 			this.tableIterator().forEach(entry -> {
 				Object value = entry.getValueDirect();
@@ -360,18 +371,18 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
-		public Iteratorable<? extends EntryListModification<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<>() {
+		public Iteratorable<? extends ListModificationEntry<?>> tableIterator() {
+			return new AbstractEntryIteratorImpl<ListModificationEntry<?>>() {
 				@Override
-				public EntryListModification<?> next() {
-					return new EntryListModificationImpl<>(nextKey());
+				public ListModificationEntry<?> next() {
+					return new ListModificationEntryImpl<>(nextKey());
 				}
 			};
 		}
 		
-		protected class EntryListModificationImpl<V> extends AbstractEntryImpl<V> implements EntryListModification<V> {
+		protected class ListModificationEntryImpl<V> extends AbstractEntryImpl<V> implements ListModificationEntry<V> {
 			
-			public EntryListModificationImpl(IKey<V> key) {
+			public ListModificationEntryImpl(IKey<V> key) {
 				super(key);
 			}
 			
@@ -397,12 +408,12 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 	}
 	
-	class AttributeListChangeEvent implements IAttributeListChangeEvent {
+	class AttributeListChangeEvent implements ChangeEvent {
 		
-		public final IAttributeList oldList;
-		public final IAttributeListModification mod;
+		public final IAttributeList<TYPE> oldList;
+		public final IAttributeListModification<TYPE> mod;
 		
-		public AttributeListChangeEvent(IAttributeList oldList, IAttributeListModification mod) {
+		public AttributeListChangeEvent(IAttributeList<TYPE> oldList, IAttributeListModification<TYPE> mod) {
 			this.oldList = oldList;
 			this.mod = mod;
 		}
@@ -418,8 +429,8 @@ public class AttributeListCreator implements IAttributeListCreator, ToString {
 		}
 		
 		@Override
-		public <V> IAttributeListChangeEventEntry<V> getEntry(IKey<V> key) {
-			return new IAttributeListChangeEventEntry<>() {
+		public <V> ChangeEventEntry<V> getEntry(IKey<V> key) {
+			return new ChangeEventEntry<>() {
 				
 				//get
 				@Override

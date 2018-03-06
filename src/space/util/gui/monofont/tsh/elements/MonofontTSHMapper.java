@@ -60,7 +60,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 	@Override
 	public CharSequence2D rebuild0() {
 		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
-		for (IndexMapEntry<Entry> entry : table.tableIterator()) {
+		for (IndexMapEntry<Entry> entry : table.table()) {
 			if (entry == null)
 				continue;
 			

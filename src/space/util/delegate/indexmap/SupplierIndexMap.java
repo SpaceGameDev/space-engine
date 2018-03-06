@@ -126,13 +126,13 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> iterator() {
-		return indexMap.get().iterator();
+	public Iteratorable<VALUE> values() {
+		return indexMap.get().values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return indexMap.get().tableIterator();
+	public Iteratorable<IndexMapEntry<VALUE>> table() {
+		return indexMap.get().table();
 	}
 	
 	@Override

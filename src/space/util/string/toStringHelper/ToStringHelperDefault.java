@@ -252,7 +252,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
-				Iteratorable<IndexMultiMapEntry<String>> iter = map.tableIterator();
+				Iteratorable<IndexMultiMapEntry<String>> iter = map.table();
 				
 				b.append(name).append("{ ");
 				for (IndexMultiMapEntry<String> entry : iter) {

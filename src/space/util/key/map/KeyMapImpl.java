@@ -1,12 +1,12 @@
-package space.util.keygen.map;
+package space.util.key.map;
 
 import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArray;
-import space.util.keygen.IKey;
-import space.util.keygen.IKeyGenerator;
-import space.util.keygen.IllegalKeyException;
+import space.util.key.IKey;
+import space.util.key.IKeyGenerator;
+import space.util.key.IllegalKeyException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -112,12 +112,36 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, space.util.baseobject.
 	
 	@Override
 	public Iteratorable<VALUE> iterator() {
-		return map.iterator();
+		return map.values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> tableIterator() {
-		return map.tableIterator();
+	public Iteratorable<? extends Entry> tableIterator() {
+		return new Iteratorable<>() {
+			Iteratorable<IndexMapEntry<VALUE>> iter = map.table();
+			
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+			
+			@Override
+			public Entry next() {
+				return new Entry() {
+					public IndexMapEntry<VALUE> entry = iter.next();
+					
+					@Override
+					public IKey<?> getKey() {
+						return gen.getKey(entry.getIndex());
+					}
+					
+					@Override
+					public Object getValue() {
+						return entry.getValue();
+					}
+				};
+			}
+		};
 	}
 	
 	@Override

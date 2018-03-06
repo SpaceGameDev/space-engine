@@ -1,10 +1,10 @@
-package space.util.keygen.impl;
+package space.util.key.impl;
 
 import space.util.baseobject.ToString;
 import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.IFreeableStorage;
-import space.util.keygen.IKey;
+import space.util.key.IKey;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 

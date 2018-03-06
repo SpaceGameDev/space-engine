@@ -78,7 +78,7 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 	@Override
 	public CharSequence2D rebuild0() {
 		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
-		for (IndexMultiMapEntry<MonofontGuiElement> entry : table.tableIterator()) {
+		for (IndexMultiMapEntry<MonofontGuiElement> entry : table.table()) {
 			MonofontGuiElement value = entry.getValue();
 			charTable.put(entry.getIndex(), value != null ? value.buildSequence2D() : null);
 		}
