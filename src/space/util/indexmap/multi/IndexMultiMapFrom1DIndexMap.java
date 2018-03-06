@@ -1,8 +1,8 @@
 package space.util.indexmap.multi;
 
+import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -135,74 +135,22 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	public Collection<IndexMultiMapEntry<VALUE>> tableInternal() {
-		return new Collection<>() {
-			Collection<IndexMapEntry<VALUE>> coll = indexMap.table();
-			
+		return new ConvertingCollection<>(indexMap.table(), entry -> new IndexMultiMapEntry<VALUE>() {
 			@Override
-			public int size() {
-				return coll.size();
+			public int[] getIndex() {
+				return new int[] {entry.getIndex()};
 			}
 			
 			@Override
-			public boolean isEmpty() {
-				return coll.isEmpty();
+			public VALUE getValue() {
+				return entry.getValue();
 			}
-
-//			@Override
-//			public boolean contains(Object o) {
-//				return coll.contains(o);
-//			}
-//
-//			@Override
-//			public Iterator<IndexMultiMapEntry<VALUE>> iterator() {
-//				return null;
-//			}
-//
-//			@Override
-//			public Object[] toArray() {
-//				return new Object[0];
-//			}
-//
-//			@Override
-//			public <T> T[] toArray(T[] a) {
-//				return null;
-//			}
-//
-//			@Override
-//			public boolean add(IndexMultiMapEntry<VALUE> valueIndexMultiMapEntry) {
-//				return false;
-//			}
-//
-//			@Override
-//			public boolean remove(Object o) {
-//				return false;
-//			}
-//
-//			@Override
-//			public boolean containsAll(Collection<?> c) {
-//				return false;
-//			}
-//
-//			@Override
-//			public boolean addAll(Collection<? extends IndexMultiMapEntry<VALUE>> c) {
-//				return false;
-//			}
-//
-//			@Override
-//			public boolean removeAll(Collection<?> c) {
-//				return false;
-//			}
-//
-//			@Override
-//			public boolean retainAll(Collection<?> c) {
-//				return false;
-//			}
-//
-//			@Override
-//			public void clear() {
-//
-//			}
-		};
+			
+			@Override
+			public void setValue(VALUE v) {
+				entry.setValue(v);
+			}
+		});
 	}
 	
 	protected class IndexMultiMapFrom1DIndexMapEntry implements IndexMultiMapEntry<VALUE> {

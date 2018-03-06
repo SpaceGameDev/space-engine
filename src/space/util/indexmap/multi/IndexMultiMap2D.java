@@ -257,7 +257,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		
 		@Override
 		public Iterator<IndexMultiMapEntry<VALUE>> iterator() {
-			return new Iter();
+			return new EntryIterator();
 		}
 		
 		@Override
@@ -269,7 +269,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		}
 	}
 	
-	public class Iter implements Iterator<IndexMultiMapEntry<VALUE>> {
+	public class EntryIterator implements Iterator<IndexMultiMapEntry<VALUE>> {
 		
 		public boolean hasNext = true;
 		
@@ -279,7 +279,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		public int nh;
 		public int nx = -1;
 		
-		public Iter() {
+		public EntryIterator() {
 			calcNextPos();
 		}
 		
