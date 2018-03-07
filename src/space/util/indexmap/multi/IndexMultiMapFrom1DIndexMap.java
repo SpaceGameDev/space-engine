@@ -3,7 +3,9 @@ package space.util.indexmap.multi;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
+import space.util.indexmap.IndexMap.IndexMapEntry;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,7 +39,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		this.relativePos = relativePos;
 	}
 	
-	//index
+	//basic
 	public int getListIndex(int[] pos) {
 		return isListIndexValid(pos) ? getSafeO(pos, relativePos.length, 0) : -1;
 	}
@@ -55,17 +57,17 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		return true;
 	}
 	
-	//expandable
+	public void checkModificationAllowed() {
+		if (!modifiable)
+			throw new UnsupportedOperationException("not modifiable!");
+	}
+	
+	//size
 	@Override
 	public boolean isExpandable(int[] pos) {
 		return modifiable && isListIndexValid(pos);
 	}
 	
-	//size
-	
-	/**
-	 * size at this coordinate
-	 */
 	@Override
 	public int size(int[] pos) {
 		return isListIndexValid(pos) ? indexMap.size() : 1;
@@ -81,40 +83,44 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	@Override
-	public VALUE put(int pos[], VALUE v) {
+	public IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos) {
 		int i = getListIndex(pos);
 		if (i == -1)
 			return null;
-		if (!modifiable)
-			throw new UnsupportedOperationException("not modifiable!");
+		return new Entry<>(indexMap.getEntry(i));
+	}
+	
+	@Override
+	public VALUE put(int pos[], VALUE v) {
+		checkModificationAllowed();
+		int i = getListIndex(pos);
+		if (i == -1)
+			return null;
 		return indexMap.put(i, v);
 	}
 	
 	@Override
 	public VALUE remove(int[] pos) {
+		checkModificationAllowed();
 		int i = getListIndex(pos);
 		if (i == -1)
 			return null;
-		if (!modifiable)
-			throw new UnsupportedOperationException("not modifiable!");
 		return indexMap.remove(i);
 	}
 	
 	//clear
 	@Override
 	public void clear() {
-		if (!modifiable)
-			throw new UnsupportedOperationException("not modifiable!");
+		checkModificationAllowed();
 		indexMap.clear();
 	}
 	
 	@Override
 	public void clear(int[] pos) {
+		checkModificationAllowed();
 		int i = getListIndex(pos);
 		if (i == -1)
 			return;
-		if (!modifiable)
-			throw new UnsupportedOperationException("not modifiable!");
 		indexMap.clear();
 	}
 	
@@ -126,66 +132,47 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	
 	@Override
 	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
-		if (isListIndexValid(pos)) {
-			if (pos.length == relativePos.length)
-				return tableInternal();
-			return Collections.singleton(new IndexMultiMapFrom1DIndexMapEntry(pos[relativePos.length]));
+		if (pos.length <= relativePos.length) {
+			for (int i = 0; i < pos.length; i++)
+				if (pos[i] != relativePos[i])
+					return Collections.emptySet();
+			return tableComplete();
+		} else {
+			for (int i = 0; i < pos.length; i++)
+				if (pos[i] != getSafeO(relativePos, i, 0))
+					return Collections.emptyList();
+			return Collections.singleton(new Entry<>(indexMap.getEntry(pos[relativePos.length])));
 		}
-		return Collections.emptyList();
 	}
 	
-	public Collection<IndexMultiMapEntry<VALUE>> tableInternal() {
-		return new ConvertingCollection<>(indexMap.table(), entry -> new IndexMultiMapEntry<VALUE>() {
-			@Override
-			public int[] getIndex() {
-				return new int[] {entry.getIndex()};
-			}
-			
-			@Override
-			public VALUE getValue() {
-				return entry.getValue();
-			}
-			
-			@Override
-			public void setValue(VALUE v) {
-				entry.setValue(v);
-			}
-		});
+	public Collection<IndexMultiMapEntry<VALUE>> tableComplete() {
+		return new ConvertingCollection<>(indexMap.table(), Entry::new);
 	}
 	
-	protected class IndexMultiMapFrom1DIndexMapEntry implements IndexMultiMapEntry<VALUE> {
+	protected class Entry<V> implements IndexMultiMapEntry<V> {
 		
-		int index;
-		int[] pos;
-		VALUE v;
+		private final IndexMapEntry<V> entry;
 		
-		public IndexMultiMapFrom1DIndexMapEntry(int index) {
-			this.index = index;
-			this.pos = calcPos(index);
-			this.v = indexMap.get(index);
+		public Entry(IndexMapEntry<V> entry) {
+			this.entry = entry;
 		}
 		
 		@Override
 		public int[] getIndex() {
-			return pos;
+			int[] array = Arrays.copyOf(relativePos, relativePos.length + 1);
+			array[relativePos.length] = entry.getIndex();
+			return array;
 		}
 		
 		@Override
-		public VALUE getValue() {
-			return v;
+		public V getValue() {
+			return entry.getValue();
 		}
 		
 		@Override
-		public void setValue(VALUE v) {
-			this.v = v;
-			indexMap.put(index, v);
+		public void setValue(V v) {
+			checkModificationAllowed();
+			entry.setValue(v);
 		}
-	}
-	
-	public int[] calcPos(int index) {
-		int[] pos = new int[relativePos.length + 1];
-		System.arraycopy(relativePos, 0, pos, 0, relativePos.length);
-		pos[relativePos.length] = index;
-		return pos;
 	}
 }

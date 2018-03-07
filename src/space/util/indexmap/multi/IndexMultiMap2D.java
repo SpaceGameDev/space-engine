@@ -153,6 +153,11 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 	}
 	
 	@Override
+	public IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos) {
+		return new Entry(pos);
+	}
+	
+	@Override
 	public VALUE remove(int[] pos) {
 		int h = 0 < pos.length ? pos[0] : 0;
 		if (h >= height)
@@ -269,18 +274,44 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		}
 	}
 	
+	public class Entry implements IndexMultiMapEntry<VALUE> {
+		
+		public int[] pos;
+		
+		public Entry(int[] pos) {
+			this.pos = pos;
+		}
+		
+		@Override
+		public int[] getIndex() {
+			return pos;
+		}
+		
+		@Override
+		public VALUE getValue() {
+			return get(pos);
+		}
+		
+		@Override
+		public void setValue(VALUE v) {
+			put(pos, v);
+		}
+	}
+	
 	public class EntryIterator implements Iterator<IndexMultiMapEntry<VALUE>> {
 		
 		public boolean hasNext = true;
 		
+		//current
 		public int h;
 		public int x;
 		
+		//next
 		public int nh;
 		public int nx = -1;
 		
 		public EntryIterator() {
-			calcNextPos();
+			calcNext();
 		}
 		
 		@Override
@@ -294,44 +325,20 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 				throw new NoSuchElementException();
 			
 			calcNext();
-			return new IndexMultiMapEntry<>() {
-				int[] pos = new int[] {h, x};
-				VALUE v = buffer[h][x];
-				
-				@Override
-				public int[] getIndex() {
-					return pos;
-				}
-				
-				@Override
-				public VALUE getValue() {
-					return v;
-				}
-				
-				@Override
-				public void setValue(VALUE v) {
-					this.v = v;
-					buffer[h][x] = v;
-				}
-			};
+			return new Entry(new int[] {h, x});
 		}
 		
 		public void calcNext() {
-			calcNextShift();
-			calcNextPos();
-		}
-		
-		public void calcNextShift() {
+			//shift over
 			h = nh;
-			x = nx;
-		}
-		
-		public void calcNextPos() {
-			nx++;
+			x = nx++;
+			
+			//nextLine
 			while (nx >= length[nh]) {
 				nh++;
 				nx = 0;
 				
+				//endOfLine
 				if (nh >= height) {
 					hasNext = false;
 					break;

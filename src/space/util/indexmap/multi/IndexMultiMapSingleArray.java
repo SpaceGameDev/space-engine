@@ -4,6 +4,7 @@ import space.util.delegate.impl.ArrayIterable;
 import space.util.delegate.iterator.Iteratorable;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * works like a {@link IndexMultiMap}, but internally compresses down the information into a 1D-array similarly to what you see with Textures
@@ -109,12 +110,12 @@ public class IndexMultiMapSingleArray<VALUE> implements IndexMultiMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> values() {
-		return new ArrayIterable.ArrayIterator<>(array);
+	public Collection<VALUE> values() {
+		return new ArrayIterable<>(array);
 	}
 	
 	@Override
-	public Iteratorable<IndexMultiMapEntry<VALUE>> table(int[] pos) {
+	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
 		return new Iteratorable<IndexMultiMapEntry<VALUE>>() {
 			
 			int index = 0;

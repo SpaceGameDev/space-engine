@@ -30,6 +30,8 @@ public interface IndexMap<VALUE> {
 	
 	VALUE get(int index);
 	
+	IndexMapEntry<VALUE> getEntry(int index);
+	
 	VALUE put(int index, VALUE v);
 	
 	int indexOf(VALUE v);

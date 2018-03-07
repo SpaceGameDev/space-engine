@@ -69,6 +69,11 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
+	public IndexMapEntry<VALUE> getEntry(int index) {
+		return new Entry(index);
+	}
+	
+	@Override
 	public VALUE put(int index, VALUE v) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
@@ -263,24 +268,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 					
 					@Override
 					public IndexMapEntry<VALUE> next() {
-						return new IndexMapEntry<>() {
-							int index2 = index++;
-							
-							@Override
-							public int getIndex() {
-								return index2;
-							}
-							
-							@Override
-							public VALUE getValue() {
-								return array[index2];
-							}
-							
-							@Override
-							public void setValue(VALUE v) {
-								array[index2] = v;
-							}
-						};
+						return new Entry(index++);
 					}
 					
 					@Override
@@ -311,5 +299,29 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	@Override
 	public String toString() {
 		return toString0();
+	}
+	
+	private class Entry implements IndexMapEntry<VALUE> {
+		
+		int index;
+		
+		public Entry(int index) {
+			this.index = index;
+		}
+		
+		@Override
+		public int getIndex() {
+			return index;
+		}
+		
+		@Override
+		public VALUE getValue() {
+			return get(index);
+		}
+		
+		@Override
+		public void setValue(VALUE v) {
+			put(index, v);
+		}
 	}
 }

@@ -75,6 +75,8 @@ public interface IndexMultiMap<VALUE> {
 	
 	VALUE get(int[] pos);
 	
+	IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos);
+	
 	VALUE put(int[] pos, VALUE v);
 	
 	VALUE remove(int[] pos);
