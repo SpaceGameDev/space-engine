@@ -10,6 +10,7 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.ref.Reference;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -152,7 +153,7 @@ public class ReferenceIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> values() {
+	public Collection<VALUE> values() {
 		return new ReferenceIterator<>(indexMap.values());
 	}
 	

@@ -1,8 +1,8 @@
 package space.util.key.map;
 
-import space.util.delegate.iterator.Iteratorable;
 import space.util.key.IKey;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -72,14 +72,14 @@ public interface IKeyMap<VALUE> {
 	/**
 	 * creates a {@link java.util.Iterator} over all VALUEs
 	 */
-	Iteratorable<VALUE> iterator();
+	Collection<VALUE> iterator();
 	
 	/**
 	 * creates a {@link java.util.Iterator} over all index / VALUE pairs
 	 */
-	Iteratorable<? extends Entry> tableIterator();
+	Collection<? extends KeyMapEntry> tableIterator();
 	
-	interface Entry {
+	interface KeyMapEntry {
 		
 		IKey<?> getKey();
 		

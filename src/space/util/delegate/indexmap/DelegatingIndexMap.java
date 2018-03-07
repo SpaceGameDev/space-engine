@@ -2,18 +2,16 @@ package space.util.delegate.indexmap;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
-import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * A {@link IndexMap} delegating all calls to it's Field {@link DelegatingIndexMap#indexMap}, provided by Constructor or set directly.
  */
+@SuppressWarnings("unused")
 public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	static {
@@ -66,6 +64,11 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE get(int index) {
 		return indexMap.get(index);
+	}
+	
+	@Override
+	public IndexMapEntry<VALUE> getEntry(int index) {
+		return indexMap.getEntry(index);
 	}
 	
 	@Override
@@ -129,23 +132,13 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> values() {
+	public Collection<VALUE> values() {
 		return indexMap.values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> table() {
+	public Collection<IndexMapEntry<VALUE>> table() {
 		return indexMap.table();
-	}
-	
-	@Override
-	public void forEach(Consumer<? super VALUE> action) {
-		indexMap.forEach(action);
-	}
-	
-	@Override
-	public Spliterator<VALUE> spliterator() {
-		return indexMap.spliterator();
 	}
 	
 	//object
@@ -203,14 +196,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	protected boolean superremove(int index, VALUE v) {
 		return IndexMap.super.remove(index, v);
-	}
-	
-	protected void superforEach(Consumer<? super VALUE> action) {
-		IndexMap.super.forEach(action);
-	}
-	
-	protected Spliterator<VALUE> superspliterator() {
-		return IndexMap.super.spliterator();
 	}
 	
 	@Override

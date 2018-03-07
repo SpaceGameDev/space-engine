@@ -11,10 +11,10 @@ import space.util.key.map.KeyMapImpl;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class AttributeListChangeEventHelper implements Consumer<ChangeEvent> {
+public class AttributeListChangeEventHelper implements Consumer<ChangeEvent<?>> {
 	
 	public final AtomicInteger callbackGen = new AtomicInteger();
-	public final IndexMap<Consumer<ChangeEvent>> callbackList = new IndexMapArray<>();
+	public final IndexMap<Consumer<ChangeEvent<?>>> callbackList = new IndexMapArray<>();
 	public final KeyMapImpl<IntList> keysToCallback = new KeyMapImpl<>();
 	
 	//put
@@ -22,7 +22,7 @@ public class AttributeListChangeEventHelper implements Consumer<ChangeEvent> {
 		put(event -> consumer.accept(event.getEntry(key)), key);
 	}
 	
-	public void put(Consumer<ChangeEvent> consumer, IKey<?>... key) {
+	public void put(Consumer<ChangeEvent<?>> consumer, IKey<?>... key) {
 		int cbIndex = callbackGen.getAndIncrement();
 		callbackList.put(cbIndex, consumer);
 		for (IKey<?> k : key)
@@ -31,9 +31,9 @@ public class AttributeListChangeEventHelper implements Consumer<ChangeEvent> {
 	
 	//accept
 	@Override
-	public void accept(ChangeEvent changeEvent) {
+	public void accept(ChangeEvent<?> changeEvent) {
 		IndexMap<Boolean> result = new IndexMapArray<>();
-		changeEvent.getMod().tableIterator().forEach(entry -> {
+		changeEvent.getMod().table().forEach(entry -> {
 			if (entry.isUnchanged())
 				return;
 			IntList intList = keysToCallback.get(entry.getKey());

@@ -21,6 +21,10 @@ public class ConvertingCollection<F, T> implements Collection<T> {
 		this(coll, remap, null, null);
 	}
 	
+	public ConvertingCollection(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+		this(coll, remap, reverse, true);
+	}
+	
 	public ConvertingCollection(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse, boolean allowAdd) {
 		this(coll, remap, reverse, allowAdd ? t -> coll.add(reverse.apply(t)) : null);
 	}

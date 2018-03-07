@@ -2,7 +2,6 @@ package space.util.delegate.indexmap;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
-import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -66,6 +65,11 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public IndexMapEntry<VALUE> getEntry(int index) {
+		return indexMap.get().getEntry(index);
+	}
+	
+	@Override
 	public VALUE put(int index, VALUE v) {
 		return indexMap.get().put(index, v);
 	}
@@ -126,12 +130,12 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Iteratorable<VALUE> values() {
+	public Collection<VALUE> values() {
 		return indexMap.get().values();
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> table() {
+	public Collection<IndexMapEntry<VALUE>> table() {
 		return indexMap.get().table();
 	}
 	

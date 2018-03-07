@@ -1,10 +1,10 @@
 package space.util.key.attribute;
 
 import space.util.concurrent.event.IEvent;
-import space.util.delegate.iterator.Iteratorable;
 import space.util.key.IKey;
 import space.util.key.IKeyGenerator;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -89,12 +89,12 @@ public interface IAttributeListCreator<TYPE> extends IKeyGenerator {
 		/**
 		 * gets an {@link java.util.Iterator} over all values
 		 */
-		Iteratorable<?> iterator();
+		Collection<?> values();
 		
 		/**
 		 * gets an {@link java.util.Iterator} over all index / value pairs
 		 */
-		Iteratorable<? extends AbstractEntry<?>> tableIterator();
+		Collection<? extends AbstractEntry<?>> table();
 	}
 	
 	interface AbstractEntry<V> {
@@ -150,7 +150,7 @@ public interface IAttributeListCreator<TYPE> extends IKeyGenerator {
 		void apply(IAttributeListModification<TYPE> mod);
 		
 		@Override
-		Iteratorable<? extends ListEntry<?>> tableIterator();
+		Collection<? extends ListEntry<?>> table();
 	}
 	
 	interface ListEntry<V> extends AbstractEntry<V> {
@@ -233,7 +233,7 @@ public interface IAttributeListCreator<TYPE> extends IKeyGenerator {
 		IAttributeList<TYPE> createNewList();
 		
 		@Override
-		Iteratorable<? extends ListModificationEntry<?>> tableIterator();
+		Collection<? extends ListModificationEntry<?>> table();
 	}
 	
 	interface ListModificationEntry<V> extends AbstractEntry<V> {
@@ -262,12 +262,12 @@ public interface IAttributeListCreator<TYPE> extends IKeyGenerator {
 	 * It is used in the {@link IEvent} gotten from {@link IAttributeList#getChangeEvent()}.
 	 * Use {@link ChangeEvent#getEntry(IKey)} to get the Entry of one {@link IKey}.
 	 */
-	interface ChangeEvent {
+	interface ChangeEvent<TYPE> {
 		
 		//get lists
-		IAttributeList getOldList();
+		IAttributeList<TYPE> getOldList();
 		
-		IAttributeListModification getMod();
+		IAttributeListModification<TYPE> getMod();
 		
 		<V> ChangeEventEntry<V> getEntry(IKey<V> key);
 	}

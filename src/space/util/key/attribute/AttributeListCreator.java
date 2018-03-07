@@ -4,9 +4,8 @@ import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.concurrent.event.IEvent;
 import space.util.concurrent.event.SimpleEvent;
-import space.util.delegate.iterator.Iteratorable;
+import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArrayWithDefault;
 import space.util.key.IKey;
 import space.util.key.IKeyGenerator;
@@ -15,6 +14,7 @@ import space.util.key.impl.DisposableKeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -64,6 +64,11 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 	@Override
 	public IKey<?> getKey(int id) {
 		return gen.getKey(id);
+	}
+	
+	@Override
+	public Collection<IKey<?>> getKeys() {
+		return gen.getKeys();
 	}
 	
 	@Override
@@ -127,7 +132,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		}
 		
 		@Override
-		public Iteratorable<Object> iterator() {
+		public Collection<Object> values() {
 			return indexMap.values();
 		}
 		
@@ -145,25 +150,11 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 			return toString0();
 		}
 		
-		protected abstract class AbstractEntryIteratorImpl<T> implements Iteratorable<T> {
-			
-			protected Iteratorable<IndexMapEntry<Object>> iter = indexMap.table();
-			
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			protected IKey<?> nextKey() {
-				return gen.getKey(iter.next().getIndex());
-			}
-		}
-		
-		protected abstract class AbstractEntryImpl<V> implements AbstractEntry<V> {
+		protected abstract class AbstractEntry<V> implements IAttributeListCreator.AbstractEntry<V> {
 			
 			protected IKey<V> key;
 			
-			public AbstractEntryImpl(IKey<V> key) {
+			public AbstractEntry(IKey<V> key) {
 				this.key = key;
 			}
 			
@@ -221,7 +212,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		public synchronized void apply(IAttributeListModification<TYPE> mod2) {
 			//same check
 			AttributeListModification mod = AttributeListCreator.this.createModify();
-			mod2.tableIterator().forEach(entry -> {
+			mod2.table().forEach(entry -> {
 				IKey<?> key = entry.getKey();
 				Object value = entry.getValueDirect();
 				mod.putDirect(key, Objects.equals(value, this.getDirect(key)) ? UNCHANGED : value);
@@ -232,7 +223,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 			changeEvent.run(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
 			
 			//apply values
-			mod.tableIterator().forEach(entry -> {
+			mod.table().forEach(entry -> {
 				Object value = entry.getValueDirect();
 				if (value != UNCHANGED)
 					this.indexMap.put(entry.getKey().getID(), value);
@@ -240,18 +231,13 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		}
 		
 		@Override
-		public Iteratorable<? extends ListEntry<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<ListEntry<?>>() {
-				@Override
-				public ListEntry<?> next() {
-					return new ListEntryImpl<>(nextKey());
-				}
-			};
+		public Collection<? extends IAttributeListCreator.ListEntry<?>> table() {
+			return new ConvertingCollection<>(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
 		
-		protected class ListEntryImpl<V> extends AbstractEntryImpl<V> implements ListEntry<V> {
+		protected class ListEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListEntry<V> {
 			
-			public ListEntryImpl(IKey<V> key) {
+			public ListEntry(IKey<V> key) {
 				super(key);
 			}
 			
@@ -362,7 +348,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		@Override
 		public IAttributeList<TYPE> createNewList() {
 			AttributeList list = new AttributeList();
-			this.tableIterator().forEach(entry -> {
+			this.table().forEach(entry -> {
 				Object value = entry.getValueDirect();
 				if (value != UNCHANGED)
 					list.indexMap.put(entry.getKey().getID(), value);
@@ -371,18 +357,13 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		}
 		
 		@Override
-		public Iteratorable<? extends ListModificationEntry<?>> tableIterator() {
-			return new AbstractEntryIteratorImpl<ListModificationEntry<?>>() {
-				@Override
-				public ListModificationEntry<?> next() {
-					return new ListModificationEntryImpl<>(nextKey());
-				}
-			};
+		public Collection<? extends IAttributeListCreator.ListModificationEntry<?>> table() {
+			return new ConvertingCollection<>(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
 		
-		protected class ListModificationEntryImpl<V> extends AbstractEntryImpl<V> implements ListModificationEntry<V> {
+		protected class ListModificationEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListModificationEntry<V> {
 			
-			public ListModificationEntryImpl(IKey<V> key) {
+			public ListModificationEntry(IKey<V> key) {
 				super(key);
 			}
 			
@@ -408,7 +389,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		}
 	}
 	
-	class AttributeListChangeEvent implements ChangeEvent {
+	class AttributeListChangeEvent implements ChangeEvent<TYPE> {
 		
 		public final IAttributeList<TYPE> oldList;
 		public final IAttributeListModification<TYPE> mod;
@@ -419,12 +400,12 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		}
 		
 		@Override
-		public IAttributeList getOldList() {
+		public IAttributeList<TYPE> getOldList() {
 			return oldList;
 		}
 		
 		@Override
-		public IAttributeListModification getMod() {
+		public IAttributeListModification<TYPE> getMod() {
 			return mod;
 		}
 		
