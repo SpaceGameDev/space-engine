@@ -5,7 +5,6 @@ import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap2D;
 import space.util.indexmap.multi.IndexMultiMapFrom1DIndexMap;
-import space.util.indexmap.multi.IndexMultiMapLayered.IndexMultiMapLayeredImpl;
 import space.util.string.CharSequence2D;
 import space.util.string.String2D;
 
@@ -342,7 +341,7 @@ public interface ToStringHelper<T> {
 			case 2:
 				return new IndexMultiMap2D<>();
 			default:
-				return new IndexMultiMapLayeredImpl<>();
+				throw new UnsupportedOperationException("Dimension " + dimensions + " not supported!");
 		}
 	}
 }
