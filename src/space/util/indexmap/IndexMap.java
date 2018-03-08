@@ -48,7 +48,11 @@ public interface IndexMap<VALUE> {
 	}
 	
 	default void putAll(IndexMap<VALUE> indexMap) {
-		indexMap.table().forEach(entry -> put(entry.getIndex(), entry.getValue()));
+		indexMap.table().forEach(entry -> {
+			VALUE value = entry.getValue();
+			if (value != null)
+				put(entry.getIndex(), value);
+		});
 	}
 	
 	default void putAllIfAbsent(IndexMap<VALUE> indexMap) {
@@ -115,6 +119,7 @@ public interface IndexMap<VALUE> {
 	
 	Collection<IndexMapEntry<VALUE>> table();
 	
+	//entry
 	interface IndexMapEntry<VALUE> {
 		
 		int getIndex();
@@ -122,5 +127,9 @@ public interface IndexMap<VALUE> {
 		VALUE getValue();
 		
 		void setValue(VALUE v);
+		
+		default void remove() {
+			setValue(null);
+		}
 	}
 }

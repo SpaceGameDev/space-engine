@@ -1,13 +1,10 @@
 package space.util.delegate.indexmap;
 
 import space.util.baseobject.Copyable;
-import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -125,23 +122,13 @@ public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public synchronized Iteratorable<VALUE> values() {
+	public synchronized Collection<VALUE> values() {
 		return super.values();
 	}
 	
 	@Override
-	public synchronized Iteratorable<IndexMapEntry<VALUE>> table() {
+	public synchronized Collection<IndexMapEntry<VALUE>> table() {
 		return super.table();
-	}
-	
-	@Override
-	public synchronized void forEach(Consumer<? super VALUE> action) {
-		super.forEach(action);
-	}
-	
-	@Override
-	public synchronized Spliterator<VALUE> spliterator() {
-		return super.spliterator();
 	}
 	
 	//Object
