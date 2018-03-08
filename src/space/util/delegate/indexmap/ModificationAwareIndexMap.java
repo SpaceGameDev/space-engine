@@ -1,8 +1,7 @@
 package space.util.delegate.indexmap;
 
 import space.util.baseobject.Copyable;
-import space.util.delegate.iterator.Iteratorable;
-import space.util.delegate.iterator.ModificationAwareIterator;
+import space.util.delegate.collection.ModificationAwareCollection;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -113,20 +112,13 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public Iteratorable<VALUE> values() {
-		return new ModificationAwareIterator<>(super.values(), onModification);
+	public Collection<VALUE> values() {
+		return new ModificationAwareCollection<>(super.values(), onModification);
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> table() {
-		return new ModificationAwareIterator<IndexMapEntry<VALUE>>(super.table(), onModification) {
-			
-			@Override
-			public void remove() {
-				super.remove();
-				onModification.run();
-			}
-		};
+	public Collection<IndexMapEntry<VALUE>> table() {
+		return new ModificationAwareCollection<>(super.table(), onModification);
 	}
 	
 	@Override

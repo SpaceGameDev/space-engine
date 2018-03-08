@@ -20,8 +20,8 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default boolean contains(VALUE index) {
-		return indexOf(index) != -1;
+	default boolean contains(VALUE v) {
+		return indexOf(v) != -1;
 	}
 	
 	default void add(VALUE v) {
@@ -48,15 +48,16 @@ public interface IndexMap<VALUE> {
 	}
 	
 	default void putAll(IndexMap<VALUE> indexMap) {
-		indexMap.table().forEach(entry -> {
+		for (IndexMapEntry<VALUE> entry : indexMap.table()) {
 			VALUE value = entry.getValue();
 			if (value != null)
 				put(entry.getIndex(), value);
-		});
+		}
 	}
 	
 	default void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-		indexMap.table().forEach(entry -> putIfAbsent(entry.getIndex(), entry::getValue));
+		for (IndexMapEntry<VALUE> entry : indexMap.table())
+			putIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	
 	//advanced access
