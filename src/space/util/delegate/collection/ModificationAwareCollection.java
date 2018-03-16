@@ -1,6 +1,7 @@
 package space.util.delegate.collection;
 
 import space.util.baseobject.Copyable;
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -8,6 +9,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -15,23 +17,50 @@ import java.util.stream.Stream;
  * The {@link ModificationAwareCollection} will call the {@link ModificationAwareCollection#onModification} {@link Runnable} when the {@link Collection} is modified.
  */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
+public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	
 	static {
 		//noinspection unchecked
 		Copyable.manualEntry(ModificationAwareCollection.class, d -> new ModificationAwareCollection(Copyable.copy(d.coll), d.onModification));
 	}
 	
+	public Collection<E> coll;
 	public Runnable onModification;
 	
 	public ModificationAwareCollection(Collection<E> coll, Runnable onModification) {
-		super(coll);
+		this.coll = coll;
 		this.onModification = onModification;
+	}
+	
+	@Override
+	public int size() {
+		return coll.size();
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return coll.isEmpty();
+	}
+	
+	@Override
+	public boolean contains(Object o) {
+		return coll.contains(o);
 	}
 	
 	@Override
 	public Iterator<E> iterator() {
 		return new ModificationAwareIterator<>(coll.iterator(), onModification);
+	}
+	
+	@Override
+	public Object[] toArray() {
+		return coll.toArray();
+	}
+	
+	@Override
+	@SuppressWarnings("SuspiciousToArrayCall")
+	public <T> T[] toArray(T[] a) {
+		return coll.toArray(a);
 	}
 	
 	@Override
@@ -51,6 +80,11 @@ public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
 	}
 	
 	@Override
+	public boolean containsAll(Collection<?> c) {
+		return coll.containsAll(c);
+	}
+	
+	@Override
 	public boolean addAll(Collection<? extends E> c) {
 		boolean ret = coll.addAll(c);
 		if (ret)
@@ -60,8 +94,18 @@ public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
 	
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		onModification.run();
-		return coll.removeAll(c);
+		boolean ret = coll.removeAll(c);
+		if (ret)
+			onModification.run();
+		return ret;
+	}
+	
+	@Override
+	public boolean removeIf(Predicate<? super E> filter) {
+		boolean ret = coll.removeIf(filter);
+		if (ret)
+			onModification.run();
+		return ret;
 	}
 	
 	@Override
@@ -75,31 +119,37 @@ public class ModificationAwareCollection<E> extends DelegatingCollection<E> {
 	@Override
 	public void clear() {
 		coll.clear();
-		if (coll.size() != 0)
-			onModification.run();
+		onModification.run();
 	}
 	
 	@Override
-	public boolean removeIf(Predicate<? super E> filter) {
-		boolean ret = super.removeIf(filter);
-		if (ret)
-			onModification.run();
-		return ret;
+	public boolean equals(Object o) {
+		return coll.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return coll.hashCode();
 	}
 	
 	@Override
 	public Spliterator<E> spliterator() {
-		throw new UnsupportedOperationException("Not implemented");
+		return coll.spliterator();
 	}
 	
 	@Override
 	public Stream<E> stream() {
-		throw new UnsupportedOperationException("Not implemented");
+		return coll.stream();
 	}
 	
 	@Override
 	public Stream<E> parallelStream() {
-		throw new UnsupportedOperationException("Not implemented");
+		return coll.parallelStream();
+	}
+	
+	@Override
+	public void forEach(Consumer<? super E> action) {
+		coll.forEach(action);
 	}
 	
 	@Override

@@ -30,7 +30,7 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 	
 	@Override
 	public Iterator<String> iterator() {
-		return new Iteratorable<String>() {
+		return new Iteratorable<>() {
 			
 			public int index = 0;
 			

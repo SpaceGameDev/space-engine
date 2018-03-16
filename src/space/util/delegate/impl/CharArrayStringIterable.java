@@ -30,7 +30,7 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 	
 	@Override
 	public Iterator<String> iterator() {
-		return new Iteratorable<String>() {
+		return new Iteratorable<>() {
 			
 			public int index = 0;
 			

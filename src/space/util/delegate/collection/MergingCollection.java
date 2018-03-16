@@ -2,7 +2,7 @@ package space.util.delegate.collection;
 
 import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
-import space.util.delegate.impl.ArrayIterable;
+import space.util.delegate.impl.ArrayCollection;
 import space.util.delegate.iterator.MergingIterator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -29,7 +29,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@SafeVarargs
 	public MergingCollection(Collection<E>... collections) {
-		this(new ArrayList<>(new ArrayIterable<>(collections)));
+		this(new ArrayList<>(new ArrayCollection<>(collections)));
 	}
 	
 	public MergingCollection(Collection<Collection<E>> collections) {
@@ -38,7 +38,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@SafeVarargs
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayIterable<>(collections)));
+		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {

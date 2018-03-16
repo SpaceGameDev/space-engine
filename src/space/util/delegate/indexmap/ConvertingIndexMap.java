@@ -13,6 +13,10 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
 	
 	public IndexMap<F> indexMap;
 	
+	public ConvertingIndexMap(IndexMap<F> indexMap) {
+		this.indexMap = indexMap;
+	}
+	
 	public static class UnoDirectionalUnmodifiable<F, T> extends ConvertingIndexMap<F, T> {
 		
 		public Function<F, T> remap;

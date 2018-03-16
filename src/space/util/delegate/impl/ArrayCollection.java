@@ -8,19 +8,22 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.Arrays;
 import java.util.Collection;
 
-public class ArrayIterable<E> implements ToString, Collection<E> {
+/**
+ * Turns an Array of Type E into a Collection
+ */
+public class ArrayCollection<E> implements ToString, Collection<E> {
 	
 	public E[] array;
 	
-	public ArrayIterable() {
+	public ArrayCollection() {
 		
 	}
 	
-	public ArrayIterable(E[] array) {
+	public ArrayCollection(E[] array) {
 		this.array = array;
 	}
 	
-	public ArrayIterable(ArrayIterable<E> array) {
+	public ArrayCollection(ArrayCollection<E> array) {
 		this.array = array.array;
 	}
 	

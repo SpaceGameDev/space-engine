@@ -131,27 +131,6 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 		return coll.hashCode();
 	}
 	
-	//super
-	protected boolean removeIfSuper(Predicate<? super E> filter) {
-		return Collection.super.removeIf(filter);
-	}
-	
-	protected Spliterator<E> spliteratorSuper() {
-		return Collection.super.spliterator();
-	}
-	
-	protected Stream<E> streamSuper() {
-		return Collection.super.stream();
-	}
-	
-	protected Stream<E> parallelStreamSuper() {
-		return Collection.super.parallelStream();
-	}
-	
-	protected void forEachSuper(Consumer<? super E> action) {
-		Collection.super.forEach(action);
-	}
-	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("delegate", coll);
