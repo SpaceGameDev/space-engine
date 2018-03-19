@@ -82,17 +82,6 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 	}
 	
 	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return map.equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return map.hashCode();
-	}
-	
-	@Override
 	public V getOrDefault(Object key, V defaultValue) {
 		return map.getOrDefault(key, defaultValue);
 	}

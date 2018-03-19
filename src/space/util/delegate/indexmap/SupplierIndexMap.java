@@ -29,23 +29,18 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public boolean isEmpty() {
+		return indexMap.get().isEmpty();
+	}
+	
+	@Override
 	public boolean contains(int index) {
 		return indexMap.get().contains(index);
 	}
 	
 	@Override
-	public int indexOf(VALUE v) {
-		return indexMap.get().indexOf(v);
-	}
-	
-	@Override
-	public VALUE[] toArray() {
-		return indexMap.get().toArray();
-	}
-	
-	@Override
-	public VALUE[] toArray(VALUE[] array) {
-		return indexMap.get().toArray(array);
+	public boolean contains(VALUE v) {
+		return indexMap.get().contains(v);
 	}
 	
 	@Override
@@ -69,8 +64,23 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public int indexOf(VALUE v) {
+		return indexMap.get().indexOf(v);
+	}
+	
+	@Override
 	public VALUE remove(int index) {
 		return indexMap.get().remove(index);
+	}
+	
+	@Override
+	public VALUE[] toArray() {
+		return indexMap.get().toArray();
+	}
+	
+	@Override
+	public VALUE[] toArray(VALUE[] array) {
+		return indexMap.get().toArray(array);
 	}
 	
 	@Override
@@ -111,6 +121,11 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		return indexMap.get().replace(index, oldValue, newValue);
+	}
+	
+	@Override
+	public boolean remove(VALUE v) {
+		return indexMap.get().remove(v);
 	}
 	
 	@Override

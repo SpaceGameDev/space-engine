@@ -38,17 +38,6 @@ public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 		i.forEachRemaining(action);
 	}
 	
-	@Override
-	public int hashCode() {
-		return i.hashCode();
-	}
-	
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) {
-		return i.equals(obj);
-	}
-	
 	//super
 	protected void superremove() {
 		Iteratorable.super.remove();

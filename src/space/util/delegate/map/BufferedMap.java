@@ -104,16 +104,6 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	@Override
-	public synchronized boolean equals(Object o) {
-		return hasSink() ? super.equals(o) : buffer.equals(o);
-	}
-	
-	@Override
-	public synchronized int hashCode() {
-		return hasSink() ? super.hashCode() : buffer.hashCode();
-	}
-	
-	@Override
 	public synchronized V getOrDefault(Object key, V defaultValue) {
 		return hasSink() ? super.getOrDefault(key, defaultValue) : buffer.getOrDefault(key, defaultValue);
 	}

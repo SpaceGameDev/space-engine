@@ -64,16 +64,6 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
-	public boolean equals(Object o) {
-		return coll.equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return coll.hashCode();
-	}
-	
-	@Override
 	public Spliterator<E> spliterator() {
 		return coll.spliterator();
 	}

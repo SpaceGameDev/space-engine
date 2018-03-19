@@ -113,18 +113,6 @@ public class SupplierCollection<E> implements ToString, Collection<E> {
 		coll.get().forEach(action);
 	}
 	
-	//Object
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return coll.get().equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return coll.get().hashCode();
-	}
-	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("supplier", coll);

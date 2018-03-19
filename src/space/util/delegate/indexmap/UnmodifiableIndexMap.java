@@ -1,6 +1,7 @@
 package space.util.delegate.indexmap;
 
 import space.util.delegate.collection.ConvertingCollection;
+import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -22,12 +23,22 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
-		return new Entry(index);
+	public void add(VALUE v) {
+		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public void add(VALUE v) {
+	public IndexMapEntry<VALUE> getEntry(int index) {
+		return new Entry<>(indexMap.getEntry(index));
+	}
+	
+	@Override
+	public VALUE put(int index, VALUE v) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public VALUE remove(int index) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -43,16 +54,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
-	public VALUE put(int index, VALUE v) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
-	public VALUE remove(int index) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -77,6 +78,11 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
+	public boolean remove(VALUE v) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
 	public boolean remove(int index, VALUE v) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
@@ -87,8 +93,13 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
+	public Collection<VALUE> values() {
+		return new UnmodifiableCollection<>(super.values());
+	}
+	
+	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return new ConvertingCollection.BiDirectional<>(indexMap.table(), Entry::new, entry -> indexMap.getEntry(entry.getIndex()));
+		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), Entry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
 	@Override
@@ -96,16 +107,12 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 		return api.createModifier("unmodifiable", indexMap);
 	}
 	
-	private class Entry implements IndexMapEntry<VALUE> {
+	private static class Entry<VALUE> implements IndexMapEntry<VALUE> {
 		
-		IndexMapEntry<VALUE> entry;
+		public IndexMapEntry<VALUE> entry;
 		
 		public Entry(IndexMapEntry<VALUE> entry) {
 			this.entry = entry;
-		}
-		
-		public Entry(int index) {
-			entry = indexMap.getEntry(index);
 		}
 		
 		@Override

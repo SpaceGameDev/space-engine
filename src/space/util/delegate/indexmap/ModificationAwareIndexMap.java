@@ -43,21 +43,21 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	@Override
 	public void addAll(Collection<VALUE> coll) {
 		super.addAll(coll);
-		if (coll.size() == 0)
+		if (!coll.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
 	public void putAll(IndexMap<VALUE> indexMap) {
 		super.putAll(indexMap);
-		if (indexMap.size() == 0)
+		if (!indexMap.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
-		if (indexMap.size() == 0)
+		if (!indexMap.isEmpty())
 			onModification.run();
 	}
 	

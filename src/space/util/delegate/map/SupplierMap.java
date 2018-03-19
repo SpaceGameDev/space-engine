@@ -80,17 +80,6 @@ public class SupplierMap<K, V> implements Map<K, V> {
 	}
 	
 	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return map.get().equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return map.get().hashCode();
-	}
-	
-	@Override
 	public V getOrDefault(Object key, V defaultValue) {
 		return map.get().getOrDefault(key, defaultValue);
 	}

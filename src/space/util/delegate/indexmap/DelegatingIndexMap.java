@@ -5,7 +5,6 @@ import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -29,6 +28,11 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public int size() {
 		return indexMap.size();
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return indexMap.isEmpty();
 	}
 	
 	@Override
@@ -144,21 +148,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
 		return indexMap.table();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof DelegatingIndexMap))
-			return false;
-		DelegatingIndexMap<?> that = (DelegatingIndexMap<?>) o;
-		return Objects.equals(indexMap, that.indexMap);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(indexMap);
 	}
 	
 	@Override

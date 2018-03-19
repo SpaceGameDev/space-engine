@@ -189,30 +189,6 @@ public class ReferenceIndexMap<VALUE> extends ConvertingIndexMap<Reference<? ext
 //	}
 //
 //	@Override
-//	public int hashCode() {
-//		return indexMap.hashCode();
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (obj == this)
-//			return true;
-//		if (!(obj instanceof IndexMap<?>))
-//			return false;
-//
-//		IndexMap<?> other = (IndexMap<?>) obj;
-//		int index = 0;
-//		int max = Math.max(other.size(), size());
-//		for (int i = 0; i < max; i++) {
-//			Object ent = get(i);
-//			Object entO = other.get(i);
-//			if (!(Objects.equals(entO, ent) || (entO instanceof Reference<?> && Objects.equals(((Reference) entO).get(), ent))))
-//				return false;
-//		}
-//		return true;
-//	}
-//
-//	@Override
 //	public <T> T toTSH(ToStringHelper<T> api) {
 //		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 //		tsh.add("indexMap", this.indexMap);

@@ -253,22 +253,6 @@ public class ReferenceList<E> implements ToString, List<E> {
 	}
 	
 	@Override
-	@SuppressWarnings("SimplifiableIfStatement")
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof ReferenceList))
-			return false;
-		
-		return list.equals(((ReferenceList<?>) o).list);
-	}
-	
-	@Override
-	public int hashCode() {
-		return list.hashCode();
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);

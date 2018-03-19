@@ -16,8 +16,28 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 	
 	public Collection<F> coll;
 	
-	public ConvertingCollection(Collection<F> coll) {
+	protected ConvertingCollection(Collection<F> coll) {
 		this.coll = coll;
+	}
+	
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap) {
+		return new OneDirectionalUnmodifiable<>(coll, remap);
+	}
+	
+	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+		return new BiDirectionalUnmodifiable<>(coll, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(Collection<F> coll, Function<F, T> remap, Function<T, F> reverseAdd) {
+		return new BiDirectionalSparse<>(coll, remap, reverseAdd);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+		return new BiDirectional<>(coll, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse, Function<T, F> reverseAdd) {
+		return new BiDirectional<>(coll, remap, reverse, reverseAdd);
 	}
 	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingCollection<F, T> {
@@ -156,7 +176,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			return coll.containsAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
+			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
 	}
 	
@@ -256,7 +276,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			return coll.containsAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
+			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
 		
 		//modify methods
@@ -269,13 +289,13 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean removeAll(Collection<?> c) {
-			return coll.removeAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
+			return coll.removeAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean retainAll(Collection<?> c) {
-			return coll.retainAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
+			return coll.retainAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
 	}
 }

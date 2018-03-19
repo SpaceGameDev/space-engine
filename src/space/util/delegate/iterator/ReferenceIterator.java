@@ -40,16 +40,6 @@ public class ReferenceIterator<E> implements ToString, Iteratorable<E> {
 	}
 	
 	@Override
-	public boolean equals(Object o) {
-		return this == o || o instanceof ReferenceIterator && i.equals(((ReferenceIterator<?>) o).i);
-	}
-	
-	@Override
-	public int hashCode() {
-		return i.hashCode();
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("reference", i);
 	}

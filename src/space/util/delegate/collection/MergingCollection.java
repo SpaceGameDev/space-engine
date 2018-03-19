@@ -33,11 +33,13 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	//createWithAddCollection
 	@SafeVarargs
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addCollectionFromCollection(addColl), collections);
+		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
-		return createWithAddCollection(addCollectionFromCollection(addColl), collections);
+		MergingCollection<E> ret = new MergingCollection<>(collections);
+		ret.setAddColl(addColl);
+		return ret;
 	}
 	
 	@SafeVarargs
@@ -164,18 +166,6 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	@Override
 	public Iterator<E> iterator() {
 		return MergingIterator.fromIterable(collections);
-	}
-	
-	//Object
-	
-	@Override
-	public boolean equals(Object o) {
-		return this == o || collections.equals(o instanceof MergingCollection ? ((MergingCollection<?>) o).collections : o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return collections.hashCode();
 	}
 	
 	@Override

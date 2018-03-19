@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -417,16 +416,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		@Override
 		public V setValue(V value) {
 			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(k) ^ Objects.hashCode(v);
-		}
-		
-		@Override
-		public boolean equals(Object o) {
-			return o == this || (o instanceof Entry<?, ?> && Objects.equals(k, ((Entry) o).getKey()) && Objects.equals(v, ((Entry) o).getValue()));
 		}
 		
 		@Override

@@ -68,17 +68,6 @@ public class DelegatingListIterator<E> implements ToString, ListIterator<E> {
 		iterator.forEachRemaining(action);
 	}
 	
-	@Override
-	public int hashCode() {
-		return iterator.hashCode();
-	}
-	
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) {
-		return iterator.equals(obj);
-	}
-	
 	//super
 	protected void superforEachRemaining(Consumer<? super E> action) {
 		ListIterator.super.forEachRemaining(action);

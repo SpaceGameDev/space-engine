@@ -4,7 +4,6 @@ import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -73,31 +72,6 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		if (currIter == null)
 			throw new IllegalStateException();
 		currIter.remove();
-	}
-	
-	@Override
-	@SuppressWarnings("SimplifiableIfStatement")
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof MergingIterator))
-			return false;
-		
-		MergingIterator<?> that = (MergingIterator<?>) o;
-		
-		if (next != that.next)
-			return false;
-		if (!Arrays.equals(iterators, that.iterators))
-			return false;
-		return currIter != null ? currIter.equals(that.currIter) : that.currIter == null;
-	}
-	
-	@Override
-	public int hashCode() {
-		int result = Arrays.hashCode(iterators);
-		result = 31 * result + (currIter != null ? currIter.hashCode() : 0);
-		result = 31 * result + next;
-		return result;
 	}
 	
 	@Override

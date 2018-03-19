@@ -1,29 +1,20 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
-import space.util.delegate.iterator.Iteratorable;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMapArray;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.function.Consumer;
+import java.util.Collection;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 /**
  * The {@link DefaultingIndexMap} tries to get a value from the {@link DefaultingIndexMap#indexMap}, and when no value has been found, it will return the value from the {@link DefaultingIndexMap#def};
  */
-public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> implements ToString {
+public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
-	static {
-		//noinspection unchecked,RedundantTypeArguments
-		Copyable.<DefaultingIndexMap>manualEntry(DefaultingIndexMap.class, d -> new DefaultingIndexMap(Copyable.copy(d.indexMap), Copyable.copy(d.def), d.iterateOverDef));
-	}
-	
+	public IndexMap<VALUE> indexMap;
 	public DefaultFunction<VALUE> def;
 	public boolean iterateOverDef;
 	
@@ -51,169 +42,278 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	}
 	
 	public DefaultingIndexMap(IndexMap<VALUE> indexMap, DefaultFunction<VALUE> def, boolean iterateOverDef) {
-		super(indexMap);
+		this.indexMap = indexMap;
 		this.def = def;
 		this.iterateOverDef = iterateOverDef;
 	}
 	
-	public static <VALUE> DefaultFunctionWithIteration<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
-		return new DefaultFunctionWithIteration<>() {
-			
-			@Override
-			public VALUE get(int index) {
-				return map.get(index);
-			}
-			
-			@Override
-			public int indexOf(VALUE v) {
-				return map.indexOf(v);
-			}
-			
-			@Override
-			public void addAll(IndexMap<VALUE> indexMap) {
-				indexMap.putAll(map);
-			}
-		};
+	@Override
+	public boolean isExpandable() {
+		return indexMap.isExpandable();
 	}
 	
-	//get
+	@Override
+	public int size() {
+		return indexMap.size();
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return indexMap.isEmpty();
+	}
+	
+	@Override
+	public boolean contains(int index) {
+//		return indexMap.contains(index);
+	}
+	
+	@Override
+	public boolean contains(VALUE v) {
+//		return indexMap.contains(v);
+	}
+	
+	@Override
+	public void add(VALUE v) {
+		indexMap.add(v);
+	}
+	
 	@Override
 	public VALUE get(int index) {
-		VALUE thisV = indexMap.get(index);
-		return thisV != null ? thisV : def.get(index);
+	
 	}
 	
 	@Override
-	@SuppressWarnings("ConstantConditions")
+	public IndexMapEntry<VALUE> getEntry(int index) {
+	
+	}
+	
+	@Override
+	public VALUE put(int index, VALUE v) {
+		return null;
+	}
+	
+	@Override
 	public int indexOf(VALUE v) {
-		int thisV = indexMap.indexOf(v);
-		return iterateOverDef && def instanceof DefaultFunctionWithIteration<?> && thisV != -1 ? thisV : ((DefaultFunctionWithIteration<VALUE>) def).indexOf(v);
+		return 0;
+	}
+	
+	@Override
+	public VALUE remove(int index) {
+		return null;
 	}
 	
 	@Override
 	public VALUE[] toArray() {
-		return super.toArray();
+		return new VALUE[0];
 	}
 	
 	@Override
 	public VALUE[] toArray(VALUE[] array) {
-		return super.toArray(array);
+		return new VALUE[0];
 	}
 	
-	//all delegating to IndexMap default methods
 	@Override
-	public boolean contains(int index) {
-		return supercontains(index);
+	public void addAll(Collection<VALUE> coll) {
+	
+	}
+	
+	@Override
+	public void putAll(IndexMap<VALUE> indexMap) {
+	
 	}
 	
 	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-		superputAllIfAbsent(indexMap);
+	
 	}
 	
 	@Override
 	public VALUE getOrDefault(int index, VALUE def) {
-		return supergetOrDefault(index, def);
+		return null;
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, VALUE v) {
-		return superputIfAbsent(index, v);
+		return null;
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return superputIfAbsent(index, v);
+		return null;
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
-		return superreplace(index, oldValue, newValue);
+		return false;
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
-		return superreplace(index, oldValue, newValue);
+		return false;
+	}
+	
+	@Override
+	public boolean remove(VALUE v) {
+		return false;
 	}
 	
 	@Override
 	public boolean remove(int index, VALUE v) {
-		return superremove(index, v);
+		return false;
 	}
 	
 	@Override
-	public void forEach(Consumer<? super VALUE> action) {
-		superforEach(action);
+	public void clear() {
+	
 	}
 	
 	@Override
-	public Spliterator<VALUE> spliterator() {
-		return superspliterator();
-	}
-	
-	//iterators
-	@Override
-	public Iteratorable<VALUE> values() {
-		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
-			return indexMap.values();
-		
-		IndexMap<VALUE> map = new IndexMapArray<>();
-		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
-		map.putAll(indexMap);
-		return map.values();
+	public Collection<VALUE> values() {
+		return null;
 	}
 	
 	@Override
-	public Iteratorable<IndexMapEntry<VALUE>> table() {
-		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
-			return indexMap.table();
-		
-		IndexMapArray<VALUE> map = new IndexMapArray<>();
-		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
-		map.putAll(indexMap);
-		return new Iteratorable<>() {
-			Iteratorable<IndexMapEntry<VALUE>> iter = map.table();
-			IndexMapEntry<VALUE> curr;
-			
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			@Override
-			public IndexMapEntry<VALUE> next() {
-				if (!iter.hasNext())
-					throw new NoSuchElementException();
-				curr = iter.next();
-				
-				return new IndexMapEntry<>() {
-					IndexMapEntry<VALUE> entry = curr;
-					VALUE v = entry.getValue();
-					
-					@Override
-					public int getIndex() {
-						return entry.getIndex();
-					}
-					
-					@Override
-					public VALUE getValue() {
-						return v;
-					}
-					
-					@Override
-					public void setValue(VALUE v) {
-						this.v = v;
-						put(getIndex(), v);
-					}
-				};
-			}
-			
-			@Override
-			public void remove() {
-				DefaultingIndexMap.this.remove(curr.getIndex());
-			}
-		};
+	public Collection<IndexMapEntry<VALUE>> table() {
+		return null;
 	}
+	//	//get
+//	@Override
+//	public VALUE get(int index) {
+//		VALUE thisV = indexMap.get(index);
+//		return thisV != null ? thisV : def.get(index);
+//	}
+//
+//	@Override
+//	@SuppressWarnings("ConstantConditions")
+//	public int indexOf(VALUE v) {
+//		int thisV = indexMap.indexOf(v);
+//		return iterateOverDef && def instanceof DefaultFunctionWithIteration<?> && thisV != -1 ? thisV : ((DefaultFunctionWithIteration<VALUE>) def).indexOf(v);
+//	}
+//
+//	@Override
+//	public VALUE[] toArray() {
+//		return super.toArray();
+//	}
+//
+//	@Override
+//	public VALUE[] toArray(VALUE[] array) {
+//		return super.toArray(array);
+//	}
+//
+//	//all delegating to IndexMap default methods
+//	@Override
+//	public boolean contains(int index) {
+//		return supercontains(index);
+//	}
+//
+//	@Override
+//	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+//		superputAllIfAbsent(indexMap);
+//	}
+//
+//	@Override
+//	public VALUE getOrDefault(int index, VALUE def) {
+//		return supergetOrDefault(index, def);
+//	}
+//
+//	@Override
+//	public VALUE putIfAbsent(int index, VALUE v) {
+//		return superputIfAbsent(index, v);
+//	}
+//
+//	@Override
+//	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
+//		return superputIfAbsent(index, v);
+//	}
+//
+//	@Override
+//	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
+//		return superreplace(index, oldValue, newValue);
+//	}
+//
+//	@Override
+//	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+//		return superreplace(index, oldValue, newValue);
+//	}
+//
+//	@Override
+//	public boolean remove(int index, VALUE v) {
+//		return superremove(index, v);
+//	}
+//
+//	@Override
+//	public void forEach(Consumer<? super VALUE> action) {
+//		superforEach(action);
+//	}
+//
+//	@Override
+//	public Spliterator<VALUE> spliterator() {
+//		return superspliterator();
+//	}
+//
+//	//iterators
+//	@Override
+//	public Collection<VALUE> values() {
+//		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
+//			return indexMap.values();
+//
+//		IndexMap<VALUE> map = new IndexMapArray<>();
+//		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
+//		map.putAll(indexMap);
+//		return map.values();
+//	}
+//
+//	@Override
+//	public Collection<IndexMapEntry<VALUE>> table() {
+//		if (!iterateOverDef || !(def instanceof DefaultFunctionWithIteration<?>))
+//			return indexMap.table();
+//
+//		IndexMapArray<VALUE> map = new IndexMapArray<>();
+//		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
+//		map.putAll(indexMap);
+//		return new Iteratorable<>() {
+//			Collection<IndexMapEntry<VALUE>> iter = map.table();
+//			IndexMapEntry<VALUE> curr;
+//
+//			@Override
+//			public boolean hasNext() {
+//				return iter.hasNext();
+//			}
+//
+//			@Override
+//			public IndexMapEntry<VALUE> next() {
+//				if (!iter.hasNext())
+//					throw new NoSuchElementException();
+//				curr = iter.next();
+//
+//				return new IndexMapEntry<>() {
+//					IndexMapEntry<VALUE> entry = curr;
+//					VALUE v = entry.getValue();
+//
+//					@Override
+//					public int getIndex() {
+//						return entry.getIndex();
+//					}
+//
+//					@Override
+//					public VALUE getValue() {
+//						return v;
+//					}
+//
+//					@Override
+//					public void setValue(VALUE v) {
+//						this.v = v;
+//						put(getIndex(), v);
+//					}
+//				};
+//			}
+//
+//			@Override
+//			public void remove() {
+//				DefaultingIndexMap.this.remove(curr.getIndex());
+//			}
+//		};
+//	}
 	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
@@ -233,15 +333,33 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	public interface DefaultFunction<VALUE> {
 		
 		VALUE get(int index);
+
+//		default int indexOf(VALUE v) {
+//			return -1;
+//		}
+//
+//		default void addAll(IndexMap<VALUE> indexMap) {
+//
+//		}
 	}
 	
-	public interface DefaultFunctionWithIteration<VALUE> extends DefaultFunction<VALUE> {
-		
-		int indexOf(VALUE v);
-		
-		/**
-		 * being used when iterating over the def Object
-		 */
-		void addAll(IndexMap<VALUE> indexMap);
+	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
+		return new DefaultFunction<>() {
+			
+			@Override
+			public VALUE get(int index) {
+				return map.get(index);
+			}
+
+//			@Override
+//			public int indexOf(VALUE v) {
+//				return map.indexOf(v);
+//			}
+//
+//			@Override
+//			public void addAll(IndexMap<VALUE> indexMap) {
+//				indexMap.putAll(map);
+//			}
+		};
 	}
 }

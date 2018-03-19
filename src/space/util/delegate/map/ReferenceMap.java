@@ -225,20 +225,4 @@ public class ReferenceMap<K, V> implements Map<K, V> {
 			put(key, n);
 		return n;
 	}
-	
-	@Override
-	@SuppressWarnings("SimplifiableIfStatement")
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof ReferenceMap))
-			return false;
-		
-		return map.equals(((ReferenceMap<?, ?>) o).map);
-	}
-	
-	@Override
-	public int hashCode() {
-		return map.hashCode();
-	}
 }

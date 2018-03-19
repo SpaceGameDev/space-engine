@@ -69,17 +69,6 @@ public class SupplierListIterator<E> implements ToString, ListIterator<E> {
 	}
 	
 	@Override
-	public int hashCode() {
-		return iterator.get().hashCode();
-	}
-	
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) {
-		return iterator.get().equals(obj);
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("supplier", iterator);
 	}

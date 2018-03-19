@@ -4,8 +4,6 @@ import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
-import java.util.Arrays;
-
 /**
  * A List of Ints
  */
@@ -111,24 +109,6 @@ public class IntList implements ToString {
 			g--;
 		}
 		return ret;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof IntList))
-			return false;
-		
-		IntList intList = (IntList) o;
-		return size == intList.size && Arrays.equals(array, intList.array);
-	}
-	
-	@Override
-	public int hashCode() {
-		int result = Arrays.hashCode(array);
-		result = 31 * result + size;
-		return result;
 	}
 	
 	@Override

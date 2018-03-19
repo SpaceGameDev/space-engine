@@ -113,18 +113,6 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 		coll.forEach(action);
 	}
 	
-	//Object
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return coll.equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return coll.hashCode();
-	}
-	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("delegate", coll);

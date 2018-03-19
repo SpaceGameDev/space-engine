@@ -108,17 +108,6 @@ public class SupplierList<E> implements ToString, List<E> {
 	}
 	
 	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return list.get().equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return list.get().hashCode();
-	}
-	
-	@Override
 	public E get(int index) {
 		return list.get().get(index);
 	}

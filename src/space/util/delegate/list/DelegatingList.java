@@ -108,17 +108,6 @@ public class DelegatingList<E> implements ToString, List<E> {
 	}
 	
 	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object o) {
-		return list.equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return list.hashCode();
-	}
-	
-	@Override
 	public E get(int index) {
 		return list.get(index);
 	}

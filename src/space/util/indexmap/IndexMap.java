@@ -15,6 +15,10 @@ public interface IndexMap<VALUE> {
 	
 	int size();
 	
+	default boolean isEmpty() {
+		return size() == 0;
+	}
+	
 	//access
 	default boolean contains(int index) {
 		return get(index) != null;

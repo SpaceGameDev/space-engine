@@ -40,17 +40,6 @@ public class SupplierIterator<E> implements ToString, Iteratorable<E> {
 	}
 	
 	@Override
-	public int hashCode() {
-		return i.get().hashCode();
-	}
-	
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) {
-		return i.get().equals(obj);
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("i", this.i);

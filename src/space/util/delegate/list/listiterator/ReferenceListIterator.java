@@ -78,21 +78,6 @@ public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
 	}
 	
 	@Override
-	@SuppressWarnings("SimplifiableIfStatement")
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof ReferenceListIterator))
-			return false;
-		return iterator.equals(((ReferenceListIterator<?>) o).iterator);
-	}
-	
-	@Override
-	public int hashCode() {
-		return iterator.hashCode();
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iterator", this.iterator);
