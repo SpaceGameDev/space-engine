@@ -5,6 +5,7 @@ import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -36,23 +37,13 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public boolean contains(VALUE v) {
+		return indexMap.contains(v);
+	}
+	
+	@Override
 	public void add(VALUE v) {
 		indexMap.add(v);
-	}
-	
-	@Override
-	public int indexOf(VALUE v) {
-		return indexMap.indexOf(v);
-	}
-	
-	@Override
-	public VALUE[] toArray() {
-		return indexMap.toArray();
-	}
-	
-	@Override
-	public VALUE[] toArray(VALUE[] array) {
-		return indexMap.toArray(array);
 	}
 	
 	@Override
@@ -71,8 +62,23 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public int indexOf(VALUE v) {
+		return indexMap.indexOf(v);
+	}
+	
+	@Override
 	public VALUE remove(int index) {
 		return indexMap.remove(index);
+	}
+	
+	@Override
+	public VALUE[] toArray() {
+		return indexMap.toArray();
+	}
+	
+	@Override
+	public VALUE[] toArray(VALUE[] array) {
+		return indexMap.toArray(array);
 	}
 	
 	@Override
@@ -116,6 +122,11 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public boolean remove(VALUE v) {
+		return indexMap.remove(v);
+	}
+	
+	@Override
 	public boolean remove(int index, VALUE v) {
 		return indexMap.remove(index, v);
 	}
@@ -135,61 +146,19 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 		return indexMap.table();
 	}
 	
-	//object
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof DelegatingIndexMap))
+			return false;
+		DelegatingIndexMap<?> that = (DelegatingIndexMap<?>) o;
+		return Objects.equals(indexMap, that.indexMap);
+	}
+	
 	@Override
 	public int hashCode() {
-		return indexMap.hashCode();
-	}
-	
-	@Override
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) {
-		return indexMap.equals(obj);
-	}
-	
-	//super
-	protected boolean supercontains(int index) {
-		return IndexMap.super.contains(index);
-	}
-	
-	protected void superadd(VALUE v) {
-		IndexMap.super.add(v);
-	}
-	
-	protected void superaddAll(Collection<VALUE> coll) {
-		IndexMap.super.addAll(coll);
-	}
-	
-	protected void superputAll(IndexMap<VALUE> indexMap) {
-		IndexMap.super.putAll(indexMap);
-	}
-	
-	protected void superputAllIfAbsent(IndexMap<VALUE> indexMap) {
-		IndexMap.super.putAllIfAbsent(indexMap);
-	}
-	
-	protected VALUE supergetOrDefault(int index, VALUE def) {
-		return IndexMap.super.getOrDefault(index, def);
-	}
-	
-	protected VALUE superputIfAbsent(int index, VALUE v) {
-		return IndexMap.super.putIfAbsent(index, v);
-	}
-	
-	protected VALUE superputIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return IndexMap.super.putIfAbsent(index, v);
-	}
-	
-	protected boolean superreplace(int index, VALUE oldValue, VALUE newValue) {
-		return IndexMap.super.replace(index, oldValue, newValue);
-	}
-	
-	protected boolean superreplace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
-		return IndexMap.super.replace(index, oldValue, newValue);
-	}
-	
-	protected boolean superremove(int index, VALUE v) {
-		return IndexMap.super.remove(index, v);
+		return Objects.hash(indexMap);
 	}
 	
 	@Override

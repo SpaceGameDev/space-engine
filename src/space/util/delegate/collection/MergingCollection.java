@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 public class MergingCollection<E> implements ToString, Collection<E> {
 	
-	public Collection<E> addColl;
+	public AddCollection<E> addColl;
 	public Collection<Collection<E>> collections;
 	
 	@SafeVarargs
@@ -30,19 +30,34 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 		this.collections = collections;
 	}
 	
+	//createWithAddCollection
 	@SafeVarargs
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+		return createWithAddCollection(addCollectionFromCollection(addColl), collections);
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
+		return createWithAddCollection(addCollectionFromCollection(addColl), collections);
+	}
+	
+	@SafeVarargs
+	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<E>... collections) {
+		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+	}
+	
+	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<Collection<E>> collections) {
 		MergingCollection<E> ret = new MergingCollection<>(collections);
 		ret.setAddColl(addColl);
 		return ret;
 	}
 	
-	public void setAddColl(Collection<E> addColl) {
+	//setAddColl
+	public void setAddColl(AddCollection<E> addColl) {
 		this.addColl = addColl;
+	}
+	
+	public void setAddColl(Collection<E> addColl) {
+		setAddColl(addCollectionFromCollection(addColl));
 	}
 	
 	public void removeAddColl() {
@@ -60,7 +75,10 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@Override
 	public boolean isEmpty() {
-		return size() != 0;
+		for (Collection<E> e : collections)
+			if (!e.isEmpty())
+				return false;
+		return true;
 	}
 	
 	//access
@@ -87,8 +105,8 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	//all
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		for (Object o : c)
-			if (!contains(o))
+		for (Collection<E> e : collections)
+			if (!e.containsAll(c))
 				return false;
 		return true;
 	}
@@ -171,5 +189,33 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	@Override
 	public String toString() {
 		return toString0();
+	}
+	
+	@FunctionalInterface
+	public interface AddCollection<E> {
+		
+		boolean add(E e);
+		
+		default boolean addAll(Collection<? extends E> c) {
+			boolean ret = false;
+			for (E e : c)
+				if (add(e))
+					ret = true;
+			return ret;
+		}
+	}
+	
+	public static <E> AddCollection<E> addCollectionFromCollection(Collection<E> coll) {
+		return new AddCollection<E>() {
+			@Override
+			public boolean add(E e) {
+				return coll.add(e);
+			}
+			
+			@Override
+			public boolean addAll(Collection<? extends E> c) {
+				return coll.addAll(c);
+			}
+		};
 	}
 }

@@ -26,6 +26,7 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		this.onModification = onModification;
 	}
 	
+	//access
 	@Override
 	public int size() {
 		return coll.size();
@@ -58,6 +59,42 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
+	public boolean containsAll(Collection<?> c) {
+		return coll.containsAll(c);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return coll.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return coll.hashCode();
+	}
+	
+	@Override
+	public Spliterator<E> spliterator() {
+		return coll.spliterator();
+	}
+	
+	@Override
+	public Stream<E> stream() {
+		return coll.stream();
+	}
+	
+	@Override
+	public Stream<E> parallelStream() {
+		return coll.parallelStream();
+	}
+	
+	@Override
+	public void forEach(Consumer<? super E> action) {
+		coll.forEach(action);
+	}
+	
+	//modify
+	@Override
 	public boolean add(E e) {
 		boolean ret = coll.add(e);
 		if (ret)
@@ -71,11 +108,6 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		if (ret)
 			onModification.run();
 		return ret;
-	}
-	
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		return coll.containsAll(c);
 	}
 	
 	@Override
@@ -114,36 +146,6 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	public void clear() {
 		coll.clear();
 		onModification.run();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		return coll.equals(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return coll.hashCode();
-	}
-	
-	@Override
-	public Spliterator<E> spliterator() {
-		return coll.spliterator();
-	}
-	
-	@Override
-	public Stream<E> stream() {
-		return coll.stream();
-	}
-	
-	@Override
-	public Stream<E> parallelStream() {
-		return coll.parallelStream();
-	}
-	
-	@Override
-	public void forEach(Consumer<? super E> action) {
-		coll.forEach(action);
 	}
 	
 	@Override
