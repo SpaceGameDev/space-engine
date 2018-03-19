@@ -4,7 +4,7 @@ import space.engine.render.window.IMonitor.IVideoMode;
 import space.engine.render.window.IWindow;
 import space.engine.render.window.exception.WindowException;
 import space.engine.render.window.glfw.GLFWMonitor.GLFWVideoMode;
-import space.util.baseobject.additional.Freeable.FreeableWithStorage;
+import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.IFreeableStorage;

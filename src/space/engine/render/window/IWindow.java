@@ -11,7 +11,7 @@ import space.engine.render.window.callback.WindowFBOResizeCallback;
 import space.engine.render.window.callback.WindowFocusCallback;
 import space.engine.render.window.callback.WindowPositionCallback;
 import space.engine.render.window.callback.WindowResizeCallback;
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.Freeable;
 import space.util.key.IKey;
 import space.util.key.attribute.AttributeListCreator;
 
