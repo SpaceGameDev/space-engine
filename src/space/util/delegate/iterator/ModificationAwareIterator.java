@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -10,11 +9,6 @@ import java.util.Iterator;
  * The {@link ModificationAwareIterator} will call the {@link ModificationAwareIterator#onModification} {@link Runnable} when the {@link Iterator} is modified.
  */
 public class ModificationAwareIterator<E> extends DelegatingIterator<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ModificationAwareIterator.class, d -> new ModificationAwareIterator(Copyable.copy(d.i), d.onModification));
-	}
 	
 	public Runnable onModification;
 	

@@ -1,8 +1,8 @@
 package space.util.buffer.stack;
 
 import space.util.ArrayUtils;
+import space.util.baseobject.Dumpable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.Dumpable;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.buffer.direct.SubDirectBuffer;

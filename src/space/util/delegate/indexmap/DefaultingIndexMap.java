@@ -57,7 +57,7 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 	}
 	
 	public static <VALUE> DefaultFunctionWithIteration<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
-		return new DefaultFunctionWithIteration<VALUE>() {
+		return new DefaultFunctionWithIteration<>() {
 			
 			@Override
 			public VALUE get(int index) {
@@ -171,7 +171,7 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 		IndexMapArray<VALUE> map = new IndexMapArray<>();
 		((DefaultFunctionWithIteration<VALUE>) def).addAll(map);
 		map.putAll(indexMap);
-		return new Iteratorable<IndexMapEntry<VALUE>>() {
+		return new Iteratorable<>() {
 			Iteratorable<IndexMapEntry<VALUE>> iter = map.table();
 			IndexMapEntry<VALUE> curr;
 			
@@ -186,7 +186,7 @@ public class DefaultingIndexMap<VALUE> extends DelegatingIndexMap<VALUE> impleme
 					throw new NoSuchElementException();
 				curr = iter.next();
 				
-				return new IndexMapEntry<VALUE>() {
+				return new IndexMapEntry<>() {
 					IndexMapEntry<VALUE> entry = curr;
 					VALUE v = entry.getValue();
 					

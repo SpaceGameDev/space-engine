@@ -1,7 +1,6 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.Copyable;
-import space.util.baseobject.additional.Cache;
+import space.util.baseobject.Cache;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -14,11 +13,6 @@ import static space.util.delegate.util.CacheUtil.*;
  * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
  */
 public class CachingMap<K, V> extends DefaultingMap<K, V> implements Cache {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(CachingMap.class, d -> new CachingMap(d.map, d.def, d.iterateOverDef));
-	}
 	
 	//no def iteration
 	public CachingMap(Map<K, V> map, Function<K, V> def) {

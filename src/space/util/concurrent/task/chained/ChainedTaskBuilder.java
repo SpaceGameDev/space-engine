@@ -1,7 +1,7 @@
 package space.util.concurrent.task.chained;
 
+import space.util.baseobject.Cache;
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.Cache;
 import space.util.concurrent.task.ITask;
 import space.util.concurrent.task.ITinyWorkload;
 import space.util.concurrent.task.chained.ChainedTaskBuilder.ChainedTaskPart.Node;
@@ -371,7 +371,7 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 			private Map<Node, NodeTaskSinglethreaded> map = new HashMap<>();
 			
 			public ChainedTaskSinglethreadedCreator(List<ChainedTaskEntry<FUNCTION>> list) {
-				part = new ChainedTaskPart<FUNCTION>(list, false) {
+				part = new ChainedTaskPart<>(list, false) {
 				};
 				
 				for (ChainedTaskPart<FUNCTION>.Node node : part.allNodes)

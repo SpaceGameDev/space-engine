@@ -28,14 +28,14 @@ public class BaseObjectInit {
 	};
 	
 	//init
-	protected static boolean called = false;
-	
 	public static byte init2() {
 		init();
 		return 0;
 	}
 	
-	@SuppressWarnings({"unchecked", "RedundantCast"})
+	private static boolean called = false;
+	
+	@SuppressWarnings({"RedundantCast", "unchecked", "MismatchedQueryAndUpdateOfCollection"})
 	public static void init() {
 		synchronized (BaseObjectInit.class) {
 			if (called)
@@ -43,9 +43,6 @@ public class BaseObjectInit {
 			called = true;
 		}
 		
-		Setable.init();
-		Creatable.init();
-		Copyable.init();
 		ToString.init();
 		
 		//List
@@ -53,13 +50,15 @@ public class BaseObjectInit {
 		ToString.manualEntry(LinkedList.class, (BiFunction<ToStringHelper<?>, ? super LinkedList, Object>) ENTRY_LIST);
 		
 		//map
+		HashMap<Object, Object> hashMap = new HashMap<>();
 		ToString.manualEntry(HashMap.class, (BiFunction<ToStringHelper<?>, ? super HashMap, Object>) ENTRY_MAP);
-		ToString.manualEntry(new HashMap<>().keySet().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
-		ToString.manualEntry(new HashMap<>().values().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
+		ToString.manualEntry(hashMap.keySet().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
+		ToString.manualEntry(hashMap.values().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
 		
+		EnumMap<SomeEnum, Object> enumMap = new EnumMap<>(SomeEnum.class);
 		ToString.manualEntry(EnumMap.class, (BiFunction<ToStringHelper<?>, ? super EnumMap, Object>) ENTRY_MAP);
-		ToString.manualEntry(new EnumMap<>(SomeEnum.class).keySet().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
-		ToString.manualEntry(new EnumMap<>(SomeEnum.class).values().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
+		ToString.manualEntry(enumMap.keySet().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
+		ToString.manualEntry(enumMap.values().getClass(), (BiFunction<ToStringHelper<?>, ? super Collection, Object>) ENTRY_LIST);
 	}
 	
 	private enum SomeEnum {

@@ -1,7 +1,7 @@
 package space.util.buffer;
 
-import space.util.baseobject.additional.Dumpable;
-import space.util.baseobject.additional.Freeable.FreeableWithStorage;
+import space.util.baseobject.Dumpable;
+import space.util.baseobject.Freeable.FreeableWithStorage;
 
 public interface Buffer extends FreeableWithStorage, Dumpable {
 	

@@ -1,4 +1,4 @@
-package space.util.baseobject.additional;
+package space.util.baseobject;
 
 import space.util.string.String2D;
 

@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
@@ -26,11 +25,6 @@ import java.util.stream.Stream;
  * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceList#refCreator Reference Creator} supplied with the Constructor or directly set.
  */
 public class ReferenceList<E> implements ToString, List<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ReferenceList.class, d -> new ReferenceList(Copyable.copy(d.list), d.refCreator));
-	}
 	
 	public List<Reference<? extends E>> list;
 	public Function<E, ? extends Reference<? extends E>> refCreator;

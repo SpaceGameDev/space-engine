@@ -1,6 +1,5 @@
 package space.util.delegate.list.listiterator;
 
-import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.ListIterator;
@@ -10,11 +9,6 @@ import java.util.function.Consumer;
  * Synchronizes over the entire {@link ListIterator}. Frequent access on the {@link ListIterator} can be problematic.
  */
 public class SynchronizedListIterator<E> extends DelegatingListIterator<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SynchronizedListIterator.class, d -> new SynchronizedListIterator(Copyable.copy(d.iterator)));
-	}
 	
 	public SynchronizedListIterator(ListIterator<E> iterator) {
 		super(iterator);

@@ -10,7 +10,7 @@ public class ConverterSmartTest {
 		ToStringHelper.setDefault(MonofontGuiApi.TSH);
 		
 		ConverterSmart<Object> conv = new ConverterSmart<>();
-		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<IntWrapper, FloatWrapper>() {
+		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<>() {
 			@Override
 			public FloatWrapper convertNew(IntWrapper wrapper) {
 				return convertInstance(wrapper, new FloatWrapper());
@@ -25,7 +25,7 @@ public class ConverterSmartTest {
 		
 		test(conv, new IntWrapper(7), FloatWrapper.class);
 		
-		conv.putConverter(FloatWrapper.class, DoubleWrapper.class, new Converter<FloatWrapper, DoubleWrapper>() {
+		conv.putConverter(FloatWrapper.class, DoubleWrapper.class, new Converter<>() {
 			@Override
 			public DoubleWrapper convertNew(FloatWrapper wrapper) {
 				return convertInstance(wrapper, new DoubleWrapper());
@@ -40,7 +40,7 @@ public class ConverterSmartTest {
 		
 		test(conv, new IntWrapper(42), DoubleWrapper.class);
 		
-		conv.putConverter(IntWrapper.class, DoubleWrapper.class, new Converter<IntWrapper, DoubleWrapper>() {
+		conv.putConverter(IntWrapper.class, DoubleWrapper.class, new Converter<>() {
 			@Override
 			public DoubleWrapper convertNew(IntWrapper wrapper) {
 				return convertInstance(wrapper, new DoubleWrapper());

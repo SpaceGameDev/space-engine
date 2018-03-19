@@ -12,8 +12,9 @@ public interface ToString {
 	
 	//init
 	/**
-	 * used to have a static-init-function in the interface
+	 * used to have a static init-function in the interface
 	 */
+	@SuppressWarnings("unused")
 	byte zero = BaseObjectInit.init2();
 	
 	static void init() {
@@ -30,7 +31,7 @@ public interface ToString {
 	 * @param <OBJ>    the Object-Type
 	 */
 	static <OBJ> void manualEntry(Class<OBJ> clazz, BiFunction<ToStringHelper<?>, ? super OBJ, Object> function) {
-		ToStringClass.WRITE_MAP.put(clazz, function);
+		ToStringClass.MAP.put(clazz, function);
 	}
 	
 	/**
@@ -76,26 +77,24 @@ public interface ToString {
 		return toTSH().toString();
 	}
 	
-	//class
+	//helper class
 	class ToStringClass {
 		
 		//maps
-		private static volatile Map<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> WRITE_MAP = new BufferedMap<>(new HashMap<>());
-		public static ThreadLocalGlobalCachingMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP;
+		private static BufferedMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> START_BUFFER = new BufferedMap<>(new HashMap<>());
+		private static ThreadLocalGlobalCachingMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> CACHE_MAP;
 		
-		//init
-		static {
-			BaseObjectInit.init();
-		}
+		public static volatile Map<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = START_BUFFER;
 		
-		static void init() {
-			if (!(WRITE_MAP instanceof BufferedMap))
+		static synchronized void init() {
+			if (START_BUFFER == null)
 				throw new IllegalStateException("already initialized!");
 			
-			MAP = new ThreadLocalGlobalCachingMap<>();
+			CACHE_MAP = new ThreadLocalGlobalCachingMap<>();
+			MAP = CACHE_MAP.globalMap;
 			
-			((BufferedMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>>) WRITE_MAP).setSink(MAP.globalMap);
-			WRITE_MAP = MAP.globalMap;
+			START_BUFFER.setSink(CACHE_MAP.globalMap);
+			START_BUFFER = null;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -13,11 +12,6 @@ import java.util.function.Supplier;
  * A {@link Iteratorable} delegating all calls to it's Field {@link SupplierIterator#i}, which is an {@link Supplier} of Type {@link Iteratorable}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierIterator<E> implements ToString, Iteratorable<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SupplierIterator.class, d -> new SupplierIterator(Copyable.copy(d.i)));
-	}
 	
 	public Supplier<Iterator<E>> i;
 	

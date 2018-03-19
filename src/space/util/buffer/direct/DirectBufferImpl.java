@@ -1,8 +1,8 @@
 package space.util.buffer.direct;
 
+import space.util.baseobject.Dumpable;
+import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.Dumpable;
-import space.util.baseobject.additional.Freeable.FreeableWithStorage;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.IFreeableStorage;
 import space.util.math.MathUtils;

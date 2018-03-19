@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.delegate.list.listiterator.ModificationAwareListIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -21,11 +20,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareList<E> extends DelegatingList<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ModificationAwareList.class, d -> new ModificationAwareList(Copyable.copy(d.list), d.onModification));
-	}
 	
 	public Runnable onModification;
 	

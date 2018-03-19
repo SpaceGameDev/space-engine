@@ -1,4 +1,4 @@
-package space.util.baseobject.additional;
+package space.util.baseobject;
 
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.IFreeableStorage;

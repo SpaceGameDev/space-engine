@@ -27,7 +27,7 @@ public class MonofontTSHObjects extends MonofontGuiElementCaching implements ToS
 		this.helper = helper;
 		
 		//noinspection unchecked
-		tshObjectsInstance = new AbstractToStringHelperObjectsInstance<MonofontGuiElement>(obj, (ToStringHelper<MonofontGuiElement>) helper) {
+		tshObjectsInstance = new AbstractToStringHelperObjectsInstance<>(obj, (ToStringHelper<MonofontGuiElement>) helper) {
 			@Override
 			public MonofontGuiElement build() {
 				return MonofontTSHObjects.this;

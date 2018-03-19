@@ -1,7 +1,7 @@
 package space.util.freeableStorage;
 
+import space.util.baseobject.Freeable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.additional.Freeable;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 

@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.Copyable;
 import space.util.delegate.iterator.UnmodifiableIterator;
 import space.util.delegate.list.listiterator.UnmodifiableListIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -17,11 +16,6 @@ import java.util.function.UnaryOperator;
  * The {@link UnmodifiableList} makes the {@link List} unmodifiable.
  */
 public class UnmodifiableList<E> extends DelegatingList<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(UnmodifiableList.class, d -> new UnmodifiableList(Copyable.copy(d.list)));
-	}
 	
 	public UnmodifiableList(List<E> list) {
 		super(list);

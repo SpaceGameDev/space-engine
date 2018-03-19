@@ -9,7 +9,7 @@ import java.util.Iterator;
 public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 	
 	//static
-	Iteratorable<Object> EMPTY = new Iteratorable<Object>() {
+	Iteratorable<Object> EMPTY = new Iteratorable<>() {
 		
 		@Override
 		public boolean hasNext() {
@@ -23,7 +23,7 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 	};
 	
 	static <E> Iteratorable<E> toIteratorable(Iterator<E> iter) {
-		return iter instanceof Iteratorable ? (Iteratorable<E>) iter : new Iteratorable<E>() {
+		return iter instanceof Iteratorable ? (Iteratorable<E>) iter : new Iteratorable<>() {
 			
 			@Override
 			public boolean hasNext() {
@@ -43,7 +43,7 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 	}
 	
 	static <E> Iteratorable<E> single(E elem) {
-		return new Iteratorable<E>() {
+		return new Iteratorable<>() {
 			boolean gotten = false;
 			
 			@Override

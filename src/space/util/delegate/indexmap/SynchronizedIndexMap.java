@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -11,11 +10,6 @@ import java.util.function.Supplier;
  * Synchronizes over the entire {@link IndexMap}. Frequent access on the {@link IndexMap} can be problematic.
  */
 public class SynchronizedIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SynchronizedIndexMap.class, d -> new SynchronizedIndexMap(Copyable.copy(d.indexMap)));
-	}
 	
 	public SynchronizedIndexMap(IndexMap<VALUE> indexMap) {
 		super(indexMap);

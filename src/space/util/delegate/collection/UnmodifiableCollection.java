@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.UnmodifiableIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -18,11 +17,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class UnmodifiableCollection<E> implements Collection<E>, ToString {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(UnmodifiableCollection.class, d -> new UnmodifiableCollection(Copyable.copy(d.coll)));
-	}
 	
 	public Collection<E> coll;
 	

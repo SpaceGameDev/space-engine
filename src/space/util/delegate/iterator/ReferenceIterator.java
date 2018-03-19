@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -13,11 +12,6 @@ import java.util.function.Consumer;
  * Remaps all Entries to a {@link Reference} of type E. (No Reference Creator is needed here)
  */
 public class ReferenceIterator<E> implements ToString, Iteratorable<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ReferenceIterator.class, d -> new ReferenceIterator(Copyable.copy(d.i)));
-	}
 	
 	public Iterator<Reference<? extends E>> i;
 	

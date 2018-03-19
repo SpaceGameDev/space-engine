@@ -1,8 +1,8 @@
 package space.util.delegate.map.specific;
 
+import space.util.baseobject.ToString;
 import space.util.delegate.map.CachingMap;
 import space.util.delegate.map.DefaultingMap;
-import space.util.delegate.map.DelegatingMap;
 import space.util.delegate.map.SupplierMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public class ThreadLocalGlobalCachingMap<K, V> extends DelegatingMap<K, V> {
+public class ThreadLocalGlobalCachingMap<K, V> implements ToString {
 	
+	public Map<K, V> map;
 	public final Map<K, V> globalMap;
 	public final ThreadLocal<Map<K, V>> localMap;
 	
@@ -22,11 +23,8 @@ public class ThreadLocalGlobalCachingMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	public ThreadLocalGlobalCachingMap(Function<K, V> creator) {
-		super(null);
-		
 		localMap = ThreadLocal.withInitial(HashMap::new);
 		globalMap = creator != null ? new CachingMap<>(new ConcurrentHashMap<>(), creator, false) : new ConcurrentHashMap<>();
-		
 		map = new CachingMap<>(new SupplierMap<>(localMap::get), DefaultingMap.makeDefaultFunctionFromMap(globalMap), false);
 	}
 	
@@ -34,7 +32,12 @@ public class ThreadLocalGlobalCachingMap<K, V> extends DelegatingMap<K, V> {
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("globalMap", this.globalMap);
-		tsh.add("localMap", this.localMap.get());
+		
+		Map<K, V> localMap = this.localMap.get();
+		if (localMap != null)
+			tsh.add("localMap.size()", localMap.size());
+		else
+			tsh.add("localMap.size()", "null");
 		return tsh.build();
 	}
 	

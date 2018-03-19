@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -16,11 +15,6 @@ import java.util.stream.Stream;
  * A {@link Collection} delegating all calls to it's Field {@link SupplierCollection#coll}, which is an {@link Supplier} of Type {@link Collection}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierCollection<E> implements ToString, Collection<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SupplierCollection.class, d -> new SupplierCollection(Copyable.copy(d.coll)));
-	}
 	
 	public Supplier<Collection<E>> coll;
 	

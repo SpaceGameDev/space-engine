@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -15,11 +14,6 @@ import java.util.stream.Stream;
  * A {@link Collection} delegating all calls to it's Field {@link DelegatingCollection#coll}, provided by Constructor or set directly.
  */
 public class DelegatingCollection<E> implements ToString, Collection<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(DelegatingCollection.class, d -> new DelegatingCollection<>(Copyable.copy(d.coll)));
-	}
 	
 	public Collection<E> coll;
 	

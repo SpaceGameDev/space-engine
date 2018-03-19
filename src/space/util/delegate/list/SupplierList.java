@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -20,11 +19,6 @@ import java.util.stream.Stream;
  * A {@link List} delegating all calls to it's Field {@link SupplierList#list}, which is an {@link Supplier} of Type {@link List}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierList<E> implements ToString, List<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SupplierList.class, d -> new SupplierList(Copyable.copy(d.list)));
-	}
 	
 	public Supplier<List<E>> list;
 	

@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -18,11 +17,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareCollection<E> implements Collection<E>, ToString {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ModificationAwareCollection.class, d -> new ModificationAwareCollection(Copyable.copy(d.coll), d.onModification));
-	}
 	
 	public Collection<E> coll;
 	public Runnable onModification;

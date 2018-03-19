@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.delegate.iterator.ReferenceIterator;
@@ -22,11 +21,6 @@ import java.util.stream.Stream;
  * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceCollection#refCreator Reference Creator} supplied with the Constructor or directly set.
  */
 public class ReferenceCollection<E> implements ToString, Collection<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ReferenceCollection.class, d -> new ReferenceCollection(Copyable.copy(d.coll), d.refCreator));
-	}
 	
 	public Collection<Reference<? extends E>> coll;
 	public Function<E, ? extends Reference<? extends E>> refCreator;

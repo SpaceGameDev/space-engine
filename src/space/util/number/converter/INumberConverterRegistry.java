@@ -19,7 +19,7 @@ public interface INumberConverterRegistry extends Consumer<ConverterSmart<Number
 	}
 	
 	static <FROM extends NumberBase, TO extends NumberBase> void add(ConverterSmart<NumberBase> conv, Class<FROM> classFrom, Class<TO> classTo, Supplier<TO> creator, BiConsumer<FROM, TO> converter, int weight, boolean isFinal) {
-		conv.putConverter(classFrom, classTo, new Converter<FROM, TO>() {
+		conv.putConverter(classFrom, classTo, new Converter<>() {
 			@Override
 			public TO convertNew(FROM from) {
 				return convertInstance(from, creator.get());

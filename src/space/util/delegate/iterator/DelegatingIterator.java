@@ -1,6 +1,5 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -11,11 +10,6 @@ import java.util.function.Consumer;
  * A {@link Iterator} delegating all calls to it's Field {@link DelegatingIterator#i}, provided by Constructor or set directly.
  */
 public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(DelegatingIterator.class, d -> new DelegatingIterator(Copyable.copy(d.i)));
-	}
 	
 	public Iterator<E> i;
 	

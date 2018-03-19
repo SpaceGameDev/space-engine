@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.delegate.collection.ModificationAwareCollection;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -13,11 +12,6 @@ import java.util.function.Supplier;
  * The {@link ModificationAwareIndexMap} will call the {@link ModificationAwareIndexMap#onModification} {@link Runnable} when the {@link IndexMap} is modified.
  */
 public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ModificationAwareIndexMap.class, d -> new ModificationAwareIndexMap(Copyable.copy(d.indexMap), d.onModification));
-	}
 	
 	public Runnable onModification;
 	

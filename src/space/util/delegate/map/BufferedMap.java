@@ -14,9 +14,6 @@ import java.util.function.Function;
  * This allows for pre-initialization {@link Map Maps} to exist and catch all data, while the Runtime {@link Map} is being created.
  * When initialization of the Runtime {@link Map} is done, all data can be flushed to it with {@link BufferedMap#setSink(Map)}.
  *
- * @see space.util.baseobject.Creatable Usage in Creatable
- * @see space.util.baseobject.Setable Usage in Setable
- * @see space.util.baseobject.Copyable Usage in Copyable
  * @see space.util.baseobject.ToString Usage in ToString
  */
 public class BufferedMap<K, V> extends DelegatingMap<K, V> {

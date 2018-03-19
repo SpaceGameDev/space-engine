@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -13,11 +12,6 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused")
 public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(DelegatingIndexMap.class, d -> new DelegatingIndexMap(Copyable.copy(d.indexMap)));
-	}
 	
 	public IndexMap<VALUE> indexMap;
 	

@@ -1,6 +1,6 @@
 package space.util.freeableStorage;
 
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.Freeable;
 
 /**
  * {@link IFreeableStorage} is an advanced native or other resource free-ing system.

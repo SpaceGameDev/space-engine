@@ -35,7 +35,7 @@ public interface Converter<FROM, TO> {
 	
 	@SuppressWarnings("unchecked")
 	static <FROM, TO> Converter<FROM, TO> identity() {
-		return (Converter<FROM, TO>) new Converter<Object, Object>() {
+		return (Converter<FROM, TO>) new Converter<>() {
 			@Override
 			public Object convertNew(Object type) {
 				return Copyable.copy(type);
@@ -58,11 +58,6 @@ public interface Converter<FROM, TO> {
 	}
 	
 	class ConverterAndThen<FROM, MIDDLE, TO> implements Converter<FROM, TO>, ToString {
-		
-		static {
-			//noinspection unchecked
-			Copyable.manualEntry(ConverterAndThen.class, d -> new ConverterAndThen<>(Copyable.copy(d.th), Copyable.copy(d.next)));
-		}
 		
 		public Converter<FROM, MIDDLE> th;
 		public Converter<MIDDLE, TO> next;
@@ -97,11 +92,6 @@ public interface Converter<FROM, TO> {
 	}
 	
 	class ConverterBefore<FROM, MIDDLE, TO> implements Converter<FROM, TO>, ToString {
-		
-		static {
-			//noinspection unchecked
-			Copyable.manualEntry(ConverterBefore.class, d -> new ConverterBefore(Copyable.copy(d.before), Copyable.copy(d.th)));
-		}
 		
 		public Converter<FROM, MIDDLE> before;
 		public Converter<MIDDLE, TO> th;

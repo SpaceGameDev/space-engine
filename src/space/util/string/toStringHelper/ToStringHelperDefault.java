@@ -7,6 +7,7 @@ import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder1D;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.ListIterator;
 
 public class ToStringHelperDefault implements ToStringHelper<String> {
@@ -226,7 +227,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//objects
 	@Override
 	public ToStringHelperObjectsInstance<String> createObjectInstance(Object obj) {
-		return new AbstractToStringHelperObjectsInstance<String>(obj, this) {
+		return new AbstractToStringHelperObjectsInstance<>(obj, this) {
 			@Override
 			public String build() {
 				CharBufferBuilder1D b = new CharBufferBuilder1D();
@@ -248,19 +249,16 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//table
 	@Override
 	public ToStringHelperTable<String> createTable(String name, int dimensions) {
-		return new AbstractToStringHelperTable<String>(dimensions) {
+		return new AbstractToStringHelperTable<>(dimensions) {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
-				Iteratorable<IndexMultiMapEntry<String>> iter = map.table();
+				Collection<IndexMultiMapEntry<String>> coll = map.table();
 				
 				b.append(name).append("{ ");
-				for (IndexMultiMapEntry<String> entry : iter) {
-					b.append(Arrays.toString(entry.getIndex())).append(": ").append(entry.getValue());
-					if (iter.hasNext())
-						b.append(", ");
-				}
-				b.append('}');
+				for (IndexMultiMapEntry<String> entry : coll)
+					b.append(Arrays.toString(entry.getIndex())).append(": ").append(entry.getValue()).append(", ");
+				b.reduceLength(2).append('}');
 				return b.toString();
 			}
 		};
@@ -269,7 +267,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	//mapper
 	@Override
 	public ToStringHelperTable<String> createMapper(String name, String separator, boolean align) {
-		return new AbstractToStringHelperMapper<String>() {
+		return new AbstractToStringHelperMapper<>() {
 			@Override
 			public String build() {
 				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();

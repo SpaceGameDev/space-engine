@@ -1,6 +1,5 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.MergingCollection;
 import space.util.delegate.iterator.Iteratorable;
@@ -23,15 +22,6 @@ import java.util.function.Function;
  * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
  */
 public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
-	
-	static {
-		//noinspection unchecked,RedundantTypeArguments
-		Copyable.<DefaultingMap>manualEntry(DefaultingMap.class, d -> new DefaultingMap(Copyable.copy(d.map), Copyable.copy(d.def), d.iterateOverDef));
-		//noinspection unchecked,RedundantTypeArguments
-		Copyable.<DefaultingMap.KeySet>manualEntry(DefaultingMap.KeySet.class, d -> d);
-		//noinspection unchecked,RedundantTypeArguments
-		Copyable.<DefaultingMap.EntrySet>manualEntry(DefaultingMap.EntrySet.class, d -> d);
-	}
 	
 	public Function<K, V> def;
 	public boolean iterateOverDef;
@@ -62,7 +52,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	}
 	
 	public static <K, V> DefaultFunctionWithIteration<K, V> makeDefaultFunctionFromMap(Map<K, V> map) {
-		return new DefaultFunctionWithIteration<K, V>() {
+		return new DefaultFunctionWithIteration<>() {
 			
 			@Override
 			public V apply(K index) {
@@ -178,7 +168,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		
 		@Override
 		public Iterator<K> iterator() {
-			return new Iteratorable<K>() {
+			return new Iteratorable<>() {
 				Iterator<K> iter = set.iterator();
 				K curr;
 				
@@ -304,7 +294,7 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		
 		@Override
 		public Iterator<Entry<K, V>> iterator() {
-			return new Iteratorable<Entry<K, V>>() {
+			return new Iteratorable<>() {
 				Iterator<Entry<K, V>> iter = set.iterator();
 				Entry<K, V> curr;
 				
@@ -398,11 +388,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 	}
 	
 	protected static class DummyEntry<K, V> implements ToString, Entry<K, V> {
-		
-		static {
-			//noinspection unchecked
-			Copyable.manualEntry(DummyEntry.class, d -> new DummyEntry(d.k, d.v));
-		}
 		
 		public K k;
 		public V v;

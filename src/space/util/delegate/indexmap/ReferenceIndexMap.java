@@ -1,25 +1,20 @@
 package space.util.delegate.indexmap;
 
 import space.util.baseobject.ToString;
-import space.util.indexmap.IndexMap;
 
 import java.lang.ref.Reference;
-import java.util.function.Function;
 
 /**
  * Remaps all Entries to a {@link Reference} of type VALUE. These References are created by the {@link ReferenceIndexMap#refCreator Reference Creator} supplied with the Constructor or directly set.
  * Note that it will accumulate References if not removed.
  */
 public class ReferenceIndexMap<VALUE> extends ConvertingIndexMap<Reference<? extends VALUE>, VALUE> implements ToString {
-	
-	public ReferenceIndexMap(IndexMap<Reference<? extends VALUE>> indexMap, Function<VALUE, Reference<? extends VALUE>> refCreator) {
-		super(indexMap, );
-	}
 
-//	static {
-//		//noinspection unchecked
-//		Copyable.manualEntry(ReferenceIndexMap.class, d -> new ReferenceIndexMap(Copyable.copy(d.indexMap), d.refCreator));
+//	public ReferenceIndexMap(IndexMap<Reference<? extends VALUE>> indexMap, Function<VALUE, Reference<? extends VALUE>> refCreator) {
+//		super(indexMap, );
 //	}
+
+//
 //
 //	public IndexMap<Reference<? extends VALUE>> indexMap;
 //	public Function<VALUE, ? extends Reference<? extends VALUE>> refCreator;

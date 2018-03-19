@@ -1,4 +1,4 @@
-package space.util.baseobject.additional;
+package space.util.baseobject;
 
 public interface Cache {
 	

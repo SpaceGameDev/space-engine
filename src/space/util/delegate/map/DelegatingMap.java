@@ -1,6 +1,5 @@
 package space.util.delegate.map;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -15,11 +14,6 @@ import java.util.function.Function;
  * A {@link Map} delegating all calls to it's Field {@link DelegatingMap#map}, provided by Constructor or set directly.
  */
 public class DelegatingMap<K, V> implements ToString, Map<K, V> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(DelegatingMap.class, d -> new DelegatingMap(Copyable.copy(d.map)));
-	}
 	
 	public Map<K, V> map;
 	

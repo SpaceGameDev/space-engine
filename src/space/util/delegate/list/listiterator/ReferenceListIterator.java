@@ -1,6 +1,5 @@
 package space.util.delegate.list.listiterator;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -15,11 +14,6 @@ import java.util.function.Function;
  * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceListIterator#refCreator Reference Creator} supplied with the Constructor or directly set.
  */
 public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(ReferenceListIterator.class, d -> new ReferenceListIterator(Copyable.copy(d.iterator), d.refCreator));
-	}
 	
 	public ListIterator<Reference<? extends E>> iterator;
 	public Function<E, ? extends Reference<? extends E>> refCreator;

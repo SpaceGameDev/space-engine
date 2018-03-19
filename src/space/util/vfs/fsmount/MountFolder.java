@@ -60,6 +60,6 @@ public class MountFolder extends AbstractMountEntry implements Folder {
 	
 	@Override
 	public void delete(String name) {
-		path.
+//		path.
 	}
 }

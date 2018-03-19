@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -12,11 +11,6 @@ import java.util.function.Supplier;
  * The {@link UnmodifiableIndexMap} makes the {@link IndexMap} unmodifiable.
  */
 public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(UnmodifiableIndexMap.class, d -> new UnmodifiableIndexMap(Copyable.copy(d.indexMap)));
-	}
 	
 	public UnmodifiableIndexMap(IndexMap<VALUE> indexMap) {
 		super(indexMap);

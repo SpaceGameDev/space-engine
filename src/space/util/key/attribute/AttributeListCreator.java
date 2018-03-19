@@ -1,6 +1,5 @@
 package space.util.key.attribute;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.concurrent.event.IEvent;
 import space.util.concurrent.event.SimpleEvent;
@@ -20,11 +19,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, ToString {
-	
-	static {
-		Copyable.manualEntry(AttributeListCreator.AttributeList.class, AttributeListCreator.AttributeList::copy);
-		Copyable.manualEntry(AttributeListCreator.AttributeListModification.class, AttributeListCreator.AttributeListModification::copy);
-	}
 	
 	public final IKeyGenerator gen;
 	
@@ -180,10 +174,6 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		
 		private AttributeList(IndexMapArrayWithDefault<Object> indexMap) {
 			super(indexMap);
-		}
-		
-		private AttributeList copy() {
-			return new AttributeList(new IndexMapArrayWithDefault<>(indexMap.toArray(), DEFAULT));
 		}
 		
 		//get

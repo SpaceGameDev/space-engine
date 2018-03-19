@@ -1,6 +1,6 @@
 package space.util.freeableStorage;
 
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.Freeable;
 import space.util.logger.Logger;
 import space.util.logger.NullLogger;
 import space.util.string.builder.CharBufferBuilder2D;

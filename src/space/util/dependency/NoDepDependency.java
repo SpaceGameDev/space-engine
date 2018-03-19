@@ -2,7 +2,7 @@ package space.util.dependency;
 
 import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.exceptions.SetNotSupportedException;
+import space.util.baseobject.exceptions.InvalidSetException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -43,9 +43,9 @@ public class NoDepDependency implements Setable, ToString, IDependency {
 	}
 	
 	@Override
-	public void set(Object obj) throws SetNotSupportedException {
+	public void set(Object obj) throws InvalidSetException {
 		if (!(obj instanceof IDependency))
-			throw new SetNotSupportedException(obj.getClass());
+			throw new InvalidSetException(obj.getClass());
 		
 		IDependency dep = (IDependency) obj;
 		uuid = dep.uuid();

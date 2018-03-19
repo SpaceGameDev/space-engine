@@ -95,11 +95,11 @@ public class ReferenceMap<K, V> implements Map<K, V> {
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		Set<Entry<K, Reference<? extends V>>> set = map.entrySet();
-		return new AbstractSet<Entry<K, V>>() {
+		return new AbstractSet<>() {
 			@Override
 			public Iterator<Entry<K, V>> iterator() {
 				Iterator<Entry<K, Reference<? extends V>>> iter = set.iterator();
-				return new Iteratorable<Entry<K, V>>() {
+				return new Iteratorable<>() {
 					@Override
 					public boolean hasNext() {
 						return iter.hasNext();
@@ -108,7 +108,7 @@ public class ReferenceMap<K, V> implements Map<K, V> {
 					@Override
 					public Entry<K, V> next() {
 						Entry<K, Reference<? extends V>> entry = iter.next();
-						return new Entry<K, V>() {
+						return new Entry<>() {
 							//making a strong reference to prevent gc interference while operating on the object
 							V v = ReferenceUtil.getSafe(entry.getValue());
 							

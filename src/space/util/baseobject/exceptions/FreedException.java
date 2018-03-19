@@ -1,10 +1,10 @@
 package space.util.baseobject.exceptions;
 
-import space.util.baseobject.additional.Freeable;
+import space.util.baseobject.Freeable;
 import space.util.string.builder.CharBufferBuilder2D;
 
 /**
- * thrown if some data was requested but the {@link Freeable} was already released
+ * thrown if some data was requested but it was already {@link Freeable#free() freed}.
  */
 public class FreedException extends RuntimeException {
 	

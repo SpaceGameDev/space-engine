@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.Copyable;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;
@@ -18,11 +17,6 @@ import java.util.stream.Stream;
  * Synchronizes over the entire {@link List}. Frequent access on the {@link List} can be problematic.
  */
 public class SynchronizedList<E> extends DelegatingList<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SynchronizedList.class, d -> new SynchronizedList(Copyable.copy(d.list)));
-	}
 	
 	public SynchronizedList(List<E> list) {
 		super(list);

@@ -1,6 +1,5 @@
 package space.util.delegate.collection;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.delegate.impl.ArrayCollection;
 import space.util.delegate.iterator.MergingIterator;
@@ -18,11 +17,6 @@ import java.util.Iterator;
  * If no {@link MergingCollection#addColl} is specified, the Methods {@link Collection#add} and {@link Collection#addAll(Collection)} throw an {@link UnsupportedOperationException}.
  */
 public class MergingCollection<E> implements ToString, Collection<E> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(MergingCollection.class, d -> MergingCollection.createWithAddCollection(d.addColl, Copyable.copy(d.collections)));
-	}
 	
 	public Collection<E> addColl;
 	public Collection<Collection<E>> collections;

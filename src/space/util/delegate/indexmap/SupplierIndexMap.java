@@ -1,6 +1,5 @@
 package space.util.delegate.indexmap;
 
-import space.util.baseobject.Copyable;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -12,11 +11,6 @@ import java.util.function.Supplier;
  * A {@link IndexMap} delegating all calls to it's Field {@link SupplierIndexMap#indexMap}, which is an {@link Supplier} of Type {@link IndexMap}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
-	
-	static {
-		//noinspection unchecked
-		Copyable.manualEntry(SupplierIndexMap.class, d -> new SupplierIndexMap(Copyable.copy(d.indexMap)));
-	}
 	
 	public Supplier<IndexMap<VALUE>> indexMap;
 	
