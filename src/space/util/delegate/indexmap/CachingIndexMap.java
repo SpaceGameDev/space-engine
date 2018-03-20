@@ -50,10 +50,10 @@ public class CachingIndexMap<VALUE> extends DefaultingIndexMap<VALUE> implements
 	public VALUE get(int index) {
 		VALUE thisV = indexMap.get(index);
 		if (thisV != null)
-			return fromNullToObject(thisV);
+			return fromCache(thisV);
 		
 		VALUE newV = def.get(index);
-		put(index, fromObjectToNull(newV));
+		put(index, toCache(newV));
 		return newV;
 	}
 	

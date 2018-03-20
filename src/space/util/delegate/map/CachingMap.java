@@ -40,7 +40,7 @@ public class CachingMap<K, V> extends DefaultingMap<K, V> implements Cache {
 	@Override
 	@SuppressWarnings("unchecked")
 	public V get(Object key) {
-		return fromObjectToNull(map.computeIfAbsent((K) key, (K k) -> fromNullToObject(def.apply(k))));
+		return fromCache(map.computeIfAbsent((K) key, (K k) -> toCache(def.apply(k))));
 	}
 	
 	@Override

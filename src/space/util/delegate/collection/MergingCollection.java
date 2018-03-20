@@ -101,6 +101,9 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@Override
 	public boolean remove(Object o) {
+		for (Collection<E> c : collections)
+			if (c.remove(o))
+				return true;
 		return false;
 	}
 	

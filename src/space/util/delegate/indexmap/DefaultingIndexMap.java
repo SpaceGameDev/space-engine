@@ -64,12 +64,12 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@Override
 	public boolean contains(int index) {
-//		return indexMap.contains(index);
+		return indexMap.contains(index) || def.contains(index);
 	}
 	
 	@Override
 	public boolean contains(VALUE v) {
-//		return indexMap.contains(v);
+		return indexMap.contains(v) || def.contains(v);
 	}
 	
 	@Override
@@ -79,27 +79,50 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@Override
 	public VALUE get(int index) {
-	
+		VALUE v = indexMap.get(index);
+		if (v != null)
+			return v;
+		
+		return def.get(index);
 	}
 	
 	@Override
 	public IndexMapEntry<VALUE> getEntry(int index) {
-	
+		return new IndexMapEntry<>() {
+			IndexMapEntry<VALUE> entry = indexMap.getEntry(index);
+			
+			@Override
+			public int getIndex() {
+				return entry.getIndex();
+			}
+			
+			@Override
+			public VALUE getValue() {
+				VALUE value = entry.getValue();
+				return value != null ? value : def.get(index);
+			}
+			
+			@Override
+			public void setValue(VALUE v) {
+				entry.setValue(v);
+			}
+		};
 	}
 	
 	@Override
 	public VALUE put(int index, VALUE v) {
-		return null;
+		return indexMap.put(index, v);
 	}
 	
 	@Override
 	public int indexOf(VALUE v) {
-		return 0;
+		int ret = indexMap.indexOf(v);
+		return ret != -1 ? ret : def.indexOf(v);
 	}
 	
 	@Override
 	public VALUE remove(int index) {
-		return null;
+		return indexMap.remove(index);
 	}
 	
 	@Override
@@ -114,57 +137,58 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@Override
 	public void addAll(Collection<VALUE> coll) {
-	
+		indexMap.addAll(coll);
 	}
 	
 	@Override
 	public void putAll(IndexMap<VALUE> indexMap) {
-	
+		indexMap.putAll(indexMap);
 	}
 	
 	@Override
 	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-	
-	}
-	
-	@Override
-	public VALUE getOrDefault(int index, VALUE def) {
-		return null;
+		indexMap.putAllIfAbsent(indexMap);
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, VALUE v) {
-		return null;
+		return indexMap.putIfAbsent(index, () -> {
+			VALUE value = def.get(index);
+			return value != null ? value : v;
+		});
 	}
 	
 	@Override
 	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return null;
+		return indexMap.putIfAbsent(index, () -> {
+			VALUE value = def.get(index);
+			return value != null ? value : v.get();
+		});
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
-		return false;
+		return indexMap.replace(index, oldValue, newValue);
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
-		return false;
+		return indexMap.replace(index, oldValue, newValue);
 	}
 	
 	@Override
 	public boolean remove(VALUE v) {
-		return false;
+		return indexMap.remove(v);
 	}
 	
 	@Override
 	public boolean remove(int index, VALUE v) {
-		return false;
+		return indexMap.remove(index, v);
 	}
 	
 	@Override
 	public void clear() {
-	
+		indexMap.clear();
 	}
 	
 	@Override
@@ -176,6 +200,63 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	public Collection<IndexMapEntry<VALUE>> table() {
 		return null;
 	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("indexMap", this.indexMap);
+		tsh.add("def", this.def);
+		tsh.add("iterateOverDef", this.iterateOverDef);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
+	@FunctionalInterface
+	public interface DefaultFunction<VALUE> {
+		
+		VALUE get(int index);
+		
+		default boolean contains(int index) {
+			return false;
+		}
+		
+		default boolean contains(VALUE v) {
+			return false;
+		}
+		
+		default int indexOf(VALUE v) {
+			return -1;
+		}
+
+//		default void addAll(IndexMap<VALUE> indexMap) {
+//
+//		}
+	}
+	
+	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
+		return new DefaultFunction<>() {
+			
+			@Override
+			public VALUE get(int index) {
+				return map.get(index);
+			}
+
+//			@Override
+//			public int indexOf(VALUE v) {
+//				return map.indexOf(v);
+//			}
+//
+//			@Override
+//			public void addAll(IndexMap<VALUE> indexMap) {
+//				indexMap.putAll(map);
+//			}
+		};
+	}
+	
 	//	//get
 //	@Override
 //	public VALUE get(int index) {
@@ -314,52 +395,4 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 //			}
 //		};
 //	}
-	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("indexMap", this.indexMap);
-		tsh.add("def", this.def);
-		tsh.add("iterateOverDef", this.iterateOverDef);
-		return tsh.build();
-	}
-	
-	@Override
-	public String toString() {
-		return toString0();
-	}
-	
-	@FunctionalInterface
-	public interface DefaultFunction<VALUE> {
-		
-		VALUE get(int index);
-
-//		default int indexOf(VALUE v) {
-//			return -1;
-//		}
-//
-//		default void addAll(IndexMap<VALUE> indexMap) {
-//
-//		}
-	}
-	
-	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
-		return new DefaultFunction<>() {
-			
-			@Override
-			public VALUE get(int index) {
-				return map.get(index);
-			}
-
-//			@Override
-//			public int indexOf(VALUE v) {
-//				return map.indexOf(v);
-//			}
-//
-//			@Override
-//			public void addAll(IndexMap<VALUE> indexMap) {
-//				indexMap.putAll(map);
-//			}
-		};
-	}
 }

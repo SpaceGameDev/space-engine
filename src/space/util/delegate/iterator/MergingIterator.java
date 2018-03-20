@@ -6,7 +6,6 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * Merges multiple {@link Iterator} to one {@link Iterator}.
@@ -14,8 +13,7 @@ import java.util.NoSuchElementException;
 public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	public Iterator<T>[] iterators;
-	public Iterator<T> currIter;
-	public int next;
+	public int next = 0;
 	
 	//Iterable
 	public MergingIterator(Collection<? extends Iterator<T>> iterators) {
@@ -44,34 +42,33 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		return fromIterable(iterables.toArray(new Iterable[iterables.size()]));
 	}
 	
+	public Iterator<T> getNextIterator() {
+		if (next >= iterators.length)
+			return null;
+		
+		Iterator<T> iter = iterators[next];
+		while (iter != null && !iter.hasNext())
+			iter = iterators[next++];
+		return iter;
+	}
+	
 	@Override
 	public boolean hasNext() {
-		return findNext() && currIter.hasNext();
+		Iterator<T> iter = getLastIterator();
+		return iter != null && iter.hasNext();
 	}
 	
 	@Override
 	public T next() {
-		if (!findNext())
-			throw new NoSuchElementException();
-		return currIter.next();
-	}
-	
-	public boolean findNext() {
-		Iterator<T> curr = currIter;
-		while (curr == null || !curr.hasNext()) {
-			if (next >= iterators.length)
-				return false;
-			curr = iterators[next++];
-		}
-		currIter = curr;
-		return true;
+		Iterator<T> iter = getNextIterator();
+		return iter != null ? iter.next() : null;
 	}
 	
 	@Override
 	public void remove() {
-		if (currIter == null)
-			throw new IllegalStateException();
-		currIter.remove();
+		Iterator<T> iter = getLastIterator();
+		if (iter != null)
+			iter.remove();
 	}
 	
 	@Override
@@ -79,8 +76,12 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iterators", this.iterators);
-		tsh.add("currIter", this.currIter);
 		tsh.add("next", this.next);
+		
+		if (next >= this.iterators.length)
+			tsh.add("iterators[next]", "Overflow");
+		else
+			tsh.add("iterators[next]", this.iterators[next]);
 		return tsh.build();
 	}
 	
