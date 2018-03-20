@@ -1,6 +1,7 @@
 package space.util.delegate.iterator;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * {@link Iteratorable} allows you to put {@link Iterator Iterators} (like the {@link java.util.ListIterator}) inside a iterating for-each loop (with ':').
@@ -18,24 +19,9 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 		
 		@Override
 		public Object next() {
-			return null;
+			throw new NoSuchElementException();
 		}
 	};
-	
-	static <E> Iteratorable<E> toIteratorable(Iterator<E> iter) {
-		return iter instanceof Iteratorable ? (Iteratorable<E>) iter : new Iteratorable<>() {
-			
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-			
-			@Override
-			public E next() {
-				return iter.next();
-			}
-		};
-	}
 	
 	@SuppressWarnings("unchecked")
 	static <E> Iteratorable<E> empty() {
@@ -57,6 +43,21 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 					return null;
 				gotten = true;
 				return elem;
+			}
+		};
+	}
+	
+	static <E> Iteratorable<E> toIteratorable(Iterator<E> iter) {
+		return iter instanceof Iteratorable ? (Iteratorable<E>) iter : new Iteratorable<>() {
+			
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+			
+			@Override
+			public E next() {
+				return iter.next();
 			}
 		};
 	}

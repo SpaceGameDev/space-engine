@@ -38,15 +38,7 @@ public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 		i.forEachRemaining(action);
 	}
 	
-	//super
-	protected void superremove() {
-		Iteratorable.super.remove();
-	}
-	
-	protected void superforEachRemaining(Consumer<? super E> action) {
-		Iteratorable.super.forEachRemaining(action);
-	}
-	
+	//toString
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("delegate", i);

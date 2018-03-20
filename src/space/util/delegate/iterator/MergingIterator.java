@@ -14,8 +14,9 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	public Iterator<T>[] iterators;
 	public int next = 0;
+	protected Iterator<T> lastIterator;
 	
-	//Iterable
+	//from Iterator
 	public MergingIterator(Collection<? extends Iterator<T>> iterators) {
 		//noinspection unchecked
 		this(iterators.toArray((Iterator<T>[]) new Iterator[iterators.size()]));
@@ -24,9 +25,10 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	@SafeVarargs
 	public MergingIterator(Iterator<T>... iterators) {
 		this.iterators = iterators;
+		getNextIterator();
 	}
 	
-	//Iterable
+	//from Iterable
 	@SafeVarargs
 	public static <T> MergingIterator<T> fromIterable(Iterable<T>... iterables) {
 		int l = iterables.length;
@@ -42,20 +44,19 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		return fromIterable(iterables.toArray(new Iterable[iterables.size()]));
 	}
 	
+	//methods
 	public Iterator<T> getNextIterator() {
-		if (next >= iterators.length)
-			return null;
-		
-		Iterator<T> iter = iterators[next];
-		while (iter != null && !iter.hasNext())
-			iter = iterators[next++];
-		return iter;
+		for (; next >= iterators.length; next++) {
+			Iterator<T> iter = iterators[next];
+			if (iter.hasNext())
+				return lastIterator = iter;
+		}
+		return null;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		Iterator<T> iter = getLastIterator();
-		return iter != null && iter.hasNext();
+		return lastIterator.hasNext();
 	}
 	
 	@Override
@@ -66,9 +67,7 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	@Override
 	public void remove() {
-		Iterator<T> iter = getLastIterator();
-		if (iter != null)
-			iter.remove();
+		lastIterator.remove();
 	}
 	
 	@Override
@@ -77,11 +76,7 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iterators", this.iterators);
 		tsh.add("next", this.next);
-		
-		if (next >= this.iterators.length)
-			tsh.add("iterators[next]", "Overflow");
-		else
-			tsh.add("iterators[next]", this.iterators[next]);
+		tsh.add("lastIterator", this.lastIterator);
 		return tsh.build();
 	}
 	
