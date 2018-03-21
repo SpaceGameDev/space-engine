@@ -28,22 +28,6 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 		getNextIterator();
 	}
 	
-	//from Iterable
-	@SafeVarargs
-	public static <T> MergingIterator<T> fromIterable(Iterable<T>... iterables) {
-		int l = iterables.length;
-		//noinspection unchecked
-		Iterator<T>[] ret = new Iterator[l];
-		for (int i = 0; i < l; i++)
-			ret[i] = iterables[i].iterator();
-		return new MergingIterator<>(ret);
-	}
-	
-	public static <T> MergingIterator<T> fromIterable(Collection<? extends Iterable<T>> iterables) {
-		//noinspection unchecked
-		return fromIterable(iterables.toArray(new Iterable[iterables.size()]));
-	}
-	
 	//methods
 	public Iterator<T> getNextIterator() {
 		for (; next >= iterators.length; next++) {
@@ -83,5 +67,21 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	@Override
 	public String toString() {
 		return toString0();
+	}
+	
+	//from Iterable
+	@SafeVarargs
+	public static <T> MergingIterator<T> fromIterable(Iterable<T>... iterables) {
+		int l = iterables.length;
+		//noinspection unchecked
+		Iterator<T>[] ret = new Iterator[l];
+		for (int i = 0; i < l; i++)
+			ret[i] = iterables[i].iterator();
+		return new MergingIterator<>(ret);
+	}
+	
+	public static <T> MergingIterator<T> fromIterable(Collection<? extends Iterable<T>> iterables) {
+		//noinspection unchecked
+		return fromIterable(iterables.toArray(new Iterable[iterables.size()]));
 	}
 }

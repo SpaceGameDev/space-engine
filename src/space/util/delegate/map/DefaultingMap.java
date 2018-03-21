@@ -50,31 +50,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		this.iterateOverDef = iterateOverDef;
 	}
 	
-	public static <K, V> DefaultFunctionWithIteration<K, V> makeDefaultFunctionFromMap(Map<K, V> map) {
-		return new DefaultFunctionWithIteration<>() {
-			
-			@Override
-			public V apply(K index) {
-				return map.get(index);
-			}
-			
-			@Override
-			public void addKeySet(Collection<K> keySet) {
-				keySet.addAll(map.keySet());
-			}
-			
-			@Override
-			public void addValues(Collection<V> valueSet) {
-				valueSet.addAll(map.values());
-			}
-			
-			@Override
-			public void addEntrySet(Collection<Entry<K, V>> entrySet) {
-				entrySet.addAll(map.entrySet());
-			}
-		};
-	}
-	
 	//get
 	@Override
 	@SuppressWarnings("unchecked")
@@ -110,10 +85,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		return allowIterateOverDefault() ? new EntrySet() : map.entrySet();
 	}
 	
-	public boolean allowIterateOverDefault() {
-		return iterateOverDef && def instanceof DefaultFunctionWithIteration;
-	}
-	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
@@ -121,6 +92,35 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		tsh.add("def", this.def);
 		tsh.add("iterateOverDef", this.iterateOverDef);
 		return tsh.build();
+	}
+	
+	public boolean allowIterateOverDefault() {
+		return iterateOverDef && def instanceof DefaultFunctionWithIteration;
+	}
+	
+	public static <K, V> DefaultFunctionWithIteration<K, V> makeDefaultFunctionFromMap(Map<K, V> map) {
+		return new DefaultFunctionWithIteration<>() {
+			
+			@Override
+			public V apply(K index) {
+				return map.get(index);
+			}
+			
+			@Override
+			public void addKeySet(Collection<K> keySet) {
+				keySet.addAll(map.keySet());
+			}
+			
+			@Override
+			public void addValues(Collection<V> valueSet) {
+				valueSet.addAll(map.values());
+			}
+			
+			@Override
+			public void addEntrySet(Collection<Entry<K, V>> entrySet) {
+				entrySet.addAll(map.entrySet());
+			}
+		};
 	}
 	
 	//DefaultFunctionWithIteration
@@ -151,21 +151,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public int size() {
-			return set.size();
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			return set.isEmpty();
-		}
-		
-		@Override
-		public boolean contains(Object o) {
-			return set.contains(o);
-		}
-		
-		@Override
 		public Iterator<K> iterator() {
 			return new Iteratorable<>() {
 				Iterator<K> iter = set.iterator();
@@ -188,6 +173,42 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 				}
 			};
 		}
+		
+		@Override
+		public int size() {
+			return set.size();
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			return set.isEmpty();
+		}
+		
+		@Override
+		public boolean contains(Object o) {
+			return set.contains(o);
+		}
+		
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			boolean[] ret = new boolean[1];
+			replaceAll((k, v) -> {
+				if (!c.contains(k))
+					return v;
+				ret[0] = true;
+				return null;
+			});
+			return ret[0];
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("map", DefaultingMap.this.map);
+			return tsh.build();
+		}
+		
+
 		
 		@Override
 		public Object[] toArray() {
@@ -233,27 +254,8 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public boolean removeAll(Collection<?> c) {
-			boolean[] ret = new boolean[1];
-			replaceAll((k, v) -> {
-				if (!c.contains(k))
-					return v;
-				ret[0] = true;
-				return null;
-			});
-			return ret[0];
-		}
-		
-		@Override
 		public void clear() {
 			DefaultingMap.this.clear();
-		}
-		
-		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-			tsh.add("map", DefaultingMap.this.map);
-			return tsh.build();
 		}
 		
 		@Override
@@ -419,16 +421,16 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
+		public String toString() {
+			return toString0();
+		}
+		
+		@Override
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("k", this.k);
 			tsh.add("v", this.v);
 			return tsh.build();
-		}
-		
-		@Override
-		public String toString() {
-			return toString0();
 		}
 	}
 }

@@ -14,6 +14,17 @@ public class GetClassOrSuperMap<K extends Class<?>, V> extends GetOverrideMap<K,
 	}
 	
 	@Override
+	public boolean containsKey(Object key) {
+		if (!(key instanceof Class<?>))
+			return false;
+		
+		for (Class<?> clazz = (Class<?>) key; clazz != null; clazz = clazz.getSuperclass())
+			if (map.containsKey(clazz))
+				return true;
+		return false;
+	}
+	
+	@Override
 	public V get(Object key) {
 		if (!(key instanceof Class<?>))
 			return null;
@@ -24,16 +35,5 @@ public class GetClassOrSuperMap<K extends Class<?>, V> extends GetOverrideMap<K,
 				return ret;
 		}
 		return null;
-	}
-	
-	@Override
-	public boolean containsKey(Object key) {
-		if (!(key instanceof Class<?>))
-			return false;
-		
-		for (Class<?> clazz = (Class<?>) key; clazz != null; clazz = clazz.getSuperclass())
-			if (map.containsKey(clazz))
-				return true;
-		return false;
 	}
 }

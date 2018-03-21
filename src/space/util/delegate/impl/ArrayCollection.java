@@ -28,11 +28,6 @@ public class ArrayCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public ArrayIterator<E> iterator() {
-		return new ArrayIterator<>(array);
-	}
-	
-	@Override
 	public int size() {
 		return array.length;
 	}
@@ -45,6 +40,11 @@ public class ArrayCollection<E> implements ToString, Collection<E> {
 	@Override
 	public boolean contains(Object o) {
 		return Arrays.binarySearch(array, o) != 0;
+	}
+	
+	@Override
+	public ArrayIterator<E> iterator() {
+		return new ArrayIterator<>(array);
 	}
 	
 	@Override

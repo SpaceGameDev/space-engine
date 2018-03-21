@@ -29,6 +29,21 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 	}
 	
 	@Override
+	public int size() {
+		return array.length;
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return array.length == 0;
+	}
+	
+	@Override
+	public boolean contains(Object o) {
+		return Arrays.binarySearch(array, o) != 0;
+	}
+	
+	@Override
 	public Iterator<String> iterator() {
 		return new Iteratorable<>() {
 			
@@ -44,21 +59,6 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 				return array[index++].name();
 			}
 		};
-	}
-	
-	@Override
-	public int size() {
-		return array.length;
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return array.length == 0;
-	}
-	
-	@Override
-	public boolean contains(Object o) {
-		return Arrays.binarySearch(array, o) != 0;
 	}
 	
 	@Override

@@ -14,12 +14,12 @@ public abstract class GetOverrideMap<K, V> extends DelegatingMap<K, V> {
 		super(map);
 	}
 	
+	@Override
+	public abstract boolean containsKey(Object key);
+	
 	//get
 	@Override
 	public abstract V get(Object key);
-	
-	@Override
-	public abstract boolean containsKey(Object key);
 	
 	//redirect to default impl
 	@Override

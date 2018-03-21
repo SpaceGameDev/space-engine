@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * A {@link List} delegating all calls to it's Field {@link DelegatingList#list}, provided by Constructor or set directly.
  */
-public class DelegatingList<E> implements ToString, List<E> {
+public class DelegatingList<E> implements List<E>, ToString {
 	
 	public List<E> list;
 	
@@ -175,35 +175,6 @@ public class DelegatingList<E> implements ToString, List<E> {
 	@Override
 	public void forEach(Consumer<? super E> action) {
 		list.forEach(action);
-	}
-	
-	//super
-	protected void superreplaceAll(UnaryOperator<E> operator) {
-		List.super.replaceAll(operator);
-	}
-	
-	protected void supersort(Comparator<? super E> c) {
-		List.super.sort(c);
-	}
-	
-	protected Spliterator<E> superspliterator() {
-		return List.super.spliterator();
-	}
-	
-	protected boolean superremoveIf(Predicate<? super E> filter) {
-		return List.super.removeIf(filter);
-	}
-	
-	protected Stream<E> superstream() {
-		return List.super.stream();
-	}
-	
-	protected Stream<E> superparallelStream() {
-		return List.super.parallelStream();
-	}
-	
-	protected void superforEach(Consumer<? super E> action) {
-		List.super.forEach(action);
 	}
 	
 	@Override

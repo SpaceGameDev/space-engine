@@ -1,6 +1,9 @@
 package space.util.delegate.collection;
 
+import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ConvertingIterator;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -12,12 +15,24 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
-public abstract class ConvertingCollection<F, T> implements Collection<T> {
+public abstract class ConvertingCollection<F, T> implements Collection<T>, ToString {
 	
 	public Collection<F> coll;
 	
 	protected ConvertingCollection(Collection<F> coll) {
 		this.coll = coll;
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("coll", this.coll);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 	
 	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap) {
@@ -69,21 +84,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		}
 		
 		@Override
-		public boolean containsAll(Collection<?> c) {
-			outer:
-			for (F f : coll) {
-				T t = remap.apply(f);
-				for (Object o : c)
-					if (Objects.equals(t, o))
-						continue outer;
-				return false;
-			}
-			return true;
-		}
-		
-		@Override
 		public Iterator<T> iterator() {
-			return new ConvertingIterator<>(coll.iterator(), remap);
+			return ConvertingIterator.createConverterOneDirectional(coll.iterator(), remap);
 		}
 		
 		@Override
@@ -115,11 +117,6 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 			return a;
 		}
 		
-		@Override
-		public void forEach(Consumer<? super T> action) {
-			coll.forEach(f -> action.accept(remap.apply(f)));
-		}
-		
 		//modify methods
 		@Override
 		public boolean add(T t) {
@@ -132,12 +129,30 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		}
 		
 		@Override
+		public boolean containsAll(Collection<?> c) {
+			outer:
+			for (F f : coll) {
+				T t = remap.apply(f);
+				for (Object o : c)
+					if (Objects.equals(t, o))
+						continue outer;
+				return false;
+			}
+			return true;
+		}
+		
+		@Override
 		public boolean addAll(Collection<? extends T> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
 		public boolean removeAll(Collection<?> c) {
+			throw new UnsupportedOperationException("Unmodifiable");
+		}
+		
+		@Override
+		public boolean removeIf(Predicate<? super T> filter) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
@@ -152,8 +167,16 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		}
 		
 		@Override
-		public boolean removeIf(Predicate<? super T> filter) {
-			throw new UnsupportedOperationException("Unmodifiable");
+		public void forEach(Consumer<? super T> action) {
+			coll.forEach(f -> action.accept(remap.apply(f)));
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("coll", this.coll);
+			tsh.add("remap", this.remap);
+			return tsh.build();
 		}
 	}
 	
@@ -177,6 +200,15 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
 			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("coll", this.coll);
+			tsh.add("remap", this.remap);
+			tsh.add("reverse", this.reverse);
+			return tsh.build();
 		}
 	}
 	
@@ -251,6 +283,15 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		public boolean removeIf(Predicate<? super T> filter) {
 			return coll.removeIf(f -> filter.test(remap.apply(f)));
 		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("coll", this.coll);
+			tsh.add("remap", this.remap);
+			tsh.add("reverseAdd", this.reverseAdd);
+			return tsh.build();
+		}
 	}
 	
 	public static class BiDirectional<F, T> extends BiDirectionalSparse<F, T> {
@@ -266,25 +307,12 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 			this.reverse = reverse;
 		}
 		
-		//access methods
-		@Override
-		@SuppressWarnings("unchecked")
-		public boolean contains(Object o) {
-			return coll.contains(reverse.apply((T) o));
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
-			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
-		}
-		
 		//modify methods
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean remove(Object o) {
 			return coll.remove(reverse.apply((T) o));
-		}
+		}        //access methods
 		
 		@Override
 		@SuppressWarnings("unchecked")
@@ -293,9 +321,35 @@ public abstract class ConvertingCollection<F, T> implements Collection<T> {
 		}
 		
 		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("coll", this.coll);
+			tsh.add("remap", this.remap);
+			tsh.add("reverseAdd", this.reverseAdd);
+			tsh.add("reverse", this.reverse);
+			return tsh.build();
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean contains(Object o) {
+			return coll.contains(reverse.apply((T) o));
+		}
+		
+		@Override
 		@SuppressWarnings("unchecked")
 		public boolean retainAll(Collection<?> c) {
 			return coll.retainAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean containsAll(Collection<?> c) {
+			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
+		}
+		
+
+		
+
 	}
 }

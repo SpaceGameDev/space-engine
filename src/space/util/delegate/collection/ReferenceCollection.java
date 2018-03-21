@@ -1,6 +1,8 @@
 package space.util.delegate.collection;
 
 import space.util.delegate.util.ReferenceUtil;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.ref.Reference;
 import java.util.Collection;
@@ -13,5 +15,13 @@ public class ReferenceCollection<E> extends ConvertingCollection.BiDirectionalSp
 	
 	public ReferenceCollection(Collection<Reference<? extends E>> coll, Function<E, Reference<? extends E>> refCreator) {
 		super(coll, ReferenceUtil::getSafe, refCreator);
+	}
+	
+	@Override
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("coll", this.coll);
+		tsh.add("refCreator", this.reverseAdd);
+		return tsh.build();
 	}
 }

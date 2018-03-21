@@ -136,6 +136,16 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		return new ModificationAwareList<>(super.subList(fromIndex, toIndex), onModification);
+	}
+	
+	@Override
+	public Spliterator<E> spliterator() {
+		return list.spliterator();
+	}
+	
+	@Override
 	public boolean removeIf(Predicate<? super E> filter) {
 		boolean ret = super.removeIf(filter);
 		if (ret)
@@ -144,18 +154,13 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public Spliterator<E> spliterator() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-	
-	@Override
 	public Stream<E> stream() {
-		throw new UnsupportedOperationException("Not implemented");
+		return list.stream();
 	}
 	
 	@Override
 	public Stream<E> parallelStream() {
-		throw new UnsupportedOperationException("Not implemented");
+		return list.parallelStream();
 	}
 	
 	@Override

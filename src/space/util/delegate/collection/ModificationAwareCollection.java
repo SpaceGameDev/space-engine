@@ -58,31 +58,6 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		return coll.toArray(a);
 	}
 	
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		return coll.containsAll(c);
-	}
-	
-	@Override
-	public Spliterator<E> spliterator() {
-		return coll.spliterator();
-	}
-	
-	@Override
-	public Stream<E> stream() {
-		return coll.stream();
-	}
-	
-	@Override
-	public Stream<E> parallelStream() {
-		return coll.parallelStream();
-	}
-	
-	@Override
-	public void forEach(Consumer<? super E> action) {
-		coll.forEach(action);
-	}
-	
 	//modify
 	@Override
 	public boolean add(E e) {
@@ -98,6 +73,11 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		if (ret)
 			onModification.run();
 		return ret;
+	}
+	
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return coll.containsAll(c);
 	}
 	
 	@Override
@@ -136,6 +116,26 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	public void clear() {
 		coll.clear();
 		onModification.run();
+	}
+	
+	@Override
+	public Spliterator<E> spliterator() {
+		return coll.spliterator();
+	}
+	
+	@Override
+	public Stream<E> stream() {
+		return coll.stream();
+	}
+	
+	@Override
+	public Stream<E> parallelStream() {
+		return coll.parallelStream();
+	}
+	
+	@Override
+	public void forEach(Consumer<? super E> action) {
+		coll.forEach(action);
 	}
 	
 	@Override

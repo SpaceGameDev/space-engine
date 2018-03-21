@@ -79,6 +79,11 @@ public class SupplierCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
+	public boolean removeIf(Predicate<? super E> filter) {
+		return coll.get().removeIf(filter);
+	}
+	
+	@Override
 	public boolean retainAll(Collection<?> c) {
 		return coll.get().retainAll(c);
 	}
@@ -91,11 +96,6 @@ public class SupplierCollection<E> implements ToString, Collection<E> {
 	@Override
 	public Spliterator<E> spliterator() {
 		return coll.get().spliterator();
-	}
-	
-	@Override
-	public boolean removeIf(Predicate<? super E> filter) {
-		return coll.get().removeIf(filter);
 	}
 	
 	@Override

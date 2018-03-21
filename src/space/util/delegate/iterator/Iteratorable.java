@@ -23,6 +23,12 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 		}
 	};
 	
+	//this is the Magic!     - and it is so simple
+	@Override
+	default Iterator<T> iterator() {
+		return this;
+	}
+	
 	@SuppressWarnings("unchecked")
 	static <E> Iteratorable<E> empty() {
 		return (Iteratorable<E>) EMPTY;
@@ -60,11 +66,5 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 				return iter.next();
 			}
 		};
-	}
-	
-	//this is the Magic!     - and it is so simple
-	@Override
-	default Iterator<T> iterator() {
-		return this;
 	}
 }

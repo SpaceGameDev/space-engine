@@ -1,30 +1,66 @@
 package space.util.delegate.iterator;
 
+import space.util.baseobject.ToString;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class ConvertingIterator<F, T> implements Iterator<T> {
+public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString {
 	
 	public Iterator<F> iter;
-	public Function<F, T> remap;
 	
-	public ConvertingIterator(Iterator<F> iter, Function<F, T> remap) {
+	public ConvertingIterator(Iterator<F> iter) {
 		this.iter = iter;
-		this.remap = remap;
 	}
 	
 	@Override
-	public boolean hasNext() {
-		return iter.hasNext();
+	public <T> T toTSH(ToStringHelper<T> api) {
+		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		tsh.add("iter", this.iter);
+		return tsh.build();
 	}
 	
 	@Override
-	public T next() {
-		return remap.apply(iter.next());
+	public String toString() {
+		return toString0();
 	}
 	
-	@Override
-	public void remove() {
-		iter.remove();
+	public static <F, T> OneDirectional<F, T> createConverterOneDirectional(Iterator<F> iter, Function<F, T> remap) {
+		return new OneDirectional<>(iter, remap);
+	}
+	
+	public static class OneDirectional<F, T> extends ConvertingIterator<F, T> {
+		
+		public Function<F, T> remap;
+		
+		public OneDirectional(Iterator<F> iter, Function<F, T> remap) {
+			super(iter);
+			this.remap = remap;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return iter.hasNext();
+		}
+		
+		@Override
+		public T next() {
+			return remap.apply(iter.next());
+		}
+		
+		@Override
+		public void remove() {
+			iter.remove();
+		}
+		
+		@Override
+		public <T> T toTSH(ToStringHelper<T> api) {
+			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			tsh.add("iter", this.iter);
+			tsh.add("remap", this.remap);
+			return tsh.build();
+		}
 	}
 }

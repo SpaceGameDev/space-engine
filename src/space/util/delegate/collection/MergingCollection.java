@@ -30,29 +30,6 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 		this.collections = collections;
 	}
 	
-	//createWithAddCollection
-	@SafeVarargs
-	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
-	}
-	
-	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
-		MergingCollection<E> ret = new MergingCollection<>(collections);
-		ret.setAddColl(addColl);
-		return ret;
-	}
-	
-	@SafeVarargs
-	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
-	}
-	
-	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<Collection<E>> collections) {
-		MergingCollection<E> ret = new MergingCollection<>(collections);
-		ret.setAddColl(addColl);
-		return ret;
-	}
-	
 	//setAddColl
 	public void setAddColl(AddCollection<E> addColl) {
 		this.addColl = addColl;
@@ -90,6 +67,29 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 			if (e.contains(o))
 				return true;
 		return false;
+	}
+	
+	@Override
+	public Iterator<E> iterator() {
+		return MergingIterator.fromIterable(collections);
+	}
+	
+	@Override
+	public Object[] toArray() {
+		return toArray(new Object[size()]);
+	}
+	
+	@Override
+	@SuppressWarnings("SuspiciousSystemArraycopy")
+	public <T> T[] toArray(T[] a) {
+		int pos = 0;
+		for (Collection<E> e : collections) {
+			Object[] o = e.toArray();
+			int l = o.length;
+			System.arraycopy(o, 0, a, pos, l);
+			pos += l;
+		}
+		return a;
 	}
 	
 	@Override
@@ -149,29 +149,6 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public Object[] toArray() {
-		return toArray(new Object[size()]);
-	}
-	
-	@Override
-	@SuppressWarnings("SuspiciousSystemArraycopy")
-	public <T> T[] toArray(T[] a) {
-		int pos = 0;
-		for (Collection<E> e : collections) {
-			Object[] o = e.toArray();
-			int l = o.length;
-			System.arraycopy(o, 0, a, pos, l);
-			pos += l;
-		}
-		return a;
-	}
-	
-	@Override
-	public Iterator<E> iterator() {
-		return MergingIterator.fromIterable(collections);
-	}
-	
-	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("addColl", this.addColl);
@@ -182,6 +159,43 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	@Override
 	public String toString() {
 		return toString0();
+	}
+	
+	//createWithAddCollection
+	@SafeVarargs
+	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
+		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+	}
+	
+	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
+		MergingCollection<E> ret = new MergingCollection<>(collections);
+		ret.setAddColl(addColl);
+		return ret;
+	}
+	
+	@SafeVarargs
+	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<E>... collections) {
+		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+	}
+	
+	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<Collection<E>> collections) {
+		MergingCollection<E> ret = new MergingCollection<>(collections);
+		ret.setAddColl(addColl);
+		return ret;
+	}
+	
+	public static <E> AddCollection<E> addCollectionFromCollection(Collection<E> coll) {
+		return new AddCollection<>() {
+			@Override
+			public boolean add(E e) {
+				return coll.add(e);
+			}
+			
+			@Override
+			public boolean addAll(Collection<? extends E> c) {
+				return coll.addAll(c);
+			}
+		};
 	}
 	
 	@FunctionalInterface
@@ -196,19 +210,5 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 					ret = true;
 			return ret;
 		}
-	}
-	
-	public static <E> AddCollection<E> addCollectionFromCollection(Collection<E> coll) {
-		return new AddCollection<E>() {
-			@Override
-			public boolean add(E e) {
-				return coll.add(e);
-			}
-			
-			@Override
-			public boolean addAll(Collection<? extends E> c) {
-				return coll.addAll(c);
-			}
-		};
 	}
 }

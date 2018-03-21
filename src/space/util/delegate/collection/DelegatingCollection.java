@@ -79,6 +79,11 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
+	public boolean removeIf(Predicate<? super E> filter) {
+		return coll.removeIf(filter);
+	}
+	
+	@Override
 	public boolean retainAll(Collection<?> c) {
 		return coll.retainAll(c);
 	}
@@ -91,11 +96,6 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 	@Override
 	public Spliterator<E> spliterator() {
 		return coll.spliterator();
-	}
-	
-	@Override
-	public boolean removeIf(Predicate<? super E> filter) {
-		return coll.removeIf(filter);
 	}
 	
 	@Override

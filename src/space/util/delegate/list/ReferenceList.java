@@ -228,18 +228,13 @@ public class ReferenceList<E> implements ToString, List<E> {
 	}
 	
 	@Override
-	public boolean removeIf(Predicate<? super E> filter) {
-		return list.removeIf(ref -> filter.test(ReferenceUtil.getSafe(ref)));
-	}
-	
-	@Override
-	public void forEach(Consumer<? super E> action) {
-		list.forEach(ref -> action.accept(ReferenceUtil.getSafe(ref)));
-	}
-	
-	@Override
 	public Spliterator<E> spliterator() {
 		throw new UnsupportedOperationException("Not implemented");
+	}
+	
+	@Override
+	public boolean removeIf(Predicate<? super E> filter) {
+		return list.removeIf(ref -> filter.test(ReferenceUtil.getSafe(ref)));
 	}
 	
 	@Override
@@ -250,6 +245,11 @@ public class ReferenceList<E> implements ToString, List<E> {
 	@Override
 	public Stream<E> parallelStream() {
 		throw new UnsupportedOperationException("Not implemented");
+	}
+	
+	@Override
+	public void forEach(Consumer<? super E> action) {
+		list.forEach(ref -> action.accept(ReferenceUtil.getSafe(ref)));
 	}
 	
 	@Override

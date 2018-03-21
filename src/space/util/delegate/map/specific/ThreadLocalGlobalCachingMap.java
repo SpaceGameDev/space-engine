@@ -14,9 +14,9 @@ import java.util.function.Function;
 
 public class ThreadLocalGlobalCachingMap<K, V> implements ToString {
 	
-	public Map<K, V> map;
 	public final Map<K, V> globalMap;
 	public final ThreadLocal<Map<K, V>> localMap;
+	public Map<K, V> map;
 	
 	public ThreadLocalGlobalCachingMap() {
 		this(null);

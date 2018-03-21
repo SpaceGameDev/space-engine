@@ -215,6 +215,26 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 		return toString0();
 	}
 	
+	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
+		return new DefaultFunction<>() {
+
+			@Override
+			public VALUE get(int index) {
+				return map.get(index);
+			}
+
+//			@Override
+//			public int indexOf(VALUE v) {
+//				return map.indexOf(v);
+//			}
+//
+//			@Override
+//			public void addAll(IndexMap<VALUE> indexMap) {
+//				indexMap.putAll(map);
+//			}
+		};
+	}
+	
 	@FunctionalInterface
 	public interface DefaultFunction<VALUE> {
 		
@@ -235,26 +255,6 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 //		default void addAll(IndexMap<VALUE> indexMap) {
 //
 //		}
-	}
-	
-	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
-		return new DefaultFunction<>() {
-			
-			@Override
-			public VALUE get(int index) {
-				return map.get(index);
-			}
-
-//			@Override
-//			public int indexOf(VALUE v) {
-//				return map.indexOf(v);
-//			}
-//
-//			@Override
-//			public void addAll(IndexMap<VALUE> indexMap) {
-//				indexMap.putAll(map);
-//			}
-		};
 	}
 	
 	//	//get
