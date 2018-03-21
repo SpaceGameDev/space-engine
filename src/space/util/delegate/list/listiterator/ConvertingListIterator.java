@@ -32,14 +32,6 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		return new OneDirectionalUnmodifiable<>(listIterator, remap);
 	}
 	
-	public static <F, T> OneDirectional<F, T> createConvertingOneDirectional(ListIterator<F> listIterator, Function<F, T> remap) {
-		return new OneDirectional<>(listIterator, remap);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectionalSparse(ListIterator<F> listIterator, Function<F, T> remap, Function<T, F> reverse) {
-		return createConvertingBiDirectional(listIterator, remap, reverse);
-	}
-	
 	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(ListIterator<F> listIterator, Function<F, T> remap, Function<T, F> reverse) {
 		return new BiDirectional<>(listIterator, remap, reverse);
 	}
@@ -112,25 +104,18 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		}
 	}
 	
-	public static class OneDirectional<F, T> extends OneDirectionalUnmodifiable<F, T> {
-		
-		public OneDirectional(ListIterator<F> listIterator, Function<F, T> remap) {
-			super(listIterator, remap);
-		}
-		
-		@Override
-		public void remove() {
-			listIterator.remove();
-		}
-	}
-	
-	public static class BiDirectional<F, T> extends OneDirectional<F, T> {
+	public static class BiDirectional<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
 		public Function<T, F> reverse;
 		
 		public BiDirectional(ListIterator<F> listIterator, Function<F, T> remap, Function<T, F> reverse) {
 			super(listIterator, remap);
 			this.reverse = reverse;
+		}
+		
+		@Override
+		public void remove() {
+			listIterator.remove();
 		}
 		
 		@Override

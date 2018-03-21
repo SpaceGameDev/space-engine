@@ -50,18 +50,18 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		this.iterateOverDef = iterateOverDef;
 	}
 	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean containsKey(Object key) {
+		return map.containsKey(key) || def.apply((K) key) != null;
+	}
+	
 	//get
 	@Override
 	@SuppressWarnings("unchecked")
 	public V get(Object key) {
 		V thisV = map.get(key);
 		return thisV != null ? thisV : def.apply((K) key);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean containsKey(Object key) {
-		return map.containsKey(key) || def.apply((K) key) != null;
 	}
 	
 	//collections
@@ -175,21 +175,6 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
-		public int size() {
-			return set.size();
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			return set.isEmpty();
-		}
-		
-		@Override
-		public boolean contains(Object o) {
-			return set.contains(o);
-		}
-		
-		@Override
 		public boolean removeAll(Collection<?> c) {
 			boolean[] ret = new boolean[1];
 			replaceAll((k, v) -> {
@@ -202,11 +187,28 @@ public class DefaultingMap<K, V> extends GetOverrideMap<K, V> {
 		}
 		
 		@Override
+		public int size() {
+			return set.size();
+		}
+		
+		@Override
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("map", DefaultingMap.this.map);
 			return tsh.build();
 		}
+		
+		@Override
+		public boolean isEmpty() {
+			return set.isEmpty();
+		}
+		
+		@Override
+		public boolean contains(Object o) {
+			return set.contains(o);
+		}
+		
+
 		
 
 		

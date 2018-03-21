@@ -24,6 +24,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 	}
 	
 	@Override
+	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
@@ -85,7 +86,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		public Iterator<T> iterator() {
-			return ConvertingIterator.createConverterOneDirectional(coll.iterator(), remap);
+			return ConvertingIterator.createConverterOneDirectionalUnmodifiable(coll.iterator(), remap);
 		}
 		
 		@Override
@@ -172,6 +173,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
@@ -203,6 +205,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
@@ -261,6 +264,11 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
+		public Iterator<T> iterator() {
+			return ConvertingIterator.createConverterOneDirectional(coll.iterator(), remap);
+		}
+		
+		@Override
 		public boolean retainAll(Collection<?> c) {
 			boolean mod = false;
 			Iterator<F> iter = coll.iterator();
@@ -285,6 +293,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
@@ -321,6 +330,19 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
+		public boolean retainAll(Collection<?> c) {
+			return coll.retainAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean contains(Object o) {
+			return coll.contains(reverse.apply((T) o));
+		}
+		
+		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
@@ -332,24 +354,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean contains(Object o) {
-			return coll.contains(reverse.apply((T) o));
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public boolean retainAll(Collection<?> c) {
-			return coll.retainAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
 			return coll.containsAll(createConvertingOneDirectionalUnmodifiable((Collection<T>) c, reverse));
 		}
-		
-
-		
-
 	}
 }

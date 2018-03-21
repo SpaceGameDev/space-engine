@@ -68,11 +68,6 @@ public class UnmodifiableList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
-		return new UnmodifiableList<>(super.subList(fromIndex, toIndex));
-	}
-	
-	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
@@ -100,6 +95,11 @@ public class UnmodifiableList<E> extends DelegatingList<E> {
 	@Override
 	public ListIterator<E> listIterator(int index) {
 		return new UnmodifiableListIterator<>(list.listIterator());
+	}
+	
+	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		return new UnmodifiableList<>(super.subList(fromIndex, toIndex));
 	}
 	
 	@Override

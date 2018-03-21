@@ -217,7 +217,7 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	public static <VALUE> DefaultFunction<VALUE> makeDefaultFunctionFromIndexMap(IndexMap<VALUE> map) {
 		return new DefaultFunction<>() {
-
+			
 			@Override
 			public VALUE get(int index) {
 				return map.get(index);

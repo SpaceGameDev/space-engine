@@ -5,6 +5,7 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString {
@@ -16,6 +17,7 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 	}
 	
 	@Override
+	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("iter", this.iter);
@@ -27,15 +29,19 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 		return toString0();
 	}
 	
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConverterOneDirectionalUnmodifiable(Iterator<F> iter, Function<F, T> remap) {
+		return new OneDirectionalUnmodifiable<F, T>(iter, remap);
+	}
+	
 	public static <F, T> OneDirectional<F, T> createConverterOneDirectional(Iterator<F> iter, Function<F, T> remap) {
 		return new OneDirectional<>(iter, remap);
 	}
 	
-	public static class OneDirectional<F, T> extends ConvertingIterator<F, T> {
+	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingIterator<F, T> {
 		
 		public Function<F, T> remap;
 		
-		public OneDirectional(Iterator<F> iter, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(Iterator<F> iter, Function<F, T> remap) {
 			super(iter);
 			this.remap = remap;
 		}
@@ -52,15 +58,33 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 		
 		@Override
 		public void remove() {
-			iter.remove();
+			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
+		public void forEachRemaining(Consumer<? super T> action) {
+			iter.forEachRemaining(f -> action.accept(remap.apply(f)));
+		}
+		
+		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("iter", this.iter);
 			tsh.add("remap", this.remap);
 			return tsh.build();
+		}
+	}
+	
+	public static class OneDirectional<F, T> extends OneDirectionalUnmodifiable<F, T> {
+		
+		public OneDirectional(Iterator<F> iter, Function<F, T> remap) {
+			super(iter, remap);
+		}
+		
+		@Override
+		public void remove() {
+			iter.remove();
 		}
 	}
 }
