@@ -1,6 +1,7 @@
 package space.util.delegate.list;
 
 import space.util.baseobject.ToString;
+import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.iterator.ConvertingIterator;
 import space.util.delegate.list.listiterator.ConvertingListIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -26,8 +27,8 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		this.list = list;
 	}
 	
-	@SuppressWarnings("TypeParameterHidesVisibleType")
 	@Override
+	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);
@@ -39,15 +40,31 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(List<F> list, Function<F, T> remap) {
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap) {
 		return new OneDirectionalUnmodifiable<>(list, remap);
+	}
+	
+	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
+		return new BiDirectionalUnmodifiable<>(list, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
+		return new BiDirectionalSparse<>(list, remap, reverseSparse);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
+		return new BiDirectional<>(list, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse, Function<? super T, ? extends F> reverse) {
+		return new BiDirectional<>(list, remap, reverseSparse, reverse);
 	}
 	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingList<F, T> {
 		
-		public Function<F, T> remap;
+		public Function<? super F, ? extends T> remap;
 		
-		public OneDirectionalUnmodifiable(List<F> list, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap) {
 			super(list);
 			this.remap = remap;
 		}
@@ -116,16 +133,9 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			outer:
-			for (F f : list) {
-				T t = remap.apply(f);
-				for (Object o : c)
-					if (Objects.equals(t, o))
-						continue outer;
-				return false;
-			}
-			return true;
+			return list.containsAll(ConvertingCollection.createConvertingOneDirectionalUnmodifiable((Collection<F>) c, remap));
 		}
 		
 		@Override
@@ -226,99 +236,201 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 	}
 	
+	public static class BiDirectionalUnmodifiable<F, T> extends OneDirectionalUnmodifiable<F, T> {
+		
+		public Function<? super T, ? extends F> reverse;
+		
+		public BiDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
+			super(list, remap);
+			this.reverse = reverse;
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean contains(Object o) {
+			return list.contains(reverse.apply((T) o));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean containsAll(Collection<?> c) {
+			return list.containsAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<F>) c, remap, reverse));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public int indexOf(Object o) {
+			return list.indexOf(reverse.apply((T) o));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public int lastIndexOf(Object o) {
+			return list.lastIndexOf(reverse.apply((T) o));
+		}
+	}
+	
 	public static class BiDirectionalSparse<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverseSparse;
+		public Function<? super T, ? extends F> reverseSparse;
 		
-		public BiDirectionalSparse(List<F> list, Function<F, T> remap, Function<T, F> reverseSparse) {
+		public BiDirectionalSparse(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
 			super(list, remap);
 			this.reverseSparse = reverseSparse;
 		}
 		
 		@Override
 		public boolean add(T t) {
-			return super.add(t);
+			return list.add(reverseSparse.apply(t));
 		}
 		
 		@Override
 		public boolean remove(Object o) {
-			return super.remove(o);
+			ListIterator<F> iter = list.listIterator();
+			while (iter.hasNext()) {
+				if (Objects.equals(remap.apply(iter.next()), o)) {
+					iter.remove();
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		@Override
 		public boolean addAll(Collection<? extends T> c) {
-			return super.addAll(c);
+			return list.addAll(ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
 		}
 		
 		@Override
 		public boolean addAll(int index, Collection<? extends T> c) {
-			return super.addAll(index, c);
+			return list.addAll(index, ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
 		}
 		
 		@Override
 		public boolean removeAll(Collection<?> c) {
-			return super.removeAll(c);
+			boolean mod = false;
+			Iterator<F> iter = list.iterator();
+			while (iter.hasNext()) {
+				T t = remap.apply(iter.next());
+				if (c.contains(t)) {
+					iter.remove();
+					mod = true;
+				}
+			}
+			return mod;
 		}
 		
 		@Override
 		public boolean retainAll(Collection<?> c) {
-			return super.retainAll(c);
+			boolean mod = false;
+			Iterator<F> iter = list.iterator();
+			while (iter.hasNext()) {
+				T t = remap.apply(iter.next());
+				if (!c.contains(t)) {
+					iter.remove();
+					mod = true;
+				}
+			}
+			return mod;
 		}
 		
 		@Override
 		public void replaceAll(UnaryOperator<T> operator) {
-			super.replaceAll(operator);
+			list.replaceAll(f1 -> {
+				T t1 = remap.apply(f1);
+				T t2 = operator.apply(t1);
+				return t1 == t2 ? f1 : reverseSparse.apply(t2);
+			});
 		}
 		
 		@Override
 		public void sort(Comparator<? super T> c) {
-			super.sort(c);
+			list.sort((o1, o2) -> c.compare(remap.apply(o1), remap.apply(o2)));
 		}
 		
 		@Override
 		public void clear() {
-			super.clear();
+			list.clear();
 		}
 		
 		@Override
 		public T set(int index, T element) {
-			return super.set(index, element);
+			return remap.apply(list.set(index, reverseSparse.apply(element)));
 		}
 		
 		@Override
 		public void add(int index, T element) {
-			super.add(index, element);
+			list.add(index, reverseSparse.apply(element));
 		}
 		
 		@Override
 		public T remove(int index) {
-			return super.remove(index);
+			return remap.apply(list.remove(index));
 		}
 		
 		@Override
 		public Iterator<T> iterator() {
-			return super.iterator();
+			return ConvertingIterator.createConverterOneDirectional(list.iterator(), remap);
 		}
 		
 		@Override
 		public ListIterator<T> listIterator() {
-			return super.listIterator();
+			return ConvertingListIterator.createConvertingBiDirectional(list.listIterator(), remap, reverseSparse);
 		}
 		
 		@Override
 		public ListIterator<T> listIterator(int index) {
-			return super.listIterator(index);
+			return ConvertingListIterator.createConvertingBiDirectional(list.listIterator(index), remap, reverseSparse);
 		}
 		
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
-			return super.subList(fromIndex, toIndex);
+			return ConvertingList.createConvertingBiDirectionalSparse(list.subList(fromIndex, toIndex), remap, reverseSparse);
 		}
 		
 		@Override
 		public boolean removeIf(Predicate<? super T> filter) {
-			return super.removeIf(filter);
+			return list.removeIf(f -> filter.test(remap.apply(f)));
 		}
 	}
 	
+	public static class BiDirectional<F, T> extends BiDirectionalSparse<F, T> {
+		
+		public Function<? super T, ? extends F> reverse;
+		
+		public BiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
+			this(list, remap, reverse, reverse);
+		}
+		
+		public BiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse, Function<? super T, ? extends F> reverse) {
+			super(list, remap, reverseSparse);
+			this.reverse = reverse;
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean contains(Object o) {
+			return list.contains(reverse.apply((T) o));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean containsAll(Collection<?> c) {
+			return list.containsAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<F>) c, remap, reverse));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public int indexOf(Object o) {
+			return list.indexOf(reverse.apply((T) o));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public int lastIndexOf(Object o) {
+			return list.lastIndexOf(reverse.apply((T) o));
+		}
+		
+		//more methods!
+	}
 }

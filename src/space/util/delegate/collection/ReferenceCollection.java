@@ -21,7 +21,7 @@ public class ReferenceCollection<E> extends ConvertingCollection.BiDirectionalSp
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
-		tsh.add("refCreator", this.reverseAdd);
+		tsh.add("refCreator", this.reverseSparse);
 		return tsh.build();
 	}
 }

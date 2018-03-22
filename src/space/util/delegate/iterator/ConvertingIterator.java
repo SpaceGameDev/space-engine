@@ -29,19 +29,19 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConverterOneDirectionalUnmodifiable(Iterator<F> iter, Function<F, T> remap) {
-		return new OneDirectionalUnmodifiable<F, T>(iter, remap);
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConverterOneDirectionalUnmodifiable(Iterator<F> iter, Function<? super F, ? extends T> remap) {
+		return new OneDirectionalUnmodifiable<>(iter, remap);
 	}
 	
-	public static <F, T> OneDirectional<F, T> createConverterOneDirectional(Iterator<F> iter, Function<F, T> remap) {
+	public static <F, T> OneDirectional<F, T> createConverterOneDirectional(Iterator<F> iter, Function<? super F, ? extends T> remap) {
 		return new OneDirectional<>(iter, remap);
 	}
 	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingIterator<F, T> {
 		
-		public Function<F, T> remap;
+		public Function<? super F, ? extends T> remap;
 		
-		public OneDirectionalUnmodifiable(Iterator<F> iter, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(Iterator<F> iter, Function<? super F, ? extends T> remap) {
 			super(iter);
 			this.remap = remap;
 		}
@@ -78,7 +78,7 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 	
 	public static class OneDirectional<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public OneDirectional(Iterator<F> iter, Function<F, T> remap) {
+		public OneDirectional(Iterator<F> iter, Function<? super F, ? extends T> remap) {
 			super(iter, remap);
 		}
 		

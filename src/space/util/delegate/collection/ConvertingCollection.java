@@ -6,7 +6,6 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -36,36 +35,35 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap) {
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(Collection<F> coll, Function<? super F, ? extends T> remap) {
 		return new OneDirectionalUnmodifiable<>(coll, remap);
 	}
 	
-	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 		return new BiDirectionalUnmodifiable<>(coll, remap, reverse);
 	}
 	
-	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(Collection<F> coll, Function<F, T> remap, Function<T, F> reverseAdd) {
-		return new BiDirectionalSparse<>(coll, remap, reverseAdd);
+	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
+		return new BiDirectionalSparse<>(coll, remap, reverseSparse);
 	}
 	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 		return new BiDirectional<>(coll, remap, reverse);
 	}
 	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse, Function<T, F> reverseAdd) {
-		return new BiDirectional<>(coll, remap, reverse, reverseAdd);
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse, Function<? super T, ? extends F> reverseSparse) {
+		return new BiDirectional<>(coll, remap, reverse, reverseSparse);
 	}
 	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingCollection<F, T> {
 		
-		public Function<F, T> remap;
+		public Function<? super F, ? extends T> remap;
 		
-		public OneDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(Collection<F> coll, Function<? super F, ? extends T> remap) {
 			super(coll);
 			this.remap = remap;
 		}
 		
-		//access methods
 		@Override
 		public int size() {
 			return coll.size();
@@ -118,7 +116,6 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return a;
 		}
 		
-		//modify methods
 		@Override
 		public boolean add(T t) {
 			throw new UnsupportedOperationException("Unmodifiable");
@@ -184,9 +181,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 	
 	public static class BiDirectionalUnmodifiable<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverse;
+		public Function<? super T, ? extends F> reverse;
 		
-		public BiDirectionalUnmodifiable(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+		public BiDirectionalUnmodifiable(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 			super(coll, remap);
 			this.reverse = reverse;
 		}
@@ -217,17 +214,16 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 	
 	public static class BiDirectionalSparse<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverseAdd;
+		public Function<? super T, ? extends F> reverseSparse;
 		
-		public BiDirectionalSparse(Collection<F> coll, Function<F, T> remap, Function<T, F> reverseAdd) {
+		public BiDirectionalSparse(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
 			super(coll, remap);
-			this.reverseAdd = reverseAdd;
+			this.reverseSparse = reverseSparse;
 		}
 		
-		//modify methods
 		@Override
 		public boolean add(T t) {
-			return coll.add(reverseAdd.apply(t));
+			return coll.add(reverseSparse.apply(t));
 		}
 		
 		@Override
@@ -244,9 +240,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		public boolean addAll(Collection<? extends T> c) {
-			ArrayList<F> list = new ArrayList<>(c.size());
-			c.forEach(o -> list.add(reverseAdd.apply(o)));
-			return coll.addAll(list);
+			return coll.addAll(ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
 		}
 		
 		@Override
@@ -298,30 +292,29 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
-			tsh.add("reverseAdd", this.reverseAdd);
+			tsh.add("reverseSparse", this.reverseSparse);
 			return tsh.build();
 		}
 	}
 	
 	public static class BiDirectional<F, T> extends BiDirectionalSparse<F, T> {
 		
-		public Function<T, F> reverse;
+		public Function<? super T, ? extends F> reverse;
 		
-		public BiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse) {
+		public BiDirectional(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 			this(coll, remap, reverse, reverse);
 		}
 		
-		public BiDirectional(Collection<F> coll, Function<F, T> remap, Function<T, F> reverse, Function<T, F> reverseAdd) {
-			super(coll, remap, reverseAdd);
+		public BiDirectional(Collection<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse, Function<? super T, ? extends F> reverseSparse) {
+			super(coll, remap, reverseSparse);
 			this.reverse = reverse;
 		}
 		
-		//modify methods
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean remove(Object o) {
 			return coll.remove(reverse.apply((T) o));
-		}        //access methods
+		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
@@ -347,7 +340,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
-			tsh.add("reverseAdd", this.reverseAdd);
+			tsh.add("reverseSparse", this.reverseSparse);
 			tsh.add("reverse", this.reverse);
 			return tsh.build();
 		}

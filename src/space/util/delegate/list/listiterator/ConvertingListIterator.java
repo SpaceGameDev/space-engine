@@ -17,6 +17,7 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 	}
 	
 	@Override
+	@SuppressWarnings("TypeParameterHidesVisibleType")
 	public <T> T toTSH(ToStringHelper<T> api) {
 		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 		tsh.add("listIterator", this.listIterator);
@@ -28,19 +29,19 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(ListIterator<F> listIterator, Function<F, T> remap) {
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(ListIterator<F> listIterator, Function<? super F, ? extends T> remap) {
 		return new OneDirectionalUnmodifiable<>(listIterator, remap);
 	}
 	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(ListIterator<F> listIterator, Function<F, T> remap, Function<T, F> reverse) {
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(ListIterator<F> listIterator, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 		return new BiDirectional<>(listIterator, remap, reverse);
 	}
 	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingListIterator<F, T> {
 		
-		public Function<F, T> remap;
+		public Function<? super F, ? extends T> remap;
 		
-		public OneDirectionalUnmodifiable(ListIterator<F> listIterator, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(ListIterator<F> listIterator, Function<? super F, ? extends T> remap) {
 			super(listIterator);
 			this.remap = remap;
 		}
@@ -96,6 +97,7 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		}
 		
 		@Override
+		@SuppressWarnings("TypeParameterHidesVisibleType")
 		public <T> T toTSH(ToStringHelper<T> api) {
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("listIterator", this.listIterator);
@@ -106,9 +108,9 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 	
 	public static class BiDirectional<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverse;
+		public Function<? super T, ? extends F> reverse;
 		
-		public BiDirectional(ListIterator<F> listIterator, Function<F, T> remap, Function<T, F> reverse) {
+		public BiDirectional(ListIterator<F> listIterator, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 			super(listIterator, remap);
 			this.reverse = reverse;
 		}
