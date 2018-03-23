@@ -83,8 +83,8 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 	
 	//toString
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("gen", this.gen);
 		return tsh.build();
 	}
@@ -132,8 +132,8 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		
 		//toString
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", indexMap);
 			tsh.add("creator", AttributeListCreator.this);
 			return tsh.build();

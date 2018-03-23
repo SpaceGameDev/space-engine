@@ -101,8 +101,8 @@ public class ArrayCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("array", this.array);
 		return tsh.build();
 	}
@@ -139,8 +139,8 @@ public class ArrayCollection<E> implements ToString, Collection<E> {
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("array", this.array);
 			tsh.add("index", this.index);
 			tsh.add("end", this.end);

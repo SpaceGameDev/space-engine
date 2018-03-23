@@ -29,8 +29,8 @@ public class ThreadLocalGlobalCachingMap<K, V> implements ToString {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("globalMap", this.globalMap);
 		
 		Map<K, V> localMap = this.localMap.get();

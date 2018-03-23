@@ -139,8 +139,8 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
 		tsh.add("onModification", this.onModification);
 		return tsh.build();

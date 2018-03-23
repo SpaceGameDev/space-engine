@@ -23,9 +23,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 	}
 	
 	@Override
-	@SuppressWarnings("TypeParameterHidesVisibleType")
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
 		return tsh.build();
 	}
@@ -128,14 +127,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		public boolean containsAll(Collection<?> c) {
-			outer:
-			for (F f : coll) {
-				T t = remap.apply(f);
-				for (Object o : c)
-					if (Objects.equals(t, o))
-						continue outer;
-				return false;
-			}
+			for (F f : coll)
+				if (!c.contains(remap.apply(f)))
+					return false;
 			return true;
 		}
 		
@@ -170,9 +164,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		@SuppressWarnings("TypeParameterHidesVisibleType")
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
 			return tsh.build();
@@ -202,9 +195,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		@SuppressWarnings("TypeParameterHidesVisibleType")
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
 			tsh.add("reverse", this.reverse);
@@ -240,7 +232,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		public boolean addAll(Collection<? extends T> c) {
-			return coll.addAll(ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
+			return coll.addAll(createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
 		}
 		
 		@Override
@@ -287,9 +279,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		@SuppressWarnings("TypeParameterHidesVisibleType")
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
 			tsh.add("reverseSparse", this.reverseSparse);
@@ -335,9 +326,8 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		@SuppressWarnings("TypeParameterHidesVisibleType")
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
 			tsh.add("reverseSparse", this.reverseSparse);

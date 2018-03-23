@@ -17,9 +17,8 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 	}
 	
 	@Override
-	@SuppressWarnings("TypeParameterHidesVisibleType")
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("iter", this.iter);
 		return tsh.build();
 	}
@@ -67,9 +66,8 @@ public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString 
 		}
 		
 		@Override
-		@SuppressWarnings("TypeParameterHidesVisibleType")
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("iter", this.iter);
 			tsh.add("remap", this.remap);
 			return tsh.build();

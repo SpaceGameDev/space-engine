@@ -91,9 +91,8 @@ public class DisposableKey<T> implements IKey<T>, FreeableWithStorage, ToString 
 	
 	//toString
 	@Override
-	@SuppressWarnings("TypeParameterHidesVisibleType")
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("id", storage.getID());
 		return tsh.build();
 	}

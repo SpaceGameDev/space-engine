@@ -1,6 +1,8 @@
 package space.util.delegate.indexmap;
 
+import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.ModificationAwareCollection;
+import space.util.delegate.indexmap.entry.ModificationAwareEntry;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -106,18 +108,31 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
+	public IndexMapEntry<VALUE> getEntry(int index) {
+		return new ModificationAwareEntry<>(super.getEntry(index), onModification);
+	}
+	
+	@Override
+	public boolean remove(VALUE v) {
+		boolean ret = super.remove(v);
+		if (ret)
+			onModification.run();
+		return ret;
+	}
+	
+	@Override
 	public Collection<VALUE> values() {
 		return new ModificationAwareCollection<>(super.values(), onModification);
 	}
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return new ModificationAwareCollection<>(super.table(), onModification);
+		return new ModificationAwareCollection<>(ConvertingCollection.<IndexMapEntry<VALUE>, IndexMapEntry<VALUE>>createConvertingBiDirectional(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry) modEntry).entry : null), onModification);
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("onModification", this.onModification);
 		return tsh.build();

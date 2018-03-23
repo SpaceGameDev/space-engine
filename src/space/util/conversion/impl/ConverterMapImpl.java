@@ -45,8 +45,8 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMapAdvanced<MI
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		return tsh.build();
 	}
@@ -85,8 +85,8 @@ public class ConverterMapImpl<MINFROM, MINTO> implements ConverterMapAdvanced<MI
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("key1", this.key1);
 			tsh.add("key2", this.key2);
 			return tsh.build();

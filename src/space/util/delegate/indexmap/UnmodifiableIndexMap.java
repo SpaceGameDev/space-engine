@@ -2,6 +2,7 @@ package space.util.delegate.indexmap;
 
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
+import space.util.delegate.indexmap.entry.UnmodifiableIndexMapEntry;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -29,7 +30,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public IndexMapEntry<VALUE> getEntry(int index) {
-		return new Entry<>(indexMap.getEntry(index));
+		return new UnmodifiableIndexMapEntry<>(indexMap.getEntry(index));
 	}
 	
 	@Override
@@ -99,35 +100,11 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), Entry::new, entry -> indexMap.getEntry(entry.getIndex()));
+		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), UnmodifiableIndexMapEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("unmodifiable", indexMap);
-	}
-	
-	private static class Entry<VALUE> implements IndexMapEntry<VALUE> {
-		
-		public IndexMapEntry<VALUE> entry;
-		
-		public Entry(IndexMapEntry<VALUE> entry) {
-			this.entry = entry;
-		}
-		
-		@Override
-		public int getIndex() {
-			return entry.getIndex();
-		}
-		
-		@Override
-		public VALUE getValue() {
-			return entry.getValue();
-		}
-		
-		@Override
-		public void setValue(VALUE v) {
-			throw new UnsupportedOperationException("Unmodifiable");
-		}
 	}
 }

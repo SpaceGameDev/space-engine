@@ -20,8 +20,8 @@ public class SubDirectBuffer extends NotFreeableDirectBuffer {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("isFreed", this.storage.isFreed());
 		tsh.add("parent", this.parent);
 		tsh.add("address", this.storage.address);

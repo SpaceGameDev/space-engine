@@ -164,8 +164,8 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);
 		tsh.add("onModification", this.onModification);
 		return tsh.build();

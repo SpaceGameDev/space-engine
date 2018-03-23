@@ -202,8 +202,8 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("def", this.def);
 		tsh.add("iterateOverDef", this.iterateOverDef);

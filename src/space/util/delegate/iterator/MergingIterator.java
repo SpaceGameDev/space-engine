@@ -55,9 +55,8 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	}
 	
 	@Override
-	@SuppressWarnings("TypeParameterHidesVisibleType")
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("iterators", this.iterators);
 		tsh.add("next", this.next);
 		tsh.add("lastIterator", this.lastIterator);

@@ -81,8 +81,8 @@ public class Dependency implements Setable, ToString, IDependency {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("uuid", uuid);
 		tsh.add("requires", requires);
 		tsh.add("requiredBy", requiredBy);

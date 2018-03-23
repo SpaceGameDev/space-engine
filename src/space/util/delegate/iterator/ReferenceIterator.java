@@ -1,22 +1,25 @@
 package space.util.delegate.iterator;
 
-import space.util.baseobject.ToString;
+import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.ref.Reference;
+import java.util.Iterator;
 
 /**
  * Remaps all Entries to a {@link Reference} of type E. (No Reference Creator is needed here)
  */
-public class ReferenceIterator<E> implements ToString, Iteratorable<E> {
+public class ReferenceIterator<E> extends ConvertingIterator.OneDirectional<Reference<? extends E>, E> {
 	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("reference", i);
+	public ReferenceIterator(Iterator<Reference<? extends E>> iter) {
+		super(iter, ReferenceUtil::getSafe);
 	}
 	
 	@Override
-	public String toString() {
-		return toString0();
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("iter", this.iter);
+		return tsh.build();
 	}
 }

@@ -123,8 +123,8 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("singlethreadedOnly", this.singlethreadedOnly);
 		tsh.add("optimizeExecutionPriority", this.multithreadedOptimizeExecutionPriority);
 		tsh.add("allowTinyWorkload", this.multithreadedAllowTinyWorkload);
@@ -179,19 +179,6 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 			}
 		}
 		
-		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-			tsh.add("allNodes", this.allNodes);
-			tsh.add("firstNodes", this.firstNodes);
-			return tsh.build();
-		}
-		
-		@Override
-		public String toString() {
-			return toString0();
-		}
-		
 		/**
 		 * one {@link Node} exists for each FUNCTION
 		 */
@@ -228,8 +215,8 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 			}
 			
 			@Override
-			public <T> T toTSH(ToStringHelper<T> api) {
-				ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+			public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+				ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 				tsh.add("func", this.func);
 				tsh.add("dep", this.dep);
 				tsh.add("depCnt", this.depCnt);
@@ -242,6 +229,21 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 				return toString0();
 			}
 		}
+		
+		@Override
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+			tsh.add("allNodes", this.allNodes);
+			tsh.add("firstNodes", this.firstNodes);
+			return tsh.build();
+		}
+		
+		@Override
+		public String toString() {
+			return toString0();
+		}
+		
+
 	}
 	
 	//ChainedTaskMultithreaded
@@ -285,24 +287,6 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 					map.get(node).call();
 			}
 			
-			@Override
-			public <T> T toTSH(ToStringHelper<T> api) {
-				ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-				tsh.add("executionStarted", this.executionStarted);
-				tsh.add("result", this.result);
-				tsh.add("subTasks", this.subTasks);
-				tsh.add("callCnt", this.callCnt);
-				tsh.add("exception", this.exception);
-				tsh.add("handler", this.handler);
-				tsh.add("executor", this.executor);
-				return tsh.build();
-			}
-			
-			@Override
-			public String toString() {
-				return toString0();
-			}
-			
 			public class NodeTaskMultithreaded extends AbstractRunnableTask implements ToString {
 				
 				public Node node;
@@ -335,8 +319,8 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 				}
 				
 				@Override
-				public <T> T toTSH(ToStringHelper<T> api) {
-					ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+				public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+					ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 					tsh.add("executionStarted", this.executionStarted);
 					tsh.add("result", this.result);
 					tsh.add("executor", this.executor);
@@ -350,6 +334,26 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 					return toString0();
 				}
 			}
+			
+			@Override
+			public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+				ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+				tsh.add("executionStarted", this.executionStarted);
+				tsh.add("result", this.result);
+				tsh.add("subTasks", this.subTasks);
+				tsh.add("callCnt", this.callCnt);
+				tsh.add("exception", this.exception);
+				tsh.add("handler", this.handler);
+				tsh.add("executor", this.executor);
+				return tsh.build();
+			}
+			
+			@Override
+			public String toString() {
+				return toString0();
+			}
+			
+
 		}
 	}
 	
@@ -420,8 +424,8 @@ public class ChainedTaskBuilder<FUNCTION> implements IChainedTaskBuilder<FUNCTIO
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("task", this.task);
 			return tsh.build();
 		}

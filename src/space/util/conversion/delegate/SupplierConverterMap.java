@@ -40,8 +40,8 @@ public class SupplierConverterMap<MINFROM, MINTO> implements ConverterMapAdvance
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		return tsh.build();
 	}

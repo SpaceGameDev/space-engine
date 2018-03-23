@@ -31,8 +31,8 @@ public class CachingConverterMap<MINFROM, MINTO> implements ConverterMap<MINFROM
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		tsh.add("def", this.def);
 		return tsh.build();

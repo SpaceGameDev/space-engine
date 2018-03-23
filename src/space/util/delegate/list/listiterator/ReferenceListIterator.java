@@ -7,86 +7,22 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 import java.lang.ref.Reference;
 import java.util.ListIterator;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceListIterator#refCreator Reference Creator} supplied with the Constructor or directly set.
  */
-public class ReferenceListIterator<E> implements ToString, ListIterator<E> {
+public class ReferenceListIterator<E> extends ConvertingListIterator.BiDirectional<Reference<? extends E>, E> implements ToString {
 	
-	public ListIterator<Reference<? extends E>> iterator;
-	public Function<E, ? extends Reference<? extends E>> refCreator;
-	
-	public ReferenceListIterator(ListIterator<Reference<? extends E>> iterator) {
-		this(iterator, ReferenceUtil.defRefCreator());
-	}
-	
-	public ReferenceListIterator(ListIterator<Reference<? extends E>> iterator, Function<E, ? extends Reference<? extends E>> refCreator) {
-		this.iterator = iterator;
-		this.refCreator = refCreator;
+	public ReferenceListIterator(ListIterator<Reference<? extends E>> listIterator, Function<? super E, ? extends Reference<? extends E>> refCreator) {
+		super(listIterator, ReferenceUtil::getSafe, refCreator);
 	}
 	
 	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-	
-	@Override
-	public E next() {
-		return ReferenceUtil.getSafe(iterator.next());
-	}
-	
-	@Override
-	public boolean hasPrevious() {
-		return iterator.hasPrevious();
-	}
-	
-	@Override
-	public E previous() {
-		return ReferenceUtil.getSafe(iterator.previous());
-	}
-	
-	@Override
-	public int nextIndex() {
-		return iterator.nextIndex();
-	}
-	
-	@Override
-	public int previousIndex() {
-		return iterator.previousIndex();
-	}
-	
-	@Override
-	public void remove() {
-		iterator.remove();
-	}
-	
-	@Override
-	public void set(E e) {
-		iterator.set(refCreator.apply(e));
-	}
-	
-	@Override
-	public void add(E e) {
-		iterator.add(refCreator.apply(e));
-	}
-	
-	@Override
-	public void forEachRemaining(Consumer<? super E> action) {
-		iterator.forEachRemaining(e -> action.accept(ReferenceUtil.getSafe(e)));
-	}
-	
-	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
-		tsh.add("iterator", this.iterator);
-		tsh.add("refCreator", this.refCreator);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("listIterator", this.listIterator);
+		tsh.add("refCreator", this.reverse);
 		return tsh.build();
-	}
-	
-	@Override
-	public String toString() {
-		return toString0();
 	}
 }

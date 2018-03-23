@@ -1,6 +1,10 @@
 package space.util.delegate.indexmap;
 
+import space.util.baseobject.ToString;
+import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -9,7 +13,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
+public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString {
 	
 	public IndexMap<F> indexMap;
 	
@@ -17,9 +21,26 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
 		this.indexMap = indexMap;
 	}
 	
-	public static class UnoDirectionalUnmodifiable<F, T> extends ConvertingIndexMap<F, T> {
+	@Override
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("indexMap", this.indexMap);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
+	}
+	
+	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingIndexMap<F, T> {
 		
 		public Function<F, T> remap;
+		
+		public OneDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap) {
+			super(indexMap);
+			this.remap = remap;
+		}
 		
 		@Override
 		public boolean isExpandable() {
@@ -55,8 +76,8 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
 		}
 		
 		@Override
-		public IndexMapEntry<T> getEntry(int index) {
-			return new Entry(index);
+		public boolean isEmpty() {
+			return indexMap.isEmpty();
 		}
 		
 		@Override
@@ -86,6 +107,11 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
 			for (int i = 0; i < org.length; i++)
 				ret[i] = remap.apply(org[i]);
 			return ret;
+		}
+		
+		@Override
+		public IndexMapEntry<T> getEntry(int index) {
+			return new Entry(indexMap.getEntry(index));
 		}
 		
 		@Override
@@ -165,34 +191,41 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T> {
 		
 		@Override
 		public Collection<T> values() {
-		
+			return ConvertingCollection.createConvertingOneDirectionalUnmodifiable(indexMap.values(), remap);
 		}
 		
 		@Override
 		public Collection<IndexMapEntry<T>> table() {
+			return ConvertingCollection.createConvertingOneDirectionalUnmodifiable(indexMap.table(), Entry::new);
+		}
 		
+		@Override
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+			tsh.add("indexMap", this.indexMap);
+			tsh.add("remap", this.remap);
+			return tsh.build();
 		}
 		
 		public class Entry implements IndexMap.IndexMapEntry<T> {
 			
-			public int index;
+			public IndexMapEntry<F> entry;
 			
-			public Entry(int index) {
-				this.index = index;
+			public Entry(IndexMapEntry<F> entry) {
+				this.entry = entry;
 			}
 			
 			@Override
 			public int getIndex() {
-				return index;
+				return entry.getIndex();
 			}
 			
 			@Override
 			public T getValue() {
-				return get(index);
+				return remap.apply(entry.getValue());
 			}
 			
-			@Override
-			public void setValue(Object v) {
+			public void setValue(T v) {
 				throw new UnsupportedOperationException("unmodifiable");
 			}
 			

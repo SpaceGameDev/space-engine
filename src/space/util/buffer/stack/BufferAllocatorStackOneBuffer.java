@@ -114,8 +114,8 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
 		tsh.add("storage", this.storage);
 		tsh.add("buffer", this.buffer);

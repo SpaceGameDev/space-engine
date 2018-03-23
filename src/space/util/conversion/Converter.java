@@ -78,8 +78,8 @@ public interface Converter<FROM, TO> {
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("th", this.th);
 			tsh.add("next", this.next);
 			return tsh.build();
@@ -112,8 +112,8 @@ public interface Converter<FROM, TO> {
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("before", this.before);
 			tsh.add("th", this.th);
 			return tsh.build();

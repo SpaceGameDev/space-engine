@@ -64,8 +64,8 @@ public class DirectBufferImpl implements DirectBuffer, FreeableWithStorage, Dump
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("isFreed", this.isFreed());
 			tsh.add("address", this.address);
 			tsh.add("capacity", this.capacity);
@@ -371,8 +371,8 @@ public class DirectBufferImpl implements DirectBuffer, FreeableWithStorage, Dump
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("isFreed", this.storage.isFreed());
 		tsh.add("address", this.storage.address);
 		tsh.add("capacity", this.storage.capacity);

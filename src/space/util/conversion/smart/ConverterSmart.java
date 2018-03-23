@@ -97,8 +97,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 	}
 	
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
-		ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("nodes", this.nodes);
 		return tsh.build();
 	}
@@ -205,8 +205,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("conv", this.conv);
 			tsh.add("weight", this.weight);
 			tsh.add("isFinal", this.isFinal);
@@ -250,8 +250,8 @@ public class ConverterSmart<MIN> implements IConverterSmart<MIN>, ToString {
 		}
 		
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
-			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("clazzNode", this.clazzNode);
 			
 			ToStringHelperTable<T> convertFrom = api.createMapper("convertFrom", " -> ", true);
