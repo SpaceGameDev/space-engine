@@ -33,6 +33,26 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		return toString0();
 	}
 	
+	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap) {
+		return new OneDirectionalUnmodifiable<>(indexMap, remap);
+	}
+	
+	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+		return new BiDirectionalUnmodifiable<>(indexMap, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse) {
+		return new BiDirectionalSparse<>(indexMap, remap, reverseSparse);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+		return new BiDirectional<>(indexMap, remap, reverse);
+	}
+	
+	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse, Function<T, F> reverse) {
+		return new BiDirectional<>(indexMap, remap, reverseSparse, reverse);
+	}
+	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingIndexMap<F, T> {
 		
 		public Function<F, T> remap;
@@ -196,7 +216,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public Collection<IndexMapEntry<T>> table() {
-			return ConvertingCollection.createConvertingOneDirectionalUnmodifiable(indexMap.table(), Entry::new);
+			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
 		}
 		
 		@Override
@@ -236,16 +256,143 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 	}
 	
-	public static class BiDirectionalUnmodifiable {
-	
+	public static class BiDirectionalUnmodifiable<F, T> extends OneDirectionalUnmodifiable<F, T> {
+		
+		public Function<T, F> reverse;
+		
+		public BiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+			super(indexMap, remap);
+			this.reverse = reverse;
+		}
+		
+		@Override
+		public boolean contains(T v) {
+			return indexMap.contains(reverse.apply(v));
+		}
+		
+		@Override
+		public int indexOf(T v) {
+			return indexMap.indexOf(reverse.apply(v));
+		}
+		
+		@Override
+		public Collection<T> values() {
+			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.values(), remap, reverse);
+		}
 	}
 	
-	public static class BiDirectional {
-	
+	public static class BiDirectionalSparse<F, T> extends OneDirectionalUnmodifiable<F, T> {
+		
+		public Function<T, F> reverseSparse;
+		
+		public BiDirectionalSparse(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse) {
+			super(indexMap, remap);
+			this.reverseSparse = reverseSparse;
+		}
+		
+		@Override
+		public void add(T v) {
+			indexMap.add(reverseSparse.apply(v));
+		}
+		
+		@Override
+		public T put(int index, T v) {
+			return remap.apply(indexMap.put(index, reverseSparse.apply(v)));
+		}
+		
+		@Override
+		public T remove(int index) {
+			return remap.apply(indexMap.remove(index));
+		}
+		
+		@Override
+		public IndexMapEntry<T> getEntry(int index) {
+//			return super.getEntry(index);
+		}
+		
+		@Override
+		public void addAll(Collection<T> coll) {
+			indexMap.addAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable(coll, reverseSparse, remap));
+		}
+		
+		@Override
+		public void putAll(IndexMap<T> indexMap) {
+			this.indexMap.putAll(ConvertingIndexMap.createConvertingBiDirectionalUnmodifiable(indexMap, reverseSparse, remap));
+		}
+		
+		@Override
+		public void putAllIfAbsent(IndexMap<T> indexMap) {
+			this.indexMap.putAllIfAbsent(ConvertingIndexMap.createConvertingBiDirectionalUnmodifiable(indexMap, reverseSparse, remap));
+		}
+		
+		@Override
+		public T putIfAbsent(int index, T v) {
+			return super.putIfAbsent(index, v);
+		}
+		
+		@Override
+		public T putIfAbsent(int index, Supplier<? extends T> v) {
+			return super.putIfAbsent(index, v);
+		}
+		
+		@Override
+		public boolean replace(int index, T oldValue, T newValue) {
+			return super.replace(index, oldValue, newValue);
+		}
+		
+		@Override
+		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
+			return super.replace(index, oldValue, newValue);
+		}
+		
+		@Override
+		public boolean remove(T v) {
+			return super.remove(v);
+		}
+		
+		@Override
+		public boolean remove(int index, T v) {
+			return super.remove(index, v);
+		}
+		
+		@Override
+		public void clear() {
+			super.clear();
+		}
+		
+		@Override
+		public Collection<IndexMapEntry<T>> table() {
+			return super.table();
+		}
 	}
 	
-	public static class BiDirectionalSpareReverse {
-	
+	public static class BiDirectional<F, T> extends BiDirectionalSparse<F, T> {
+		
+		public Function<T, F> reverse;
+		
+		public BiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+			this(indexMap, remap, reverse, reverse);
+		}
+		
+		public BiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse, Function<T, F> reverse) {
+			super(indexMap, remap, reverseSparse);
+			this.reverse = reverse;
+		}
+		
+		@Override
+		public boolean contains(T v) {
+			return indexMap.contains(reverse.apply(v));
+		}
+		
+		@Override
+		public int indexOf(T v) {
+			return indexMap.indexOf(reverse.apply(v));
+		}
+		
+		@Override
+		public Collection<T> values() {
+			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.values(), remap, reverse);
+		}
 	}
 
 //	public Function<F, T> remap;

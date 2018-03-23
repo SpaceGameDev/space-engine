@@ -468,7 +468,5 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		public List<T> subList(int fromIndex, int toIndex) {
 			return ConvertingList.createConvertingBiDirectional(list.subList(fromIndex, toIndex), remap, reverse, reverseSparse);
 		}
-		
-
 	}
 }
