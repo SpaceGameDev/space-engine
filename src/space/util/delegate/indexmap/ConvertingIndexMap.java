@@ -245,6 +245,11 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 				return remap.apply(entry.getValue());
 			}
 			
+			@Override
+			public T setIfAbsent(Supplier<T> v) {
+				throw new UnsupportedOperationException("unmodifiable");
+			}
+			
 			public void setValue(T v) {
 				throw new UnsupportedOperationException("unmodifiable");
 			}
@@ -390,6 +395,16 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			
 			public Entry(IndexMapEntry<F> entry) {
 				super(entry);
+			}
+			
+			@Override
+			public T setIfAbsent(Supplier<T> v) {
+				//noinspection unchecked
+				F[] applyF = (F[]) new Object[1];
+				//noinspection unchecked
+				T[] applyT = (T[]) new Object[1];
+				F ret = entry.setIfAbsent(() -> applyF[0] = reverseSparse.apply(applyT[0] = v.get()));
+				return ret == applyF[0] ? applyT[0] : remap.apply(ret);
 			}
 			
 			@Override

@@ -5,6 +5,8 @@ import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+import java.util.function.Supplier;
+
 public class UnmodifiableIndexMapEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
 	
 	public IndexMapEntry<VALUE> entry;
@@ -25,6 +27,11 @@ public class UnmodifiableIndexMapEntry<VALUE> implements IndexMapEntry<VALUE>, T
 	
 	@Override
 	public void setValue(VALUE v) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public VALUE setIfAbsent(Supplier<VALUE> v) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	

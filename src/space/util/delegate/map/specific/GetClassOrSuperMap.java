@@ -1,4 +1,4 @@
-package space.util.delegate.map.specific.ClassMap;
+package space.util.delegate.map.specific;
 
 import space.util.delegate.map.GetOverrideMap;
 

@@ -320,6 +320,11 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		}
 		
 		@Override
+		public VALUE setIfAbsent(Supplier<VALUE> v) {
+			return putIfAbsent(index, v);
+		}
+		
+		@Override
 		public void setValue(VALUE v) {
 			put(index, v);
 		}

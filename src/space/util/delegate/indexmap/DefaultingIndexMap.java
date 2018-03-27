@@ -6,6 +6,7 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
@@ -168,12 +169,30 @@ public class DefaultingIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
-		return indexMap.replace(index, oldValue, newValue);
+		IndexMapEntry<VALUE> entry = indexMap.getEntry(index);
+		VALUE value = entry.getValue();
+		
+		if (value == null)
+			value = this.def.get(index);
+		if (Objects.equals(oldValue, value)) {
+			entry.setValue(newValue);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
-		return indexMap.replace(index, oldValue, newValue);
+		IndexMapEntry<VALUE> entry = indexMap.getEntry(index);
+		VALUE value = entry.getValue();
+		
+		if (value == null)
+			value = this.def.get(index);
+		if (Objects.equals(oldValue, value)) {
+			entry.setValue(newValue.get());
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

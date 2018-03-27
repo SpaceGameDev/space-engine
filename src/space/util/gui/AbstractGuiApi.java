@@ -1,6 +1,6 @@
 package space.util.gui;
 
-import space.util.delegate.map.specific.ClassMap.GetClassOrSuperMap;
+import space.util.delegate.map.specific.GetClassOrSuperMap;
 import space.util.gui.exception.GuiElementUnsupportedException;
 
 import java.util.HashMap;

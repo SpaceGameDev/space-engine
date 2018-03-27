@@ -133,6 +133,8 @@ public interface IndexMap<VALUE> {
 		
 		void setValue(VALUE v);
 		
+		VALUE setIfAbsent(Supplier<VALUE> v);
+		
 		default void remove() {
 			setValue(null);
 		}
