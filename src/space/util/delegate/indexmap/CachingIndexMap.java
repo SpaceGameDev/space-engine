@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
+import static space.util.delegate.util.CacheUtil.*;
+
 /**
  * The {@link CachingMap} tries to get a value from the {@link CachingMap#map}, and when no value has been found, it will get the value from the {@link CachingMap#def}, write it into the local map and return it;
  * <p>
@@ -43,7 +45,7 @@ public class CachingIndexMap<VALUE> implements IndexMap<VALUE>, ToString, Cache 
 	
 	@Override
 	public boolean contains(int index) {
-		return indexMap.putIfAbsent(index, () -> def.apply(index)) != null;
+		return indexMap.putIfAbsent(index, () -> toCache(def.apply(index))) != null;
 	}
 	
 	@Override
@@ -54,12 +56,12 @@ public class CachingIndexMap<VALUE> implements IndexMap<VALUE>, ToString, Cache 
 	
 	@Override
 	public void add(VALUE v) {
-		indexMap.add(v);
+		indexMap.add(toCache(v));
 	}
 	
 	@Override
 	public VALUE get(int index) {
-		return indexMap.putIfAbsent(index, () -> def.apply(index));
+		return fromCache(indexMap.putIfAbsent(index, () -> toCache(def.apply(index))));
 	}
 	
 	@Override
