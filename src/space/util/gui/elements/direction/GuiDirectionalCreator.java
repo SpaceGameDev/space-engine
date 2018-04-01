@@ -25,7 +25,5 @@ public interface GuiDirectionalCreator extends GuiCreator {
 		GuiElement put(int index, GuiElement v);
 		
 		GuiElement remove(int index);
-		
-		void remove(GuiElement v);
 	}
 }

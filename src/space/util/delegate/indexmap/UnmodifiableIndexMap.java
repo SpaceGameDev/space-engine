@@ -79,11 +79,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean remove(VALUE v) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
 	public boolean remove(int index, VALUE v) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}

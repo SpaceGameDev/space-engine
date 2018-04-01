@@ -113,21 +113,13 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public boolean remove(VALUE v) {
-		boolean ret = super.remove(v);
-		if (ret)
-			onModification.run();
-		return ret;
-	}
-	
-	@Override
 	public Collection<VALUE> values() {
 		return new ModificationAwareCollection<>(super.values(), onModification);
 	}
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return new ModificationAwareCollection<>(ConvertingCollection.createConvertingBiDirectional(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry) modEntry).entry : null), onModification);
+		return new ModificationAwareCollection<>(ConvertingCollection.<IndexMapEntry<VALUE>, ModificationAwareEntry<VALUE>>createConvertingBiDirectional(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? modEntry.entry : null), onModification);
 	}
 	
 	@Override

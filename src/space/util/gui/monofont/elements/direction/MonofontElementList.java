@@ -47,15 +47,6 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 		return old;
 	}
 	
-	@Override
-	public void remove(GuiElement gui) {
-		if (!(gui instanceof MonofontGuiElement))
-			throw new IllegalGuiElementException(gui);
-		MonofontGuiElement v = (MonofontGuiElement) gui;
-		list.remove(v);
-		v.setParent(null);
-	}
-	
 	public IndexMap<CharSequence2D> buildList() {
 		IndexMap<CharSequence2D> charTable = new IndexMapArray<>();
 		for (IndexMapEntry<MonofontGuiElement> entry : list.table()) {

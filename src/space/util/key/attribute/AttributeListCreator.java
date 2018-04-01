@@ -172,10 +172,6 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 			super(DEFAULT);
 		}
 		
-		private AttributeList(IndexMapArrayWithDefault<Object> indexMap) {
-			super(indexMap);
-		}
-		
 		//get
 		@Override
 		@SuppressWarnings("unchecked")
@@ -222,7 +218,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		
 		@Override
 		public Collection<? extends IAttributeListCreator.ListEntry<?>> table() {
-			return new ConvertingCollection<>(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
+			return ConvertingCollection.createConvertingBiDirectional(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
 		
 		protected class ListEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListEntry<V> {
@@ -348,7 +344,7 @@ public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, 
 		
 		@Override
 		public Collection<? extends IAttributeListCreator.ListModificationEntry<?>> table() {
-			return new ConvertingCollection<>(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
+			return ConvertingCollection.createConvertingBiDirectional(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
 		
 		protected class ListModificationEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListModificationEntry<V> {

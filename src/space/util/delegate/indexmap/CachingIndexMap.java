@@ -27,16 +27,6 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public boolean contains(VALUE v) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public int indexOf(VALUE v) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		boolean[] chg = new boolean[1];
 		super.putIfAbsent(index, () -> {
@@ -56,11 +46,6 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 			return defValue == oldValue ? newValue.get() : defValue;
 		});
 		return chg[0] || super.replace(index, oldValue, newValue);
-	}
-	
-	@Override
-	public boolean remove(VALUE v) {
-		throw new UnsupportedOperationException();
 	}
 	
 	@Override

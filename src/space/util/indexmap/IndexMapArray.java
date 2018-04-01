@@ -81,11 +81,6 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public int indexOf(VALUE v) {
-		return Arrays.binarySearch(array, 0, length, v);
-	}
-	
-	@Override
 	public VALUE remove(int index) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");

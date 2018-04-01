@@ -8,7 +8,6 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -78,14 +77,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean contains(T v) {
-			for (F f : indexMap.values())
-				if (Objects.equals(remap.apply(f), v))
-					return true;
-			return false;
-		}
-		
-		@Override
 		public void add(T v) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
@@ -103,15 +94,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		@Override
 		public T put(int index, T v) {
 			throw new UnsupportedOperationException("unmodifiable");
-		}
-		
-		@Override
-		public int indexOf(T v) {
-			Iterator<F> iter = indexMap.values().iterator();
-			for (int i = 0; iter.hasNext(); i++)
-				if (Objects.equals(remap.apply(iter.next()), v))
-					return i;
-			return -1;
 		}
 		
 		@Override
@@ -195,11 +177,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean remove(T v) {
-			throw new UnsupportedOperationException("unmodifiable");
-		}
-		
-		@Override
 		public boolean remove(int index, T v) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
@@ -268,16 +245,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		public BiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
 			super(indexMap, remap);
 			this.reverse = reverse;
-		}
-		
-		@Override
-		public boolean contains(T v) {
-			return indexMap.contains(reverse.apply(v));
-		}
-		
-		@Override
-		public int indexOf(T v) {
-			return indexMap.indexOf(reverse.apply(v));
 		}
 		
 		@Override
@@ -367,12 +334,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean remove(T v) {
-			int index = indexOf(v);
-			return index != -1 && indexMap.remove(index) != null;
-		}
-		
-		@Override
 		public boolean remove(int index, T v) {
 			IndexMapEntry<F> entry = indexMap.getEntry(index);
 			if (!Objects.equals(v, remap.apply(entry.getValue())))
@@ -433,16 +394,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean contains(T v) {
-			return indexMap.contains(reverse.apply(v));
-		}
-		
-		@Override
-		public int indexOf(T v) {
-			return indexMap.indexOf(reverse.apply(v));
-		}
-		
-		@Override
 		public boolean replace(int index, T oldValue, T newValue) {
 			return indexMap.replace(index, reverse.apply(oldValue), () -> reverseSparse.apply(newValue));
 		}
@@ -450,11 +401,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		@Override
 		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
 			return indexMap.replace(index, reverse.apply(oldValue), () -> reverseSparse.apply(newValue.get()));
-		}
-		
-		@Override
-		public boolean remove(T v) {
-			return indexMap.remove(reverse.apply(v));
 		}
 		
 		@Override

@@ -41,11 +41,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean contains(VALUE v) {
-		return indexMap.contains(v);
-	}
-	
-	@Override
 	public void add(VALUE v) {
 		indexMap.add(v);
 	}
@@ -63,11 +58,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE put(int index, VALUE v) {
 		return indexMap.put(index, v);
-	}
-	
-	@Override
-	public int indexOf(VALUE v) {
-		return indexMap.indexOf(v);
 	}
 	
 	@Override
@@ -123,11 +113,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		return indexMap.replace(index, oldValue, newValue);
-	}
-	
-	@Override
-	public boolean remove(VALUE v) {
-		return indexMap.remove(v);
 	}
 	
 	@Override

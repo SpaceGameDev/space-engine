@@ -24,10 +24,6 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default boolean contains(VALUE v) {
-		return indexOf(v) != -1;
-	}
-	
 	default void add(VALUE v) {
 		put(size(), v);
 	}
@@ -37,8 +33,6 @@ public interface IndexMap<VALUE> {
 	IndexMapEntry<VALUE> getEntry(int index);
 	
 	VALUE put(int index, VALUE v);
-	
-	int indexOf(VALUE v);
 	
 	VALUE remove(int index);
 	
@@ -102,10 +96,6 @@ public interface IndexMap<VALUE> {
 			return true;
 		}
 		return false;
-	}
-	
-	default boolean remove(VALUE v) {
-		return remove(indexOf(v)) != null;
 	}
 	
 	default boolean remove(int index, VALUE v) {
