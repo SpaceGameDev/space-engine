@@ -146,7 +146,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	public Collection<IndexMultiMapEntry<VALUE>> tableComplete() {
-		return new ConvertingCollection<>(indexMap.table(), Entry::new);
+		return ConvertingCollection.createConvertingBiDirectional(indexMap.table(), Entry::new, entry -> entry instanceof Entry ? ((Entry<VALUE>) entry).entry : null);
 	}
 	
 	protected class Entry<V> implements IndexMultiMapEntry<V> {
