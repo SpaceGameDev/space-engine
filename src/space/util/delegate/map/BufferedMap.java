@@ -1,5 +1,8 @@
 package space.util.delegate.map;
 
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +32,7 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 	public synchronized void setSink(Map<K, V> sink) {
 		map = sink;
 		sink.putAll(buffer);
-		buffer.clear();
+		buffer = null;
 	}
 	
 	public synchronized boolean hasSink() {
@@ -162,5 +165,13 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 	@Override
 	public synchronized V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
 		return hasSink() ? super.merge(key, value, remappingFunction) : buffer.merge(key, value, remappingFunction);
+	}
+	
+	@Override
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("map", this.map);
+		tsh.add("buffer", this.buffer);
+		return tsh.build();
 	}
 }

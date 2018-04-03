@@ -2,7 +2,7 @@ package space.util.delegate.indexmap;
 
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
-import space.util.delegate.indexmap.entry.UnmodifiableIndexMapEntry;
+import space.util.delegate.indexmap.entry.UnmodifiableEntry;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -30,7 +30,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public IndexMapEntry<VALUE> getEntry(int index) {
-		return new UnmodifiableIndexMapEntry<>(indexMap.getEntry(index));
+		return new UnmodifiableEntry<>(indexMap.getEntry(index));
 	}
 	
 	@Override
@@ -95,7 +95,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), UnmodifiableIndexMapEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
+		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
 	@Override

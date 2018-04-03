@@ -14,8 +14,8 @@ import java.util.function.Function;
 
 public class ThreadLocalGlobalCachingMap<K, V> implements ToString {
 	
-	public final Map<K, V> globalMap;
-	public final ThreadLocal<Map<K, V>> localMap;
+	public Map<K, V> globalMap;
+	public ThreadLocal<Map<K, V>> localMap;
 	public Map<K, V> map;
 	
 	public ThreadLocalGlobalCachingMap() {
@@ -37,7 +37,7 @@ public class ThreadLocalGlobalCachingMap<K, V> implements ToString {
 		if (localMap != null)
 			tsh.add("localMap.size()", localMap.size());
 		else
-			tsh.add("localMap.size()", "null");
+			tsh.add("localMap", "null");
 		return tsh.build();
 	}
 	

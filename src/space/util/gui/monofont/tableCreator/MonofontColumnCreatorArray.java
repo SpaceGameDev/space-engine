@@ -1,6 +1,5 @@
 package space.util.gui.monofont.tableCreator;
 
-import space.util.delegate.iterator.Iteratorable;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.IndexMapEntry;
@@ -8,6 +7,8 @@ import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.math.MathUtils;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
+
+import java.util.Collection;
 
 /**
  * makes a table with full borders out of single characters
@@ -39,7 +40,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, ColumnDirection direction, IndexMap<CharSequence2D> elements) {
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		Iteratorable<IndexMapEntry<CharSequence2D>> iter = elements.table();
+		Collection<IndexMapEntry<CharSequence2D>> iter = elements.table();
 		for (IndexMapEntry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			CharSequence2D value = elem.getValue();

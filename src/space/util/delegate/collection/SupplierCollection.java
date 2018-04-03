@@ -16,9 +16,9 @@ import java.util.stream.Stream;
  */
 public class SupplierCollection<E> implements ToString, Collection<E> {
 	
-	public Supplier<Collection<E>> coll;
+	public Supplier<? extends Collection<E>> coll;
 	
-	public SupplierCollection(Supplier<Collection<E>> coll) {
+	public SupplierCollection(Supplier<? extends Collection<E>> coll) {
 		this.coll = coll;
 	}
 	

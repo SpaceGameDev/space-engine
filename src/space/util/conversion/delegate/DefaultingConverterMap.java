@@ -1,6 +1,5 @@
 package space.util.conversion.delegate;
 
-import space.util.baseobject.ToString;
 import space.util.conversion.Converter;
 import space.util.conversion.ConverterMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -11,7 +10,7 @@ import java.util.Map;
 /**
  * Is threadsafe if the internal {@link Map} is threadsafe.
  */
-public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> implements ToString {
+public class DefaultingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> {
 	
 	public ConverterMap<MINFROM, MINTO> def;
 	

@@ -1,6 +1,5 @@
 package space.util.delegate.list;
 
-import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.list.listiterator.ReferenceListIterator;
 import space.util.delegate.util.ReferenceUtil;
@@ -14,7 +13,7 @@ import java.util.function.Function;
 /**
  * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceList#refCreator Reference Creator} supplied with the Constructor or directly set.
  */
-public class ReferenceList<E> extends ConvertingList.BiDirectionalSparse<Reference<? extends E>, E> implements ToString {
+public class ReferenceList<E> extends ConvertingList.BiDirectionalSparse<Reference<? extends E>, E> {
 	
 	public ReferenceList(List<Reference<? extends E>> list, Function<? super E, ? extends Reference<? extends E>> refCreator) {
 		super(list, ReferenceUtil::getSafe, refCreator);

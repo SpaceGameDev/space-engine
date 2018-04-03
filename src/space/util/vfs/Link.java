@@ -1,9 +1,8 @@
 package space.util.vfs;
 
-import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
-public interface Link extends Entry, ToString {
+public interface Link extends Entry {
 	
 	/**
 	 * gets the pointer to the linked file

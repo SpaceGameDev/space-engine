@@ -1,6 +1,13 @@
 package space.util.delegate.map;
 
+import space.util.delegate.collection.UnmodifiableCollection;
+import space.util.delegate.map.entry.UnmodifiableEntry;
+import space.util.delegate.set.ConvertingSet;
+import space.util.delegate.set.UnmodifiableSet;
+
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -76,5 +83,20 @@ public class UnmodifiableMap<K, V> extends DelegatingMap<K, V> {
 	@Override
 	public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
 		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public Set<K> keySet() {
+		return new UnmodifiableSet<>(map.keySet());
+	}
+	
+	@Override
+	public Collection<V> values() {
+		return new UnmodifiableCollection<>(map.values());
+	}
+	
+	@Override
+	public Set<Entry<K, V>> entrySet() {
+		return new ConvertingSet.BiDirectionalUnmodifiable<Entry<K, V>, Entry<K, V>>(map.entrySet(), UnmodifiableEntry::new, entry -> entry instanceof UnmodifiableEntry ? ((UnmodifiableEntry) entry).entry : null);
 	}
 }

@@ -136,50 +136,6 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 		return map.merge(key, value, remappingFunction);
 	}
 	
-	protected V supergetOrDefault(Object key, V defaultValue) {
-		return Map.super.getOrDefault(key, defaultValue);
-	}
-	
-	protected void superforEach(BiConsumer<? super K, ? super V> action) {
-		Map.super.forEach(action);
-	}
-	
-	protected void superreplaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
-		Map.super.replaceAll(function);
-	}
-	
-	protected V superputIfAbsent(K key, V value) {
-		return Map.super.putIfAbsent(key, value);
-	}
-	
-	protected boolean superremove(Object key, Object value) {
-		return Map.super.remove(key, value);
-	}
-	
-	protected boolean superreplace(K key, V oldValue, V newValue) {
-		return Map.super.replace(key, oldValue, newValue);
-	}
-	
-	protected V superreplace(K key, V value) {
-		return Map.super.replace(key, value);
-	}
-	
-	protected V supercomputeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
-		return Map.super.computeIfAbsent(key, mappingFunction);
-	}
-	
-	protected V supercomputeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		return Map.super.computeIfPresent(key, remappingFunction);
-	}
-	
-	protected V supercompute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		return Map.super.compute(key, remappingFunction);
-	}
-	
-	protected V supermerge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-		return Map.super.merge(key, value, remappingFunction);
-	}
-	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
 		return api.createModifier("delegate", map);

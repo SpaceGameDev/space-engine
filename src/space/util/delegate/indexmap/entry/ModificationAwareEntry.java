@@ -1,30 +1,19 @@
 package space.util.delegate.indexmap.entry;
 
-import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.function.Supplier;
 
-public class ModificationAwareEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
+public class ModificationAwareEntry<VALUE> extends DelegatingEntry<VALUE> {
 	
 	public IndexMapEntry<VALUE> entry;
 	public Runnable onModification;
 	
 	public ModificationAwareEntry(IndexMapEntry<VALUE> entry, Runnable onModification) {
-		this.entry = entry;
+		super(entry);
 		this.onModification = onModification;
-	}
-	
-	@Override
-	public int getIndex() {
-		return entry.getIndex();
-	}
-	
-	@Override
-	public VALUE getValue() {
-		return entry.getValue();
 	}
 	
 	@Override

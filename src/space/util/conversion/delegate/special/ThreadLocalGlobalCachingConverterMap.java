@@ -1,6 +1,5 @@
 package space.util.conversion.delegate.special;
 
-import space.util.baseobject.ToString;
 import space.util.conversion.ConverterMap;
 import space.util.conversion.delegate.CachingConverterMap;
 import space.util.conversion.delegate.DelegatingConverterMap;
@@ -12,7 +11,7 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ThreadLocalGlobalCachingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> implements ToString {
+public class ThreadLocalGlobalCachingConverterMap<MINFROM, MINTO> extends DelegatingConverterMap<MINFROM, MINTO> {
 	
 	public final ConverterMap<MINFROM, MINTO> globalMap;
 	public final ThreadLocal<ConverterMap<MINFROM, MINTO>> localMap;

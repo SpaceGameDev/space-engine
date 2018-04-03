@@ -1,7 +1,6 @@
 package space.util.vfs;
 
 import space.util.FlagUtil;
-import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-public interface File extends Entry, ToString {
+public interface File extends Entry {
 	
 	/**
 	 * gets the size of this file

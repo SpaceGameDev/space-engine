@@ -3,15 +3,14 @@ package space.util.delegate.indexmap.entry;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.function.Supplier;
 
-public class UnmodifiableIndexMapEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
+public class DelegatingEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
 	
 	public IndexMapEntry<VALUE> entry;
 	
-	public UnmodifiableIndexMapEntry(IndexMapEntry<VALUE> entry) {
+	public DelegatingEntry(IndexMapEntry<VALUE> entry) {
 		this.entry = entry;
 	}
 	
@@ -27,19 +26,22 @@ public class UnmodifiableIndexMapEntry<VALUE> implements IndexMapEntry<VALUE>, T
 	
 	@Override
 	public void setValue(VALUE v) {
-		throw new UnsupportedOperationException("Unmodifiable");
+		entry.setValue(v);
 	}
 	
 	@Override
 	public VALUE setIfAbsent(Supplier<VALUE> v) {
-		throw new UnsupportedOperationException("Unmodifiable");
+		return entry.setIfAbsent(v);
+	}
+	
+	@Override
+	public void remove() {
+		entry.remove();
 	}
 	
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
-		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("entry", this.entry);
-		return tsh.build();
+		return api.createModifier("delegate", entry);
 	}
 	
 	@Override

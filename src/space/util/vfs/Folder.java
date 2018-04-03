@@ -1,6 +1,5 @@
 package space.util.vfs;
 
-import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.vfs.exception.UnsupportedEntryException;
 
@@ -8,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.OpenOption;
 import java.util.Map;
 
-public interface Folder extends Entry, ToString {
+public interface Folder extends Entry {
 	
 	//getEntries
 	

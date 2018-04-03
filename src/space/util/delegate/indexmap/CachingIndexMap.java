@@ -1,7 +1,6 @@
 package space.util.delegate.indexmap;
 
 import space.util.baseobject.Cache;
-import space.util.baseobject.ToString;
 import space.util.delegate.map.CachingMap;
 import space.util.delegate.util.CacheUtil;
 import space.util.indexmap.IndexMap;
@@ -17,7 +16,7 @@ import java.util.function.Supplier;
  * <p>
  * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
  */
-public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache, ToString {
+public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache {
 	
 	public IntFunction<VALUE> def;
 	

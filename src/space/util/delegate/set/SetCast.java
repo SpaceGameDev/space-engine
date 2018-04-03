@@ -1,5 +1,6 @@
-package space.util.delegate.collection;
+package space.util.delegate.set;
 
+import space.util.delegate.collection.DelegatingCollection;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Collection;

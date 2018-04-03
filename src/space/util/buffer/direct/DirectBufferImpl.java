@@ -1,7 +1,6 @@
 package space.util.buffer.direct;
 
 import space.util.baseobject.Dumpable;
-import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.IFreeableStorage;
@@ -19,7 +18,7 @@ import static sun.misc.Unsafe.*;
 /**
  * A simple <b>UNCHECKED</b> implementation of {@link DirectBuffer}
  */
-public class DirectBufferImpl implements DirectBuffer, FreeableWithStorage, Dumpable, ToString {
+public class DirectBufferImpl implements DirectBuffer, ToString {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	

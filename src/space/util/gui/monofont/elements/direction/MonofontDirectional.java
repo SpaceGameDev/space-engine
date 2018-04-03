@@ -1,7 +1,6 @@
 package space.util.gui.monofont.elements.direction;
 
 import space.util.gui.elements.direction.GuiDirectionalCreator;
-import space.util.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
 import space.util.gui.elements.text.GuiText1DCreator;
 import space.util.gui.monofont.MonofontIncluding;
 import space.util.gui.monofont.elements.text.MonofontText1D;
@@ -10,7 +9,7 @@ import space.util.gui.monofont.tableCreator.MonofontColumnCreator.ColumnDirectio
 import space.util.gui.monofont.tableCreator.MonofontWithColumnCreator;
 import space.util.string.CharSequence2D;
 
-public class MonofontDirectional extends MonofontElementList implements GuiDirectional, MonofontWithColumnCreator {
+public class MonofontDirectional extends MonofontElementList implements MonofontWithColumnCreator {
 	
 	static {
 		MonofontIncluding.toIncludeList.add(MonofontDirectional.class);
