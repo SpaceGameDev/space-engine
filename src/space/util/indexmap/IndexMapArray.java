@@ -128,19 +128,19 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	//addAll
 	@Override
-	public void addAll(Collection<VALUE> coll) {
+	public void addAll(Collection<? extends VALUE> coll) {
 		ensureCapacity(length + coll.size());
 		IndexMap.super.addAll(coll);
 	}
 	
 	@Override
-	public void putAll(IndexMap<VALUE> indexMap) {
+	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		ensureCapacity(indexMap.size());
 		IndexMap.super.putAll(indexMap);
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		ensureCapacity(indexMap.size());
 		IndexMap.super.putAllIfAbsent(indexMap);
 	}

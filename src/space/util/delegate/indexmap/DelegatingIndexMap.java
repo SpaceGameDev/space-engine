@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 /**
  * A {@link IndexMap} delegating all calls to it's Field {@link DelegatingIndexMap#indexMap}, provided by Constructor or set directly.
  */
-@SuppressWarnings("unused")
 public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	public IndexMap<VALUE> indexMap;
@@ -76,17 +75,17 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void addAll(Collection<VALUE> coll) {
+	public void addAll(Collection<? extends VALUE> coll) {
 		indexMap.addAll(coll);
 	}
 	
 	@Override
-	public void putAll(IndexMap<VALUE> indexMap) {
+	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.putAll(indexMap);
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.putAllIfAbsent(indexMap);
 	}
 	

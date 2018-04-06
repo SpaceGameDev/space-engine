@@ -44,17 +44,17 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public void addAll(Collection<VALUE> coll) {
+	public void addAll(Collection<? extends VALUE> coll) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public void putAll(IndexMap<VALUE> indexMap) {
+	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -95,7 +95,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
+		return new ConvertingCollection.BiDirectionalUnmodifiable<>(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
 	@Override

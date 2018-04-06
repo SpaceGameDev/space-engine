@@ -19,10 +19,16 @@ import java.util.function.Supplier;
 public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache {
 	
 	public IntFunction<VALUE> def;
+	public boolean allowIterateOverExisting;
 	
 	public CachingIndexMap(IndexMap<VALUE> indexMap, IntFunction<VALUE> def) {
+		this(indexMap, def, true);
+	}
+	
+	public CachingIndexMap(IndexMap<VALUE> indexMap, IntFunction<VALUE> def, boolean allowIterateOverExisting) {
 		super(indexMap, CacheUtil::fromCache, CacheUtil::toCache);
 		this.def = def;
+		this.allowIterateOverExisting = allowIterateOverExisting;
 	}
 	
 	@Override
@@ -60,6 +66,8 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public Collection<VALUE> values() {
+		if (allowIterateOverExisting)
+			return super.values();
 		throw new UnsupportedOperationException();
 	}
 	
@@ -75,11 +83,15 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public VALUE[] toArray() {
+		if (allowIterateOverExisting)
+			return super.toArray();
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public VALUE[] toArray(VALUE[] a) {
+		if (allowIterateOverExisting)
+			return super.toArray(a);
 		throw new UnsupportedOperationException();
 	}
 	
@@ -105,7 +117,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		indexMap.table().forEach(entry -> super.putIfAbsent(entry.getIndex(), () -> {
 			VALUE defValue = def.apply(entry.getIndex());
 			return defValue != null ? defValue : entry.getValue();
@@ -130,6 +142,8 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
+		if (allowIterateOverExisting)
+			return super.table();
 		throw new UnsupportedOperationException();
 	}
 	

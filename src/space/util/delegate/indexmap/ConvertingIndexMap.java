@@ -32,31 +32,11 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap) {
-		return new OneDirectionalUnmodifiable<>(indexMap, remap);
-	}
-	
-	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
-		return new BiDirectionalUnmodifiable<>(indexMap, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse) {
-		return new BiDirectionalSparse<>(indexMap, remap, reverseSparse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
-		return new BiDirectional<>(indexMap, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse, Function<T, F> reverse) {
-		return new BiDirectional<>(indexMap, remap, reverseSparse, reverse);
-	}
-	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingIndexMap<F, T> {
 		
-		public Function<F, T> remap;
+		public Function<? super F, ? extends T> remap;
 		
-		public OneDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap) {
+		public OneDirectionalUnmodifiable(IndexMap<F> indexMap, Function<? super F, ? extends T> remap) {
 			super(indexMap);
 			this.remap = remap;
 		}
@@ -73,7 +53,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public boolean contains(int index) {
-			return indexMap.contains(index);
+			return get(index) != null;
 		}
 		
 		@Override
@@ -136,17 +116,17 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void addAll(Collection<T> coll) {
+		public void addAll(Collection<? extends T> coll) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public void putAll(IndexMap<T> indexMap) {
+		public void putAll(IndexMap<? extends T> indexMap) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public void putAllIfAbsent(IndexMap<T> indexMap) {
+		public void putAllIfAbsent(IndexMap<? extends T> indexMap) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -188,12 +168,12 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public Collection<T> values() {
-			return ConvertingCollection.createConvertingOneDirectionalUnmodifiable(indexMap.values(), remap);
+			return new ConvertingCollection.OneDirectionalUnmodifiable<>(indexMap.values(), remap);
 		}
 		
 		@Override
 		public Collection<IndexMapEntry<T>> table() {
-			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
+			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
 		}
 		
 		@Override
@@ -240,24 +220,33 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 	
 	public static class BiDirectionalUnmodifiable<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverse;
+		public Function<? super T, ? extends F> reverse;
 		
-		public BiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+		public BiDirectionalUnmodifiable(IndexMap<F> indexMap, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 			super(indexMap, remap);
 			this.reverse = reverse;
 		}
 		
 		@Override
 		public Collection<T> values() {
-			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.values(), remap, reverse);
+			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.values(), remap, reverse);
+		}
+		
+		@Override
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+			tsh.add("indexMap", this.indexMap);
+			tsh.add("remap", this.remap);
+			tsh.add("reverse", this.reverse);
+			return tsh.build();
 		}
 	}
 	
 	public static class BiDirectionalSparse<F, T> extends OneDirectionalUnmodifiable<F, T> {
 		
-		public Function<T, F> reverseSparse;
+		public Function<? super T, ? extends F> reverseSparse;
 		
-		public BiDirectionalSparse(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse) {
+		public BiDirectionalSparse(IndexMap<F> indexMap, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
 			super(indexMap, remap);
 			this.reverseSparse = reverseSparse;
 		}
@@ -283,18 +272,19 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void addAll(Collection<T> coll) {
-			indexMap.addAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable(coll, reverseSparse, remap));
+		public void addAll(Collection<? extends T> coll) {
+			indexMap.addAll(new ConvertingCollection.BiDirectionalUnmodifiable<>(coll, reverseSparse, remap));
 		}
 		
 		@Override
-		public void putAll(IndexMap<T> indexMap) {
-			this.indexMap.putAll(ConvertingIndexMap.createConvertingBiDirectionalUnmodifiable(indexMap, reverseSparse, remap));
+		public void putAll(IndexMap<? extends T> indexMap) {
+			this.indexMap.putAll(new ConvertingIndexMap.BiDirectionalUnmodifiable<T, F>((IndexMap<T>) indexMap, reverseSparse, remap));
 		}
 		
 		@Override
-		public void putAllIfAbsent(IndexMap<T> indexMap) {
-			this.indexMap.putAllIfAbsent(ConvertingIndexMap.createConvertingBiDirectionalUnmodifiable(indexMap, reverseSparse, remap));
+		public void putAllIfAbsent(IndexMap<? extends T> indexMap) {
+			IndexMap<F> t = new BiDirectionalUnmodifiable<>(indexMap, reverseSparse, remap);
+			this.indexMap.putAllIfAbsent(t);
 		}
 		
 		@Override
@@ -352,6 +342,15 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
 		}
 		
+		@Override
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+			tsh.add("indexMap", this.indexMap);
+			tsh.add("remap", this.remap);
+			tsh.add("reverseSparse", this.reverseSparse);
+			return tsh.build();
+		}
+		
 		public class Entry extends OneDirectionalUnmodifiable<F, T>.Entry {
 			
 			public Entry(IndexMapEntry<F> entry) {
@@ -382,13 +381,13 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 	
 	public static class BiDirectional<F, T> extends BiDirectionalSparse<F, T> {
 		
-		public Function<T, F> reverse;
+		public Function<? super T, ? extends F> reverse;
 		
-		public BiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverse) {
+		public BiDirectional(IndexMap<F> indexMap, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
 			this(indexMap, remap, reverse, reverse);
 		}
 		
-		public BiDirectional(IndexMap<F> indexMap, Function<F, T> remap, Function<T, F> reverseSparse, Function<T, F> reverse) {
+		public BiDirectional(IndexMap<F> indexMap, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse, Function<? super T, ? extends F> reverse) {
 			super(indexMap, remap, reverseSparse);
 			this.reverse = reverse;
 		}
@@ -409,8 +408,20 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public Collection<T> values() {
-			return ConvertingCollection.createConvertingBiDirectionalUnmodifiable(indexMap.values(), remap, reverse);
+		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+			tsh.add("indexMap", this.indexMap);
+			tsh.add("remap", this.remap);
+			tsh.add("reverseSparse", this.reverseSparse);
+			tsh.add("reverse", this.reverse);
+			return tsh.build();
 		}
+		
+		@Override
+		public Collection<T> values() {
+			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.values(), remap, reverse);
+		}
+		
+
 	}
 }

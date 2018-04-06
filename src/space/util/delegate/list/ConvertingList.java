@@ -39,26 +39,6 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap) {
-		return new OneDirectionalUnmodifiable<>(list, remap);
-	}
-	
-	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
-		return new BiDirectionalUnmodifiable<>(list, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
-		return new BiDirectionalSparse<>(list, remap, reverseSparse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
-		return new BiDirectional<>(list, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(List<F> list, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse, Function<? super T, ? extends F> reverse) {
-		return new BiDirectional<>(list, remap, reverseSparse, reverse);
-	}
-	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingList<F, T> {
 		
 		public Function<? super F, ? extends T> remap;
@@ -214,17 +194,17 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		public ListIterator<T> listIterator() {
-			return ConvertingListIterator.createConvertingOneDirectionalUnmodifiable(list.listIterator(), remap);
+			return new ConvertingListIterator.OneDirectionalUnmodifiable<>(list.listIterator(), remap);
 		}
 		
 		@Override
 		public ListIterator<T> listIterator(int index) {
-			return ConvertingListIterator.createConvertingOneDirectionalUnmodifiable(list.listIterator(index), remap);
+			return new ConvertingListIterator.OneDirectionalUnmodifiable<>(list.listIterator(index), remap);
 		}
 		
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
-			return ConvertingList.createConvertingOneDirectionalUnmodifiable(list.subList(fromIndex, toIndex), remap);
+			return new ConvertingList.OneDirectionalUnmodifiable<>(list.subList(fromIndex, toIndex), remap);
 		}
 		
 		@Override
@@ -264,7 +244,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			return list.containsAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<T>) c, reverse, remap));
+			return list.containsAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
 		@Override
@@ -281,7 +261,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
-			return ConvertingList.createConvertingBiDirectionalUnmodifiable(list.subList(fromIndex, toIndex), remap, reverse);
+			return new ConvertingList.BiDirectionalUnmodifiable<>(list.subList(fromIndex, toIndex), remap, reverse);
 		}
 	}
 	
@@ -313,12 +293,12 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		public boolean addAll(Collection<? extends T> c) {
-			return list.addAll(ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
+			return list.addAll(new ConvertingCollection.OneDirectionalUnmodifiable<>(c, reverseSparse));
 		}
 		
 		@Override
 		public boolean addAll(int index, Collection<? extends T> c) {
-			return list.addAll(index, ConvertingCollection.createConvertingOneDirectionalUnmodifiable(c, reverseSparse));
+			return list.addAll(index, new ConvertingCollection.OneDirectionalUnmodifiable<>(c, reverseSparse));
 		}
 		
 		@Override
@@ -390,17 +370,17 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		public ListIterator<T> listIterator() {
-			return ConvertingListIterator.createConvertingBiDirectional(list.listIterator(), remap, reverseSparse);
+			return new ConvertingListIterator.BiDirectional<>(list.listIterator(), remap, reverseSparse);
 		}
 		
 		@Override
 		public ListIterator<T> listIterator(int index) {
-			return ConvertingListIterator.createConvertingBiDirectional(list.listIterator(index), remap, reverseSparse);
+			return new ConvertingListIterator.BiDirectional<>(list.listIterator(index), remap, reverseSparse);
 		}
 		
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
-			return ConvertingList.createConvertingBiDirectionalSparse(list.subList(fromIndex, toIndex), remap, reverseSparse);
+			return new ConvertingList.BiDirectionalSparse<>(list.subList(fromIndex, toIndex), remap, reverseSparse);
 		}
 		
 		@Override
@@ -436,8 +416,20 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		@SuppressWarnings("unchecked")
+		public boolean removeAll(Collection<?> c) {
+			return list.removeAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean retainAll(Collection<?> c) {
+			return list.retainAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			return list.containsAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<T>) c, reverse, remap));
+			return list.containsAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
 		@Override
@@ -453,20 +445,12 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
-		public boolean removeAll(Collection<?> c) {
-			return list.removeAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<T>) c, reverse, remap));
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public boolean retainAll(Collection<?> c) {
-			return list.retainAll(ConvertingCollection.createConvertingBiDirectionalUnmodifiable((Collection<T>) c, reverse, remap));
-		}
-		
-		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
-			return ConvertingList.createConvertingBiDirectional(list.subList(fromIndex, toIndex), remap, reverse, reverseSparse);
+			return new ConvertingList.BiDirectional<>(list.subList(fromIndex, toIndex), remap, reverse, reverseSparse);
 		}
+		
+
+		
+
 	}
 }

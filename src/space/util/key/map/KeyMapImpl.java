@@ -119,7 +119,7 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 	
 	@Override
 	public Collection<? extends Entry> tableIterator() {
-		return ConvertingCollection.createConvertingBiDirectional(map.table(), Entry::new, entry -> map.getEntry(entry.getKey().getID()));
+		return new ConvertingCollection.BiDirectional<>(map.table(), Entry::new, entry -> map.getEntry(entry.getKey().getID()));
 	}
 	
 	@Override

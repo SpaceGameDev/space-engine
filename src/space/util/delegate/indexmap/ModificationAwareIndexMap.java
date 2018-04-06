@@ -43,21 +43,21 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public void addAll(Collection<VALUE> coll) {
+	public void addAll(Collection<? extends VALUE> coll) {
 		super.addAll(coll);
 		if (!coll.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
-	public void putAll(IndexMap<VALUE> indexMap) {
+	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		super.putAll(indexMap);
 		if (!indexMap.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
 		if (!indexMap.isEmpty())
 			onModification.run();
@@ -119,7 +119,7 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	
 	@Override
 	public Collection<IndexMapEntry<VALUE>> table() {
-		return new ModificationAwareCollection<>(ConvertingCollection.createConvertingBiDirectional(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<VALUE>) modEntry).entry : null), onModification);
+		return new ModificationAwareCollection<>(new ConvertingCollection.BiDirectional<>(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<VALUE>) modEntry).entry : null), onModification);
 	}
 	
 	@Override

@@ -74,17 +74,17 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void addAll(Collection<VALUE> coll) {
+	public void addAll(Collection<? extends VALUE> coll) {
 		indexMap.get().addAll(coll);
 	}
 	
 	@Override
-	public void putAll(IndexMap<VALUE> indexMap) {
+	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.get().putAll(indexMap);
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<VALUE> indexMap) {
+	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.get().putAllIfAbsent(indexMap);
 	}
 	

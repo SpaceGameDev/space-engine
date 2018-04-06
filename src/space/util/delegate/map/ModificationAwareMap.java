@@ -65,7 +65,7 @@ public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	
 	@Override
 	public Set<Map.Entry<K, V>> entrySet() {
-		return new ModificationAwareSet<>(ConvertingSet.createConvertingBiDirectional(map.entrySet(), entry -> entry == null ? null : new ModificationAwareEntry<>(entry), entry -> entry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<K, V>) entry).entry : null), onModification);
+		return new ModificationAwareSet<>(new ConvertingSet.BiDirectional<>(map.entrySet(), entry -> entry == null ? null : new ModificationAwareEntry<>(entry), entry -> entry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<K, V>) entry).entry : null), onModification);
 	}
 	
 	@Override

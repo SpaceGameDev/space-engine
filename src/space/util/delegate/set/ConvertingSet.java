@@ -7,26 +7,6 @@ import java.util.function.Function;
 
 public class ConvertingSet {
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(Set<F> coll, Function<? super F, ? extends T> remap) {
-		return new OneDirectionalUnmodifiable<F, T>(coll, remap);
-	}
-	
-	public static <F, T> BiDirectionalUnmodifiable<F, T> createConvertingBiDirectionalUnmodifiable(Set<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
-		return new BiDirectionalUnmodifiable<F, T>(coll, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectionalSparse<F, T> createConvertingBiDirectionalSparse(Set<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse) {
-		return new BiDirectionalSparse<F, T>(coll, remap, reverseSparse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Set<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
-		return new BiDirectional<F, T>(coll, remap, reverse);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(Set<F> coll, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse, Function<? super T, ? extends F> reverseSparse) {
-		return new BiDirectional<F, T>(coll, remap, reverse, reverseSparse);
-	}
-	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingCollection.OneDirectionalUnmodifiable<F, T> implements Set<T> {
 		
 		public OneDirectionalUnmodifiable(Set<F> coll, Function<? super F, ? extends T> remap) {

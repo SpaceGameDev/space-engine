@@ -41,20 +41,20 @@ public interface IndexMap<VALUE> {
 	VALUE[] toArray(VALUE[] array);
 	
 	//addAll
-	default void addAll(Collection<VALUE> coll) {
+	default void addAll(Collection<? extends VALUE> coll) {
 		coll.forEach(this::add);
 	}
 	
-	default void putAll(IndexMap<VALUE> indexMap) {
-		for (IndexMapEntry<VALUE> entry : indexMap.table()) {
+	default void putAll(IndexMap<? extends VALUE> indexMap) {
+		for (IndexMapEntry<? extends VALUE> entry : indexMap.table()) {
 			VALUE value = entry.getValue();
 			if (value != null)
 				put(entry.getIndex(), value);
 		}
 	}
 	
-	default void putAllIfAbsent(IndexMap<VALUE> indexMap) {
-		for (IndexMapEntry<VALUE> entry : indexMap.table())
+	default void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+		for (IndexMapEntry<? extends VALUE> entry : indexMap.table())
 			putIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	

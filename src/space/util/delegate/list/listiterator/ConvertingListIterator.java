@@ -28,14 +28,6 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		return toString0();
 	}
 	
-	public static <F, T> OneDirectionalUnmodifiable<F, T> createConvertingOneDirectionalUnmodifiable(ListIterator<F> listIterator, Function<? super F, ? extends T> remap) {
-		return new OneDirectionalUnmodifiable<>(listIterator, remap);
-	}
-	
-	public static <F, T> BiDirectional<F, T> createConvertingBiDirectional(ListIterator<F> listIterator, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
-		return new BiDirectional<>(listIterator, remap, reverse);
-	}
-	
 	public static class OneDirectionalUnmodifiable<F, T> extends ConvertingListIterator<F, T> {
 		
 		public Function<? super F, ? extends T> remap;
