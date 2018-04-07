@@ -273,18 +273,17 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public void addAll(Collection<? extends T> coll) {
-			indexMap.addAll(new ConvertingCollection.BiDirectionalUnmodifiable<>(coll, reverseSparse, remap));
+			indexMap.addAll(new ConvertingCollection.OneDirectionalUnmodifiable<>(coll, reverseSparse));
 		}
 		
 		@Override
 		public void putAll(IndexMap<? extends T> indexMap) {
-			this.indexMap.putAll(new ConvertingIndexMap.BiDirectionalUnmodifiable<T, F>((IndexMap<T>) indexMap, reverseSparse, remap));
+			this.indexMap.putAll(new ConvertingIndexMap.OneDirectionalUnmodifiable<>(indexMap, reverseSparse));
 		}
 		
 		@Override
 		public void putAllIfAbsent(IndexMap<? extends T> indexMap) {
-			IndexMap<F> t = new BiDirectionalUnmodifiable<>(indexMap, reverseSparse, remap);
-			this.indexMap.putAllIfAbsent(t);
+			this.indexMap.putAllIfAbsent(new OneDirectionalUnmodifiable<>(indexMap, reverseSparse));
 		}
 		
 		@Override
@@ -421,7 +420,5 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.values(), remap, reverse);
 		}
-		
-
 	}
 }

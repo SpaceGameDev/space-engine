@@ -3,6 +3,7 @@ package space.util.delegate.map;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.set.ConvertingSet;
+import space.util.delegate.set.UnmodifiableSet;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -93,7 +94,7 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		
 		@Override
 		public Set<K> keySet() {
-			return map.keySet();
+			return new UnmodifiableSet<>(map.keySet());
 		}
 		
 		@Override
@@ -247,67 +248,115 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		
 		@Override
 		public void putAll(Map<? extends K, ? extends T> m) {
-			map.putAll(new BiDirectionalUnmodifiable<>(m, reverseSparse, remap));
+			map.putAll(new ConvertingMap.OneDirectionalUnmodifiable<>(m, reverseSparse));
 		}
 		
 		@Override
 		public Set<K> keySet() {
-			return super.keySet();
+			return map.keySet();
 		}
 		
 		@Override
 		public Collection<T> values() {
-			return super.values();
+			return new ConvertingCollection.BiDirectionalSparse<>(map.values(), remap, reverseSparse);
 		}
 		
 		@Override
 		public Set<Map.Entry<K, T>> entrySet() {
-			return super.entrySet();
+			return new ConvertingSet.BiDirectional<Map.Entry<K, F>, Map.Entry<K, T>>(map.entrySet(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((BiDirectionalSparse.Entry) entry).entry : null);
 		}
 		
 		@Override
 		public void replaceAll(BiFunction<? super K, ? super T, ? extends T> function) {
-			super.replaceAll(function);
+			map.replaceAll((k, f) -> {
+				T t = remap.apply(f);
+				T tRet = function.apply(k, t);
+				return t == tRet ? f : reverseSparse.apply(tRet);
+			});
 		}
 		
 		@Override
 		public T putIfAbsent(K key, T value) {
-			return super.putIfAbsent(key, value);
+			return remap.apply(map.computeIfAbsent(key, k -> reverseSparse.apply(value)));
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean remove(Object key, Object value) {
-			return super.remove(key, value);
+			boolean[] ret = new boolean[1];
+			map.compute((K) key, (k, f) -> {
+				if (!Objects.equals(remap.apply(f), value))
+					return f;
+				ret[0] = true;
+				return null;
+			});
+			return ret[0];
 		}
 		
 		@Override
 		public boolean replace(K key, T oldValue, T newValue) {
-			return super.replace(key, oldValue, newValue);
+			boolean[] ret = new boolean[1];
+			map.compute(key, (k, f) -> {
+				if (!Objects.equals(remap.apply(f), oldValue))
+					return f;
+				ret[0] = true;
+				return reverseSparse.apply(newValue);
+			});
+			return ret[0];
 		}
 		
 		@Override
 		public T replace(K key, T value) {
-			return super.replace(key, value);
+			return remap.apply(map.computeIfPresent(key, (k, f) -> reverseSparse.apply(value)));
 		}
 		
 		@Override
 		public T computeIfAbsent(K key, Function<? super K, ? extends T> mappingFunction) {
-			return super.computeIfAbsent(key, mappingFunction);
+			return remap.apply(map.computeIfAbsent(key, k -> reverseSparse.apply(mappingFunction.apply(k))));
 		}
 		
 		@Override
 		public T computeIfPresent(K key, BiFunction<? super K, ? super T, ? extends T> remappingFunction) {
-			return super.computeIfPresent(key, remappingFunction);
+			return remap.apply(map.computeIfPresent(key, (k, f) -> {
+				T t = remap.apply(f);
+				T ret = remappingFunction.apply(k, t);
+				return ret == t ? f : reverseSparse.apply(ret);
+			}));
 		}
 		
 		@Override
 		public T compute(K key, BiFunction<? super K, ? super T, ? extends T> remappingFunction) {
-			return super.compute(key, remappingFunction);
+			return remap.apply(map.computeIfPresent(key, (k, f) -> {
+				T t = remap.apply(f);
+				T ret = remappingFunction.apply(k, t);
+				return ret == t ? f : reverseSparse.apply(ret);
+			}));
 		}
 		
 		@Override
 		public T merge(K key, T value, BiFunction<? super T, ? super T, ? extends T> remappingFunction) {
-			return super.merge(key, value, remappingFunction);
+			return remap.apply(map.merge(key, reverseSparse.apply(value), (f1, f2) -> {
+				T t1 = remap.apply(f1);
+				T t2 = remap.apply(f2);
+				T ret = remappingFunction.apply(t1, t2);
+				if (ret == t1)
+					return f1;
+				if (ret == t2)
+					return f2;
+				return reverseSparse.apply(ret);
+			}));
+		}
+		
+		public class Entry extends OneDirectionalUnmodifiable<K, F, T>.Entry {
+			
+			public Entry(Map.Entry<K, F> entry) {
+				super(entry);
+			}
+			
+			@Override
+			public T setValue(T value) {
+				return remap.apply(entry.setValue(reverseSparse.apply(value)));
+			}
 		}
 	}
 }
