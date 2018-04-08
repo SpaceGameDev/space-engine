@@ -29,7 +29,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
+	public Entry<VALUE> getEntry(int index) {
 		return new UnmodifiableEntry<>(indexMap.getEntry(index));
 	}
 	
@@ -94,7 +94,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public Collection<IndexMapEntry<VALUE>> table() {
+	public Collection<Entry<VALUE>> table() {
 		return new ConvertingCollection.BiDirectionalUnmodifiable<>(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	

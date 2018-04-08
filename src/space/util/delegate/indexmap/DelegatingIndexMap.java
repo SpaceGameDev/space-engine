@@ -50,7 +50,7 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
+	public Entry<VALUE> getEntry(int index) {
 		return indexMap.getEntry(index);
 	}
 	
@@ -130,7 +130,7 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Collection<IndexMapEntry<VALUE>> table() {
+	public Collection<Entry<VALUE>> table() {
 		return indexMap.table();
 	}
 	

@@ -172,7 +172,7 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			return tsh.build();
 		}
 		
-		public class Entry implements Map.Entry<K, T> {
+		public class Entry implements Map.Entry<K, T>, ToString {
 			
 			public Map.Entry<K, F> entry;
 			
@@ -193,6 +193,33 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			@Override
 			public T setValue(T value) {
 				throw new UnsupportedOperationException("unmodifiable");
+			}
+			
+			@Override
+			public int hashCode() {
+				return Objects.hashCode(getKey()) ^ Objects.hashCode(getValue());
+			}
+			
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (!(obj instanceof Map.Entry))
+					return false;
+				Map.Entry other = (Map.Entry) obj;
+				return Objects.equals(getKey(), other.getKey()) && Objects.equals(getValue(), other.getValue());
+			}
+			
+			@Override
+			public String toString() {
+				return toString0();
+			}
+			
+			@Override
+			public <TSH> TSH toTSH(ToStringHelper<TSH> api) {
+				ToStringHelperObjectsInstance<TSH> tsh = api.createObjectInstance(this);
+				tsh.add("entry", this.entry);
+				return tsh.build();
 			}
 		}
 	}

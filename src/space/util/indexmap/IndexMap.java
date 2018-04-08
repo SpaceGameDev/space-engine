@@ -30,7 +30,7 @@ public interface IndexMap<VALUE> {
 	
 	VALUE get(int index);
 	
-	IndexMapEntry<VALUE> getEntry(int index);
+	Entry<VALUE> getEntry(int index);
 	
 	VALUE put(int index, VALUE v);
 	
@@ -46,7 +46,7 @@ public interface IndexMap<VALUE> {
 	}
 	
 	default void putAll(IndexMap<? extends VALUE> indexMap) {
-		for (IndexMapEntry<? extends VALUE> entry : indexMap.table()) {
+		for (Entry<? extends VALUE> entry : indexMap.table()) {
 			VALUE value = entry.getValue();
 			if (value != null)
 				put(entry.getIndex(), value);
@@ -54,7 +54,7 @@ public interface IndexMap<VALUE> {
 	}
 	
 	default void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
-		for (IndexMapEntry<? extends VALUE> entry : indexMap.table())
+		for (Entry<? extends VALUE> entry : indexMap.table())
 			putIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	
@@ -112,10 +112,10 @@ public interface IndexMap<VALUE> {
 	
 	Collection<VALUE> values();
 	
-	Collection<IndexMapEntry<VALUE>> table();
+	Collection<Entry<VALUE>> table();
 	
 	//entry
-	interface IndexMapEntry<VALUE> {
+	interface Entry<VALUE> {
 		
 		int getIndex();
 		
@@ -128,5 +128,36 @@ public interface IndexMap<VALUE> {
 		default void remove() {
 			setValue(null);
 		}
+		
+		/**
+		 * Returns the hash code for this {@link Entry Entry}.
+		 * The hash code is generated like this:
+		 * <pre>
+		 *     return Integer.hashCode(this.getIndex()) ^ Objects.hashCode(this.getValue());
+		 * </pre>
+		 *
+		 * @return the hash code of this object
+		 */
+		@Override
+		int hashCode();
+		
+		/**
+		 * Compares two {@link Entry Entries} for equality.
+		 * For two entries to be considered equal, their key and value have to be equal.
+		 * All Implementations should therefor implement it in this way:
+		 * <pre>
+		 * 		if (this == obj)
+		 * 			return true;
+		 * 		if (!(obj instanceof IndexMap.Entry))
+		 *     		return false;
+		 * 		IndexMap.Entry other = (IndexMap.Entry) obj;
+		 * 		return (this == obj) || (this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue()));
+		 * </pre>
+		 *
+		 * @param obj the other obj to check against
+		 * @return if the index and value are equal
+		 */
+		@Override
+		boolean equals(Object obj);
 	}
 }

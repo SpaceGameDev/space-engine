@@ -92,7 +92,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public IndexMapEntry<T> getEntry(int index) {
+		public IndexMap.Entry<T> getEntry(int index) {
 			return new Entry(indexMap.getEntry(index));
 		}
 		
@@ -172,7 +172,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public Collection<IndexMapEntry<T>> table() {
+		public Collection<IndexMap.Entry<T>> table() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
 		}
 		
@@ -184,11 +184,11 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return tsh.build();
 		}
 		
-		public class Entry implements IndexMap.IndexMapEntry<T> {
+		public class Entry implements IndexMap.Entry<T>, ToString {
 			
-			public IndexMapEntry<F> entry;
+			public IndexMap.Entry<F> entry;
 			
-			public Entry(IndexMapEntry<F> entry) {
+			public Entry(IndexMap.Entry<F> entry) {
 				this.entry = entry;
 			}
 			
@@ -214,6 +214,33 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("unmodifiable");
+			}
+			
+			@Override
+			public int hashCode() {
+				return Integer.hashCode(this.getIndex()) ^ Objects.hashCode(this.getValue());
+			}
+			
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (!(obj instanceof IndexMap.Entry))
+					return false;
+				IndexMap.Entry other = (IndexMap.Entry) obj;
+				return (this == obj) || (this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue()));
+			}
+			
+			@Override
+			public String toString() {
+				return toString0();
+			}
+			
+			@Override
+			public <TSH> TSH toTSH(ToStringHelper<TSH> api) {
+				ToStringHelperObjectsInstance<TSH> tsh = api.createObjectInstance(this);
+				tsh.add("entry", this.entry);
+				return tsh.build();
 			}
 		}
 	}
@@ -267,7 +294,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public IndexMapEntry<T> getEntry(int index) {
+		public IndexMap.Entry<T> getEntry(int index) {
 			return new Entry(indexMap.getEntry(index));
 		}
 		
@@ -306,7 +333,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public boolean replace(int index, T oldValue, T newValue) {
-			IndexMapEntry<F> entry = indexMap.getEntry(index);
+			IndexMap.Entry<F> entry = indexMap.getEntry(index);
 			if (!Objects.equals(oldValue, remap.apply(entry.getValue())))
 				return false;
 			entry.setValue(reverseSparse.apply(newValue));
@@ -315,7 +342,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
-			IndexMapEntry<F> entry = indexMap.getEntry(index);
+			IndexMap.Entry<F> entry = indexMap.getEntry(index);
 			if (!Objects.equals(oldValue, remap.apply(entry.getValue())))
 				return false;
 			entry.setValue(reverseSparse.apply(newValue.get()));
@@ -324,7 +351,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		public boolean remove(int index, T v) {
-			IndexMapEntry<F> entry = indexMap.getEntry(index);
+			IndexMap.Entry<F> entry = indexMap.getEntry(index);
 			if (!Objects.equals(v, remap.apply(entry.getValue())))
 				return false;
 			entry.remove();
@@ -337,7 +364,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public Collection<IndexMapEntry<T>> table() {
+		public Collection<IndexMap.Entry<T>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
 		}
 		
@@ -352,7 +379,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		public class Entry extends OneDirectionalUnmodifiable<F, T>.Entry {
 			
-			public Entry(IndexMapEntry<F> entry) {
+			public Entry(IndexMap.Entry<F> entry) {
 				super(entry);
 			}
 			

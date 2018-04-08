@@ -1,16 +1,18 @@
 package space.util.delegate.indexmap.entry;
 
 import space.util.baseobject.ToString;
-import space.util.indexmap.IndexMap.IndexMapEntry;
+import space.util.indexmap.IndexMap;
+import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DelegatingEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
+public class DelegatingEntry<VALUE> implements Entry<VALUE>, ToString {
 	
-	public IndexMapEntry<VALUE> entry;
+	public Entry<VALUE> entry;
 	
-	public DelegatingEntry(IndexMapEntry<VALUE> entry) {
+	public DelegatingEntry(Entry<VALUE> entry) {
 		this.entry = entry;
 	}
 	
@@ -37,6 +39,19 @@ public class DelegatingEntry<VALUE> implements IndexMapEntry<VALUE>, ToString {
 	@Override
 	public void remove() {
 		entry.remove();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Integer.hashCode(this.getIndex()) ^ Objects.hashCode(this.getValue());
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IndexMap.Entry))
+			return false;
+		IndexMap.Entry other = (IndexMap.Entry) obj;
+		return (this == obj) || (this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue()));
 	}
 	
 	@Override

@@ -9,7 +9,6 @@ import space.util.gui.monofont.tableCreator.multi.MonofontTableCreatorNoBorder;
 import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator;
 import space.util.gui.tsh.elements.GuiToStringHelperMapperCreator.GuiToStringHelperMapper;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
 import space.util.indexmap.multi.IndexMultiMap2D;
@@ -43,7 +42,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 			throw new IllegalGuiElementException();
 		MonofontGuiElement gui = (MonofontGuiElement) object;
 		
-		Entry ent = table.putIfAbsent(pos[0], Entry::new);
+		Entry ent = table.putIfAbsent(pos[0], MonofontTSHMapper.Entry::new);
 		MonofontGuiElement old;
 		if (pos[1] == 0) {
 			old = ent.key;
@@ -60,7 +59,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 	@Override
 	public CharSequence2D rebuild0() {
 		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
-		for (IndexMapEntry<Entry> entry : table.table()) {
+		for (IndexMap.Entry<Entry> entry : table.table()) {
 			if (entry == null)
 				continue;
 			

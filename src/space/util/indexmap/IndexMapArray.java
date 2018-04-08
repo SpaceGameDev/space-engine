@@ -69,7 +69,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
+	public IndexMap.Entry<VALUE> getEntry(int index) {
 		return new Entry(index);
 	}
 	
@@ -249,10 +249,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public Collection<IndexMapEntry<VALUE>> table() {
+	public Collection<IndexMap.Entry<VALUE>> table() {
 		return new AbstractCollection<>() {
 			@Override
-			public Iterator<IndexMapEntry<VALUE>> iterator() {
+			public Iterator<IndexMap.Entry<VALUE>> iterator() {
 				return new Iteratorable<>() {
 					int index;
 					
@@ -262,8 +262,8 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 					}
 					
 					@Override
-					public IndexMapEntry<VALUE> next() {
-						return new Entry(index++);
+					public IndexMap.Entry<VALUE> next() {
+						return new IndexMapArray<VALUE>.Entry(index++);
 					}
 					
 					@Override
@@ -279,7 +279,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 			}
 			
 			@Override
-			public boolean add(IndexMapEntry<VALUE> entry) {
+			public boolean add(IndexMap.Entry<VALUE> entry) {
 				IndexMapArray.this.put(entry.getIndex(), entry.getValue());
 				return true;
 			}
@@ -296,7 +296,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		return toString0();
 	}
 	
-	private class Entry implements IndexMapEntry<VALUE> {
+	private class Entry implements IndexMap.Entry<VALUE> {
 		
 		int index;
 		

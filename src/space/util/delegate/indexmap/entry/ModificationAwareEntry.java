@@ -1,6 +1,6 @@
 package space.util.delegate.indexmap.entry;
 
-import space.util.indexmap.IndexMap.IndexMapEntry;
+import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -8,10 +8,10 @@ import java.util.function.Supplier;
 
 public class ModificationAwareEntry<VALUE> extends DelegatingEntry<VALUE> {
 	
-	public IndexMapEntry<VALUE> entry;
+	public Entry<VALUE> entry;
 	public Runnable onModification;
 	
-	public ModificationAwareEntry(IndexMapEntry<VALUE> entry, Runnable onModification) {
+	public ModificationAwareEntry(Entry<VALUE> entry, Runnable onModification) {
 		super(entry);
 		this.onModification = onModification;
 	}

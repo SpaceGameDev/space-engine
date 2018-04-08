@@ -7,7 +7,7 @@ import space.util.gui.exception.IllegalGuiElementException;
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.gui.monofont.MonofontGuiElementCaching;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
+import space.util.indexmap.IndexMap.Entry;
 import space.util.indexmap.IndexMapArray;
 import space.util.string.CharSequence2D;
 
@@ -49,7 +49,7 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	
 	public IndexMap<CharSequence2D> buildList() {
 		IndexMap<CharSequence2D> charTable = new IndexMapArray<>();
-		for (IndexMapEntry<MonofontGuiElement> entry : list.table()) {
+		for (Entry<MonofontGuiElement> entry : list.table()) {
 			GuiElement value = entry.getValue();
 			charTable.put(entry.getIndex(), value != null ? ((MonofontGuiElement) value).buildSequence2D() : null);
 		}

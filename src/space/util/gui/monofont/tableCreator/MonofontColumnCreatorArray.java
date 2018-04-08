@@ -2,7 +2,7 @@ package space.util.gui.monofont.tableCreator;
 
 import space.util.gui.monofont.MonofontGuiElement;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
+import space.util.indexmap.IndexMap.Entry;
 import space.util.indexmap.axis.IndexAxisMapInt;
 import space.util.math.MathUtils;
 import space.util.string.CharSequence2D;
@@ -40,8 +40,8 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, ColumnDirection direction, IndexMap<CharSequence2D> elements) {
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		Collection<IndexMapEntry<CharSequence2D>> iter = elements.table();
-		for (IndexMapEntry<CharSequence2D> elem : iter) {
+		Collection<Entry<CharSequence2D>> iter = elements.table();
+		for (Entry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			CharSequence2D value = elem.getValue();
 			axis.put(new int[] {0, index}, new int[] {value.height(), value.maxLength()});
@@ -63,7 +63,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 		
 		//entries
 		iter = elements.table();
-		for (IndexMapEntry<CharSequence2D> elem : iter) {
+		for (Entry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;
 			int untilx = axis.getIndex(1, index + 1) + (index + 1) * separatorLength;

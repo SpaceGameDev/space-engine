@@ -3,7 +3,6 @@ package space.util.key.map;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
 import space.util.indexmap.IndexMapArray;
 import space.util.key.IKey;
 import space.util.key.IKeyGenerator;
@@ -119,7 +118,7 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 	
 	@Override
 	public Collection<? extends Entry> tableIterator() {
-		return new ConvertingCollection.BiDirectional<>(map.table(), Entry::new, entry -> map.getEntry(entry.getKey().getID()));
+		return new ConvertingCollection.BiDirectional<>(map.table(), KeyMapImpl.Entry::new, entry -> map.getEntry(entry.getKey().getID()));
 	}
 	
 	@Override
@@ -137,9 +136,9 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 	
 	private class Entry implements KeyMapEntry {
 		
-		public IndexMapEntry<?> entry;
+		public IndexMap.Entry<?> entry;
 		
-		public Entry(IndexMapEntry entry) {
+		public Entry(IndexMap.Entry entry) {
 			this.entry = entry;
 		}
 		

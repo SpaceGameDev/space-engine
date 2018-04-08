@@ -49,7 +49,7 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
+	public Entry<VALUE> getEntry(int index) {
 		return indexMap.get().getEntry(index);
 	}
 	
@@ -129,7 +129,7 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public Collection<IndexMapEntry<VALUE>> table() {
+	public Collection<Entry<VALUE>> table() {
 		return indexMap.get().table();
 	}
 	

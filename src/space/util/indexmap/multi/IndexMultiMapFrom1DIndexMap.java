@@ -3,7 +3,6 @@ package space.util.indexmap.multi;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMap.IndexMapEntry;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,7 +86,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		int i = getListIndex(pos);
 		if (i == -1)
 			return null;
-		return new Entry<>(indexMap.getEntry(i));
+		return new Entry(indexMap.getEntry(i));
 	}
 	
 	@Override
@@ -141,19 +140,19 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 			for (int i = 0; i < pos.length; i++)
 				if (pos[i] != getSafeO(relativePos, i, 0))
 					return Collections.emptyList();
-			return Collections.singleton(new Entry<>(indexMap.getEntry(pos[relativePos.length])));
+			return Collections.singleton(new Entry(indexMap.getEntry(pos[relativePos.length])));
 		}
 	}
 	
 	public Collection<IndexMultiMapEntry<VALUE>> tableComplete() {
-		return new ConvertingCollection.BiDirectional<>(indexMap.table(), Entry::new, entry -> entry instanceof Entry ? ((Entry<VALUE>) entry).entry : null);
+		return new ConvertingCollection.BiDirectional<>(indexMap.table(), IndexMultiMapFrom1DIndexMap.Entry::new, entry -> entry instanceof IndexMultiMapFrom1DIndexMap.Entry ? ((Entry) entry).entry : null);
 	}
 	
 	protected class Entry<V> implements IndexMultiMapEntry<V> {
 		
-		private final IndexMapEntry<V> entry;
+		private final IndexMap.Entry<V> entry;
 		
-		public Entry(IndexMapEntry<V> entry) {
+		public Entry(IndexMap.Entry<V> entry) {
 			this.entry = entry;
 		}
 		

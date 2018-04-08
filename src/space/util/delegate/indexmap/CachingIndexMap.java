@@ -110,8 +110,8 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public IndexMapEntry<VALUE> getEntry(int index) {
-		IndexMapEntry<VALUE> entry = super.getEntry(index);
+	public IndexMap.Entry<VALUE> getEntry(int index) {
+		IndexMap.Entry<VALUE> entry = super.getEntry(index);
 		entry.setIfAbsent(() -> this.def.apply(index));
 		return entry;
 	}
@@ -141,7 +141,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public Collection<IndexMapEntry<VALUE>> table() {
+	public Collection<IndexMap.Entry<VALUE>> table() {
 		if (allowIterateOverExisting)
 			return super.table();
 		throw new UnsupportedOperationException();

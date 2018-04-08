@@ -32,12 +32,12 @@ public class DelegatingEntry<K, V> implements Map.Entry<K, V> {
 	}
 	
 	@Override
-	public boolean equals(Object o) {
-		if (o == this)
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if (!(o instanceof Map.Entry))
+		if (!(obj instanceof Map.Entry))
 			return false;
-		Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-		return Objects.equals(getKey(), e.getKey()) && Objects.equals(getValue(), e.getValue());
+		Map.Entry other = (Map.Entry) obj;
+		return Objects.equals(getKey(), other.getKey()) && Objects.equals(getValue(), other.getValue());
 	}
 }
