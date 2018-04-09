@@ -21,8 +21,16 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	public IntFunction<VALUE> def;
 	public boolean allowIterateOverExisting;
 	
+	public CachingIndexMap(IndexMap<VALUE> indexMap, IndexMap<VALUE> def) {
+		this(indexMap, def, false);
+	}
+	
+	public CachingIndexMap(IndexMap<VALUE> indexMap, IndexMap<VALUE> def, boolean allowIterateOverExisting) {
+		this(indexMap, def::get, allowIterateOverExisting);
+	}
+	
 	public CachingIndexMap(IndexMap<VALUE> indexMap, IntFunction<VALUE> def) {
-		this(indexMap, def, true);
+		this(indexMap, def, false);
 	}
 	
 	public CachingIndexMap(IndexMap<VALUE> indexMap, IntFunction<VALUE> def, boolean allowIterateOverExisting) {
@@ -68,7 +76,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	public Collection<VALUE> values() {
 		if (allowIterateOverExisting)
 			return super.values();
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	
 	@Override
@@ -85,14 +93,14 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	public VALUE[] toArray() {
 		if (allowIterateOverExisting)
 			return super.toArray();
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	
 	@Override
 	public VALUE[] toArray(VALUE[] a) {
 		if (allowIterateOverExisting)
 			return super.toArray(a);
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	
 	@Override
@@ -144,7 +152,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	public Collection<IndexMap.Entry<VALUE>> table() {
 		if (allowIterateOverExisting)
 			return super.table();
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	
 	@Override
@@ -154,6 +162,6 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public void clearCache() {
-		indexMap.clear();
+		super.clear();
 	}
 }

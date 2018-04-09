@@ -386,4 +386,35 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			}
 		}
 	}
+	
+	public static class BiDirectional<K, F, T> extends BiDirectionalSparse<K, F, T> {
+		
+		public Function<? super T, ? extends F> reverse;
+		
+		public BiDirectional(Map<K, F> map, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverse) {
+			this(map, remap, reverse, reverse);
+		}
+		
+		public BiDirectional(Map<K, F> map, Function<? super F, ? extends T> remap, Function<? super T, ? extends F> reverseSparse, Function<? super T, ? extends F> reverse) {
+			super(map, remap, reverseSparse);
+			this.reverse = reverse;
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean containsValue(Object value) {
+			return map.containsValue(reverse.apply((T) value));
+		}
+		
+		@Override
+		public Collection<T> values() {
+			return new ConvertingCollection.BiDirectional<>(map.values(), remap, reverse);
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean remove(Object key, Object value) {
+			return map.remove(key, reverse.apply((T) value));
+		}
+	}
 }
