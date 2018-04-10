@@ -98,9 +98,8 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 	@Override
 	public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return map.compute(key, (k, v) -> {
-			//IfPresent missing
 			V v2 = (v == null) ? def.apply(k) : CacheUtil.fromCache(v);
-			return CacheUtil.toCache(remappingFunction.apply(k, v2));
+			return v2 == null ? CacheUtil.nullObject() : CacheUtil.toCache(remappingFunction.apply(k, v2));
 		});
 	}
 	
@@ -114,7 +113,10 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 	
 	@Override
 	public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-		return super.merge(key, value, remappingFunction);
+		return map.compute(key, (k, v) -> {
+			V v2 = (v == null) ? def.apply(k) : CacheUtil.fromCache(v);
+			return CacheUtil.toCache(remappingFunction.apply(v2, value));
+		});
 	}
 	
 	@Override
@@ -122,11 +124,6 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 		if (allowIterateOverExisting)
 			return super.values();
 		throw new UnsupportedOperationException("Cache iteration not allowed!");
-	}
-	
-	@Override
-	public boolean remove(Object key, Object value) {
-		return super.remove(key, value);
 	}
 	
 	@Override
