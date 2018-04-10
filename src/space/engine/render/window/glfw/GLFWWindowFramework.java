@@ -1,18 +1,18 @@
 package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
-import space.engine.render.window.IMonitor;
-import space.engine.render.window.IWindowFramework;
+import space.engine.render.window.WindowFramework;
+import space.engine.render.window.WindowMonitor;
 import space.util.buffer.array.ArrayBufferLong;
 import space.util.buffer.array.ArrayBufferLong.ArrayBufferLongSingle;
 import space.util.buffer.array.ArrayBufferPointer;
 import space.util.buffer.stack.BufferAllocatorStack;
-import space.util.key.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.attribute.AttributeListCreator.IAttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.side.Side.*;
 
-public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
+public class GLFWWindowFramework implements WindowFramework<GLFWWindow> {
 	
 	/**
 	 * finalization of the object will {@link GLFW#glfwTerminate()}
@@ -28,7 +28,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	
 	//monitor
 	@Override
-	public IMonitor[] getMonitors() {
+	public WindowMonitor[] getMonitors() {
 		BufferAllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
 		try {
 			alloc.push();
@@ -36,7 +36,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 			ArrayBufferPointer monitorList = ArrayBufferPointer.alloc(alloc::allocNoFree, nglfwGetMonitors(monitorCnt.address()), monitorCnt.getLong());
 			
 			int length = (int) monitorList.length();
-			IMonitor[] ret = new IMonitor[length];
+			WindowMonitor[] ret = new WindowMonitor[length];
 			for (int i = 0; i < length; i++)
 				ret[i] = new GLFWMonitor(monitorList.getPointer(i));
 			return ret;
@@ -46,7 +46,7 @@ public class GLFWWindowFramework implements IWindowFramework<GLFWWindow> {
 	}
 	
 	@Override
-	public IMonitor getPrimaryMonitor() {
+	public WindowMonitor getPrimaryMonitor() {
 		return new GLFWMonitor(glfwGetPrimaryMonitor());
 	}
 	

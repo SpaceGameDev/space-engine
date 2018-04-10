@@ -1,9 +1,9 @@
 package space.engine.render.window.callback;
 
-import space.engine.render.window.IWindow;
+import space.engine.render.window.Window;
 
 @FunctionalInterface
 public interface WindowFocusCallback {
 	
-	void onWindowFocus(IWindow window, boolean focus);
+	void onWindowFocus(Window window, boolean focus);
 }

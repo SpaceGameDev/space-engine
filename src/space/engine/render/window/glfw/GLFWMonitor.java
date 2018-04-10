@@ -2,11 +2,11 @@ package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
-import space.engine.render.window.IMonitor;
+import space.engine.render.window.WindowMonitor;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class GLFWMonitor implements IMonitor {
+public class GLFWMonitor implements WindowMonitor {
 	
 	public long pointer;
 	public String name;

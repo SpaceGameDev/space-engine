@@ -1,9 +1,9 @@
 package space.engine.render.window.callback;
 
-import space.engine.render.window.IWindow;
+import space.engine.render.window.Window;
 
 @FunctionalInterface
 public interface WindowResizeCallback {
 	
-	void onWindowResize(IWindow window, int width, int height);
+	void onWindowResize(Window window, int width, int height);
 }

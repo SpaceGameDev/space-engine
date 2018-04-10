@@ -1,6 +1,6 @@
 package space.engine.render.window;
 
-public interface IMonitor {
+public interface WindowMonitor {
 	
 	String name();
 	
@@ -22,39 +22,10 @@ public interface IMonitor {
 	
 	IVideoMode[] getAvailableVideoModes();
 	
-	interface IVideoMode<MONITOR extends IMonitor> {
-		
-		MONITOR getMonitor();
-		
-		int width();
-		
-		int height();
-		
-		/**
-		 * default: -1
-		 */
-		int refreshRate();
-		
-		/**
-		 * default: -1
-		 */
-		int bitsR();
-		
-		/**
-		 * default: -1
-		 */
-		int bitsG();
-		
-		/**
-		 * default: -1
-		 */
-		int bitsB();
-	}
-	
-	static IVideoMode<IMonitor> createVideoModeWindowed(int width, int height) {
+	static IVideoMode<WindowMonitor> createVideoModeWindowed(int width, int height) {
 		return new IVideoMode<>() {
 			@Override
-			public IMonitor getMonitor() {
+			public WindowMonitor getMonitor() {
 				return null;
 			}
 			
@@ -88,5 +59,34 @@ public interface IMonitor {
 				return -1;
 			}
 		};
+	}
+	
+	interface IVideoMode<MONITOR extends WindowMonitor> {
+		
+		MONITOR getMonitor();
+		
+		int width();
+		
+		int height();
+		
+		/**
+		 * default: -1
+		 */
+		int refreshRate();
+		
+		/**
+		 * default: -1
+		 */
+		int bitsR();
+		
+		/**
+		 * default: -1
+		 */
+		int bitsG();
+		
+		/**
+		 * default: -1
+		 */
+		int bitsB();
 	}
 }

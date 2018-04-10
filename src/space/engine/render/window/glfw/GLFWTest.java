@@ -2,17 +2,17 @@ package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import space.engine.render.window.IMonitor;
-import space.engine.render.window.IWindow;
-import space.engine.render.window.IWindowFramework;
+import space.engine.render.window.Window;
 import space.engine.render.window.WindowFormat;
+import space.engine.render.window.WindowFramework;
+import space.engine.render.window.WindowMonitor;
 import space.engine.side.Side;
 import space.util.buffer.alloc.DefaultBufferAllocator;
 import space.util.buffer.string.DefaultStringConverter;
 import space.util.freeableStorage.FreeableStorageCleaner;
-import space.util.key.attribute.AttributeListCreator.AttributeListModification;
-import space.util.key.attribute.IAttributeListCreator.IAttributeList;
-import space.util.key.attribute.IAttributeListCreator.IAttributeListModification;
+import space.util.key.attribute.AttributeListCreator.IAttributeList;
+import space.util.key.attribute.AttributeListCreator.IAttributeListModification;
+import space.util.key.attribute.AttributeListCreatorImpl.AttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
 
@@ -50,17 +50,17 @@ public class GLFWTest {
 		FreeableStorageCleaner.startCleanupThread();
 		
 		//framework
-		IWindowFramework<?> windowfw = new GLFWWindowFramework();
+		WindowFramework<?> windowfw = new GLFWWindowFramework();
 		
 		//window
 		AttributeListModification attListMod = WindowFormat.ATT_CREATOR.createModify();
 		attListMod.put(WINDOW_MODE, WindowMode.WINDOWED);
-		attListMod.put(VIDEO_MODE, IMonitor.createVideoModeWindowed(800, 600));
+		attListMod.put(VIDEO_MODE, WindowMonitor.createVideoModeWindowed(800, 600));
 		
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);
 		IAttributeList attList = attListMod.createNewList();
-		IWindow window = windowfw.create(attList);
+		Window window = windowfw.create(attList);
 		
 		if (CRASH)
 			throw new RuntimeException("Crash!");

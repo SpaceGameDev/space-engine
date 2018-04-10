@@ -1,17 +1,17 @@
 package space.engine.render.window.glfw;
 
-import space.engine.render.window.IMonitor.IVideoMode;
-import space.engine.render.window.IWindow;
+import space.engine.render.window.Window;
+import space.engine.render.window.WindowMonitor.IVideoMode;
 import space.engine.render.window.exception.WindowException;
 import space.engine.render.window.glfw.GLFWMonitor.GLFWVideoMode;
 import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.key.attribute.AttributeListChangeEventHelper;
-import space.util.key.attribute.IAttributeListCreator.ChangeEvent;
-import space.util.key.attribute.IAttributeListCreator.ChangeEventEntry;
-import space.util.key.attribute.IAttributeListCreator.IAttributeList;
+import space.util.key.attribute.AttributeListCreator.ChangeEvent;
+import space.util.key.attribute.AttributeListCreator.ChangeEventEntry;
+import space.util.key.attribute.AttributeListCreator.IAttributeList;
 import space.util.string.builder.CharBufferBuilder2D;
 
 import java.util.function.Consumer;
@@ -21,7 +21,7 @@ import static space.engine.render.window.WindowFormat.*;
 import static space.engine.render.window.WindowFormat.WindowMode.*;
 import static space.engine.render.window.glfw.GLFWUtil.toGLFWBoolean;
 
-public class GLFWWindow implements IWindow, FreeableWithStorage {
+public class GLFWWindow implements Window, FreeableWithStorage {
 	
 	public GLFWWindowFramework windowFramework;
 	public Storage storage;
@@ -29,7 +29,7 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 	public IAttributeList format;
 	public AttributeListChangeEventHelper changeEventHelper;
 	
-	public GLFWWindow(GLFWWindowFramework windowFramework, IFreeableStorage getSubList, IAttributeList format) {
+	public GLFWWindow(GLFWWindowFramework windowFramework, FreeableStorage getSubList, IAttributeList format) {
 		this.windowFramework = windowFramework;
 		this.format = format;
 		setupChangeEventHelper();
@@ -138,7 +138,7 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 	}
 	
 	@Override
-	public IFreeableStorage getStorage() {
+	public FreeableStorage getStorage() {
 		return storage;
 	}
 	
@@ -157,24 +157,12 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 		glfwPollEvents();
 	}
 	
-	public static class Storage extends FreeableStorage {
-		
-		private long windowPointer;
-		
-		public Storage(Object referent, IFreeableStorage getSubList, long windowPointer) {
-			super(referent, getSubList);
-			this.windowPointer = windowPointer;
-		}
-		
-		@Override
-		protected void handleFree() {
-			glfwDestroyWindow(windowPointer);
-		}
-		
-		public long getWindowPointer() throws FreedException {
-			throwIfFreed();
-			return windowPointer;
-		}
+	protected static long getWindowSharePointer(Window windowShare) {
+		if (windowShare == null)
+			return 0;
+		if ((windowShare instanceof GLFWWindow))
+			return ((GLFWWindow) windowShare).storage.getWindowPointer();
+		throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
 	}
 	
 	//static
@@ -202,12 +190,24 @@ public class GLFWWindow implements IWindow, FreeableWithStorage {
 		throw new IllegalArgumentException("Invalid type: " + type);
 	}
 	
-	protected static long getWindowSharePointer(IWindow windowShare) {
-		if (windowShare == null)
-			return 0;
-		if ((windowShare instanceof GLFWWindow))
-			return ((GLFWWindow) windowShare).storage.getWindowPointer();
-		throw new IllegalArgumentException("GL_CONTEXT_SHARE was not of type GLFWWindow, instead was " + windowShare.getClass().getName());
+	public static class Storage extends FreeableStorageImpl {
+		
+		private long windowPointer;
+		
+		public Storage(Object referent, FreeableStorage getSubList, long windowPointer) {
+			super(referent, getSubList);
+			this.windowPointer = windowPointer;
+		}
+		
+		@Override
+		protected void handleFree() {
+			glfwDestroyWindow(windowPointer);
+		}
+		
+		public long getWindowPointer() throws FreedException {
+			throwIfFreed();
+			return windowPointer;
+		}
 	}
 	
 	private static void checkVideoMode(IVideoMode<?> videoMode) {

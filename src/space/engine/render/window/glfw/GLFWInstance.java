@@ -2,8 +2,8 @@ package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.render.window.exception.WindowFrameworkInitializationException;
+import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.FreeableStorageWeak;
-import space.util.freeableStorage.IFreeableStorage;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -23,7 +23,7 @@ public class GLFWInstance {
 		}
 		
 		GLFWInstance inst = new GLFWInstance();
-		instanceRef = new Storage(inst, IFreeableStorage.ROOT_LIST);
+		instanceRef = new Storage(inst, FreeableStorage.ROOT_LIST);
 		return inst;
 	}
 	
@@ -36,7 +36,7 @@ public class GLFWInstance {
 	
 	protected static class Storage extends FreeableStorageWeak<GLFWInstance> {
 		
-		public Storage(GLFWInstance referent, IFreeableStorage getSubList) {
+		public Storage(GLFWInstance referent, FreeableStorage getSubList) {
 			super(referent, getSubList);
 		}
 		

@@ -1,9 +1,9 @@
 package space.engine.render.window.callback;
 
-import space.engine.render.window.IWindow;
+import space.engine.render.window.Window;
 
 @FunctionalInterface
 public interface MousePositionCallback {
 	
-	void onMouseMove(IWindow window, double x, double y);
+	void onMouseMove(Window window, double x, double y);
 }

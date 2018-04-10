@@ -1,9 +1,9 @@
 package space.engine.render.window.callback;
 
-import space.engine.render.window.IWindow;
+import space.engine.render.window.Window;
 
 @FunctionalInterface
 public interface WindowPositionCallback {
 	
-	void onWindowMove(IWindow window, int x, int y);
+	void onWindowMove(Window window, int x, int y);
 }
