@@ -3,7 +3,7 @@ package space.util.buffer.direct;
 import space.util.baseobject.Dumpable;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.math.MathUtils;
 import space.util.string.String2D;
 import space.util.string.builder.CharBufferBuilder2D;
@@ -27,21 +27,26 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 	protected DirectBufferImpl() {
 	}
 	
-	public DirectBufferImpl(long capacity, IFreeableStorage... parents) {
+	public DirectBufferImpl(long capacity, FreeableStorage... parents) {
 		this(UNSAFE.allocateMemory(capacity), capacity, parents);
 	}
 	
-	public DirectBufferImpl(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBufferImpl(long address, long capacity, FreeableStorage... parents) {
 		this.storage = new Storage(this, address, capacity, parents);
 	}
 	
+	@Override
+	public FreeableStorage getStorage() {
+		return storage;
+	}
+	
 	//storage
-	public static class Storage extends FreeableStorage implements ToString {
+	public static class Storage extends FreeableStorageImpl implements ToString {
 		
 		protected long address;
 		protected long capacity;
 		
-		public Storage(Object referent, long address, long capacity, IFreeableStorage... parents) {
+		public Storage(Object referent, long address, long capacity, FreeableStorage... parents) {
 			super(referent, parents);
 			this.address = address;
 			this.capacity = capacity;
@@ -75,11 +80,6 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 		public String toString() {
 			return toString0();
 		}
-	}
-	
-	@Override
-	public IFreeableStorage getStorage() {
-		return storage;
 	}
 	
 	//getter

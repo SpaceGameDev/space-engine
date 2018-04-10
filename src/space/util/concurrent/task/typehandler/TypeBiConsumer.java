@@ -2,7 +2,7 @@ package space.util.concurrent.task.typehandler;
 
 import java.util.function.BiConsumer;
 
-public class TypeBiConsumer<T, U> implements ITypeHandler<BiConsumer<T, U>> {
+public class TypeBiConsumer<T, U> implements TypeHandler<BiConsumer<T, U>> {
 	
 	public T t;
 	public U u;

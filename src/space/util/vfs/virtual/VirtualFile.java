@@ -1,7 +1,7 @@
 package space.util.vfs.virtual;
 
-import space.util.concurrent.lock.rwlock.IRWLock;
 import space.util.concurrent.lock.rwlock.RWLock;
+import space.util.concurrent.lock.rwlock.RWLockImpl;
 import space.util.vfs.AbstractEntry;
 import space.util.vfs.File;
 import space.util.vfs.Folder;
@@ -23,7 +23,7 @@ import static space.util.math.MathUtils.min;
 
 public class VirtualFile extends AbstractEntry implements File {
 	
-	public IRWLock rwLock = new RWLock();
+	public RWLock rwLock = new RWLockImpl();
 	public volatile byte[] array;
 	
 	public VirtualFile(String name) {

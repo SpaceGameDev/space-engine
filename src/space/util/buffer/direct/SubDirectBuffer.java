@@ -1,6 +1,6 @@
 package space.util.buffer.direct;
 
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -8,7 +8,7 @@ public class SubDirectBuffer extends NotFreeableDirectBuffer {
 	
 	public Object parent;
 	
-	public SubDirectBuffer(long address, long capacity, Object parent, IFreeableStorage... lists) {
+	public SubDirectBuffer(long address, long capacity, Object parent, FreeableStorage... lists) {
 		super(address, capacity, lists);
 		this.parent = parent;
 	}

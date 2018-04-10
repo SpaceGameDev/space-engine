@@ -1,23 +1,23 @@
 package space.util.concurrent.lock.simplelock;
 
-import space.util.concurrent.lock.keylock.KeyLock;
+import space.util.concurrent.lock.keylock.KeyLockImpl;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * a simple wrapper class from {@link ISimpleLock} to {@link KeyLock}, which calls the supplier for the key
+ * a simple wrapper class from {@link SimpleLock} to {@link KeyLockImpl}, which calls the supplier for the key
  */
-public class WrapperLock<KEY> implements ISimpleLock {
+public class WrapperLock<KEY> implements SimpleLock {
 	
 	public Supplier<KEY> key;
-	public KeyLock<? super KEY> lock;
+	public KeyLockImpl<? super KEY> lock;
 	
 	public WrapperLock(Supplier<KEY> key) {
-		this(key, new KeyLock<>());
+		this(key, new KeyLockImpl<>());
 	}
 	
-	public WrapperLock(Supplier<KEY> key, KeyLock<? super KEY> lock) {
+	public WrapperLock(Supplier<KEY> key, KeyLockImpl<? super KEY> lock) {
 		this.key = key;
 		this.lock = lock;
 	}

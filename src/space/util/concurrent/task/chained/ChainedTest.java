@@ -1,7 +1,7 @@
 package space.util.concurrent.task.chained;
 
 import space.util.baseobject.BaseObjectInit;
-import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.Task;
 import space.util.concurrent.task.typehandler.TypeConsumer;
 import space.util.delegate.list.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
@@ -30,7 +30,7 @@ public class ChainedTest {
 			if (prestart)
 				pool.prestartAllCoreThreads();
 			
-			ChainedTaskBuilder<Consumer<Integer>> builder = new ChainedTaskBuilder<>(singlethread);
+			ChainedTaskBuilderImpl<Consumer<Integer>> builder = new ChainedTaskBuilderImpl<>(singlethread);
 			builder.addHook("last", 5, integer -> doWork("last", integer, ChainedTest::actualWork));
 			builder.addHook("require", new String[] {"no"}, integer -> doWork("require", integer, ChainedTest::actualWork));
 			builder.addHook("no", integer -> doWork("no", integer, ChainedTest::actualWork));
@@ -48,7 +48,7 @@ public class ChainedTest {
 			
 			System.out.println(builder);
 			
-			ITask task = builder.execute(pool, new TypeConsumer<>(42));
+			Task task = builder.execute(pool, new TypeConsumer<>(42));
 			
 			if (doCancel) {
 				Thread.sleep(1000);

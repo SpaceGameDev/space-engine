@@ -2,7 +2,7 @@ package space.util.buffer.stack;
 
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 import space.util.stack.PointerList;
 import space.util.stack.multistack.MultiStack;
 
@@ -25,17 +25,17 @@ public class BufferAllocatorStackBufferList extends MultiStack<DirectBuffer> imp
 	}
 	
 	@Override
-	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer alloc(long address, long capacity, FreeableStorage... parents) {
 		return put(alloc.alloc(address, capacity, parents));
 	}
 	
 	@Override
-	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer allocNoFree(long address, long capacity, FreeableStorage... parents) {
 		return alloc.allocNoFree(address, capacity, parents);
 	}
 	
 	@Override
-	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, FreeableStorage... parents) {
 		return put(alloc.malloc(capacity, parents));
 	}
 }

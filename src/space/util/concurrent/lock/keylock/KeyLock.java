@@ -1,99 +1,62 @@
 package space.util.concurrent.lock.keylock;
 
-import space.util.concurrent.awaitable.OneToOneSignalable;
-
 import java.util.concurrent.TimeUnit;
 
-public class KeyLock<KEY> extends OneToOneSignalable implements IKeyLock<KEY> {
-	
-	public KEY currentKey;
-	public int stackLevel;
+/**
+ * A simple Lock which can be locked with a KEY instead of the current Thread
+ */
+public interface KeyLock<KEY> {
 	
 	//lock
-	@Override
-	public synchronized void lock(KEY key) {
-		while (!tryLock(key))
-			try {
-				await();
-			} catch (InterruptedException ignore) {
-				
-			}
-	}
+	void lock(KEY key);
 	
-	@Override
-	public synchronized void lock(KEY key, long time, TimeUnit unit) {
-		while (!tryLock(key))
-			try {
-				await(time, unit);
-			} catch (InterruptedException ignore) {
-				
-			}
-	}
+	void lock(KEY key, long time, TimeUnit unit);
 	
-	@Override
-	public synchronized void lockInterruptibly(KEY key) throws InterruptedException {
-		while (!tryLock(key))
-			await();
-	}
+	void lockInterruptibly(KEY key) throws InterruptedException;
 	
-	@Override
-	public synchronized void lockInterruptibly(KEY key, long time, TimeUnit unit) throws InterruptedException {
-		while (!tryLock(key))
-			await(time, unit);
-	}
+	void lockInterruptibly(KEY key, long time, TimeUnit unit) throws InterruptedException;
 	
-	@Override
-	public synchronized boolean tryLock(KEY key) {
-		if (currentKey == null) {
-			currentKey = key;
-			stackLevel = 1;
-			return true;
-		}
-		if (currentKey == key) {
-			stackLevel++;
-			return true;
-		}
-		
-		return false;
-	}
+	boolean tryLock(KEY key);
 	
 	//unlock
-	@Override
-	public synchronized boolean tryUnlock(KEY key) {
-		if (currentKey == null || currentKey != key)
-			return false;
-		unlock();
-		return true;
-	}
-	
-	@Override
-	public synchronized void unlock(KEY key) {
-		if (currentKey == null)
-			throw new IllegalStateException("Not locked!");
-		if (currentKey != key)
-			throw new IllegalStateException("Locked by other key!");
-		unlock();
-	}
+	void unlock(KEY key);
 	
 	/**
-	 * will force unlock ignoring the key
+	 * may be an {@link UnsupportedOperationException}
 	 */
-	protected synchronized void unlock() {
-		stackLevel--;
-		if (stackLevel == 0) {
-			currentKey = null;
-			signal();
+	boolean tryUnlock(KEY key);
+	
+	//getter
+	
+	/**
+	 * may be an {@link UnsupportedOperationException}
+	 */
+	boolean isLocked();
+	
+	/**
+	 * may be an {@link UnsupportedOperationException}
+	 */
+	KEY getHolder();
+	
+	default void execute(KEY key, Runnable command) {
+		lock(key);
+		try {
+			command.run();
+		} finally {
+			unlock(key);
 		}
 	}
 	
-	//getter
-	@Override
-	public synchronized boolean isLocked() {
-		return currentKey != null;
-	}
-	
-	@Override
-	public synchronized KEY getHolder() {
-		return currentKey;
+	default void executeInterruptibly(KEY key, Runnable command) {
+		try {
+			lockInterruptibly(key);
+			try {
+				command.run();
+			} finally {
+				unlock(key);
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 }

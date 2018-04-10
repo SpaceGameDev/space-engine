@@ -9,7 +9,7 @@ public class ConverterSmartTest {
 	public static void main(String[] args) {
 		ToStringHelper.setDefault(MonofontGuiApi.TSH);
 		
-		ConverterSmart<Object> conv = new ConverterSmart<>();
+		ConverterSmartImpl<Object> conv = new ConverterSmartImpl<>();
 		conv.putConverter(IntWrapper.class, FloatWrapper.class, new Converter<>() {
 			@Override
 			public FloatWrapper convertNew(IntWrapper wrapper) {
@@ -57,7 +57,7 @@ public class ConverterSmartTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void test(ConverterSmart<Object> conv, Object from, Class<?> to) {
+	public static void test(ConverterSmartImpl<Object> conv, Object from, Class<?> to) {
 		Converter c = conv.getConverter(from.getClass(), to);
 		System.out.println(c == null ? "null" : (c + ": " + from + " -> " + c.convertNew(from)));
 	}

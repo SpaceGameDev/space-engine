@@ -1,9 +1,9 @@
 package space.util.concurrent.task.impl;
 
-import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.Task;
 
 /**
- * A full implementation of {@link ITask} accepting a {@link Runnable}
+ * A full implementation of {@link Task} accepting a {@link Runnable}
  */
 public class RunnableTask extends AbstractRunnableTask {
 	

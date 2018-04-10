@@ -1,6 +1,6 @@
 package space.util.number.converter;
 
-import space.util.conversion.smart.ConverterSmart;
+import space.util.conversion.smart.ConverterSmartImpl;
 import space.util.number.base.NumberBase;
 import space.util.number.integer.IntegerGeneral;
 import space.util.number.integer.NumberBigInteger;
@@ -16,7 +16,7 @@ import static space.util.number.converter.NumberConverter.*;
 public class IntegerConverter implements INumberConverterRegistry {
 	
 	@Override
-	public void accept(ConverterSmart<NumberBase> conv) {
+	public void accept(ConverterSmartImpl<NumberBase> conv) {
 		//general to
 		add(conv, NumberByte.class, IntegerGeneral.class, IntegerGeneral::new, (from, to) -> to.set(from.b >= 0, intArrayFromByteSigned(from.b)), WEIGHT_GENERAL_CONVERSION, false);
 		add(conv, NumberShort.class, IntegerGeneral.class, IntegerGeneral::new, (from, to) -> to.set(from.s >= 0, intArrayFromShortSigned(from.s)), WEIGHT_GENERAL_CONVERSION, false);

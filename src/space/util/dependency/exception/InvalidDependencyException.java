@@ -1,6 +1,6 @@
 package space.util.dependency.exception;
 
-import space.util.dependency.IDependency;
+import space.util.dependency.Dependency;
 
 /**
  * Thrown if an Dependency is invalid for any reason.
@@ -22,7 +22,7 @@ public class InvalidDependencyException extends RuntimeException {
 		super(cause);
 	}
 	
-	public InvalidDependencyException(IDependency dep) {
+	public InvalidDependencyException(Dependency dep) {
 		this("Invalid Dependency: " + dep.toString());
 	}
 }

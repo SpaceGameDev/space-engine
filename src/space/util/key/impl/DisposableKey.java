@@ -3,15 +3,15 @@ package space.util.key.impl;
 import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.IFreeableStorage;
-import space.util.key.IKey;
+import space.util.freeableStorage.FreeableStorageImpl;
+import space.util.key.Key;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DisposableKey<T> implements IKey<T>, FreeableWithStorage, ToString {
+public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 	
 	public final Storage storage;
 	public Supplier<T> def;
@@ -33,13 +33,18 @@ public class DisposableKey<T> implements IKey<T>, FreeableWithStorage, ToString 
 		gen.allKeys.put(id, this);
 	}
 	
+	@Override
+	public FreeableStorage getStorage() {
+		return storage;
+	}
+	
 	//storage
-	public static class Storage extends FreeableStorage {
+	public static class Storage extends FreeableStorageImpl {
 		
 		private final int id;
 		public DisposableKeyGenerator gen;
 		
-		public Storage(Object referent, int id, DisposableKeyGenerator gen, IFreeableStorage... lists) {
+		public Storage(Object referent, int id, DisposableKeyGenerator gen, FreeableStorage... lists) {
 			super(referent, lists);
 			this.id = id;
 			this.gen = gen;
@@ -55,11 +60,6 @@ public class DisposableKey<T> implements IKey<T>, FreeableWithStorage, ToString 
 		protected void handleFree() {
 			gen.dispose(id);
 		}
-	}
-	
-	@Override
-	public IFreeableStorage getStorage() {
-		return storage;
 	}
 	
 	//id

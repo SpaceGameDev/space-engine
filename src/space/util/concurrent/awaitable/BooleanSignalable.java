@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * if {@link BooleanSignalable#signal()} is called, it will turn into signaled state and stay there
  */
-public class BooleanSignalable implements ToString, IResetable {
+public class BooleanSignalable implements ToString, Resetable {
 	
 	public boolean signaled;
 	

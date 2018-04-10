@@ -1,21 +1,21 @@
 package space.util.freeableStorage;
 
-import space.util.freeableStorage.IFreeableStorageList.Entry;
+import space.util.freeableStorage.FreeableStorageList.Entry;
 
 import java.lang.ref.SoftReference;
 
-public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements IFreeableStorage {
+public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements FreeableStorage {
 	
 	private volatile boolean isFreed = false;
-	private final IFreeableStorageList.Entry[] entries;
+	private final FreeableStorageList.Entry[] entries;
 	private final int freePriority;
-	private IFreeableStorageList subList;
+	private FreeableStorageList subList;
 	
-	public FreeableStorageSoft(T referent, IFreeableStorage... lists) {
+	public FreeableStorageSoft(T referent, FreeableStorage... lists) {
 		super(referent, FreeableStorageCleaner.QUEUE);
 		
 		int freePriority = Integer.MIN_VALUE;
-		entries = new IFreeableStorageList.Entry[lists.length];
+		entries = new FreeableStorageList.Entry[lists.length];
 		for (int i = 0; i < lists.length; i++) {
 			entries[i] = lists[i].getSubList().insert(this);
 			int lfp = lists[i].freePriority();
@@ -57,7 +57,7 @@ public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements
 	
 	//children
 	@Override
-	public synchronized IFreeableStorageList getSubList() {
-		return subList != null ? subList : (subList = FreeableStorageList.createList(freePriority));
+	public synchronized FreeableStorageList getSubList() {
+		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));
 	}
 }

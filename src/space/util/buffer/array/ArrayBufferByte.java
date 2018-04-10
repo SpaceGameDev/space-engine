@@ -1,19 +1,19 @@
 package space.util.buffer.array;
 
-import space.util.buffer.alloc.IAllocMethod;
-import space.util.buffer.alloc.IMallocMethod;
+import space.util.buffer.alloc.AllocMethod;
+import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 
 import static space.util.primitive.NativeType.INT8;
 
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
-	public static ArrayBufferByte alloc(IAllocMethod alloc, long address, long length, IFreeableStorage... parents) {
+	public static ArrayBufferByte alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
 		return new ArrayBufferByte(alloc.alloc(address, INT8.multiply(length), parents), length);
 	}
 	
-	public static ArrayBufferByte malloc(IMallocMethod alloc, long length, IFreeableStorage... parents) {
+	public static ArrayBufferByte malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
 		return new ArrayBufferByte(alloc.malloc(INT8.multiply(length), parents), length);
 	}
 	
@@ -60,11 +60,11 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	}
 	
 	//single
-	public static ArrayBufferByteSingle allocSingle(IAllocMethod alloc, long address, IFreeableStorage... parents) {
+	public static ArrayBufferByteSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
 		return new ArrayBufferByteSingle(alloc.alloc(address, INT8.BYTES, parents));
 	}
 	
-	public static ArrayBufferByteSingle mallocSingle(IMallocMethod alloc, IFreeableStorage... parents) {
+	public static ArrayBufferByteSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
 		return new ArrayBufferByteSingle(alloc.malloc(INT8.BYTES, parents));
 	}
 	

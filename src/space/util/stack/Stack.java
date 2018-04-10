@@ -1,37 +1,17 @@
 package space.util.stack;
 
-import space.util.indexmap.IndexMapArray;
-
-import java.util.Arrays;
-
-public class Stack<T> implements IStack<T> {
+/**
+ * Works <b><i>similar</i></b> to a stack, you can push() values on it and can retrieve them with pop().
+ * You have the option of just push()-ing and pop()-ing
+ * or you can do a pushPointer() and popPointer(long), if you want to ensure the equilibrium of push() and pop()s manually.
+ */
+public interface Stack<T> {
 	
-	public IndexMapArray<T> list = new IndexMapArray<>();
+	void push(T t);
 	
-	@Override
-	public void push(T t) {
-		list.add(t);
-	}
+	long pushPointer(T t);
 	
-	@Override
-	public long pushPointer(T t) {
-		int ret = list.size();
-		list.put(ret, t);
-		return ret;
-	}
+	T pop();
 	
-	@Override
-	public T pop() {
-		return list.remove(list.size() - 1);
-	}
-	
-	@Override
-	public T popPointer(long id) {
-		int l = list.size() - 1;
-		int i = (int) (id + 1);
-		if (i > l)
-			Arrays.fill(list.array, i, l, null);
-		
-		return list.remove((int) id);
-	}
+	T popPointer(long pointer);
 }

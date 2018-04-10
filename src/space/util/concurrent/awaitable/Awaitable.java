@@ -2,11 +2,11 @@ package space.util.concurrent.awaitable;
 
 import java.util.concurrent.TimeUnit;
 
-public interface IAwaitable {
+public interface Awaitable {
 	
 	/**
-	 * returns true if this {@link IAwaitable} is already triggered.
-	 * This returning true also indicates that the {@link IAwaitable#await()} Methods will return instantly.
+	 * returns true if this {@link Awaitable} is already triggered.
+	 * This returning true also indicates that the {@link Awaitable#await()} Methods will return instantly.
 	 */
 	boolean isSignaled();
 	

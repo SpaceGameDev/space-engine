@@ -2,7 +2,7 @@ package space.util.concurrent.task.typehandler;
 
 import java.util.function.UnaryOperator;
 
-public class TypeUnaryOperator<T> implements ITypeHandler<UnaryOperator<T>> {
+public class TypeUnaryOperator<T> implements TypeHandler<UnaryOperator<T>> {
 	
 	public T obj;
 	

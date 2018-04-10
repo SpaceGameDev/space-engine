@@ -1,14 +1,14 @@
 package space.util.concurrent.event;
 
-import space.util.concurrent.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.typehandler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple Event running hooks every time {@link SimpleEvent#run(ITypeHandler)} is called.
+ * A simple Event running hooks every time {@link SimpleEvent#run(TypeHandler)} is called.
  */
-public class SimpleEvent<FUNCTION> implements IRunnableEvent<FUNCTION> {
+public class SimpleEvent<FUNCTION> implements RunnableEvent<FUNCTION> {
 	
 	public List<FUNCTION> after = new ArrayList<>();
 	
@@ -25,7 +25,7 @@ public class SimpleEvent<FUNCTION> implements IRunnableEvent<FUNCTION> {
 	
 	//run
 	@Override
-	public synchronized void run(ITypeHandler<FUNCTION> type) {
+	public synchronized void run(TypeHandler<FUNCTION> type) {
 		notifyAll();
 		after.forEach(type);
 	}

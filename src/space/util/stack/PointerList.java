@@ -3,7 +3,7 @@ package space.util.stack;
 import static java.lang.Math.*;
 
 /**
- * Allows for {@link PointerList#push(long)} and {@link PointerList#pop()} of longs. Can be used to eg. store {@link IStack} or {@link space.util.stack.multistack.IMultiStack} pointers.
+ * Allows for {@link PointerList#push(long)} and {@link PointerList#pop()} of longs. Can be used to eg. store {@link Stack} or {@link space.util.stack.multistack.IMultiStack} pointers.
  */
 public class PointerList {
 	

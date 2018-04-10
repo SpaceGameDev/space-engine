@@ -2,7 +2,7 @@ package space.util.buffer.direct;
 
 import space.util.buffer.exception.BufferAddressNullException;
 import space.util.buffer.exception.BufferOutOfBoundsException;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 import space.util.string.String2D;
 
 /**
@@ -39,7 +39,7 @@ public class CheckedDirectBuffer implements DirectBuffer {
 	
 	//delegates
 	@Override
-	public IFreeableStorage getStorage() {
+	public FreeableStorage getStorage() {
 		return buffer.getStorage();
 	}
 	

@@ -1,7 +1,7 @@
 package space.util.concurrent.task;
 
-import space.util.concurrent.awaitable.IAwaitable;
-import space.util.concurrent.event.IEvent;
+import space.util.concurrent.awaitable.Awaitable;
+import space.util.concurrent.event.Event;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * A {@link ITask} is something which is created to be executed by some thread in a protected environment,
+ * A {@link Task} is something which is created to be executed by some thread in a protected environment,
  * signaling back it's execution, completion and error states. It also allows for Hooks to be added and to be awaited on.
  */
-public interface ITask extends IEvent<Consumer<ITask>>, IAwaitable {
+public interface Task extends Event<Consumer<Task>>, Awaitable {
 	
 	//run
 	
@@ -56,9 +56,23 @@ public interface ITask extends IEvent<Consumer<ITask>>, IAwaitable {
 	//result
 	
 	/**
-	 * gets the {@link TaskResult} of this {@link ITask}
+	 * waits until the {@link Task} is complete
+	 */
+	@Override
+	void await() throws InterruptedException;
+	
+	/**
+	 * waits until the {@link Task} is complete with a timeout
+	 */
+	@Override
+	void await(long time, TimeUnit unit) throws InterruptedException;
+	
+	//throw
+	
+	/**
+	 * gets the {@link TaskResult} of this {@link Task}
 	 *
-	 * @return the {@link TaskResult} of the {@link ITask} or null, if not already finished
+	 * @return the {@link TaskResult} of the {@link Task} or null, if not already finished
 	 */
 	TaskResult getResult();
 	
@@ -69,7 +83,7 @@ public interface ITask extends IEvent<Consumer<ITask>>, IAwaitable {
 	 */
 	Throwable getException();
 	
-	//throw
+	//await
 	
 	/**
 	 * if an Exception occured, rethrow it. If not, return.
@@ -88,18 +102,4 @@ public interface ITask extends IEvent<Consumer<ITask>>, IAwaitable {
 		await();
 		rethrowException();
 	}
-	
-	//await
-	
-	/**
-	 * waits until the {@link ITask} is complete
-	 */
-	@Override
-	void await() throws InterruptedException;
-	
-	/**
-	 * waits until the {@link ITask} is complete with a timeout
-	 */
-	@Override
-	void await(long time, TimeUnit unit) throws InterruptedException;
 }

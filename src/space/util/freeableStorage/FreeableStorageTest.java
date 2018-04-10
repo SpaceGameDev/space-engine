@@ -18,7 +18,7 @@ public class FreeableStorageTest {
 	public static boolean CLEAR_PARENT = false;
 	public static boolean CLEAR_ARRAY = true;
 	
-	public static IFreeableStorageList LIST_ROOT = FreeableStorageList.createList(0);
+	public static FreeableStorageList LIST_ROOT = FreeableStorageListImpl.createList(0);
 	
 	public static void main(String[] args) throws Exception {
 		BaseLogger logger = BaseLogger.defaultPrinter(BaseLogger.defaultHandler(new BaseLogger()));
@@ -81,16 +81,16 @@ public class FreeableStorageTest {
 		ParentFreeable freeable = new ParentFreeable(this, LIST_ROOT, idGen.getAndIncrement());
 	}
 	
-	public static class ParentFreeable extends FreeableStorage {
+	public static class ParentFreeable extends FreeableStorageImpl {
 		
 		int id;
 		
-		public ParentFreeable(Object referent, IFreeableStorage parent, int id) {
+		public ParentFreeable(Object referent, FreeableStorage parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
 		
-		public ParentFreeable(Object referent, IFreeableStorageList parent, int id) {
+		public ParentFreeable(Object referent, FreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
@@ -110,7 +110,7 @@ public class FreeableStorageTest {
 		
 		static final AtomicInteger idGen = new AtomicInteger();
 //		private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
-//		static final long OFFSET_PARENT = UnsafeInstance.objectFieldOffset(FreeableStorage.class, "parent");
+//		static final long OFFSET_PARENT = UnsafeInstance.objectFieldOffset(FreeableStorageImpl.class, "parent");
 		
 		Parent parent;
 		ThingFreeable freeable;
@@ -127,22 +127,22 @@ public class FreeableStorageTest {
 //		public void init(Parent parent) {
 //			this.parent = parent;
 //
-//			IFreeableStorageList subList = parent.freeable.getSubList();
+//			FreeableStorageList subList = parent.freeable.getSubList();
 //			UNSAFE.putObject(freeable, OFFSET_PARENT, subList);
 //			subList.insert(freeable);
 //		}
 	}
 	
-	public static class ThingFreeable extends FreeableStorage {
+	public static class ThingFreeable extends FreeableStorageImpl {
 		
 		int id;
 		
-		public ThingFreeable(Object referent, IFreeableStorage parent, int id) {
+		public ThingFreeable(Object referent, FreeableStorage parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}
 		
-		public ThingFreeable(Object referent, IFreeableStorageList parent, int id) {
+		public ThingFreeable(Object referent, FreeableStorageList parent, int id) {
 			super(referent, parent);
 			this.id = id;
 		}

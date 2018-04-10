@@ -4,19 +4,19 @@ import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
-import space.util.key.IKey;
-import space.util.key.IKeyGenerator;
 import space.util.key.IllegalKeyException;
+import space.util.key.Key;
+import space.util.key.KeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
+public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	
 	public IndexMap<VALUE> map;
-	public IKeyGenerator gen;
+	public KeyGenerator gen;
 	
 	public KeyMapImpl() {
 		this(new IndexMapArray<>());
@@ -26,16 +26,16 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 		this.map = map;
 	}
 	
-	public KeyMapImpl(IKeyGenerator gen) {
+	public KeyMapImpl(KeyGenerator gen) {
 		this(new IndexMapArray<>(), gen);
 	}
 	
-	public KeyMapImpl(IndexMap<VALUE> map, IKeyGenerator gen) {
+	public KeyMapImpl(IndexMap<VALUE> map, KeyGenerator gen) {
 		this.map = map;
 		this.gen = gen;
 	}
 	
-	public void check(IKey<?> key) {
+	public void check(Key<?> key) {
 		if (gen != null && !gen.isKeyOf(key))
 			throw new IllegalKeyException();
 	}
@@ -43,60 +43,60 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 	//methods
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE get(IKey<?> key) {
+	public VALUE get(Key<?> key) {
 		check(key);
 		return map.get(key.getID());
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE put(IKey<?> key, VALUE v) {
+	public VALUE put(Key<?> key, VALUE v) {
 		check(key);
 		return map.put(key.getID(), v);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE remove(IKey<?> key) {
+	public VALUE remove(Key<?> key) {
 		check(key);
 		return map.remove(key.getID());
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE getOrDefault(IKey<?> key, VALUE def) {
+	public VALUE getOrDefault(Key<?> key, VALUE def) {
 		check(key);
 		return map.getOrDefault(key.getID(), def);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE putIfAbsent(IKey<?> key, VALUE v) {
+	public VALUE putIfAbsent(Key<?> key, VALUE v) {
 		check(key);
 		return map.putIfAbsent(key.getID(), v);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE putIfAbsent(IKey<?> key, Supplier<? extends VALUE> v) {
+	public VALUE putIfAbsent(Key<?> key, Supplier<? extends VALUE> v) {
 		check(key);
 		return map.putIfAbsent(key.getID(), v);
 	}
 	
 	@Override
-	public boolean replace(IKey<?> key, VALUE oldValue, VALUE newValue) {
+	public boolean replace(Key<?> key, VALUE oldValue, VALUE newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);
 	}
 	
 	@Override
-	public boolean replace(IKey<?> key, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(Key<?> key, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);
 	}
 	
 	@Override
-	public boolean remove(IKey<?> key, VALUE v) {
+	public boolean remove(Key<?> key, VALUE v) {
 		check(key);
 		return map.remove(key.getID(), v);
 	}
@@ -143,7 +143,7 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 		}
 		
 		@Override
-		public IKey<?> getKey() {
+		public Key<?> getKey() {
 			return gen.getKey(entry.getIndex());
 		}
 		
@@ -153,26 +153,26 @@ public class KeyMapImpl<VALUE> implements IKeyMap<VALUE>, ToString {
 		}
 	}
 	
-	public static class KeyMapImplWithGenerator<VALUE> extends KeyMapImpl<VALUE> implements IKeyGenerator {
+	public static class KeyMapImplWithGenerator<VALUE> extends KeyMapImpl<VALUE> implements KeyGenerator {
 		
-		public <T> IKey<T> generateKey() {
+		public <T> Key<T> generateKey() {
 			return gen.generateKey();
 		}
 		
-		public <T> IKey<T> generateKey(Supplier<T> def) {
+		public <T> Key<T> generateKey(Supplier<T> def) {
 			return gen.generateKey(def);
 		}
 		
 		@Override
-		public IKey<?> getKey(int id) {
+		public Key<?> getKey(int id) {
 			return gen.getKey(id);
 		}
 		
-		public boolean isKeyOf(IKey<?> key) {
+		public boolean isKeyOf(Key<?> key) {
 			return gen.isKeyOf(key);
 		}
 		
-		public Collection<IKey<?>> getKeys() {
+		public Collection<Key<?>> getKeys() {
 			return gen.getKeys();
 		}
 	}

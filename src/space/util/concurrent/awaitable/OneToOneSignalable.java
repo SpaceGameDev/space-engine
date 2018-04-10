@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * if {@link OneToOneSignalable#signal()} is getting called X-times, X Threads will leave the await()-Method
  */
-public class OneToOneSignalable implements ToString, ISignalable {
+public class OneToOneSignalable implements ToString, Signalable {
 	
 	public int stack;
 	

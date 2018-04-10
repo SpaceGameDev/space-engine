@@ -1,6 +1,6 @@
 package space.util.concurrent.task.impl;
 
-import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.Task;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import static space.util.concurrent.task.TaskResult.*;
 
 /**
- * An {@link ITask} Implementation which implements it as a {@link Runnable}.
+ * An {@link Task} Implementation which implements it as a {@link Runnable}.
  * It implements everything except a {@link AbstractRunnableTask#run0()} Method to implement for execution.
  * If you want to submit a Runnable directly, refer to {@link RunnableTask}.
  * If you do not want it as a {@link Runnable}, refer to {@link AbstractTask}.

@@ -3,8 +3,8 @@ package space.util.buffer.stack;
 import space.util.baseobject.ToString;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.IFreeableStorage;
-import space.util.stack.IStack;
+import space.util.freeableStorage.FreeableStorage;
+import space.util.stack.SimpleStack;
 import space.util.stack.Stack;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -23,14 +23,14 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 	public final BufferAllocatorStackBufferList bufferList;
 	
 	public long largeThreshold;
-	public IStack<BiIntEntry> stack = new Stack<>();
+	public Stack<BiIntEntry> stack = new SimpleStack<>();
 	
 	//constructor
 	public BufferAllocatorStackCombined(BufferAllocator alloc) {
 		this(alloc, DEFAULT_LARGE_THRESHOLD);
 	}
 	
-	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold, IFreeableStorage... lists) {
+	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold, FreeableStorage... lists) {
 		this.largeThreshold = largeThreshold;
 		
 		this.alloc = alloc;
@@ -79,17 +79,17 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 	
 	//alloc
 	@Override
-	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer alloc(long address, long capacity, FreeableStorage... parents) {
 		return bufferList.alloc(address, capacity, parents);
 	}
 	
 	@Override
-	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer allocNoFree(long address, long capacity, FreeableStorage... parents) {
 		return alloc.allocNoFree(address, capacity, parents);
 	}
 	
 	@Override
-	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, FreeableStorage... parents) {
 		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
 	}
 	

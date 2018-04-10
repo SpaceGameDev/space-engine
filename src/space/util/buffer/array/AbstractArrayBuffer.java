@@ -3,7 +3,7 @@ package space.util.buffer.array;
 import space.util.annotation.Self;
 import space.util.buffer.Buffer;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 import space.util.primitive.NativeType;
 import space.util.string.String2D;
 
@@ -67,7 +67,7 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 	}
 	
 	@Override
-	public IFreeableStorage getStorage() {
+	public FreeableStorage getStorage() {
 		return buffer.getStorage();
 	}
 }

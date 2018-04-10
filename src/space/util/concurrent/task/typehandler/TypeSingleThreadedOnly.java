@@ -1,10 +1,10 @@
 package space.util.concurrent.task.typehandler;
 
-public class TypeSingleThreadedOnly<FUNCTION> implements ITypeHandler<FUNCTION> {
+public class TypeSingleThreadedOnly<FUNCTION> implements TypeHandler<FUNCTION> {
 	
-	public ITypeHandler<FUNCTION> handler;
+	public TypeHandler<FUNCTION> handler;
 	
-	public TypeSingleThreadedOnly(ITypeHandler<FUNCTION> handler) {
+	public TypeSingleThreadedOnly(TypeHandler<FUNCTION> handler) {
 		this.handler = handler;
 	}
 	

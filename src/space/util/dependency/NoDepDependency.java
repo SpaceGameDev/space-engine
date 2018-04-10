@@ -6,7 +6,7 @@ import space.util.baseobject.exceptions.InvalidSetException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class NoDepDependency implements Setable, ToString, IDependency {
+public class NoDepDependency implements Setable, ToString, Dependency {
 	
 	public String uuid;
 	
@@ -44,10 +44,10 @@ public class NoDepDependency implements Setable, ToString, IDependency {
 	
 	@Override
 	public void set(Object obj) throws InvalidSetException {
-		if (!(obj instanceof IDependency))
+		if (!(obj instanceof Dependency))
 			throw new InvalidSetException(obj.getClass());
 		
-		IDependency dep = (IDependency) obj;
+		Dependency dep = (Dependency) obj;
 		uuid = dep.uuid();
 	}
 	

@@ -7,7 +7,7 @@ import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.buffer.direct.SubDirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.stack.PointerList;
 import space.util.string.String2D;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -23,23 +23,23 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	public static final long DEFAULT_CAPACITY = 1024;
 	
 	public BufferAllocator alloc;
-	public FreeableStorage storage;
+	public FreeableStorageImpl storage;
 	public DirectBuffer buffer;
 	public long topOfStack = 0;
 	public PointerList pointerList;
 	
 	//constructor
-	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, IFreeableStorage... lists) {
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, FreeableStorage... lists) {
 		this(alloc, DEFAULT_CAPACITY, lists);
 	}
 	
-	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, IFreeableStorage... lists) {
+	public BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, FreeableStorage... lists) {
 		this(alloc, initCapacity, new PointerList(), lists);
 	}
 	
-	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList, IFreeableStorage[] lists) {
+	protected BufferAllocatorStackOneBuffer(BufferAllocator alloc, long initCapacity, PointerList pointerList, FreeableStorage[] lists) {
 		this.alloc = alloc;
-		this.storage = IFreeableStorage.createAnonymous(lists);
+		this.storage = FreeableStorage.createAnonymous(lists);
 		makeInternalBuffer(initCapacity);
 		this.pointerList = pointerList;
 	}
@@ -92,20 +92,20 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	@Override
-	public DirectBuffer malloc(long capacity, IFreeableStorage... parents) {
-		IFreeableStorage[] list2 = Arrays.copyOf(parents, parents.length + 1);
-		list2[parents.length] = buffer.getStorage();
-		return new SubDirectBuffer(allocInternal(capacity), capacity, buffer, list2);
-	}
-	
-	@Override
-	public DirectBuffer alloc(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer alloc(long address, long capacity, FreeableStorage... parents) {
 		return alloc.alloc(address, capacity, parents);
 	}
 	
 	@Override
-	public DirectBuffer allocNoFree(long address, long capacity, IFreeableStorage... parents) {
+	public DirectBuffer allocNoFree(long address, long capacity, FreeableStorage... parents) {
 		return alloc.allocNoFree(address, capacity, parents);
+	}
+	
+	@Override
+	public DirectBuffer malloc(long capacity, FreeableStorage... parents) {
+		FreeableStorage[] list2 = Arrays.copyOf(parents, parents.length + 1);
+		list2[parents.length] = buffer.getStorage();
+		return new SubDirectBuffer(allocInternal(capacity), capacity, buffer, list2);
 	}
 	
 	//dump

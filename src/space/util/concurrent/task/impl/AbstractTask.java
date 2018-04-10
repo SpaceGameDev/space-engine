@@ -1,6 +1,6 @@
 package space.util.concurrent.task.impl;
 
-import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
 
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import java.util.function.Consumer;
 import static space.util.concurrent.task.TaskResult.CANCELED;
 
 /**
- * An abstract Implementation of {@link ITask}, providing basic functionality without Implementing how the execution, submitting, canceling (partially) and {@link Exception} handling works.
+ * An abstract Implementation of {@link Task}, providing basic functionality without Implementing how the execution, submitting, canceling (partially) and {@link Exception} handling works.
  * It should be noted that any implementation should NOT put the execution in a synchronized block, as it inhibits any interaction with the {@link AbstractTask},
  * and should instead synchronize the start and the end of the execution with result evaluation, NOT the execution itself.
  * If you want that already implemented, refer to {@link AbstractRunnableTask}.
  */
-public abstract class AbstractTask implements ITask {
+public abstract class AbstractTask implements Task {
 	
 	public static final int INITIAL_EVENT_ARRAYLIST_CAPACITY = 1;
 	
@@ -24,7 +24,7 @@ public abstract class AbstractTask implements ITask {
 	 * will be created lazily when {@link AbstractTask#addHook(Consumer)} is called the first time
 	 * capacity of ArrayList: 1 - 3 - 9 - ...
 	 */
-	public List<Consumer<ITask>> events;
+	public List<Consumer<Task>> events;
 	
 	//these are volatile to allow getter of these two values to be non-synchronized
 	//state
@@ -74,7 +74,7 @@ public abstract class AbstractTask implements ITask {
 	protected abstract void cancel0(boolean mayInterrupt);
 	
 	//event
-	public synchronized void addHook(Consumer<ITask> func) {
+	public synchronized void addHook(Consumer<Task> func) {
 		if (hooksRan) {
 			func.accept(this);
 			return;
@@ -86,7 +86,7 @@ public abstract class AbstractTask implements ITask {
 	}
 	
 	@Override
-	public synchronized boolean removeHook(Consumer<ITask> hook) {
+	public synchronized boolean removeHook(Consumer<Task> hook) {
 		return events != null && events.remove(hook);
 	}
 	
@@ -100,7 +100,7 @@ public abstract class AbstractTask implements ITask {
 		
 		notifyAll();
 		if (events != null)
-			for (Consumer<ITask> func : events)
+			for (Consumer<Task> func : events)
 				func.accept(this);
 	}
 	

@@ -1,8 +1,8 @@
 package space.util.logger;
 
-import space.util.concurrent.task.chained.ChainedTaskBuilder;
-import space.util.concurrent.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.chained.ChainedTaskBuilderImpl;
 import space.util.concurrent.task.typehandler.TypeBiConsumer;
+import space.util.concurrent.task.typehandler.TypeHandler;
 import space.util.logger.prefix.LogLevelPrefix;
 import space.util.logger.prefix.Prefix;
 import space.util.logger.prefix.SubLoggerPrefix;
@@ -19,8 +19,8 @@ import java.util.function.BiConsumer;
 
 public class BaseLogger extends AbstractLogger {
 	
-	ChainedTaskBuilder<Prefix> handler = new ChainedTaskBuilder<>(true);
-	ChainedTaskBuilder<BiConsumer<LogMessage, CharSequence2D>> printer = new ChainedTaskBuilder<>(true);
+	ChainedTaskBuilderImpl<Prefix> handler = new ChainedTaskBuilderImpl<>(true);
+	ChainedTaskBuilderImpl<BiConsumer<LogMessage, CharSequence2D>> printer = new ChainedTaskBuilderImpl<>(true);
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {
@@ -51,7 +51,7 @@ public class BaseLogger extends AbstractLogger {
 	@Override
 	public void logDirect0(LogMessage msg) {
 		try {
-			handler.execute(new ITypeHandler<>() {
+			handler.execute(new TypeHandler<>() {
 				@Override
 				public void accept(Prefix consumer) {
 					consumer.accept(msg);

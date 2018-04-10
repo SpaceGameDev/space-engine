@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * The {@link LockLikeSignalable} allows you to "lock" with the {@link LockLikeSignalable#signal()} and "unlock" with the {@link LockLikeSignalable#reset()}.
  * Only when the amount of "locks" turns zero, it is signaled
  */
-public class LockLikeSignalable implements ToString, IResetable {
+public class LockLikeSignalable implements ToString, Resetable {
 	
 	public int holderCnt;
 	

@@ -1,6 +1,6 @@
 package space.util.concurrent.awaitable;
 
-public interface ISignalable extends IAwaitable, Runnable {
+public interface Signalable extends Awaitable, Runnable {
 	
 	/**
 	 * notifies Threads waiting. exact usage implementation specific

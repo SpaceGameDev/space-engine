@@ -1,16 +1,16 @@
 package space.util.concurrent.event;
 
-import space.util.concurrent.awaitable.IAwaitable;
-import space.util.concurrent.task.typehandler.ITypeHandler;
+import space.util.concurrent.awaitable.Awaitable;
+import space.util.concurrent.task.typehandler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class OneTimeEvent<T> implements IRunnableEvent<T>, IAwaitable {
+public class OneTimeEvent<T> implements RunnableEvent<T>, Awaitable {
 	
 	public List<T> after = new ArrayList<>();
-	public ITypeHandler<T> type;
+	public TypeHandler<T> type;
 	
 	//hook
 	@Override
@@ -28,7 +28,7 @@ public class OneTimeEvent<T> implements IRunnableEvent<T>, IAwaitable {
 	
 	//run
 	@Override
-	public synchronized void run(ITypeHandler<T> type) {
+	public synchronized void run(TypeHandler<T> type) {
 		this.type = type;
 		notifyAll();
 		after.forEach(type);

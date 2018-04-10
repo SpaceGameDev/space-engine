@@ -11,7 +11,7 @@ import space.util.buffer.direct.DirectBuffer;
  * </ul>
  * Supported Charsets: UTF8, UTF16, ASCII
  */
-public interface IBufferStringConverter {
+public interface BufferStringConverter {
 	
 	//memString from String
 	DirectBuffer memStringUTF8(String str, boolean nullTerm);

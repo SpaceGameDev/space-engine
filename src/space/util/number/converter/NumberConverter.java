@@ -1,6 +1,6 @@
 package space.util.number.converter;
 
-import space.util.conversion.smart.ConverterSmart;
+import space.util.conversion.smart.ConverterSmartImpl;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.number.base.NumberBase;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -11,10 +11,10 @@ public class NumberConverter {
 	public static final int WEIGHT_GENERAL_CONVERSION = 256;
 	public static final int WEIGHT_BETWEEN_TYPES_CONVERSION = 512;
 	
-	public static final ConverterSmart<NumberBase> conv;
+	public static final ConverterSmartImpl<NumberBase> conv;
 	
 	static {
-		conv = new ConverterSmart<>();
+		conv = new ConverterSmartImpl<>();
 		
 		new IntegerConverter().accept(conv);
 		new UnsignedConverter().accept(conv);

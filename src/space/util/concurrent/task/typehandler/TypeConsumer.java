@@ -2,7 +2,7 @@ package space.util.concurrent.task.typehandler;
 
 import java.util.function.Consumer;
 
-public class TypeConsumer<T> implements ITypeHandler<Consumer<T>> {
+public class TypeConsumer<T> implements TypeHandler<Consumer<T>> {
 	
 	public T obj;
 	

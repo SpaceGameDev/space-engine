@@ -4,6 +4,6 @@ import java.util.function.Supplier;
 
 public class TypeRunnable {
 	
-	public static final ITypeHandler<Runnable> INSTANCE = Runnable::run;
-	public static final Supplier<ITypeHandler<Runnable>> SUPPLIER = () -> INSTANCE;
+	public static final TypeHandler<Runnable> INSTANCE = Runnable::run;
+	public static final Supplier<TypeHandler<Runnable>> SUPPLIER = () -> INSTANCE;
 }

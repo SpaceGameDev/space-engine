@@ -1,7 +1,7 @@
 package space.util.concurrent.task.chained;
 
 import space.util.baseobject.ToString;
-import space.util.dependency.IDependency;
+import space.util.dependency.Dependency;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -9,12 +9,12 @@ import java.util.Comparator;
 
 public class ChainedTaskEntry<FUNCTION> implements ToString, Comparable<ChainedTaskEntry<FUNCTION>> {
 	
-	public static final Comparator<ChainedTaskEntry<?>> COMPARATOR = (o1, o2) -> o1 == o2 ? 0 : IDependency.COMPARATOR.compare(o1.dependency, o2.dependency);
+	public static final Comparator<ChainedTaskEntry<?>> COMPARATOR = (o1, o2) -> o1 == o2 ? 0 : Dependency.COMPARATOR.compare(o1.dependency, o2.dependency);
 	
-	public IDependency dependency;
+	public Dependency dependency;
 	public FUNCTION function;
 	
-	public ChainedTaskEntry(IDependency dependency, FUNCTION function) {
+	public ChainedTaskEntry(Dependency dependency, FUNCTION function) {
 		this.dependency = dependency;
 		this.function = function;
 	}

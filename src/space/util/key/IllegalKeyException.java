@@ -1,7 +1,7 @@
 package space.util.key;
 
 /**
- * thrown when a {@link IKey} is used which is not allowed to be used
+ * thrown when a {@link Key} is used which is not allowed to be used
  * common reasons:
  * - the key is not made by a specific generator
  * - the key is invalid or was freed
@@ -27,7 +27,7 @@ public class IllegalKeyException extends RuntimeException {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 	
-	public IllegalKeyException(IKey<?> key) {
+	public IllegalKeyException(Key<?> key) {
 		this(key == null ? "a NULL Key!" : "Key " + key + " is illegal!");
 	}
 }

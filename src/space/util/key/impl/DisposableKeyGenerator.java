@@ -5,8 +5,8 @@ import space.util.delegate.indexmap.ReferenceIndexMap;
 import space.util.delegate.list.IntList;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
-import space.util.key.IKey;
-import space.util.key.IKeyGenerator;
+import space.util.key.Key;
+import space.util.key.KeyGenerator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -14,11 +14,11 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class DisposableKeyGenerator implements IKeyGenerator, ToString {
+public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	
 	public int counter;
 	public IntList disposed;
-	public IndexMap<IKey<?>> allKeys = new ReferenceIndexMap<>(new IndexMapArray<>(), WeakReference::new);
+	public IndexMap<Key<?>> allKeys = new ReferenceIndexMap<>(new IndexMapArray<>(), WeakReference::new);
 	
 	public DisposableKeyGenerator(boolean allowReuse) {
 		if (allowReuse)
@@ -38,17 +38,17 @@ public class DisposableKeyGenerator implements IKeyGenerator, ToString {
 	
 	//key
 	@Override
-	public synchronized IKey<?> getKey(int id) {
+	public synchronized Key<?> getKey(int id) {
 		return allKeys.get(id);
 	}
 	
 	@Override
-	public boolean isKeyOf(IKey<?> key) {
+	public boolean isKeyOf(Key<?> key) {
 		return key instanceof DisposableKey && ((DisposableKey) key).storage.gen == this;
 	}
 	
 	@Override
-	public Collection<IKey<?>> getKeys() {
+	public Collection<Key<?>> getKeys() {
 		return allKeys.values();
 	}
 	

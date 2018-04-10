@@ -1,23 +1,57 @@
 package space.util.concurrent.lock.simplelock;
 
-import space.util.concurrent.lock.keylock.KeyLock;
-
-import java.util.function.Supplier;
+import java.util.concurrent.TimeUnit;
 
 /**
- * a simple wrapper class from {@link ISimpleLock} to {@link KeyLock}, which gets the Key by the Constructor argument
+ * A Lock which is locked by your Thread
  */
-public class SimpleLock<KEY> extends WrapperLock<KEY> {
+public interface SimpleLock {
 	
-	public SimpleLock(KEY key) {
-		super(makeSupplier(key));
+	//lock
+	void lock();
+	
+	void lock(long time, TimeUnit unit);
+	
+	void lockInterruptibly() throws InterruptedException;
+	
+	void lockInterruptibly(long time, TimeUnit unit) throws InterruptedException;
+	
+	boolean tryLock();
+	
+	//unlock
+	void unlock();
+	
+	/**
+	 * may be an {@link UnsupportedOperationException}
+	 */
+	boolean tryUnlock();
+	
+	//getter
+	
+	/**
+	 * may be an {@link UnsupportedOperationException}
+	 */
+	boolean isLocked();
+	
+	default void execute(Runnable command) {
+		lock();
+		try {
+			command.run();
+		} finally {
+			unlock();
+		}
 	}
 	
-	public SimpleLock(KEY key, KeyLock<? super KEY> lock) {
-		super(makeSupplier(key), lock);
-	}
-	
-	public static <T> Supplier<T> makeSupplier(T t) {
-		return () -> t;
+	default void executeInterruptibly(Runnable command) {
+		try {
+			lockInterruptibly();
+			try {
+				command.run();
+			} finally {
+				unlock();
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 }

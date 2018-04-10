@@ -1,7 +1,7 @@
 package space.util.concurrent.task.impl;
 
 import space.util.concurrent.task.CollectiveExecutionException;
-import space.util.concurrent.task.ITask;
+import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
 
 import java.util.concurrent.CancellationException;
@@ -12,11 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static space.util.concurrent.task.TaskResult.*;
 
 /**
- * A {@link ITask} which can have multiple sub-{@link ITask ITasks}, doing Cancellation, Exception handling / forwarding and Result calculations.
+ * A {@link Task} which can have multiple sub-{@link Task ITasks}, doing Cancellation, Exception handling / forwarding and Result calculations.
  */
 public class MultiTask extends AbstractTask {
 	
-	public Iterable<? extends ITask> subTasks;
+	public Iterable<? extends Task> subTasks;
 	
 	//state
 	protected AtomicInteger callCnt;
@@ -27,15 +27,15 @@ public class MultiTask extends AbstractTask {
 	public MultiTask() {
 	}
 	
-	public MultiTask(Iterable<ITask> subTasks) {
+	public MultiTask(Iterable<Task> subTasks) {
 		init(subTasks);
 	}
 	
-	public void init(Iterable<? extends ITask> subTasks) {
+	public void init(Iterable<? extends Task> subTasks) {
 		this.subTasks = subTasks;
 		
 		int size = 0;
-		for (ITask task : subTasks) {
+		for (Task task : subTasks) {
 			task.addHook(this::call);
 			size++;
 		}
@@ -46,11 +46,11 @@ public class MultiTask extends AbstractTask {
 	public synchronized void submit(Executor executor) {
 		if (startExecution())
 			return;
-		for (ITask task : subTasks)
+		for (Task task : subTasks)
 			task.submit(executor);
 	}
 	
-	public void call(ITask task) {
+	public void call(Task task) {
 		TaskResult res = task.getResult();
 		switch (res) {
 			case DONE:
@@ -94,7 +94,7 @@ public class MultiTask extends AbstractTask {
 	//cancel
 	@Override
 	public void cancel0(boolean mayInterrupt) {
-		for (ITask event : subTasks)
+		for (Task event : subTasks)
 			event.cancel(mayInterrupt);
 	}
 	

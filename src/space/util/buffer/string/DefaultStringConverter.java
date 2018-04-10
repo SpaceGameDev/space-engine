@@ -12,7 +12,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-public class DefaultStringConverter implements IBufferStringConverter {
+public class DefaultStringConverter implements BufferStringConverter {
 	
 	public static final String CHARACTER_CODING_EXCEPTION = "CHARACTER_CODING_EXCEPTION";
 	public static final byte NULL_CHARACTER = 0;

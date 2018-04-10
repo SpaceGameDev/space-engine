@@ -1,97 +1,121 @@
 package space.util.dependency;
 
-import space.util.baseobject.Setable;
-import space.util.baseobject.ToString;
-import space.util.baseobject.exceptions.InvalidSetException;
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.dependency.exception.CircleDependencyException;
 
-public class Dependency implements Setable, ToString, IDependency {
+import java.util.Comparator;
+
+/**
+ * A Dependency Utility Object.
+ * It can require something to be put before (require), it can put itself to be put before something else (requiredBy())
+ * and it can have a global priority to be executed sooner or later even without direct dependency (defaultPriority()).<br>
+ * <br>
+ * <h3>UUID Strings:</h3>
+ * It is <b>strongly recommended</b> to add a uuid to all Dependency-Objects and put these UUIDs into public-static-final-Fields.
+ * This way any object can be easily identified. The usage of '*' in UUIDs is not permitted.
+ * If no Dependency is required but the uuid should be set, use the {@link NoDepDependency}-Object.
+ * UUIDs can be validated by the isUuidValid()-Method.
+ * <br>
+ * <h3>Adding Dependency</h3>
+ * The Methods require() and requiredBy() are used to define Dependency. They can return null if it dows not have any special Dependency on anything.
+ * If an actual String[]-Array-Object is returned, each entry contains either a uuid or a pattern. Pattern are recognized by having a '*'-Character at the end of the String.
+ * A Pattern can be detected by the isPartialMatchingPattern()-Method and the pattern to be searched for can be extracted by the getPartialMatchingPattern()-Method.
+ * If the String[]-Array contains a <b>uuid</b> (a String with no '*'-Character at the end), it will require/requireBy a Dependency having the <b>exact</b> uuid.
+ * If it contains a <b>pattern</b> ('*' at the end), it will require/requireBy a Dependency with it's uuid <b>containing</b> the String <b>without the '*'-Character</b> at the end.<br>
+ * <br>
+ * <h3>Sorting Dependencies:</h3>
+ * <ul>
+ * <li>if the {@link Dependency} requires something (requires()-Method), something should be put in front of the {@link Dependency} object</li>
+ * <li>if the {@link Dependency} is required by something (requiredBy()-Method), something should be put after the {@link Dependency} object</li>
+ * <li>if none of these apply, the Object with the <b>lower</b> defaultPriority should be <b>executed first</b> (defaultPriority()-Method)</li>
+ * <li>if the defaultPriority if equal, the order of those two objects does not matter</li>
+ * </ul>
+ *
+ * @see SimpleDependency
+ * @see NoDepDependency
+ */
+public interface Dependency extends Comparable<Dependency> {
 	
-	public String uuid;
-	public String[] requires;
-	public String[] requiredBy;
-	public int defaultPriority;
-	
-	public Dependency() {
-	}
-	
-	public Dependency(String uuid) {
-		this(uuid, null, null, 0);
-	}
-	
-	public Dependency(String uuid, int defaultPriority) {
-		this(uuid, null, null, defaultPriority);
-	}
-	
-	public Dependency(String uuid, String[] requires) {
-		this(uuid, requires, null, 0);
-	}
-	
-	public Dependency(String uuid, String[] requires, int defaultPriority) {
-		this(uuid, requires, null, defaultPriority);
-	}
-	
-	public Dependency(String uuid, String[] requires, String[] requiredBy) {
-		this(uuid, requires, requiredBy, 0);
-	}
-	
-	public Dependency(String uuid, String[] requires, String[] requiredBy, int defaultPriority) {
-		this.uuid = uuid;
-		this.requires = requires;
-		this.requiredBy = requiredBy;
-		this.defaultPriority = defaultPriority;
-	}
-	
-	@Override
-	public String uuid() {
-		return uuid;
-	}
-	
-	@Override
-	public String[] requires() {
-		return requires;
-	}
-	
-	@Override
-	public String[] requiredBy() {
-		return requiredBy;
-	}
-	
-	@Override
-	public int defaultPriority() {
-		return defaultPriority;
-	}
-	
-	@Override
-	public int hashCode() {
-		return uuid.hashCode();
-	}
-	
-	@Override
-	public void set(Object obj) throws InvalidSetException {
-		if (!(obj instanceof IDependency))
-			throw new InvalidSetException(obj.getClass());
+	//static
+	//static uuid
+	char STAR = '*';
+	/**
+	 * comp < 1  ->  o1 before o2<br>
+	 * comp > 1  ->  o2 before o1
+	 */
+	Comparator<Dependency> COMPARATOR = (o1, o2) -> {
+		boolean o1Beforeo2 = find(o1, o2.requires()) || find(o2, o1.requiredBy());
+		boolean o2Beforeo1 = find(o2, o1.requires()) || find(o1, o2.requiredBy());
 		
-		IDependency dep = (IDependency) obj;
-		uuid = dep.uuid();
-		requires = dep.requires();
-		requiredBy = dep.requiredBy();
-		defaultPriority = dep.defaultPriority();
+		if (o1Beforeo2 && o2Beforeo1)
+			throw new CircleDependencyException(o1, o2);
+		if (o1Beforeo2)
+			return -1;
+		if (o2Beforeo1)
+			return 1;
+		
+		return o1.defaultPriority() - o2.defaultPriority();
+	};
+	
+	/**
+	 * a String on which Identification of the Function in possible
+	 */
+	String uuid();
+	
+	/**
+	 * anything in this array has be executed before this is executed
+	 */
+	String[] requires();
+	
+	/**
+	 * anything in this array will be executed after this is executed
+	 */
+	String[] requiredBy();
+	
+	/**
+	 * the default priority if no dependency is given
+	 */
+	int defaultPriority();
+	
+	/**
+	 * something has dependency, if any condition is met:
+	 * <ul>
+	 * <li>requires() something (not null)</li>
+	 * <li>requiredBy() something (not null)</li>
+	 * <li>defaultPriority() is not 0</li>
+	 * </ul>
+	 *
+	 * @return if something has any dependency
+	 */
+	default boolean hasDependency() {
+		return requires() != null || requiredBy() != null || defaultPriority() != 0;
 	}
 	
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
-		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("uuid", uuid);
-		tsh.add("requires", requires);
-		tsh.add("requiredBy", requiredBy);
-		tsh.add("defaultPriority", defaultPriority);
-		return tsh.build();
+	default int compareTo(Dependency o) {
+		return COMPARATOR.compare(this, o);
 	}
 	
-	@Override
-	public String toString() {
-		return toString0();
+	static boolean find(Dependency func, String[] array) {
+		if (array == null)
+			return false;
+		
+		for (String str : array) {
+			String uuid = func.uuid();
+			if (uuid != null && ((Dependency.isPartialMatchingPattern(str) && uuid.contains(getPartialMatchingPattern(str))) || uuid.equals(str)))
+				return true;
+		}
+		return false;
+	}
+	
+	static boolean isUuidValid(String uuid) {
+		return uuid.indexOf(STAR) == -1;
+	}
+	
+	static boolean isPartialMatchingPattern(String str) {
+		return str.charAt(str.length() - 1) == STAR;
+	}
+	
+	static String getPartialMatchingPattern(String str) {
+		return str.substring(0, str.length() - 1);
 	}
 }

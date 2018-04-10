@@ -90,7 +90,7 @@ public final class FreeableStorageCleaner {
 		
 		//more than two references
 		//-> collect
-		ArrayList<IFreeableStorage> list = new ArrayList<>();
+		ArrayList<FreeableStorage> list = new ArrayList<>();
 		handleReferenceOrAdd(list, ref1);
 		handleReferenceOrAdd(list, ref2);
 		Reference<?> ref;
@@ -99,7 +99,7 @@ public final class FreeableStorageCleaner {
 		}
 		
 		//-> sort
-		list.sort(Comparator.comparingInt(IFreeableStorage::freePriority).reversed());
+		list.sort(Comparator.comparingInt(FreeableStorage::freePriority).reversed());
 		
 		//-> log if logger exists
 		if (cleanupLoggerDebug)
@@ -112,19 +112,19 @@ public final class FreeableStorageCleaner {
 	}
 	
 	private static void handleReference(Reference<?> ref) {
-		if (ref instanceof IFreeableStorage) {
+		if (ref instanceof FreeableStorage) {
 			if (cleanupLoggerDebug)
 				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC: [").append(ref).append(']').toString());
 			else
 				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC").toString());
-			((IFreeableStorage) ref).free();
+			((FreeableStorage) ref).free();
 		} else
 			cleanupThreadIllegalReference.accept(ref);
 	}
 	
-	private static void handleReferenceOrAdd(ArrayList<IFreeableStorage> array, Reference<?> ref) {
-		if (ref instanceof IFreeableStorage)
-			array.add((IFreeableStorage) ref);
+	private static void handleReferenceOrAdd(ArrayList<FreeableStorage> array, Reference<?> ref) {
+		if (ref instanceof FreeableStorage)
+			array.add((FreeableStorage) ref);
 		else
 			cleanupThreadIllegalReference.accept(ref);
 	}

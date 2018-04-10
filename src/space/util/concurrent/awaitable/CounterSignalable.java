@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * counts how many {@link CounterSignalable#signal()}-calls have been made and if it was called often enough, it will notify
  */
-public class CounterSignalable implements ToString, ISignalable {
+public class CounterSignalable implements ToString, Signalable {
 	
 	public int cnt;
 	

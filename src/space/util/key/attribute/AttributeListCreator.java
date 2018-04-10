@@ -1,448 +1,307 @@
 package space.util.key.attribute;
 
-import space.util.baseobject.ToString;
-import space.util.concurrent.event.IEvent;
-import space.util.concurrent.event.SimpleEvent;
-import space.util.delegate.collection.ConvertingCollection;
-import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMapArrayWithDefault;
-import space.util.key.IKey;
-import space.util.key.IKeyGenerator;
-import space.util.key.IllegalKeyException;
-import space.util.key.impl.DisposableKeyGenerator;
-import space.util.string.toStringHelper.ToStringHelper;
-import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.concurrent.event.Event;
+import space.util.key.Key;
+import space.util.key.KeyGenerator;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class AttributeListCreator<TYPE> implements IAttributeListCreator<TYPE>, ToString {
+public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	
-	public final IKeyGenerator gen;
-	
-	public AttributeListCreator() {
-		this(new DisposableKeyGenerator(false));
-	}
-	
-	public AttributeListCreator(IKeyGenerator gen) {
-		this.gen = gen;
-	}
-	
-	public void check(IKey<?> key) {
-		if (!gen.isKeyOf(key))
-			throw new IllegalKeyException(key);
-	}
-	
-	public static <V> V correctDefault(V v, IKey<V> key) {
-		return v != DEFAULT ? v : key.getDefaultValue();
-	}
-	
-	//delegate to gen
-	@Override
-	public <T> IKey<T> generateKey() {
-		return gen.generateKey();
-	}
-	
-	@Override
-	public <T> IKey<T> generateKey(T def) {
-		return gen.generateKey(def);
-	}
-	
-	@Override
-	public <T> IKey<T> generateKey(Supplier<T> def) {
-		return gen.generateKey(def);
-	}
-	
-	@Override
-	public IKey<?> getKey(int id) {
-		return gen.getKey(id);
-	}
-	
-	@Override
-	public Collection<IKey<?>> getKeys() {
-		return gen.getKeys();
-	}
-	
-	@Override
-	public boolean isKeyOf(IKey<?> key) {
-		return gen.isKeyOf(key);
-	}
-	
-	//create
-	@Override
-	public AttributeList create() {
-		return new AttributeList();
-	}
-	
-	@Override
-	public AttributeListModification createModify() {
-		return new AttributeListModification();
-	}
-	
-	//toString
-	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
-		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("gen", this.gen);
-		return tsh.build();
-	}
-	
-	@Override
-	public String toString() {
-		return toString0();
-	}
-	
-	public abstract class AbstractAttributeList implements IAbstractAttributeList<TYPE>, ToString {
-		
-		public IndexMapArrayWithDefault<Object> indexMap;
-		
-		protected AbstractAttributeList(Object defaultObject) {
-			this(gen instanceof DisposableKeyGenerator ? new IndexMapArrayWithDefault<>(((DisposableKeyGenerator) gen).counter, defaultObject) : new IndexMapArrayWithDefault<>(defaultObject));
-		}
-		
-		private AbstractAttributeList(IndexMapArrayWithDefault<Object> indexMap) {
-			this.indexMap = indexMap;
-		}
-		
-		//get
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> Object getDirect(IKey<V> key) {
-			check(key);
-			return indexMap.get(key.getID());
-		}
-		
-		//other
-		@Override
-		public int size() {
-			return indexMap.size();
-		}
-		
-		@Override
-		public IAttributeListCreator getCreator() {
-			return AttributeListCreator.this;
-		}
-		
-		@Override
-		public Collection<Object> values() {
-			return indexMap.values();
-		}
-		
-		//toString
-		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
-			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-			tsh.add("indexMap", indexMap);
-			tsh.add("creator", AttributeListCreator.this);
-			return tsh.build();
-		}
-		
+	Object DEFAULT = new Object() {
 		@Override
 		public String toString() {
-			return toString0();
+			return "DEF";
 		}
-		
-		protected abstract class AbstractEntry<V> implements IAttributeListCreator.AbstractEntry<V> {
-			
-			protected IKey<V> key;
-			
-			public AbstractEntry(IKey<V> key) {
-				this.key = key;
-			}
-			
-			@Override
-			public IKey<V> getKey() {
-				return key;
-			}
-			
-			@Override
-			public Object getValueDirect() {
-				return AbstractAttributeList.this.getDirect(key);
-			}
+	};
+	Object UNCHANGED = new Object() {
+		@Override
+		public String toString() {
+			return "UNCH";
 		}
-	}
+	};
 	
-	public class AttributeList extends AbstractAttributeList implements IAttributeList<TYPE> {
-		
-		public SimpleEvent<Consumer<ChangeEvent>> changeEvent = new SimpleEvent<>();
-		
-		public AttributeList() {
-			super(DEFAULT);
-		}
+	/**
+	 * creates a new {@link IAttributeList IAttributeList}
+	 */
+	IAttributeList<TYPE> create();
+	
+	/**
+	 * creates a new {@link IAttributeListModification IAttributeListModification}
+	 */
+	IAttributeListModification<TYPE> createModify();
+	
+	@Override
+	<T> Key<T> generateKey();
+	
+	@Override
+	<T> Key<T> generateKey(Supplier<T> defaultValue);
+	
+	@Override
+	boolean isKeyOf(Key<?> key);
+	
+	//abstract version
+	interface IAbstractAttributeList<TYPE> {
 		
 		//get
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V get(IKey<V> key) {
-			check(key);
-			return correctDefault((V) indexMap.get(key.getID()), key);
+		
+		/**
+		 * gets the value for a given {@link Key} <b>without</b> checking if it's the default value.<br>
+		 * Possible Values:
+		 * <ul>
+		 * <li>{@link IAttributeList#DEFAULT} the default object</li>
+		 * <li>{@link IAttributeList#UNCHANGED} the unchanged object</li>
+		 * <li>an actual value Object of type V</li>
+		 * </ul>
+		 */
+		<V> Object getDirect(Key<V> key);
+		
+		default <V> boolean isDefault(Key<V> key) {
+			return getDirect(key) == DEFAULT;
 		}
 		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V getOrDefault(IKey<V> key, V def) {
-			check(key);
-			Object o = indexMap.get(key.getID());
-			return o == DEFAULT ? def : (V) o;
+		default <V> boolean isNotDefault(Key<V> key) {
+			return getDirect(key) != DEFAULT;
 		}
 		
-		//other
-		@Override
-		public IEvent<Consumer<ChangeEvent>> getChangeEvent() {
-			return changeEvent;
+		//others
+		
+		/**
+		 * returns the amount of entries
+		 */
+		int size();
+		
+		/**
+		 * gets the {@link AttributeListCreator} of this AttributeList
+		 */
+		AttributeListCreator getCreator();
+		
+		/**
+		 * creates a new {@link IAttributeListModification IAttributeListModification}.
+		 * Calls <code>this.{@link IAbstractAttributeList#getCreator()}.{@link AttributeListCreator#createModify()}</code> by default.
+		 */
+		default IAttributeListModification<TYPE> createModify() {
+			return getCreator().createModify();
 		}
 		
-		@Override
-		public synchronized void apply(IAttributeListModification<TYPE> mod2) {
-			//same check
-			AttributeListModification mod = AttributeListCreator.this.createModify();
-			mod2.table().forEach(entry -> {
-				IKey<?> key = entry.getKey();
-				Object value = entry.getValueDirect();
-				mod.putDirect(key, Objects.equals(value, this.getDirect(key)) ? UNCHANGED : value);
-			});
-			
-			//trigger events
-			ChangeEvent chEvent = new AttributeListChangeEvent(this, mod);
-			changeEvent.run(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
-			
-			//apply values
-			mod.table().forEach(entry -> {
-				Object value = entry.getValueDirect();
-				if (value != UNCHANGED)
-					this.indexMap.put(entry.getKey().getID(), value);
-			});
-		}
+		/**
+		 * gets an {@link java.util.Iterator} over all values
+		 */
+		Collection<?> values();
 		
-		@Override
-		public Collection<? extends IAttributeListCreator.ListEntry<?>> table() {
-			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
-		}
-		
-		protected class ListEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListEntry<V> {
-			
-			public ListEntry(IKey<V> key) {
-				super(key);
-			}
-			
-			@Override
-			public V getValue() {
-				return AttributeList.this.get(key);
-			}
-		}
+		/**
+		 * gets an {@link java.util.Iterator} over all index / value pairs
+		 */
+		Collection<? extends AbstractEntry<?>> table();
 	}
 	
-	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification<TYPE> {
+	interface AbstractEntry<V> {
 		
-		public AttributeListModification() {
-			super(UNCHANGED);
+		Key<V> getKey();
+		
+		//value
+		Object getValueDirect();
+	}
+	
+	//list itself
+	
+	/**
+	 * An {@link IAttributeList IAttributeList} holds values to all keys generated.<br>
+	 * It can be modified by creating a {@link IAttributeListModification IAttributeListModification} with {@link AttributeListCreator#createModify()},
+	 * putting all the changing values there and than calling {@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)} to apply changes.
+	 * When applying changes the {@link Event} from {@link IAttributeList#getChangeEvent()} is triggered.
+	 *
+	 * @see IAttributeListModification the modification AttributeList
+	 */
+	interface IAttributeList<TYPE> extends IAbstractAttributeList<TYPE> {
+		
+		//get
+		
+		/**
+		 * Gets the value for a given {@link Key} or the default value if the value is equal to {@link IAttributeList#DEFAULT}
+		 */
+		<V> V get(Key<V> key);
+		
+		/**
+		 * Gets the value for a given {@link Key} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT}
+		 */
+		<V> V getOrDefault(Key<V> key, V def);
+		
+		//other
+		
+		/**
+		 * Gets the {@link Event} to use {@link Event#addHook(Object)} to add Hooks.
+		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
+		 */
+		Event<Consumer<ChangeEvent>> getChangeEvent();
+		
+		/**
+		 * Applies a certain modification.<br>
+		 * It should be handled like this:
+		 * <ul>
+		 * <li>copy the mod</li>
+		 * <li>replace all "replacements" with the same entry with {@link IAttributeList#UNCHANGED}</li>
+		 * <li>trigger the {@link Event} gotten from {@link IAttributeList#getChangeEvent()}</li>
+		 * <li>apply the changes to this object</li>
+		 * </ul>
+		 */
+		void apply(IAttributeListModification<TYPE> mod);
+		
+		@Override
+		Collection<? extends ListEntry<?>> table();
+	}
+	
+	interface ListEntry<V> extends AbstractEntry<V> {
+		
+		V getValue();
+	}
+	
+	//modification
+	
+	interface IAttributeListModification<TYPE> extends IAbstractAttributeList<TYPE> {
+		
+		//get
+		default <V> boolean isUnchanged(Key<V> key) {
+			return getDirect(key) == UNCHANGED;
 		}
 		
-		private AttributeListModification(IndexMap<Object> indexMap) {
-			super(indexMap);
-		}
-		
-		private AttributeListModification copy() {
-			return new AttributeListModification(new IndexMapArrayWithDefault<>(indexMap.toArray(), UNCHANGED));
+		default <V> boolean hasChanged(Key<V> key) {
+			return getDirect(key) != UNCHANGED;
 		}
 		
 		//put
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> void put(IKey<V> key, V v) {
-			check(key);
-			indexMap.put(key.getID(), v);
-		}
+		
+		/**
+		 * sets the value to v for a given {@link Key}
+		 */
+		<V> void put(Key<V> key, V v);
+		
+		/**
+		 * sets the value to v for a given {@link Key}, directly so you can use {@link IAttributeList#UNCHANGED} or {@link IAttributeList#DEFAULT}
+		 */
+		<V> void putDirect(Key<V> key, Object v);
+		
+		/**
+		 * sets the value for a given {@link Key} and returns the previous value
+		 */
+		<V> V putAndGet(Key<V> key, V v);
+		
+		/**
+		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key}
+		 */
+		<V> void reset(Key<V> key);
+		
+		/**
+		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key} if the current value is equal to v
+		 */
+		<V> boolean reset(Key<V> key, V v);
+		
+		/**
+		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key}
+		 */
+		<V> void setDefault(Key<V> key);
+		
+		/**
+		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key} if the current value is equal to v
+		 */
+		<V> boolean setDefault(Key<V> key, V v);
+		
+		/**
+		 * sets the value for a given {@link Key} if the current value is equal to the old value
+		 */
+		<V> boolean replace(Key<V> key, V oldValue, V newValue);
+		
+		/**
+		 * sets the value for a given {@link Key} if the current value is equal to the old value
+		 */
+		<V> boolean replace(Key<V> key, V oldValue, Supplier<? extends V> newValue);
+		
+		/**
+		 * copies from either an {@link IAttributeList} or {@link IAttributeListModification} all the {@link Key IKeys} over
+		 */
+		void copyOver(IAbstractAttributeList list, Key<?>... keys);
+		
+		//other
+		
+		/**
+		 * resets all entries to {@link IAttributeList#UNCHANGED}
+		 */
+		void clear();
+		
+		IAttributeList<TYPE> createNewList();
 		
 		@Override
-		public <V> void putDirect(IKey<V> key, Object v) {
-			check(key);
-			indexMap.put(key.getID(), v);
+		Collection<? extends ListModificationEntry<?>> table();
+	}
+	
+	interface ListModificationEntry<V> extends AbstractEntry<V> {
+		
+		void put(V v);
+		
+		void putDirect(Object v);
+		
+		void setDefault();
+		
+		void reset();
+		
+		default boolean isUnchanged() {
+			return getValueDirect() == UNCHANGED;
 		}
 		
-		//set to UNCHANGED
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> void reset(IKey<V> key) {
-			check(key);
-			indexMap.put(key.getID(), UNCHANGED);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> boolean reset(IKey<V> key, V v) {
-			check(key);
-			return indexMap.replace(key.getID(), v, UNCHANGED);
-		}
-		
-		//set to DEFAULT
-		@Override
-		public <V> void setDefault(IKey<V> key) {
-			check(key);
-			indexMap.put(key.getID(), DEFAULT);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> boolean setDefault(IKey<V> key, V v) {
-			check(key);
-			return indexMap.replace(key.getID(), v, DEFAULT);
-		}
-		
-		//putAndGet
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> V putAndGet(IKey<V> key, V v) {
-			check(key);
-			return correctDefault((V) indexMap.put(key.getID(), v), key);
-		}
-		
-		//replace
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> boolean replace(IKey<V> key, V oldValue, V newValue) {
-			check(key);
-			return indexMap.replace(key.getID(), oldValue, newValue);
-		}
-		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <V> boolean replace(IKey<V> key, V oldValue, Supplier<? extends V> newValue) {
-			check(key);
-			return indexMap.replace(key.getID(), oldValue, newValue);
-		}
-		
-		@Override
-		public void copyOver(IAbstractAttributeList list, IKey<?>... keys) {
-			if (list.getCreator() != AttributeListCreator.this)
-				throw new IllegalKeyException("List not of same generator type");
-			
-			for (IKey<?> key : keys) {
-				check(key);
-				indexMap.put(key.getID(), list.getDirect(key));
-			}
-		}
-		
-		//clear
-		@Override
-		public void clear() {
-			indexMap.clear();
-		}
-		
-		@Override
-		public IAttributeList<TYPE> createNewList() {
-			AttributeList list = new AttributeList();
-			this.table().forEach(entry -> {
-				Object value = entry.getValueDirect();
-				if (value != UNCHANGED)
-					list.indexMap.put(entry.getKey().getID(), value);
-			});
-			return list;
-		}
-		
-		@Override
-		public Collection<? extends IAttributeListCreator.ListModificationEntry<?>> table() {
-			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
-		}
-		
-		protected class ListModificationEntry<V> extends AbstractEntry<V> implements IAttributeListCreator.ListModificationEntry<V> {
-			
-			public ListModificationEntry(IKey<V> key) {
-				super(key);
-			}
-			
-			@Override
-			public void put(V v) {
-				AttributeListModification.this.put(key, v);
-			}
-			
-			@Override
-			public void putDirect(Object v) {
-				AttributeListModification.this.putDirect(key, v);
-			}
-			
-			@Override
-			public void setDefault() {
-				AttributeListModification.this.setDefault(key);
-			}
-			
-			@Override
-			public void reset() {
-				AttributeListModification.this.reset(key);
-			}
+		default boolean hasChanged() {
+			return getValueDirect() != UNCHANGED;
 		}
 	}
 	
-	class AttributeListChangeEvent implements ChangeEvent<TYPE> {
+	//change event
+	
+	/**
+	 * Contains information about ANY change of an {@link IAttributeList IAttributeList}.
+	 * It is used in the {@link Event} gotten from {@link IAttributeList#getChangeEvent()}.
+	 * Use {@link ChangeEvent#getEntry(Key)} to get the Entry of one {@link Key}.
+	 */
+	interface ChangeEvent<TYPE> {
 		
-		public final IAttributeList<TYPE> oldList;
-		public final IAttributeListModification<TYPE> mod;
+		//get lists
+		IAttributeList<TYPE> getOldList();
 		
-		public AttributeListChangeEvent(IAttributeList<TYPE> oldList, IAttributeListModification<TYPE> mod) {
-			this.oldList = oldList;
-			this.mod = mod;
+		IAttributeListModification<TYPE> getMod();
+		
+		<V> ChangeEventEntry<V> getEntry(Key<V> key);
+	}
+	
+	/**
+	 * Contains information about A SINGLE change of an {@link IAttributeList IAttributeList}.
+	 * You can get the old state, the mod and calculate the new state it will be in.
+	 * "Normal" Methods will calculate the default Value, "Direct" Methods will not and can return {@link IAttributeList#DEFAULT DEFAULT} or {@link IAttributeList#UNCHANGED UNCHANGED}.
+	 * You can also set the mod to something else with {@link ChangeEventEntry#setMod(Object)}.
+	 */
+	interface ChangeEventEntry<V> {
+		
+		//get
+		Key<V> getKey();
+		
+		Object getOldDirect();
+		
+		V getOld();
+		
+		Object getMod();
+		
+		Object getNewDirect();
+		
+		V getNew();
+		
+		//set
+		void setMod(Object newmod);
+		
+		default boolean isUnchanged() {
+			return getNewDirect() == UNCHANGED;
 		}
 		
-		@Override
-		public IAttributeList<TYPE> getOldList() {
-			return oldList;
-		}
-		
-		@Override
-		public IAttributeListModification<TYPE> getMod() {
-			return mod;
-		}
-		
-		@Override
-		public <V> ChangeEventEntry<V> getEntry(IKey<V> key) {
-			return new ChangeEventEntry<>() {
-				
-				//get
-				@Override
-				public IKey<V> getKey() {
-					return key;
-				}
-				
-				@Override
-				public Object getOldDirect() {
-					return oldList.getDirect(key);
-				}
-				
-				@Override
-				public V getOld() {
-					return oldList.get(key);
-				}
-				
-				@Override
-				public Object getMod() {
-					return mod.getDirect(key);
-				}
-				
-				@Override
-				public Object getNewDirect() {
-					Object v = mod.getDirect(key);
-					return v == UNCHANGED ? oldList.getDirect(key) : v;
-				}
-				
-				@Override
-				public V getNew() {
-					Object v = mod.getDirect(key);
-					if (v == UNCHANGED)
-						return oldList.get(key);
-					if (v == DEFAULT)
-						return key.getDefaultValue();
-					//noinspection unchecked
-					return (V) v;
-				}
-				
-				//set
-				@Override
-				public void setMod(Object newmod) {
-					mod.putDirect(key, newmod);
-				}
-			};
+		default boolean hasChanged() {
+			return getNewDirect() != UNCHANGED;
 		}
 	}
 }

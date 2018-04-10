@@ -1,19 +1,19 @@
 package space.util.buffer.array;
 
-import space.util.buffer.alloc.IAllocMethod;
-import space.util.buffer.alloc.IMallocMethod;
+import space.util.buffer.alloc.AllocMethod;
+import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.IFreeableStorage;
+import space.util.freeableStorage.FreeableStorage;
 
 import static space.util.primitive.NativeType.FP32;
 
 public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	
-	public static ArrayBufferFloat alloc(IAllocMethod alloc, long address, long length, IFreeableStorage... parents) {
+	public static ArrayBufferFloat alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
 		return new ArrayBufferFloat(alloc.alloc(address, FP32.multiply(length), parents), length);
 	}
 	
-	public static ArrayBufferFloat malloc(IMallocMethod alloc, long length, IFreeableStorage... parents) {
+	public static ArrayBufferFloat malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
 		return new ArrayBufferFloat(alloc.malloc(FP32.multiply(length), parents), length);
 	}
 	
@@ -60,11 +60,11 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	}
 	
 	//single
-	public static ArrayBufferFloatSingle allocSingle(IAllocMethod alloc, long address, IFreeableStorage... parents) {
+	public static ArrayBufferFloatSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
 		return new ArrayBufferFloatSingle(alloc.alloc(address, FP32.BYTES, parents));
 	}
 	
-	public static ArrayBufferFloatSingle mallocSingle(IMallocMethod alloc, IFreeableStorage... parents) {
+	public static ArrayBufferFloatSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
 		return new ArrayBufferFloatSingle(alloc.malloc(FP32.BYTES, parents));
 	}
 	

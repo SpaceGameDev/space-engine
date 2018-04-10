@@ -1,10 +1,10 @@
 package space.util.concurrent.task.impl;
 
-import space.util.concurrent.task.ITask;
-import space.util.concurrent.task.creator.ITaskCreator;
-import space.util.concurrent.task.typehandler.ITypeHandler;
+import space.util.concurrent.task.Task;
+import space.util.concurrent.task.creator.TaskCreator;
+import space.util.concurrent.task.typehandler.TypeHandler;
 
-public class TypeHandlerTaskCreator<FUNCTION> implements ITaskCreator<FUNCTION> {
+public class TypeHandlerTaskCreator<FUNCTION> implements TaskCreator<FUNCTION> {
 	
 	public FUNCTION func;
 	
@@ -13,15 +13,15 @@ public class TypeHandlerTaskCreator<FUNCTION> implements ITaskCreator<FUNCTION> 
 	}
 	
 	@Override
-	public ITask create(ITypeHandler<FUNCTION> handler) {
+	public Task create(TypeHandler<FUNCTION> handler) {
 		return new TypeHandlerTask(handler);
 	}
 	
 	public class TypeHandlerTask extends AbstractRunnableTask {
 		
-		public ITypeHandler<FUNCTION> handler;
+		public TypeHandler<FUNCTION> handler;
 		
-		public TypeHandlerTask(ITypeHandler<FUNCTION> handler) {
+		public TypeHandlerTask(TypeHandler<FUNCTION> handler) {
 			this.handler = handler;
 		}
 		

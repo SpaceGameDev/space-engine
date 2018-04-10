@@ -2,10 +2,10 @@ package space.util.key;
 
 @FunctionalInterface
 @SuppressWarnings("unused")
-public interface IKey<T> {
+public interface Key<T> {
 	
 	/**
-	 * gets the id of the key. It can be expected that {@link IKey} ids are assigned sequentially.
+	 * gets the id of the key. It can be expected that {@link Key} ids are assigned sequentially.
 	 */
 	int getID();
 	
