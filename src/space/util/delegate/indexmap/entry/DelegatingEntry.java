@@ -6,7 +6,6 @@ import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 public class DelegatingEntry<VALUE> implements Entry<VALUE>, ToString {
 	
@@ -29,11 +28,6 @@ public class DelegatingEntry<VALUE> implements Entry<VALUE>, ToString {
 	@Override
 	public void setValue(VALUE v) {
 		entry.setValue(v);
-	}
-	
-	@Override
-	public VALUE setIfAbsent(Supplier<VALUE> v) {
-		return entry.setIfAbsent(v);
 	}
 	
 	@Override

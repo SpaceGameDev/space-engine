@@ -13,6 +13,113 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * A {@link ConvertingCollection} converts <b>FROM</b> one {@link Collection Collection's} Value <b>TO</b> a different value with the help of provided {@link Function Functions} for conversion.<br>
+ * It has multiple inner classes allowing for different usages for many different cases.<br>
+ * All implementations are threadsafe if their underlying {@link ConvertingCollection#coll} is also threadsafe.<br>
+ * <br>
+ * 3 Types of Functions:
+ * <table border=1>
+ * <tr><td>Function</td><td>Remap direction</td><td>Comment</td></tr>
+ * <tr><td>{@link ConvertingCollection.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</td><td>F -&gt; T </td><td>Always required.</td></tr>
+ * <tr><td>{@link ConvertingCollection.BiDirectionalSparse#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse}</td><td>T -&gt; F </td><td>Only called when the returned value is added to this Object. If available defaults to reverse. </td></tr>
+ * <tr><td>{@link ConvertingCollection.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</td><td>T -&gt; F </td><td>Will be called even for simple Operations, where the Result may not be stored and only used for eg. comparision. </td></tr>
+ * </table>
+ * <br>
+ * 4 Sub-Classes for Converting with different Functions:
+ * <table border=1>
+ *
+ * <tr>
+ * <td>Class name</td>
+ * <td>Modifiable?</td>
+ * <td>Required Functions</td>
+ * <td>Inefficient Methods</td>
+ * <td>Threadsafe if</td>
+ * <td>Comparision Object</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingCollection.OneDirectionalUnmodifiable OneDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.OneDirectionalUnmodifiable#contains(Object) contains(Object)}</li>
+ * <li>{@link ConvertingCollection.OneDirectionalUnmodifiable#containsAll(Collection) containsAll(Collection)}</li>
+ * </ul>
+ * </td>
+ * <td>{@link OneDirectionalUnmodifiable#coll coll} is threadsafe</td>
+ * <td>TO</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingCollection.BiDirectionalUnmodifiable BiDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.BiDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalUnmodifiable#reverse Function&lt;? super T, ? extends F&gt; reverse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>{@link OneDirectionalUnmodifiable#coll coll} is threadsafe</td>
+ * <td>FROM</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingCollection.BiDirectionalSparse BiDirectionalSparse}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#contains(Object) contains(Object)}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#containsAll(Collection) containsAll(Collection)}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#remove(Object) remove(Object)}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#removeAll(Collection) removeAll(Collection)}</li>
+ * <li>{@link ConvertingCollection.BiDirectionalSparse#retainAll(Collection) retainAll(Collection)}</li>
+ * </ul>
+ * </td>
+ * <td>{@link OneDirectionalUnmodifiable#coll coll} is threadsafe</td>
+ * <td>TO</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingCollection.BiDirectional BiDirectional}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingCollection.BiDirectional#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingCollection.BiDirectional#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse} (defaults to reverse)</li>
+ * <li>{@link ConvertingCollection.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>{@link OneDirectionalUnmodifiable#coll coll} is threadsafe</td>
+ * <td>FROM</td>
+ * </tr>
+ *
+ * </table>
+ * <ul>
+ * <li>Inefficient Methods: Methods which are implemented inefficiently and should thus be avoided to be called. Non-marked Methods will only delegate. </li>
+ * <li>Comparision Object: Object on which Comparision will be done on. Either on FROM objects or the TO objects.</li>
+ * </ul>
+ *
+ * @param <F> the value to convert <b>FROM</b>
+ * @param <T> the value to convert <b>TO</b>
+ */
 public abstract class ConvertingCollection<F, T> implements Collection<T>, ToString {
 	
 	public Collection<F> coll;

@@ -24,15 +24,15 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default void add(VALUE v) {
-		put(size(), v);
+	default void add(VALUE value) {
+		put(size(), value);
 	}
 	
 	VALUE get(int index);
 	
 	Entry<VALUE> getEntry(int index);
 	
-	VALUE put(int index, VALUE v);
+	VALUE put(int index, VALUE value);
 	
 	VALUE remove(int index);
 	
@@ -55,7 +55,7 @@ public interface IndexMap<VALUE> {
 	
 	default void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
 		for (Entry<? extends VALUE> entry : indexMap.table())
-			putIfAbsent(entry.getIndex(), entry::getValue);
+			computeIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	
 	//advanced access
@@ -64,22 +64,22 @@ public interface IndexMap<VALUE> {
 		return v == null ? def : v;
 	}
 	
-	default VALUE putIfAbsent(int index, VALUE v) {
-		VALUE c = get(index);
-		if (c != null)
-			return c;
+	default VALUE putIfAbsent(int index, VALUE value) {
+		VALUE oldValue = get(index);
+		if (oldValue != null)
+			return oldValue;
 		
-		put(index, c = v);
-		return c;
+		put(index, value);
+		return value;
 	}
 	
-	default VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		VALUE c = get(index);
-		if (c != null)
-			return c;
+	default VALUE putIfPresent(int index, VALUE value) {
+		VALUE oldValue = get(index);
+		if (oldValue == null)
+			return null;
 		
-		put(index, c = v.get());
-		return c;
+		put(index, value);
+		return value;
 	}
 	
 	default boolean replace(int index, VALUE oldValue, VALUE newValue) {
@@ -98,13 +98,35 @@ public interface IndexMap<VALUE> {
 		return false;
 	}
 	
-	default boolean remove(int index, VALUE v) {
-		VALUE c = get(index);
-		if (c == v) {
+	default boolean remove(int index, VALUE value) {
+		if (get(index) == value) {
 			remove(index);
 			return true;
 		}
 		return false;
+	}
+	
+	//compute
+	default VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		VALUE oldValue = get(index);
+		VALUE newValue = function.apply(index, oldValue);
+		if (Objects.equals(oldValue, newValue))
+			put(index, newValue);
+		return newValue;
+	}
+	
+	default VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		VALUE oldValue = get(index);
+		if (oldValue == null)
+			put(index, oldValue = supplier.get());
+		return oldValue;
+	}
+	
+	default VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+		VALUE oldValue = get(index);
+		if (oldValue != null)
+			put(index, oldValue = supplier.get());
+		return oldValue;
 	}
 	
 	//other
@@ -122,8 +144,6 @@ public interface IndexMap<VALUE> {
 		VALUE getValue();
 		
 		void setValue(VALUE v);
-		
-		VALUE setIfAbsent(Supplier<VALUE> v);
 		
 		default void remove() {
 			setValue(null);
@@ -159,5 +179,11 @@ public interface IndexMap<VALUE> {
 		 */
 		@Override
 		boolean equals(Object obj);
+	}
+	
+	@FunctionalInterface
+	interface ComputeFunction<F, R> {
+		
+		R apply(int index, F value);
 	}
 }

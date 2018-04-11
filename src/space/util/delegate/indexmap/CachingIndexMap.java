@@ -42,7 +42,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		boolean[] chg = new boolean[1];
-		super.putIfAbsent(index, () -> {
+		super.computeIfAbsent(index, () -> {
 			chg[0] = true;
 			VALUE defValue = def.apply(index);
 			return defValue == oldValue ? newValue : defValue;
@@ -53,7 +53,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	@Override
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		boolean[] chg = new boolean[1];
-		super.putIfAbsent(index, () -> {
+		super.computeIfAbsent(index, () -> {
 			chg[0] = true;
 			VALUE defValue = def.apply(index);
 			return defValue == oldValue ? newValue.get() : defValue;
@@ -62,14 +62,22 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
+	public boolean remove(int index, VALUE value) {
 		boolean[] chg = new boolean[1];
-		super.putIfAbsent(index, () -> {
+		super.computeIfAbsent(index, () -> {
 			chg[0] = true;
 			VALUE defValue = def.apply(index);
-			return defValue == v ? null : defValue;
+			return defValue == value ? null : defValue;
 		});
-		return chg[0] || super.remove(index, v);
+		return chg[0] || super.remove(index, value);
+	}
+	
+	@Override
+	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("indexMap", this.indexMap);
+		tsh.add("def", this.def);
+		return tsh.build();
 	}
 	
 	@Override
@@ -81,12 +89,12 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public boolean contains(int index) {
-		return super.putIfAbsent(index, () -> this.def.apply(index)) != null;
+		return super.computeIfAbsent(index, () -> this.def.apply(index)) != null;
 	}
 	
 	@Override
 	public VALUE get(int index) {
-		return super.putIfAbsent(index, () -> this.def.apply(index));
+		return super.computeIfAbsent(index, () -> this.def.apply(index));
 	}
 	
 	@Override
@@ -105,46 +113,46 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public VALUE getOrDefault(int index, VALUE def) {
-		VALUE value = super.putIfAbsent(index, () -> this.def.apply(index));
+		VALUE value = super.computeIfAbsent(index, () -> this.def.apply(index));
 		return value == null ? def : value;
 	}
 	
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
-		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("indexMap", this.indexMap);
-		tsh.add("def", this.def);
-		return tsh.build();
-	}
-	
-	@Override
 	public IndexMap.Entry<VALUE> getEntry(int index) {
-		IndexMap.Entry<VALUE> entry = super.getEntry(index);
-		entry.setIfAbsent(() -> this.def.apply(index));
-		return entry;
+		super.computeIfAbsent(index, () -> this.def.apply(index));
+		return super.getEntry(index);
 	}
 	
 	@Override
 	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
-		indexMap.table().forEach(entry -> super.putIfAbsent(entry.getIndex(), () -> {
+		indexMap.table().forEach(entry -> super.computeIfAbsent(entry.getIndex(), () -> {
 			VALUE defValue = def.apply(entry.getIndex());
 			return defValue != null ? defValue : entry.getValue();
 		}));
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
-		return super.putIfAbsent(index, () -> {
+	public VALUE putIfAbsent(int index, VALUE value) {
+		return super.computeIfAbsent(index, () -> {
 			VALUE defValue = def.apply(index);
-			return defValue != null ? defValue : v;
+			return defValue != null ? defValue : value;
 		});
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return super.putIfAbsent(index, () -> {
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		return super.computeIfAbsent(index, () -> {
 			VALUE defValue = def.apply(index);
-			return defValue != null ? defValue : v.get();
+			return defValue != null ? defValue : supplier.get();
+		});
+	}
+	
+	@Override
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		return super.compute(index, (index1, value) -> {
+			if (value == null)
+				value = def.apply(index1);
+			return function.apply(index1, value);
 		});
 	}
 	

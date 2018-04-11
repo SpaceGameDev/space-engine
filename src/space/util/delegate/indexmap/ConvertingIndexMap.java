@@ -12,6 +12,105 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * A {@link ConvertingIndexMap} converts <b>FROM</b> one {@link IndexMap IndexMap's} Value <b>TO</b> a different value with the help of provided {@link Function Functions} for conversion.<br>
+ * It has multiple inner classes allowing for different usages for many different cases.<br>
+ * All implementations are threadsafe if their underlying {@link ConvertingIndexMap#indexMap} is also threadsafe.<br>
+ * <br>
+ * 3 Types of Functions:
+ * <table border=1>
+ * <tr><td>Function</td><td>Remap direction</td><td>Comment</td></tr>
+ * <tr><td>{@link ConvertingIndexMap.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</td><td>F -&gt; T </td><td>Always required.</td></tr>
+ * <tr><td>{@link ConvertingIndexMap.BiDirectionalSparse#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse}</td><td>T -&gt; F </td><td>Only called when the returned value is added to this Object. If available defaults to reverse. </td></tr>
+ * <tr><td>{@link ConvertingIndexMap.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</td><td>T -&gt; F </td><td>Will be called even for simple Operations, where the Result may not be stored and only used for eg. comparision. </td></tr>
+ * </table>
+ * <br>
+ * 4 Sub-Classes for Converting with different Functions:
+ * <table border=1>
+ *
+ * <tr>
+ * <td>Class name</td>
+ * <td>Modifiable?</td>
+ * <td>Required Functions</td>
+ * <td>Inefficient Methods</td>
+ * <td>Comparision Object</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIndexMap.OneDirectionalUnmodifiable OneDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.OneDirectionalUnmodifiable#values() values()}.{@link ConvertingCollection.OneDirectionalUnmodifiable#contains(Object) contains(Object)}</li>
+ * <li>{@link ConvertingIndexMap.OneDirectionalUnmodifiable#values() values()}.{@link ConvertingCollection.OneDirectionalUnmodifiable#containsAll(Collection) containsAll(Collection)}</li>
+ * </ul>
+ * </td>
+ * <td>TO</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIndexMap.BiDirectionalUnmodifiable BiDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.BiDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingIndexMap.BiDirectionalUnmodifiable#reverse Function&lt;? super T, ? extends F&gt; reverse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>FROM</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIndexMap.BiDirectionalSparse BiDirectionalSparse}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.BiDirectionalSparse#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingIndexMap.BiDirectionalSparse#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.BiDirectionalSparse#values() values()}.{@link ConvertingCollection.OneDirectionalUnmodifiable#contains(Object) contains(Object)}</li>
+ * <li>{@link ConvertingIndexMap.BiDirectionalSparse#values() values()}.{@link ConvertingCollection.OneDirectionalUnmodifiable#containsAll(Collection) containsAll(Collection)}</li>
+ * </ul>
+ * </td>
+ * <td>TO</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIndexMap.BiDirectional BiDirectional}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIndexMap.BiDirectional#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingIndexMap.BiDirectional#reverseSparse Function&lt;? super T, ? extends F&gt; reverseSparse} (defaults to reverse)</li>
+ * <li>{@link ConvertingIndexMap.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>FROM</td>
+ * </tr>
+ *
+ * </table>
+ * <ul>
+ * <li>Inefficient Methods: Methods which are implemented inefficiently and should thus be avoided to be called. Non-marked Methods will only delegate. </li>
+ * <li>Comparision Object: Object on which Comparision will be done on. Either on FROM objects or the TO objects.</li>
+ * </ul>
+ *
+ * @param <F> the value to convert <b>FROM</b>
+ * @param <T> the value to convert <b>TO</b>
+ */
 public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString {
 	
 	public IndexMap<F> indexMap;
@@ -57,7 +156,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void add(T v) {
+		public void add(T value) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -72,7 +171,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T put(int index, T v) {
+		public T put(int index, T value) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -137,12 +236,12 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T putIfAbsent(int index, T v) {
+		public T putIfAbsent(int index, T value) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public T putIfAbsent(int index, Supplier<? extends T> v) {
+		public T putIfPresent(int index, T t) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -157,12 +256,27 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean remove(int index, T v) {
+		public boolean remove(int index, T value) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
 		public void clear() {
+			throw new UnsupportedOperationException("unmodifiable");
+		}
+		
+		@Override
+		public T compute(int index, ComputeFunction<? super T, ? extends T> function) {
+			throw new UnsupportedOperationException("unmodifiable");
+		}
+		
+		@Override
+		public T computeIfAbsent(int index, Supplier<? extends T> supplier) {
+			throw new UnsupportedOperationException("unmodifiable");
+		}
+		
+		@Override
+		public T computeIfPresent(int index, Supplier<? extends T> supplier) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -200,11 +314,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			@Override
 			public T getValue() {
 				return remap.apply(entry.getValue());
-			}
-			
-			@Override
-			public T setIfAbsent(Supplier<T> v) {
-				throw new UnsupportedOperationException("unmodifiable");
 			}
 			
 			public void setValue(T v) {
@@ -279,13 +388,13 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void add(T v) {
-			indexMap.add(reverseSparse.apply(v));
+		public void add(T value) {
+			indexMap.add(reverseSparse.apply(value));
 		}
 		
 		@Override
-		public T put(int index, T v) {
-			return remap.apply(indexMap.put(index, reverseSparse.apply(v)));
+		public T put(int index, T value) {
+			return remap.apply(indexMap.put(index, reverseSparse.apply(value)));
 		}
 		
 		@Override
@@ -314,48 +423,53 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T putIfAbsent(int index, T v) {
-			//noinspection unchecked
-			F[] applyF = (F[]) new Object[1];
-			F ret = indexMap.putIfAbsent(index, () -> applyF[0] = reverseSparse.apply(v));
-			return ret == applyF[0] ? v : remap.apply(ret);
+		public T putIfAbsent(int index, T value) {
+			return remap.apply(indexMap.computeIfAbsent(index, () -> reverseSparse.apply(value)));
 		}
 		
 		@Override
-		public T putIfAbsent(int index, Supplier<? extends T> v) {
-			//noinspection unchecked
-			F[] applyF = (F[]) new Object[1];
-			//noinspection unchecked
-			T[] applyT = (T[]) new Object[1];
-			F ret = indexMap.putIfAbsent(index, () -> applyF[0] = reverseSparse.apply(applyT[0] = v.get()));
-			return ret == applyF[0] ? applyT[0] : remap.apply(ret);
+		public T putIfPresent(int index, T value) {
+			return remap.apply(indexMap.computeIfPresent(index, () -> reverseSparse.apply(value)));
 		}
 		
 		@Override
 		public boolean replace(int index, T oldValue, T newValue) {
-			IndexMap.Entry<F> entry = indexMap.getEntry(index);
-			if (!Objects.equals(oldValue, remap.apply(entry.getValue())))
-				return false;
-			entry.setValue(reverseSparse.apply(newValue));
-			return true;
+			boolean[] ret = new boolean[1];
+			indexMap.compute(index, (index1, currValue) -> (ret[0] = Objects.equals(remap.apply(currValue), oldValue)) ? reverseSparse.apply(newValue) : currValue);
+			return ret[0];
 		}
 		
 		@Override
 		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
-			IndexMap.Entry<F> entry = indexMap.getEntry(index);
-			if (!Objects.equals(oldValue, remap.apply(entry.getValue())))
-				return false;
-			entry.setValue(reverseSparse.apply(newValue.get()));
-			return true;
+			boolean[] ret = new boolean[1];
+			indexMap.compute(index, (index1, currValue) -> (ret[0] = Objects.equals(remap.apply(currValue), oldValue)) ? reverseSparse.apply(newValue.get()) : currValue);
+			return ret[0];
 		}
 		
 		@Override
-		public boolean remove(int index, T v) {
-			IndexMap.Entry<F> entry = indexMap.getEntry(index);
-			if (!Objects.equals(v, remap.apply(entry.getValue())))
-				return false;
-			entry.remove();
-			return true;
+		public boolean remove(int index, T value) {
+			boolean[] ret = new boolean[1];
+			indexMap.compute(index, (index1, currValue) -> (ret[0] = Objects.equals(remap.apply(currValue), value)) ? null : currValue);
+			return ret[0];
+		}
+		
+		@Override
+		public T compute(int index, ComputeFunction<? super T, ? extends T> function) {
+			return remap.apply(indexMap.compute(index, (index1, f1) -> {
+				T t1 = remap.apply(f1);
+				T t2 = function.apply(index, t1);
+				return t1 == t2 ? f1 : reverseSparse.apply(t2);
+			}));
+		}
+		
+		@Override
+		public T computeIfAbsent(int index, Supplier<? extends T> supplier) {
+			return remap.apply(indexMap.computeIfAbsent(index, () -> reverseSparse.apply(supplier.get())));
+		}
+		
+		@Override
+		public T computeIfPresent(int index, Supplier<? extends T> supplier) {
+			return remap.apply(indexMap.computeIfPresent(index, () -> reverseSparse.apply(supplier.get())));
 		}
 		
 		@Override
@@ -381,16 +495,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			
 			public Entry(IndexMap.Entry<F> entry) {
 				super(entry);
-			}
-			
-			@Override
-			public T setIfAbsent(Supplier<T> v) {
-				//noinspection unchecked
-				F[] applyF = (F[]) new Object[1];
-				//noinspection unchecked
-				T[] applyT = (T[]) new Object[1];
-				F ret = entry.setIfAbsent(() -> applyF[0] = reverseSparse.apply(applyT[0] = v.get()));
-				return ret == applyF[0] ? applyT[0] : remap.apply(ret);
 			}
 			
 			@Override
@@ -429,8 +533,8 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean remove(int index, T v) {
-			return indexMap.remove(index, reverse.apply(v));
+		public boolean remove(int index, T value) {
+			return indexMap.remove(index, reverse.apply(value));
 		}
 		
 		@Override

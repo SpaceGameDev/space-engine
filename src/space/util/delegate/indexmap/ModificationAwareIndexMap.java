@@ -23,14 +23,14 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public void add(VALUE v) {
-		super.add(v);
+	public void add(VALUE value) {
+		super.add(value);
 		onModification.run();
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE v) {
-		VALUE ret = super.put(index, v);
+	public VALUE put(int index, VALUE value) {
+		VALUE ret = super.put(index, value);
 		onModification.run();
 		return ret;
 	}
@@ -64,16 +64,45 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
-		VALUE ret = super.putIfAbsent(index, v);
+	public VALUE putIfAbsent(int index, VALUE value) {
+		VALUE ret = super.putIfAbsent(index, value);
+		if (ret != value)
+			onModification.run();
+		return ret;
+	}
+	
+	@Override
+	public VALUE putIfPresent(int index, VALUE value) {
+		VALUE ret = super.putIfPresent(index, value);
+		if (ret != value)
+			onModification.run();
+		return ret;
+	}
+	
+	@Override
+	public boolean remove(int index, VALUE value) {
+		boolean ret = super.remove(index, value);
+		if (ret)
+			onModification.run();
+		return ret;
+	}
+	
+	@Override
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		VALUE ret = super.compute(index, function);
 		onModification.run();
 		return ret;
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		VALUE ret = super.putIfAbsent(index, v);
-		onModification.run();
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		boolean[] mod = new boolean[1];
+		VALUE ret = super.computeIfAbsent(index, () -> {
+			mod[0] = true;
+			return supplier.get();
+		});
+		if (mod[0])
+			onModification.run();
 		return ret;
 	}
 	
@@ -94,9 +123,13 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
-		boolean ret = super.remove(index, v);
-		if (ret)
+	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+		boolean[] mod = new boolean[1];
+		VALUE ret = super.computeIfAbsent(index, () -> {
+			mod[0] = true;
+			return supplier.get();
+		});
+		if (mod[0])
 			onModification.run();
 		return ret;
 	}

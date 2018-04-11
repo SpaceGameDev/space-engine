@@ -24,7 +24,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public void add(VALUE v) {
+	public void add(VALUE value) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -34,7 +34,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE v) {
+	public VALUE put(int index, VALUE value) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -59,12 +59,27 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
+	public VALUE putIfAbsent(int index, VALUE value) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
+	public VALUE putIfPresent(int index, VALUE value) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public boolean remove(int index, VALUE value) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		throw new UnsupportedOperationException("Unmodifiable");
+	}
+	
+	@Override
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -79,7 +94,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
+	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	

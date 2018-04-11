@@ -9,6 +9,7 @@ import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
@@ -57,15 +58,30 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		return length;
 	}
 	
+	//internal methods
+	protected VALUE putAndExpand(int index, VALUE v) {
+		ensureCapacityAvailable(index);
+		if (index >= length)
+			length = index + 1;
+		
+		VALUE ret = array[index];
+		array[index] = v;
+		return ret;
+	}
+	
+	protected VALUE getDefault() {
+		return null;
+	}
+	
 	//access
 	@Override
 	public VALUE get(int index) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
-			return null;
+			return getDefault();
 		
-		return getInternal(index);
+		return array[index];
 	}
 	
 	@Override
@@ -74,10 +90,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE v) {
+	public VALUE put(int index, VALUE value) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		return putInternal(index, v);
+		return putAndExpand(index, value);
 	}
 	
 	@Override
@@ -85,9 +101,11 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
-			return null;
+			return getDefault();
 		
-		return removeInternal(index);
+		VALUE ret = array[index];
+		array[index] = getDefault();
+		return ret;
 	}
 	
 	@Override
@@ -103,27 +121,6 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 			array = (VALUE[]) new Object[length];
 		System.arraycopy(this.array, 0, array, 0, length);
 		return array;
-	}
-	
-	//access unchecked
-	protected VALUE getInternal(int index) {
-		return array[index];
-	}
-	
-	protected VALUE removeInternal(int index) {
-		VALUE ret = array[index];
-		array[index] = null;
-		return ret;
-	}
-	
-	protected VALUE putInternal(int index, VALUE v) {
-		ensureCapacityAvailable(index);
-		if (index >= length)
-			length = index + 1;
-		
-		VALUE ret = array[index];
-		array[index] = v;
-		return ret;
 	}
 	
 	//addAll
@@ -153,38 +150,37 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		if (index >= array.length)
 			return def;
 		
-		VALUE ret = getInternal(index);
+		VALUE ret = array[index];
 		return ret != null ? ret : def;
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
-		VALUE ret = get(index);
-		if (ret != null)
-			return ret;
+	public VALUE putIfAbsent(int index, VALUE value) {
+		VALUE curr = get(index);
+		if (curr != null)
+			return curr;
 		
-		putInternal(index, v);
-		return v;
+		putAndExpand(index, value);
+		return value;
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		VALUE ret = get(index);
-		if (ret != null)
-			return ret;
+	public VALUE putIfPresent(int index, VALUE value) {
+		if (get(index) == null)
+			return null;
 		
-		putInternal(index, ret = v.get());
-		return ret;
+		putAndExpand(index, value);
+		return value;
 	}
 	
 	@Override
 	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index >= array.length || array[index] != oldValue)
+		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
 			return false;
 		
-		putInternal(index, newValue);
+		putAndExpand(index, newValue);
 		return true;
 	}
 	
@@ -192,28 +188,57 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index >= array.length || array[index] != oldValue)
+		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
 			return false;
 		
-		putInternal(index, newValue.get());
+		putAndExpand(index, newValue.get());
 		return true;
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
+	public boolean remove(int index, VALUE value) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (index >= array.length || array[index] != v)
+		if (index >= array.length)
+			return false;
+		if (Objects.equals(array[index], value))
 			return false;
 		
-		removeInternal(index);
+		array[index] = null;
 		return true;
+	}
+	
+	//compute
+	@Override
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		return putAndExpand(index, function.apply(index, get(index)));
+	}
+	
+	@Override
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		VALUE curr = get(index);
+		if (curr != null)
+			return curr;
+		
+		VALUE value = supplier.get();
+		putAndExpand(index, value);
+		return value;
+	}
+	
+	@Override
+	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+		if (get(index) == null)
+			return null;
+		
+		VALUE value = supplier.get();
+		putAndExpand(index, value);
+		return value;
 	}
 	
 	//other
 	@Override
 	public void clear() {
-		Arrays.fill(array, 0, length, null);
+		Arrays.fill(array, 0, length, getDefault());
 	}
 	
 	@Override
@@ -312,11 +337,6 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		@Override
 		public VALUE getValue() {
 			return get(index);
-		}
-		
-		@Override
-		public VALUE setIfAbsent(Supplier<VALUE> v) {
-			return putIfAbsent(index, v);
 		}
 		
 		@Override

@@ -24,6 +24,11 @@ public class IndexMapArrayWithDefault<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	@Override
+	protected VALUE getDefault() {
+		return defaultFiller;
+	}
+	
+	@Override
 	public boolean ensureCapacity(int capa) {
 		int oldl = array.length;
 		if (oldl < capa) {
@@ -32,10 +37,5 @@ public class IndexMapArrayWithDefault<VALUE> extends IndexMapArray<VALUE> {
 			return true;
 		}
 		return false;
-	}
-	
-	@Override
-	public void clear() {
-		Arrays.fill(array, 0, length, defaultFiller);
 	}
 }

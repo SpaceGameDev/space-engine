@@ -8,6 +8,67 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link ConvertingListIterator} converts <b>FROM</b> one {@link ListIterator ListIterator's} Value <b>TO</b> a different value with the help of provided {@link Function Functions} for conversion.<br>
+ * It has multiple inner classes allowing for different usages for many different cases.<br>
+ * All implementations are threadsafe if their underlying {@link ConvertingListIterator#listIterator} is also threadsafe.<br>
+ * <br>
+ * 2 Types of Functions:
+ * <table border=1>
+ * <tr><td>Function</td><td>Remap direction</td><td>Comment</td></tr>
+ * <tr><td>{@link ConvertingListIterator.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</td><td>F -&gt; T </td><td>Always required.</td></tr>
+ * <tr><td>{@link ConvertingListIterator.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</td><td>T -&gt; F </td><td>Will be called even for simple Operations, where the Result may not be stored and only used for eg. comparision. <br><b>Implementation-specific: The Result will always be added. </b></td></tr>
+ * </table>
+ * <br>
+ * 2 Sub-Classes for Converting with different Functions:
+ * <table border=1>
+ *
+ * <tr>
+ * <td>Class name</td>
+ * <td>Modifiable?</td>
+ * <td>Required Functions</td>
+ * <td>Inefficient Methods</td>
+ * <td>Comparision Object</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingListIterator.OneDirectionalUnmodifiable OneDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingListIterator.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>not used</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingListIterator.BiDirectional BiDirectional}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingListIterator.BiDirectional#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * <li>{@link ConvertingListIterator.BiDirectional#reverse Function&lt;? super T, ? extends F&gt; reverse}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>not used</td>
+ * </tr>
+ *
+ * </table>
+ * <ul>
+ * <li>Inefficient Methods: Methods which are implemented inefficiently and should thus be avoided to be called. Non-marked Methods will only delegate. </li>
+ * <li>Comparision Object: Object on which Comparision will be done on. Either on FROM objects or the TO objects.</li>
+ * </ul>
+ *
+ * @param <F> the value to convert <b>FROM</b>
+ * @param <T> the value to convert <b>TO</b>
+ */
 public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, ToString {
 	
 	public ListIterator<F> listIterator;

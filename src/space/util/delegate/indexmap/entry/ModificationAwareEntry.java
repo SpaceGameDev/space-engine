@@ -4,8 +4,6 @@ import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.function.Supplier;
-
 public class ModificationAwareEntry<VALUE> extends DelegatingEntry<VALUE> {
 	
 	public Entry<VALUE> entry;
@@ -20,18 +18,6 @@ public class ModificationAwareEntry<VALUE> extends DelegatingEntry<VALUE> {
 	public void setValue(VALUE v) {
 		entry.setValue(v);
 		onModification.run();
-	}
-	
-	@Override
-	public VALUE setIfAbsent(Supplier<VALUE> v) {
-		boolean[] mod = new boolean[1];
-		VALUE ret = entry.setIfAbsent(() -> {
-			mod[0] = true;
-			return v.get();
-		});
-		if (mod[0])
-			onModification.run();
-		return ret;
 	}
 	
 	@Override

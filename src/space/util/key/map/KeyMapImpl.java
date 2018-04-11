@@ -80,7 +80,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	@SuppressWarnings("unchecked")
 	public VALUE putIfAbsent(Key<?> key, Supplier<? extends VALUE> v) {
 		check(key);
-		return map.putIfAbsent(key.getID(), v);
+		return map.computeIfAbsent(key.getID(), v);
 	}
 	
 	@Override

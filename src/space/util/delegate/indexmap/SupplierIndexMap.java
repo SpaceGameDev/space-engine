@@ -39,8 +39,8 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void add(VALUE v) {
-		indexMap.get().add(v);
+	public void add(VALUE value) {
+		indexMap.get().add(value);
 	}
 	
 	@Override
@@ -54,8 +54,8 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE v) {
-		return indexMap.get().put(index, v);
+	public VALUE put(int index, VALUE value) {
+		return indexMap.get().put(index, value);
 	}
 	
 	@Override
@@ -79,6 +79,21 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
+	public VALUE putIfAbsent(int index, VALUE value) {
+		return indexMap.get().putIfAbsent(index, value);
+	}
+	
+	@Override
+	public VALUE putIfPresent(int index, VALUE value) {
+		return indexMap.get().putIfPresent(index, value);
+	}
+	
+	@Override
+	public boolean remove(int index, VALUE value) {
+		return indexMap.get().remove(index, value);
+	}
+	
+	@Override
 	public void putAll(IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.get().putAll(indexMap);
 	}
@@ -94,13 +109,13 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
-		return indexMap.get().putIfAbsent(index, v);
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		return indexMap.get().compute(index, function);
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return indexMap.get().putIfAbsent(index, v);
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		return indexMap.get().computeIfAbsent(index, supplier);
 	}
 	
 	@Override
@@ -114,8 +129,8 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
-		return indexMap.get().remove(index, v);
+	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+		return indexMap.get().computeIfPresent(index, supplier);
 	}
 	
 	@Override

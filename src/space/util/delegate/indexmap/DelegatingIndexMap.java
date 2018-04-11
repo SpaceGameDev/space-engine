@@ -40,8 +40,8 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public void add(VALUE v) {
-		indexMap.add(v);
+	public void add(VALUE value) {
+		indexMap.add(value);
 	}
 	
 	@Override
@@ -55,8 +55,8 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE v) {
-		return indexMap.put(index, v);
+	public VALUE put(int index, VALUE value) {
+		return indexMap.put(index, value);
 	}
 	
 	@Override
@@ -95,13 +95,13 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE v) {
-		return indexMap.putIfAbsent(index, v);
+	public VALUE putIfAbsent(int index, VALUE value) {
+		return indexMap.putIfAbsent(index, value);
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, Supplier<? extends VALUE> v) {
-		return indexMap.putIfAbsent(index, v);
+	public VALUE putIfPresent(int index, VALUE value) {
+		return indexMap.putIfPresent(index, value);
 	}
 	
 	@Override
@@ -115,8 +115,23 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE v) {
-		return indexMap.remove(index, v);
+	public boolean remove(int index, VALUE value) {
+		return indexMap.remove(index, value);
+	}
+	
+	@Override
+	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+		return indexMap.compute(index, function);
+	}
+	
+	@Override
+	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+		return indexMap.computeIfAbsent(index, supplier);
+	}
+	
+	@Override
+	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+		return indexMap.computeIfPresent(index, supplier);
 	}
 	
 	@Override

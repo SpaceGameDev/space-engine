@@ -8,6 +8,65 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link ConvertingIterator} converts <b>FROM</b> one {@link Iterator Iterator's} Value <b>TO</b> a different value with the help of provided {@link Function Functions} for conversion.<br>
+ * It has multiple inner classes allowing for different usages for many different cases.<br>
+ * All implementations are threadsafe if their underlying {@link ConvertingIterator#iter} is also threadsafe.<br>
+ * <br>
+ * 1 Types of Functions:
+ * <table border=1>
+ * <tr><td>Function</td><td>Remap direction</td><td>Comment</td></tr>
+ * <tr><td>{@link ConvertingIterator.OneDirectional#remap Function&lt;? super F, ? extends T&gt; remap}</td><td>F -&gt; T </td><td>Always required.</td></tr>
+ * </table>
+ * <br>
+ * 2 Sub-Classes for Converting with different Functions:
+ * <table border=1>
+ *
+ * <tr>
+ * <td>Class name</td>
+ * <td>Modifiable?</td>
+ * <td>Required Functions</td>
+ * <td>Inefficient Methods</td>
+ * <td>Comparision Object</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIterator.OneDirectionalUnmodifiable OneDirectionalUnmodifiable}</td>
+ * <td>No</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIterator.OneDirectionalUnmodifiable#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>not used</td>
+ * </tr>
+ *
+ * <tr>
+ * <td>{@link ConvertingIterator.OneDirectional OneDirectional}</td>
+ * <td>Yes</td>
+ * <td>
+ * <ul>
+ * <li>{@link ConvertingIterator.OneDirectional#remap Function&lt;? super F, ? extends T&gt; remap}</li>
+ * </ul>
+ * </td>
+ * <td>
+ * <ul><li>none</li></ul>
+ * </td>
+ * <td>not used</td>
+ * </tr>
+ *
+ * </table>
+ * <ul>
+ * <li>Inefficient Methods: Methods which are implemented inefficiently and should thus be avoided to be called. Non-marked Methods will only delegate. </li>
+ * <li>Comparision Object: Not used here</li>
+ * </ul>
+ *
+ * @param <F> the value to convert <b>FROM</b>
+ * @param <T> the value to convert <b>TO</b>
+ */
 public abstract class ConvertingIterator<F, T> implements Iterator<T>, ToString {
 	
 	public Iterator<F> iter;

@@ -10,9 +10,16 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * The {@link CachingMap} tries to get a value from the {@link CachingMap#map}, and when no value has been found, it will get the value from the {@link CachingMap#def}, write it into the local map and return it;
- * <p>
- * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
+ * A {@link CachingMap} is a {@link Map} that caches values inside it's {@link CachingMap#map}. If an Entry is not found it will call the {@link CachingMap#def} Function in order to get the Default value and write it back into it's cache.
+ * Any <code>null</code> values returned by the {@link CachingMap#def} Function are properly cached and handled, so that the Function will not be recalled if such values are returned.<br>
+ * <br>
+ * Any Functions allowing for iteration over this {@link Map} like {@link CachingMap#keySet()}, {@link CachingMap#values()}, {@link CachingMap#entrySet()} and {@link CachingMap#replaceAll(BiFunction)} have two behaviors:
+ * <ul>
+ * <li>if {@link CachingMap#allowIterateOverExisting}: iterates over already written values to the {@link CachingMap#map} cache</li>
+ * <li>if <b>NOT</b> {@link CachingMap#allowIterateOverExisting} <b>(default)</b>: throws an {@link UnsupportedOperationException} with message "Cache iteration not allowed!"</li>
+ * </ul>
+ * <br>
+ * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe. See {@link java.util.concurrent.ConcurrentHashMap}.
  */
 public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> implements Cache {
 	

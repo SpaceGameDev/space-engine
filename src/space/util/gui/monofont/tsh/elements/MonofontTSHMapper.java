@@ -42,7 +42,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 			throw new IllegalGuiElementException();
 		MonofontGuiElement gui = (MonofontGuiElement) object;
 		
-		Entry ent = table.putIfAbsent(pos[0], MonofontTSHMapper.Entry::new);
+		Entry ent = table.computeIfAbsent(pos[0], MonofontTSHMapper.Entry::new);
 		MonofontGuiElement old;
 		if (pos[1] == 0) {
 			old = ent.key;
