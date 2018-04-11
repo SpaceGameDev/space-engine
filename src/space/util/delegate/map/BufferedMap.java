@@ -13,7 +13,8 @@ import java.util.function.Function;
 /**
  * A {@link BufferedMap} is a Map having a {@link BufferedMap#buffer} of entries, which can be flushed into another map with {@link BufferedMap#setSink(Map) setSink(Map)}.
  * The {@link BufferedMap} is also synchronized internally.<br>
- * <br>
+ * <p>
+ * Usage example:
  * This allows for pre-initialization {@link Map Maps} to exist and catch all data, while the Runtime {@link Map} is being created.
  * When initialization of the Runtime {@link Map} is done, all data can be flushed to it with {@link BufferedMap#setSink(Map)}.
  *
