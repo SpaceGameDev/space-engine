@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * A {@link Map} delegating all calls to it's Field {@link DelegatingMap#map}, provided by Constructor or set directly.
+ * A {@link Map} delegating all calls to it's Field {@link DelegatingMap#map}, supplied with the Constructor.
  */
 public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 	
