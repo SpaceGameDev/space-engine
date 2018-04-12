@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
- * A {@link IndexMap} delegating all calls to it's Field {@link DelegatingIndexMap#indexMap}, provided by Constructor or set directly.
+ * An {@link IndexMap} delegating all calls to it's Field {@link DelegatingIndexMap#indexMap}, supplied with the Constructor.
  */
 public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	

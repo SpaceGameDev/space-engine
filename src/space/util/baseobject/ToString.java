@@ -1,25 +1,13 @@
 package space.util.baseobject;
 
-import space.util.delegate.map.BufferedMap;
-import space.util.delegate.map.specific.ThreadLocalGlobalCachingMap;
 import space.util.string.toStringHelper.ToStringHelper;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 public interface ToString {
 	
-	//init
-	/**
-	 * used to have a static init-function in the interface
-	 */
-	@SuppressWarnings("unused")
-	byte zero = BaseObjectInit.init2();
-	
-	static void init() {
-		ToStringClass.init();
-	}
+	ConcurrentHashMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = new ConcurrentHashMap<>();
 	
 	//functions
 	
@@ -31,7 +19,7 @@ public interface ToString {
 	 * @param <OBJ>    the Object-Type
 	 */
 	static <OBJ> void manualEntry(Class<OBJ> clazz, BiFunction<ToStringHelper<?>, ? super OBJ, Object> function) {
-		ToStringClass.MAP.put(clazz, function);
+		MAP.put(clazz, function);
 	}
 	
 	/**
@@ -45,7 +33,7 @@ public interface ToString {
 		if (obj instanceof ToString)
 			return ((ToString) obj).toTSH(api);
 		
-		BiFunction<ToStringHelper<?>, ?, Object> function = ToStringClass.MAP.get(obj.getClass());
+		BiFunction<ToStringHelper<?>, ?, Object> function = MAP.get(obj.getClass());
 		if (function != null)
 			//noinspection unchecked
 			return (T) ((BiFunction<ToStringHelper<?>, OBJ, Object>) function).apply(api, obj);
@@ -75,26 +63,5 @@ public interface ToString {
 	
 	default String toString0() {
 		return toTSH().toString();
-	}
-	
-	//helper class
-	class ToStringClass {
-		
-		//maps
-		private static BufferedMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> START_BUFFER = new BufferedMap<>(new HashMap<>());
-		private static ThreadLocalGlobalCachingMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> CACHE_MAP;
-		
-		public static volatile Map<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = START_BUFFER;
-		
-		static synchronized void init() {
-			if (START_BUFFER == null)
-				throw new IllegalStateException("already initialized!");
-			
-			CACHE_MAP = new ThreadLocalGlobalCachingMap<>();
-			MAP = CACHE_MAP.globalMap;
-			
-			START_BUFFER.setSink(CACHE_MAP.globalMap);
-			START_BUFFER = null;
-		}
 	}
 }

@@ -1,7 +1,7 @@
 package space.util.string.builder;
 
 import space.util.annotation.Self;
-import space.util.delegate.impl.CharArrayStringIterable;
+import space.util.delegate.specific.CharArrayStringIterable;
 import space.util.string.CharSequence2D;
 import space.util.string.ToString2D;
 import space.util.string.toStringHelper.ToStringHelper;

@@ -1,14 +1,13 @@
 package space.util.delegate.collection;
 
 import space.util.baseobject.ToString;
-import space.util.delegate.impl.ArrayCollection;
 import space.util.delegate.iterator.MergingIterator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Merges multiple {@link Collection} to one {@link Collection}.
@@ -23,7 +22,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@SafeVarargs
 	public MergingCollection(Collection<E>... collections) {
-		this(new ArrayList<>(new ArrayCollection<>(collections)));
+		this(List.of(collections));
 	}
 	
 	public MergingCollection(Collection<Collection<E>> collections) {
@@ -164,7 +163,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	//createWithAddCollection
 	@SafeVarargs
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+		return createWithAddCollection(addColl, List.of(collections));
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(Collection<E> addColl, Collection<Collection<E>> collections) {
@@ -175,7 +174,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	@SafeVarargs
 	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<E>... collections) {
-		return createWithAddCollection(addColl, new ArrayList<>(new ArrayCollection<>(collections)));
+		return createWithAddCollection(addColl, List.of(collections));
 	}
 	
 	public static <E> MergingCollection<E> createWithAddCollection(AddCollection<E> addColl, Collection<Collection<E>> collections) {

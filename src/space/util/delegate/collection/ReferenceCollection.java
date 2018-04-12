@@ -13,7 +13,7 @@ import java.util.function.Function;
  */
 public class ReferenceCollection<E> extends ConvertingCollection.BiDirectionalSparse<Reference<? extends E>, E> {
 	
-	public ReferenceCollection(Collection<Reference<? extends E>> coll, Function<E, Reference<? extends E>> refCreator) {
+	public ReferenceCollection(Collection<Reference<? extends E>> coll, Function<? super E, ? extends Reference<? extends E>> refCreator) {
 		super(coll, ReferenceUtil::getSafe, refCreator);
 	}
 	

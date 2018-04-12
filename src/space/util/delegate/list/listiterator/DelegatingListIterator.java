@@ -7,71 +7,71 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 
 /**
- * A {@link ListIterator} delegating all calls to it's Field {@link DelegatingListIterator#iterator}, provided by Constructor or set directly.
+ * A {@link ListIterator} delegating all calls to it's Field {@link DelegatingListIterator#iter}, supplied with the Constructor.
  */
 public class DelegatingListIterator<E> implements ToString, ListIterator<E> {
 	
-	public ListIterator<E> iterator;
+	public ListIterator<E> iter;
 	
-	public DelegatingListIterator(ListIterator<E> iterator) {
-		this.iterator = iterator;
+	public DelegatingListIterator(ListIterator<E> iter) {
+		this.iter = iter;
 	}
 	
 	//methods
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext();
+		return iter.hasNext();
 	}
 	
 	@Override
 	public E next() {
-		return iterator.next();
+		return iter.next();
 	}
 	
 	@Override
 	public boolean hasPrevious() {
-		return iterator.hasPrevious();
+		return iter.hasPrevious();
 	}
 	
 	@Override
 	public E previous() {
-		return iterator.previous();
+		return iter.previous();
 	}
 	
 	@Override
 	public int nextIndex() {
-		return iterator.nextIndex();
+		return iter.nextIndex();
 	}
 	
 	@Override
 	public int previousIndex() {
-		return iterator.previousIndex();
+		return iter.previousIndex();
 	}
 	
 	@Override
 	public void remove() {
-		iterator.remove();
+		iter.remove();
 	}
 	
 	@Override
 	public void set(E e) {
-		iterator.set(e);
+		iter.set(e);
 	}
 	
 	@Override
 	public void add(E e) {
-		iterator.add(e);
+		iter.add(e);
 	}
 	
 	@Override
 	public void forEachRemaining(Consumer<? super E> action) {
-		iterator.forEachRemaining(action);
+		iter.forEachRemaining(action);
 	}
 	
 	//toString
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("delegate", iterator);
+		return api.createModifier("delegate", iter);
 	}
 	
 	@Override

@@ -1,20 +1,27 @@
 package space.util.delegate.indexmap;
 
 import space.util.baseobject.Cache;
-import space.util.delegate.map.CachingMap;
 import space.util.delegate.util.CacheUtil;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 /**
- * The {@link CachingMap} tries to get a value from the {@link CachingMap#map}, and when no value has been found, it will get the value from the {@link CachingMap#def}, write it into the local map and return it;
- * <p>
- * {@link CachingMap} is threadsafe, if the internal {@link CachingMap#map} is threadsafe.
+ * A {@link CachingIndexMap} is a {@link Map} that caches values inside it's {@link CachingIndexMap#indexMap}. If an Entry is not found it will call the {@link CachingIndexMap#def} Function in order to get the Default value and write it back into it's cache.
+ * Any <code>null</code> values returned by the {@link CachingIndexMap#def} Function are properly cached and handled, so that the Function will not be recalled if such values are returned.<br>
+ * <br>
+ * Any Functions allowing for iteration over this {@link Map} like {@link CachingIndexMap#values()}, {@link CachingIndexMap#table()}, {@link CachingIndexMap#toArray()} and {@link CachingIndexMap#toArray(Object[])} have two behaviors:
+ * <ul>
+ * <li>if {@link CachingIndexMap#allowIterateOverExisting}: iterates over already written values to the {@link CachingIndexMap#indexMap} cache</li>
+ * <li>if <b>NOT</b> {@link CachingIndexMap#allowIterateOverExisting} <b>(default)</b>: throws an {@link UnsupportedOperationException} with message "Cache iteration not allowed!"</li>
+ * </ul>
+ * <br>
+ * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe. See {@link space.util.indexmap.ConcurrentIndexMapArray}.
  */
 public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache {
 	

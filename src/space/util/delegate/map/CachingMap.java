@@ -26,8 +26,16 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 	public Function<K, V> def;
 	public boolean allowIterateOverExisting;
 	
+	public CachingMap(Map<K, V> indexMap, Map<K, V> def) {
+		this(indexMap, def, false);
+	}
+	
+	public CachingMap(Map<K, V> indexMap, Map<K, V> def, boolean allowIterateOverExisting) {
+		this(indexMap, def::get, allowIterateOverExisting);
+	}
+	
 	public CachingMap(Map<K, V> indexMap, Function<K, V> def) {
-		this(indexMap, def, true);
+		this(indexMap, def, false);
 	}
 	
 	public CachingMap(Map<K, V> indexMap, Function<K, V> def, boolean allowIterateOverExisting) {

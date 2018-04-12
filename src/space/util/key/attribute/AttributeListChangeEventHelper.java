@@ -1,6 +1,6 @@
 package space.util.key.attribute;
 
-import space.util.delegate.list.IntList;
+import space.util.delegate.specific.IntList;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
 import space.util.key.Key;

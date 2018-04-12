@@ -9,40 +9,41 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * A {@link Iteratorable} delegating all calls to it's Field {@link SupplierIterator#i}, which is an {@link Supplier} of Type {@link Iteratorable}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ * A {@link Iterator} delegating all calls to it's Field {@link SupplierIterator#iter}, which is an {@link Supplier} of Type {@link Iterator}.
+ * The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierIterator<E> implements ToString, Iteratorable<E> {
 	
-	public Supplier<Iterator<E>> i;
+	public Supplier<Iterator<E>> iter;
 	
-	public SupplierIterator(Supplier<Iterator<E>> i) {
-		this.i = i;
+	public SupplierIterator(Supplier<Iterator<E>> iter) {
+		this.iter = iter;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		return i.get().hasNext();
+		return iter.get().hasNext();
 	}
 	
 	@Override
 	public E next() {
-		return i.get().next();
+		return iter.get().next();
 	}
 	
 	@Override
 	public void remove() {
-		i.get().remove();
+		iter.get().remove();
 	}
 	
 	@Override
 	public void forEachRemaining(Consumer<? super E> action) {
-		i.get().forEachRemaining(action);
+		iter.get().forEachRemaining(action);
 	}
 	
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("i", this.i);
+		tsh.add("iter", this.iter);
 		return tsh.build();
 	}
 	

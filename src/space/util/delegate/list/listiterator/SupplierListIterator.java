@@ -8,69 +8,70 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * A {@link ListIterator} delegating all calls to it's Field {@link SupplierListIterator#iterator}, which is an {@link Supplier} of Type {@link ListIterator}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ * A {@link ListIterator} delegating all calls to it's Field {@link SupplierListIterator#iter}, which is an {@link Supplier} of Type {@link ListIterator}.
+ * The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierListIterator<E> implements ToString, ListIterator<E> {
 	
-	public Supplier<ListIterator<E>> iterator;
+	public Supplier<ListIterator<E>> iter;
 	
-	public SupplierListIterator(Supplier<ListIterator<E>> iterator) {
-		this.iterator = iterator;
+	public SupplierListIterator(Supplier<ListIterator<E>> iter) {
+		this.iter = iter;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		return iterator.get().hasNext();
+		return iter.get().hasNext();
 	}
 	
 	@Override
 	public E next() {
-		return iterator.get().next();
+		return iter.get().next();
 	}
 	
 	@Override
 	public boolean hasPrevious() {
-		return iterator.get().hasPrevious();
+		return iter.get().hasPrevious();
 	}
 	
 	@Override
 	public E previous() {
-		return iterator.get().previous();
+		return iter.get().previous();
 	}
 	
 	@Override
 	public int nextIndex() {
-		return iterator.get().nextIndex();
+		return iter.get().nextIndex();
 	}
 	
 	@Override
 	public int previousIndex() {
-		return iterator.get().previousIndex();
+		return iter.get().previousIndex();
 	}
 	
 	@Override
 	public void remove() {
-		iterator.get().remove();
+		iter.get().remove();
 	}
 	
 	@Override
 	public void set(E e) {
-		iterator.get().set(e);
+		iter.get().set(e);
 	}
 	
 	@Override
 	public void add(E e) {
-		iterator.get().add(e);
+		iter.get().add(e);
 	}
 	
 	@Override
 	public void forEachRemaining(Consumer<? super E> action) {
-		iterator.get().forEachRemaining(action);
+		iter.get().forEachRemaining(action);
 	}
 	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("supplier", iterator);
+		return api.createModifier("supplier", iter);
 	}
 	
 	@Override

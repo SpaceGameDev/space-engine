@@ -8,7 +8,8 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
- * A {@link IndexMap} delegating all calls to it's Field {@link SupplierIndexMap#indexMap}, which is an {@link Supplier} of Type {@link IndexMap}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ * A {@link IndexMap} delegating all calls to it's Field {@link SupplierIndexMap#indexMap}, which is an {@link Supplier} of Type {@link IndexMap}.
+ * The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	

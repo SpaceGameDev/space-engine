@@ -3,7 +3,7 @@ package space.util.concurrent.task.chained;
 import space.util.baseobject.BaseObjectInit;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.typehandler.TypeConsumer;
-import space.util.delegate.list.IntList;
+import space.util.delegate.specific.IntList;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.toStringHelper.ToStringHelper;

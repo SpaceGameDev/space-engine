@@ -12,7 +12,7 @@ public class TokenMap {
 	
 	public static final Predicate<Field> ALL = input -> true;
 	/**
-	 * negative are all error values
+	 * negative are usually error values
 	 */
 	public static final Predicate<Field> NEGATIVE = input -> {
 		try {

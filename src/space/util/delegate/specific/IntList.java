@@ -1,4 +1,4 @@
-package space.util.delegate.list;
+package space.util.delegate.specific;
 
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;

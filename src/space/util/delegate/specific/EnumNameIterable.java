@@ -1,4 +1,4 @@
-package space.util.delegate.impl;
+package space.util.delegate.specific;
 
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
@@ -10,21 +10,21 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * turns a char[][]-array into a Iterable of type String
+ * iterates over the names of an enum
  */
-public class CharArrayStringIterable implements ToString, Collection<String> {
+public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection<String> {
 	
-	public char[][] array;
+	public E[] array;
 	
-	public CharArrayStringIterable() {
+	public EnumNameIterable() {
 		
 	}
 	
-	public CharArrayStringIterable(CharArrayStringIterable iterable) {
+	public EnumNameIterable(EnumNameIterable<E> iterable) {
 		this(iterable.array);
 	}
 	
-	public CharArrayStringIterable(char[][] array) {
+	public EnumNameIterable(E[] array) {
 		this.array = array;
 	}
 	
@@ -56,7 +56,7 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 			
 			@Override
 			public String next() {
-				return new String(array[index++]);
+				return array[index++].name();
 			}
 		};
 	}
@@ -69,8 +69,6 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 	@Override
 	@SuppressWarnings("SuspiciousSystemArraycopy")
 	public <T> T[] toArray(T[] a) {
-		if (array.getClass().isAssignableFrom(a.getClass()))
-			throw new IllegalArgumentException();
 		System.arraycopy(array, 0, a, 0, array.length);
 		return a;
 	}

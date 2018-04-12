@@ -16,7 +16,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
- * A {@link List} delegating all calls to it's Field {@link SupplierList#list}, which is an {@link Supplier} of Type {@link List}, allowing for unique usages. The {@link Supplier} is provided by Constructor or set directly.
+ * A {@link List} delegating all calls to it's Field {@link SupplierList#list}, which is an {@link Supplier} of Type {@link List}.
+ * The {@link Supplier} is provided by Constructor or set directly.
  */
 public class SupplierList<E> implements ToString, List<E> {
 	

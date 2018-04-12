@@ -2,7 +2,7 @@ package space.util.key.impl;
 
 import space.util.baseobject.ToString;
 import space.util.delegate.indexmap.ReferenceIndexMap;
-import space.util.delegate.list.IntList;
+import space.util.delegate.specific.IntList;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
 import space.util.key.Key;

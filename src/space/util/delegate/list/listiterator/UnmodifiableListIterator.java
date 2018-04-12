@@ -30,6 +30,6 @@ public class UnmodifiableListIterator<E> extends DelegatingListIterator<E> {
 	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("unmodifiable", iterator);
+		return api.createModifier("unmodifiable", iter);
 	}
 }

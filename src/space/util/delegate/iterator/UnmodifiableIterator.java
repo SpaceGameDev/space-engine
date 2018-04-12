@@ -20,6 +20,6 @@ public class UnmodifiableIterator<E> extends DelegatingIterator<E> {
 	
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("synchronized", i);
+		return api.createModifier("synchronized", iter);
 	}
 }

@@ -26,7 +26,7 @@ public class ModificationAwareIterator<E> extends DelegatingIterator<E> {
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("i", this.i);
+		tsh.add("iter", this.iter);
 		tsh.add("onModification", this.onModification);
 		return tsh.build();
 	}

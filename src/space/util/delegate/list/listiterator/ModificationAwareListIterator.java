@@ -38,7 +38,7 @@ public class ModificationAwareListIterator<E> extends DelegatingListIterator<E> 
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("iterator", this.iterator);
+		tsh.add("iterator", this.iter);
 		tsh.add("onModification", this.onModification);
 		return tsh.build();
 	}

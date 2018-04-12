@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * A {@link Collection} delegating all calls to it's Field {@link DelegatingCollection#coll}, provided by Constructor or set directly.
+ * A {@link Collection} delegating all calls to it's Field {@link DelegatingCollection#coll}, supplied with the Constructor.
  */
 public class DelegatingCollection<E> implements ToString, Collection<E> {
 	

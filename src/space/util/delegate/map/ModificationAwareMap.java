@@ -1,20 +1,18 @@
 package space.util.delegate.map;
 
 import space.util.delegate.collection.ModificationAwareCollection;
-import space.util.delegate.list.ModificationAwareList;
 import space.util.delegate.map.entry.ModificationAwareEntry;
 import space.util.delegate.set.ConvertingSet;
 import space.util.delegate.set.ModificationAwareSet;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * The {@link ModificationAwareList} will call the {@link ModificationAwareList#onModification} {@link Runnable} when the {@link List} is modified.
+ * The {@link ModificationAwareMap} will call the {@link ModificationAwareMap#onModification} {@link Runnable} when the {@link Map} is modified.
  */
 public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	

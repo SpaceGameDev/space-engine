@@ -7,41 +7,41 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
- * A {@link Iterator} delegating all calls to it's Field {@link DelegatingIterator#i}, provided by Constructor or set directly.
+ * An {@link Iterator} delegating all calls to it's Field {@link DelegatingIterator#iter}, supplied with the Constructor.
  */
 public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 	
-	public Iterator<E> i;
+	public Iterator<E> iter;
 	
-	public DelegatingIterator(Iterator<E> i) {
-		this.i = i;
+	public DelegatingIterator(Iterator<E> iter) {
+		this.iter = iter;
 	}
 	
 	//methods
 	@Override
 	public boolean hasNext() {
-		return i.hasNext();
+		return iter.hasNext();
 	}
 	
 	@Override
 	public E next() {
-		return i.next();
+		return iter.next();
 	}
 	
 	@Override
 	public void remove() {
-		i.remove();
+		iter.remove();
 	}
 	
 	@Override
 	public void forEachRemaining(Consumer<? super E> action) {
-		i.forEachRemaining(action);
+		iter.forEachRemaining(action);
 	}
 	
 	//toString
 	@Override
 	public <T> T toTSH(ToStringHelper<T> api) {
-		return api.createModifier("delegate", i);
+		return api.createModifier("delegate", iter);
 	}
 	
 	@Override

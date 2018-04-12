@@ -6,6 +6,12 @@ import space.util.string.toStringHelper.ToStringHelper;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+/**
+ * An IndexMap which ensures threadsafety and <i>should</i> be Concurrent.
+ *
+ * @implSpec Currently it just synchronizes all methods required to ensure threadsafety, but isn't actually concurrent.<br>
+ * I am also not sure if making it concurrent will give any benefit, as all it's functions are very simple and fast and introducing anything like locks on an index may already be too much overhead.
+ */
 public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	
 	public ConcurrentIndexMapArray() {

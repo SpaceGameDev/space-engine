@@ -1,13 +1,14 @@
 package space.util.delegate.map.specific;
 
-import space.util.delegate.map.GetOverrideMap;
+import space.util.delegate.map.DelegatingMap;
 
 import java.util.Map;
 
 /**
- * if you get() a Class, and the class does not exist, it will try to get the superclass, until a value is found or no superclass exists
+ * If you {@link GetClassOrSuperMap#get(Object)} with a Class, and the class does not exist, it will try again with it's superclass, until a value is found or no superclass exists.
+ * Only works with {@link GetClassOrSuperMap#get(Object)}, {@link GetClassOrSuperMap#containsKey(Object)} and {@link GetClassOrSuperMap#getOrDefault(Object, Object)}
  */
-public class GetClassOrSuperMap<K extends Class<?>, V> extends GetOverrideMap<K, V> {
+public class GetClassOrSuperMap<K extends Class<?>, V> extends DelegatingMap<K, V> {
 	
 	public GetClassOrSuperMap(Map<K, V> map) {
 		super(map);
@@ -35,5 +36,19 @@ public class GetClassOrSuperMap<K extends Class<?>, V> extends GetOverrideMap<K,
 				return ret;
 		}
 		return null;
+	}
+	
+	@Override
+	@SuppressWarnings("SuspiciousMethodCalls")
+	public V getOrDefault(Object key, V defaultValue) {
+		if (!(key instanceof Class<?>))
+			return defaultValue;
+		
+		for (Class<?> clazz = (Class<?>) key; clazz != null; clazz = clazz.getSuperclass()) {
+			V ret = map.get(clazz);
+			if (ret != null)
+				return ret;
+		}
+		return defaultValue;
 	}
 }
