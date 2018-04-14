@@ -11,12 +11,17 @@ import java.util.ListIterator;
 import java.util.function.Function;
 
 /**
- * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceList#refCreator Reference Creator} supplied with the Constructor or directly set.
+ * Remaps all Entries to a {@link Reference} of type E. These References are created by refCreator in the Constructor.<br>
+ * <b>Added References have to be removed manually.</b> Otherwise References may accumulate.
  */
 public class ReferenceList<E> extends ConvertingList.BiDirectionalSparse<Reference<? extends E>, E> {
 	
 	public ReferenceList(List<Reference<? extends E>> list, Function<? super E, ? extends Reference<? extends E>> refCreator) {
 		super(list, ReferenceUtil::getSafe, refCreator);
+	}
+	
+	public void setRefCreator(Function<? super E, ? extends Reference<? extends E>> refCreator) {
+		this.reverseSparse = refCreator;
 	}
 	
 	@Override

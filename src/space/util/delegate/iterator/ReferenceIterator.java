@@ -8,7 +8,7 @@ import java.lang.ref.Reference;
 import java.util.Iterator;
 
 /**
- * Remaps all Entries to a {@link Reference} of type E. (No Reference Creator is needed here)
+ * Remaps all Entries to a {@link Reference} of type E.<br>
  */
 public class ReferenceIterator<E> extends ConvertingIterator.OneDirectional<Reference<? extends E>, E> {
 	

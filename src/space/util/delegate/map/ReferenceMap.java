@@ -9,12 +9,17 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * A {@link ReferenceMap} remaps all Entries to a {@link Reference} of type E. These References are created by the Reference Creator supplied with the Constructor or directly set.
+ * Remaps all Entries to a {@link Reference} of type V. These References are created by refCreator in the Constructor.<br>
+ * <b>Added References have to be removed manually.</b> Otherwise References may accumulate.
  */
 public class ReferenceMap<K, V> extends ConvertingMap.BiDirectionalSparse<K, Reference<? extends V>, V> {
 	
 	public ReferenceMap(Map<K, Reference<? extends V>> map, Function<? super V, ? extends Reference<? extends V>> refCreator) {
 		super(map, ReferenceUtil::getSafe, refCreator);
+	}
+	
+	public void setRefCreator(Function<? super V, ? extends Reference<? extends V>> refCreator) {
+		this.reverseSparse = refCreator;
 	}
 	
 	@Override

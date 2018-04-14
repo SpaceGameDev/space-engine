@@ -30,7 +30,6 @@ public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 		
 		this.storage = new Storage(this, id, gen);
 		this.def = def;
-		gen.allKeys.put(id, this);
 	}
 	
 	@Override

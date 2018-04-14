@@ -9,12 +9,17 @@ import java.util.ListIterator;
 import java.util.function.Function;
 
 /**
- * Remaps all Entries to a {@link Reference} of type E. These References are created by the {@link ReferenceListIterator#refCreator Reference Creator} supplied with the Constructor or directly set.
+ * Remaps all Entries to a {@link Reference} of type E. These References are created by refCreator in the Constructor.<br>
+ * <b>Added References have to be removed manually.</b> Otherwise References may accumulate.
  */
 public class ReferenceListIterator<E> extends ConvertingListIterator.BiDirectional<Reference<? extends E>, E> {
 	
 	public ReferenceListIterator(ListIterator<Reference<? extends E>> listIterator, Function<? super E, ? extends Reference<? extends E>> refCreator) {
 		super(listIterator, ReferenceUtil::getSafe, refCreator);
+	}
+	
+	public void setRefCreator(Function<? super E, ? extends Reference<? extends E>> refCreator) {
+		this.reverse = refCreator;
 	}
 	
 	@Override

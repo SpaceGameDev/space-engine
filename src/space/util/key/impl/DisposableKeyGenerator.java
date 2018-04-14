@@ -33,7 +33,9 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	
 	@Override
 	public synchronized <T> DisposableKey<T> generateKey(Supplier<T> def) {
-		return new DisposableKey<>(disposed != null && !disposed.isEmpty() ? disposed.poll() : counter++, this, def);
+		DisposableKey<T> key = new DisposableKey<>(disposed != null && !disposed.isEmpty() ? disposed.poll() : counter++, this, def);
+		allKeys.put(key.getID(), key);
+		return key;
 	}
 	
 	//key
