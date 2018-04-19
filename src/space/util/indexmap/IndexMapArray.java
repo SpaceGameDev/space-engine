@@ -288,7 +288,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 					
 					@Override
 					public IndexMap.Entry<VALUE> next() {
-						return new IndexMapArray<VALUE>.Entry(index++);
+						return new Entry(index++);
 					}
 					
 					@Override

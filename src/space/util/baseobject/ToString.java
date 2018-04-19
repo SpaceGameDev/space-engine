@@ -9,7 +9,10 @@ public interface ToString {
 	
 	ConcurrentHashMap<Class<?>, BiFunction<ToStringHelper<?>, ?, Object>> MAP = new ConcurrentHashMap<>();
 	
-	//functions
+	@SuppressWarnings("unused")
+	Void MAP_INITIALIZATION = ToStringDefaultEntries.init0();
+	
+	//static
 	
 	/**
 	 * add a manual entry to the toTSH()-Function map
@@ -36,7 +39,7 @@ public interface ToString {
 		BiFunction<ToStringHelper<?>, ?, Object> function = MAP.get(obj.getClass());
 		if (function != null)
 			//noinspection unchecked
-			return (T) ((BiFunction<ToStringHelper<?>, OBJ, Object>) function).apply(api, obj);
+			return (T) ((BiFunction<ToStringHelper<?>, ? super OBJ, Object>) function).apply(api, obj);
 		
 		return api.toString(obj.toString());
 	}
