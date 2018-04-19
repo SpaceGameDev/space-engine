@@ -2,6 +2,8 @@ package space.util.math;
 
 import space.util.primitive.IntegerConst;
 
+import static space.util.Empties.EMPTY_INT_ARRAY;
+
 public class BigPrimitiveMath {
 	
 	//int[] array from primitive
@@ -9,26 +11,26 @@ public class BigPrimitiveMath {
 	public static int[] intArrayFromByteUnsigned(byte i2) {
 		int i = Byte.toUnsignedInt(i2);
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromShortUnsigned(short i2) {
 		int i = Short.toUnsignedInt(i2);
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromIntUnsigned(int i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromLongUnsigned(long l) {
 		if (Long.compareUnsigned(l, 0x0L) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		if (Long.compareUnsigned(l, 0xFFFFFFFFL) != 1)
 			return new int[] {BigMath.getLower(l)};
 		return new int[] {BigMath.getLower(l), BigMath.getUpper(l)};
@@ -37,25 +39,25 @@ public class BigPrimitiveMath {
 	//signed
 	public static int[] intArrayFromByteSigned(byte i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromShortSigned(short i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromIntSigned(int i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromLongSigned(long l) {
 		if (Long.compareUnsigned(l, 0x0L) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		if (Long.compareUnsigned(l, 0xFFFFFFFFL) != 1)
 			return new int[] {BigMath.getLower(l)};
 		return new int[] {BigMath.getLower(l), BigMath.getUpper(l)};
@@ -65,26 +67,26 @@ public class BigPrimitiveMath {
 	public static int[] intArrayFromByteFixed(byte i2) {
 		int i = Byte.toUnsignedInt(i2);
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i << 24};
 	}
 	
 	public static int[] intArrayFromShortFixed(short i2) {
 		int i = Short.toUnsignedInt(i2);
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i << 16};
 	}
 	
 	public static int[] intArrayFromIntFixed(int i) {
 		if (Integer.compareUnsigned(i, 0x0) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		return new int[] {i};
 	}
 	
 	public static int[] intArrayFromLongFixed(long l) {
 		if (Long.compareUnsigned(l, 0x0L) == 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		if (Long.compareUnsigned(l, 0xFFFFFFFFL) != 1)
 			return new int[] {BigMath.getLower(l)};
 		return new int[] {BigMath.getUpper(l), BigMath.getLower(l)};

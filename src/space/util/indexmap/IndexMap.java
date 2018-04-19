@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public interface IndexMap<VALUE> {
 	
-	int[] EMPTYINT = Empties.EMPTYINTARRAY;
+	int[] EMPTYINT = Empties.EMPTY_INT_ARRAY;
 	
 	//capacity
 	boolean isExpandable();

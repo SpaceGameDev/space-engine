@@ -1,16 +1,11 @@
 package space.util.math;
 
-import space.util.number.big.BigNumber;
-import space.util.number.big.BigNumberSigned;
-import space.util.number.exception.OverflowException;
-import space.util.string.builder.CharBufferBuilder1D;
-import space.util.string.builder.IStringBuilder;
+import static space.util.Empties.EMPTY_INT_ARRAY;
 
 public class BigMath {
 	
 	public static final long BITMASK_LOWER = 0x00000000FFFFFFFFL;
 	public static final long BITMASK_UPPER = 0xFFFFFFFF00000000L;
-	public static boolean doNullCheck = false;
 	
 	//upper and lower
 	public static int getLower(long l) {
@@ -45,146 +40,6 @@ public class BigMath {
 		return l << 32;
 	}
 	
-	//add sub unsigned
-	public static <NUMBER extends BigNumber> NUMBER addUnsigned(int[] a, int[] b, NUMBER ret) {
-		int l = Math.max(a.length, b.length);
-		ret.ensureCapacityNumber(l);
-		
-		int carry = 0;
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (carry == 0)
-					break;
-				ret.ensureCapacityNumber(i);
-			}
-			
-			long eval = Integer.toUnsignedLong(i < a.length ? a[i] : 0) + Integer.toUnsignedLong(i < b.length ? b[i] : 0) + carry;
-			ret.magnitude[i] = getLower(eval);
-			carry = getUpper(eval);
-		}
-		return ret;
-	}
-	
-	public static <NUMBER extends BigNumber> NUMBER subUnsigned(int[] a, int[] b, NUMBER ret) {
-		int l = Math.max(a.length, b.length);
-		ret.ensureCapacityNumber(l);
-		
-		int borrow = 0;
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (borrow == 0)
-					break;
-				throw new OverflowException("borrow not 0 after finish, ensure that a > b! (switched?)");
-			}
-			
-			long eval = (BITMASK_UPPER + Integer.toUnsignedLong(i < a.length ? a[i] : 0)) - (Integer.toUnsignedLong(i < b.length ? b[i] : 0) + borrow);
-			ret.magnitude[i] = getLower(eval);
-			borrow = ~getUpper(eval);
-		}
-		return ret;
-	}
-	
-	//add sub signed
-	public static <NUMBER extends BigNumberSigned> NUMBER addSigned(int[] a, int[] b, boolean signa, boolean signb, int expanda, NUMBER ret) {
-		if (signb)
-			return addSigned0(a, b, signa, expanda, 0, ret);
-		return subSigned0(a, invertCopy(b), signa, expanda, 1, ret);
-	}
-	
-	public static <NUMBER extends BigNumberSigned> NUMBER subSigned(int[] a, int[] b, boolean signa, boolean signb, int expanda, NUMBER ret) {
-		if (signb)
-			return subSigned0(a, b, signa, expanda, 0, ret);
-		return addSigned0(a, invertCopy(b), signa, expanda, 1, ret);
-	}
-	
-	private static <NUMBER extends BigNumberSigned> NUMBER addSigned0(int[] a, int[] b, boolean signa, int expanda, int carry, NUMBER ret) {
-		int l = Math.max(a.length, b.length);
-		ret.ensureCapacityNumber(l);
-		ret.sign = signa;
-		
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (carry == 0)
-					break;
-				if (ret.sign) {
-					ret.ensureCapacityNumber(i);
-				} else {
-					ret.sign = true;
-					break;
-				}
-			}
-			
-			long eval = Integer.toUnsignedLong(i < a.length ? a[i] : expanda) + Integer.toUnsignedLong(i < b.length ? b[i] : 0) + carry;
-			ret.magnitude[i] = getLower(eval);
-			carry = getUpper(eval);
-		}
-		return ret;
-	}
-	
-	private static <NUMBER extends BigNumberSigned> NUMBER subSigned0(int[] a, int[] b, boolean signa, int expanda, int borrow, NUMBER ret) {
-		int l = Math.max(a.length, b.length);
-		ret.ensureCapacityNumber(l);
-		ret.sign = signa;
-		
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (borrow == 0)
-					break;
-				if (ret.sign) {
-					ret.sign = false;
-					break;
-				} else {
-					ret.ensureCapacityNumber(i);
-					//TODO: not done
-					throw new RuntimeException();
-//					break;
-				}
-			}
-			
-			long eval = (BITMASK_UPPER + Integer.toUnsignedLong(i < a.length ? a[i] : expanda)) - (Integer.toUnsignedLong(i < b.length ? b[i] : 0) + borrow);
-			ret.magnitude[i] = getLower(eval);
-			borrow = ~getUpper(eval);
-		}
-		return ret;
-	}
-	
-	//add sub fixed
-	public static <NUMBER extends BigNumber> NUMBER addUnsignedFixedCapacity(int[] a, int[] b, NUMBER ret, int[] overflow) {
-		int l = ret.getCapacityNumber();
-		
-		int carry = 0;
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (overflow != null)
-					overflow[0] = carry;
-				break;
-			}
-			
-			long eval = Integer.toUnsignedLong(i < a.length ? a[i] : 0) + Integer.toUnsignedLong(i < b.length ? b[i] : 0) + carry;
-			ret.magnitude[i] = getLower(eval);
-			carry = getUpper(eval);
-		}
-		return ret;
-	}
-	
-	public static <NUMBER extends BigNumber> NUMBER subUnsignedFixedCapacity(int[] a, int[] b, NUMBER ret, int[] overflow) {
-		int l = ret.getCapacityNumber();
-		
-		int borrow = 0;
-		for (int i = 0; true; i++) {
-			if (i >= l) {
-				if (overflow != null)
-					overflow[0] = borrow;
-				break;
-			}
-			
-			long eval = (BITMASK_UPPER + Integer.toUnsignedLong(i < a.length ? a[i] : 0)) - (Integer.toUnsignedLong(i < b.length ? b[i] : 0) + borrow);
-			ret.magnitude[i] = getLower(eval);
-			borrow = ~getUpper(eval);
-		}
-		return ret;
-	}
-	
 	//shifts
 	
 	/**
@@ -198,7 +53,7 @@ public class BigMath {
 		boolean noTinyShift = tinyshift == 0;
 		int l = nl - bigshift;
 		if (l <= 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		
 		int[] ret = new int[l];
 		
@@ -225,7 +80,7 @@ public class BigMath {
 		boolean noTinyShift = tinyshift == 0;
 		int l = nl + bigshift + (noTinyShift ? 0 : 1);
 		if (l <= 0)
-			return new int[0];
+			return EMPTY_INT_ARRAY;
 		
 		int[] ret = new int[l];
 		
@@ -380,42 +235,5 @@ public class BigMath {
 			return MathUtils.compareNotEqual(ia, ib);
 		}
 		return 0;
-	}
-	
-	//toString
-	public static String toString(int[] number, boolean sign) {
-		if (sign)
-			return toString(number);
-		return toStringNegative(number);
-	}
-	
-	public static String toString(int[] number) {
-		IStringBuilder<?> b = new CharBufferBuilder1D<>();
-		toString(b, number);
-		return b.toString();
-	}
-	
-	public static void toString(IStringBuilder<?> b, int[] number) {
-		for (int i = number.length - 1; i >= 0; i--) {
-			FormatterUtil.INSTANCE.BYTES.toStringRadix(b, number[i]);
-			if (i != 0)
-				b.append(' ');
-		}
-	}
-	
-	public static String toStringNegative(int[] number) {
-		IStringBuilder<?> b = new CharBufferBuilder1D<>();
-		b.append('-');
-		toStringNegative(b, number);
-		return b.toString();
-	}
-	
-	public static void toStringNegative(IStringBuilder<?> b, int[] v) {
-		int[] number = twosConversion(v);
-		for (int i = number.length - 1; i >= 0; i--) {
-			FormatterUtil.INSTANCE.BYTES.toStringRadix(b, number[i]);
-			if (i != 0)
-				b.append(' ');
-		}
 	}
 }
