@@ -112,13 +112,13 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public Collection<VALUE> iterator() {
+	public Collection<VALUE> values() {
 		return map.values();
 	}
 	
 	@Override
-	public Collection<? extends Entry> tableIterator() {
-		return new ConvertingCollection.BiDirectional<>(map.table(), KeyMapImpl.Entry::new, entry -> map.getEntry(entry.getKey().getID()));
+	public Collection<? extends Entry> table() {
+		return new ConvertingCollection.BiDirectional<>(map.table(), EntryImpl::new, entry -> map.getEntry(entry.getKey().getID()));
 	}
 	
 	@Override
@@ -134,11 +134,11 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 		return toString0();
 	}
 	
-	private class Entry implements KeyMapEntry {
+	private class EntryImpl implements KeyMap.Entry {
 		
 		public IndexMap.Entry<?> entry;
 		
-		public Entry(IndexMap.Entry entry) {
+		public EntryImpl(IndexMap.Entry<?> entry) {
 			this.entry = entry;
 		}
 		

@@ -70,16 +70,16 @@ public interface KeyMap<VALUE> {
 	void clear();
 	
 	/**
-	 * creates a {@link java.util.Iterator} over all VALUEs
+	 * a modifiable {@link Collection} containing all VALUEs
 	 */
-	Collection<VALUE> iterator();
+	Collection<VALUE> values();
 	
 	/**
-	 * creates a {@link java.util.Iterator} over all index / VALUE pairs
+	 * a modifiable {@link Collection} with {@link Entry} of all KeyPairs
 	 */
-	Collection<? extends KeyMapEntry> tableIterator();
+	Collection<? extends Entry> table();
 	
-	interface KeyMapEntry {
+	interface Entry {
 		
 		Key<?> getKey();
 		
