@@ -1,6 +1,8 @@
 package space.engine.render.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
+import space.engine.render.window.Window;
+import space.engine.render.window.WindowContext;
 import space.engine.render.window.WindowFramework;
 import space.engine.render.window.WindowMonitor;
 import space.util.buffer.array.ArrayBufferLong;
@@ -12,7 +14,7 @@ import space.util.key.attribute.AttributeListCreator.IAttributeList;
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.side.Side.*;
 
-public class GLFWWindowFramework implements WindowFramework<GLFWWindow> {
+public class GLFWWindowFramework implements WindowFramework {
 	
 	/**
 	 * finalization of the object will {@link GLFW#glfwTerminate()}
@@ -22,7 +24,12 @@ public class GLFWWindowFramework implements WindowFramework<GLFWWindow> {
 	
 	//window
 	@Override
-	public GLFWWindow create(IAttributeList format) {
+	public WindowContext createContext(IAttributeList<WindowContext> format) {
+		return null;
+	}
+	
+	@Override
+	public Window createWindow(IAttributeList<Window> format) {
 		return new GLFWWindow(this, GLFWInstance.instanceRef, format);
 	}
 	

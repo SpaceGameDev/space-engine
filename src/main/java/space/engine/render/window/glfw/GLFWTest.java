@@ -3,7 +3,6 @@ package space.engine.render.window.glfw;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import space.engine.render.window.Window;
-import space.engine.render.window.WindowFormat;
 import space.engine.render.window.WindowFramework;
 import space.engine.render.window.WindowMonitor;
 import space.engine.side.Side;
@@ -12,7 +11,6 @@ import space.util.buffer.string.DefaultStringConverter;
 import space.util.freeableStorage.FreeableStorageCleaner;
 import space.util.key.attribute.AttributeListCreator.IAttributeList;
 import space.util.key.attribute.AttributeListCreator.IAttributeListModification;
-import space.util.key.attribute.AttributeListCreatorImpl.AttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
 
@@ -20,7 +18,7 @@ import java.util.Arrays;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
-import static space.engine.render.window.WindowFormat.*;
+import static space.engine.render.window.Window.*;
 
 public class GLFWTest {
 	
@@ -36,7 +34,7 @@ public class GLFWTest {
 	public static void main(String[] args) throws Exception {
 		//attributes
 		System.setProperty("org.lwjgl.util.NoChecks", "true");
-		IAttributeListModification mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
+		IAttributeListModification<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
 		mod.put(Side.BUFFER_STRING_CONVERTER, new DefaultStringConverter(new DefaultBufferAllocator()));
 		Side.getSide().apply(mod);
 		
@@ -50,17 +48,17 @@ public class GLFWTest {
 		FreeableStorageCleaner.startCleanupThread();
 		
 		//framework
-		WindowFramework<?> windowfw = new GLFWWindowFramework();
+		WindowFramework windowfw = new GLFWWindowFramework();
 		
 		//window
-		AttributeListModification attListMod = WindowFormat.ATT_CREATOR.createModify();
+		IAttributeListModification<Window> attListMod = Window.CREATOR.createModify();
 		attListMod.put(WINDOW_MODE, WindowMode.WINDOWED);
 		attListMod.put(VIDEO_MODE, WindowMonitor.createVideoModeWindowed(800, 600));
 		
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);
-		IAttributeList attList = attListMod.createNewList();
-		Window window = windowfw.create(attList);
+		IAttributeList<Window> attList = attListMod.createNewList();
+		Window window = windowfw.createWindow(attList);
 		
 		if (CRASH)
 			throw new RuntimeException("Crash!");

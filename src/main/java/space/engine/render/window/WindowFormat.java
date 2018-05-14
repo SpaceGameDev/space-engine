@@ -12,6 +12,7 @@ import space.engine.render.window.callback.WindowFocusCallback;
 import space.engine.render.window.callback.WindowPositionCallback;
 import space.engine.render.window.callback.WindowResizeCallback;
 import space.util.key.Key;
+import space.util.key.attribute.AttributeListCreator;
 import space.util.key.attribute.AttributeListCreatorImpl;
 
 import static java.lang.Boolean.*;
@@ -23,7 +24,7 @@ import static space.engine.render.window.WindowFormat.WindowMode.WINDOWED;
 @SuppressWarnings("unused")
 public class WindowFormat {
 	
-	public static final AttributeListCreatorImpl ATT_CREATOR = new AttributeListCreatorImpl();
+	public static final AttributeListCreator<WindowFormat> ATT_CREATOR = new AttributeListCreatorImpl<>();
 	
 	//main window settings
 	public static final Key<Integer> POSX = ATT_CREATOR.generateKey();

@@ -15,16 +15,18 @@ import space.util.baseobject.Freeable;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreatorImpl;
 
-public interface Window extends Freeable {
+import static java.lang.Boolean.FALSE;
 
-//	void makeContextCurrent();
-//
-//	void swapBuffers();
-//
-//	void pollEvents();
+public interface Window extends Freeable {
+	
+	void makeContextCurrent();
+	
+	void swapBuffers();
+	
+	void pollEvents();
 	
 	//AttributeList
-	AttributeListCreatorImpl<WindowContext> CREATOR = new AttributeListCreatorImpl<>();
+	AttributeListCreatorImpl<Window> CREATOR = new AttributeListCreatorImpl<>();
 	
 	//main window settings
 	Key<Integer> POSX = CREATOR.generateKey();
@@ -44,6 +46,13 @@ public interface Window extends Freeable {
 	Key<Integer> FBO_DEPTH = CREATOR.generateKey(0);
 	Key<Integer> FBO_STENCIL = CREATOR.generateKey(0);
 	
+	Key<GLApiType> GL_API_TYPE = CREATOR.generateKey(GLApiType.NONE);
+	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
+	Key<Integer> GL_VERSION_MAJOR = CREATOR.generateKey(2);
+	Key<Integer> GL_VERSION_MINOR = CREATOR.generateKey(1);
+	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(FALSE);
+	Key<Window> GL_CONTEXT_SHARE = CREATOR.generateKey();
+	
 	//callbacks
 	Key<KeyboardCharCallback> CHAR_CALLBACK = CREATOR.generateKey();
 	Key<KeyboardKeyCallback> KEY_CALLBACK = CREATOR.generateKey();
@@ -61,6 +70,22 @@ public interface Window extends Freeable {
 		WINDOWED,
 		FULLSCREEN,
 		BORDERLESS
+		
+	}
+	
+	enum GLApiType {
+		
+		GL,
+		GL_ES,
+		NONE
+		
+	}
+	
+	enum GLProfile {
+		
+		PROFILE_ANY,
+		PROFILE_CORE,
+		PROFILE_COMPAT
 		
 	}
 }

@@ -17,8 +17,7 @@ import space.util.string.builder.CharBufferBuilder2D;
 import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static space.engine.render.window.WindowFormat.*;
-import static space.engine.render.window.WindowFormat.WindowMode.*;
+import static space.engine.render.window.Window.WindowMode.*;
 import static space.engine.render.window.glfw.GLFWUtil.toGLFWBoolean;
 
 public class GLFWWindow implements Window, FreeableWithStorage {
@@ -26,10 +25,10 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	public GLFWWindowFramework windowFramework;
 	public Storage storage;
 	
-	public IAttributeList format;
+	public IAttributeList<Window> format;
 	public AttributeListChangeEventHelper changeEventHelper;
 	
-	public GLFWWindow(GLFWWindowFramework windowFramework, FreeableStorage getSubList, IAttributeList format) {
+	public GLFWWindow(GLFWWindowFramework windowFramework, FreeableStorage getSubList, IAttributeList<Window> format) {
 		this.windowFramework = windowFramework;
 		this.format = format;
 		setupChangeEventHelper();
@@ -48,7 +47,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		synchronized (GLFWInstance.GLFW_SYNC) {
 			//main window settings
 			glfwWindowHint(GLFW_REFRESH_RATE, fullscreen ? videoMode.refreshRate() : GLFW_DONT_CARE);
-			glfwWindowHint(GLFW_DECORATED, toGLFWBoolean(windowMode == BORDERLESS));
+			glfwWindowHint(GLFW_DECORATED, toGLFWBoolean(windowMode != BORDERLESS));
 			
 			//additional window settings
 			String title = format.get(TITLE);
@@ -90,7 +89,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		AttributeListChangeEventHelper changeEventHelper = new AttributeListChangeEventHelper();
 		
 		//main window settings
-		Consumer<ChangeEvent> windowChange = changeEvent -> {
+		Consumer<ChangeEvent<?>> windowChange = changeEvent -> {
 			ChangeEventEntry<WindowMode> windowMode = changeEvent.getEntry(WINDOW_MODE);
 			ChangeEventEntry<IVideoMode<?>> videoMode = changeEvent.getEntry(VIDEO_MODE);
 			ChangeEventEntry<Integer> posx = changeEvent.getEntry(POSX);

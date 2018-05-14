@@ -1,0 +1,25 @@
+group parent.group
+version parent.version
+
+apply plugin: 'java'
+
+properties.putAll parent.properties
+
+configurations {
+    compile.dependencies.addAll parent.configurations.compile.dependencies
+    testCompile.dependencies.addAll parent.configurations.testCompile.dependencies
+}
+
+repositories {
+    addAll parent.repositories.asCollection()
+}
+
+dependencies {
+    compile project(':space-util')
+    compile "org.lwjgl:lwjgl:$parent.lwjglVersion"
+    compile "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
+    compile "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"
+    compile "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
+    compile "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
+    compile "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
+}

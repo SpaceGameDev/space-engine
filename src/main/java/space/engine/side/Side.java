@@ -11,16 +11,16 @@ import space.util.key.attribute.AttributeListCreatorImpl;
 @SuppressWarnings("unused")
 public class Side {
 	
-	public static final AttributeListCreator ATTRIBUTE_LIST_CREATOR = new AttributeListCreatorImpl();
+	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreatorImpl<>();
 	
 	//buffer
 	public static final Key<BufferAllocator> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<BufferAllocatorStack> BUFFER_STACK_ALLOC = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
-	private static ThreadLocal<IAttributeList> thLocal = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
+	private static ThreadLocal<IAttributeList<Side>> thLocal = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
 	
-	public static IAttributeList getSide() {
+	public static IAttributeList<Side> getSide() {
 		return thLocal.get();
 	}
 }
