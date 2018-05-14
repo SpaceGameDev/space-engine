@@ -76,7 +76,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * gets the {@link AttributeListCreator} of this AttributeList
 		 */
-		AttributeListCreator getCreator();
+		AttributeListCreator<TYPE> getCreator();
 		
 		/**
 		 * creates a new {@link IAttributeListModification IAttributeListModification}.
@@ -135,7 +135,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * Gets the {@link Event} to use {@link Event#addHook(Object)} to add Hooks.
 		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
 		 */
-		Event<Consumer<ChangeEvent>> getChangeEvent();
+		Event<Consumer<ChangeEvent<?>>> getChangeEvent();
 		
 		/**
 		 * Applies a certain modification.<br>

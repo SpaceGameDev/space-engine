@@ -1,0 +1,17 @@
+group parent.group
+version parent.version
+
+apply plugin: 'java'
+
+configurations {
+    compile.dependencies.addAll parent.configurations.compile.dependencies
+    testCompile.dependencies.addAll parent.configurations.testCompile.dependencies
+}
+
+repositories {
+    addAll parent.repositories.asCollection()
+}
+
+dependencies {
+
+}

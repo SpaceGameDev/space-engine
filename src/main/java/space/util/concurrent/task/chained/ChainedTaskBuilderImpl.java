@@ -242,8 +242,6 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		public String toString() {
 			return toString0();
 		}
-		
-
 	}
 	
 	//ChainedTaskMultithreaded
@@ -353,8 +351,6 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		public Task create(TypeHandler<FUNCTION> handler) {
 			return new ChainedTaskMultithreadedTask(handler);
 		}
-		
-
 	}
 	
 	//ChainedTaskSinglethreaded

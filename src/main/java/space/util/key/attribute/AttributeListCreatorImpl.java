@@ -121,7 +121,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		}
 		
 		@Override
-		public AttributeListCreator getCreator() {
+		public AttributeListCreator<TYPE> getCreator() {
 			return AttributeListCreatorImpl.this;
 		}
 		
@@ -166,7 +166,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	
 	public class AttributeList extends AbstractAttributeList implements IAttributeList<TYPE> {
 		
-		public SimpleEvent<Consumer<ChangeEvent>> changeEvent = new SimpleEvent<>();
+		public SimpleEvent<Consumer<ChangeEvent<?>>> changeEvent = new SimpleEvent<>();
 		
 		public AttributeList() {
 			super(DEFAULT);
@@ -190,7 +190,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		
 		//other
 		@Override
-		public Event<Consumer<ChangeEvent>> getChangeEvent() {
+		public Event<Consumer<ChangeEvent<?>>> getChangeEvent() {
 			return changeEvent;
 		}
 		
@@ -232,8 +232,6 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		public Collection<? extends AttributeListCreator.ListEntry<?>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
-		
-
 	}
 	
 	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification<TYPE> {
@@ -244,10 +242,6 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		
 		private AttributeListModification(IndexMap<Object> indexMap) {
 			super(indexMap);
-		}
-		
-		private AttributeListModification copy() {
-			return new AttributeListModification(new IndexMapArrayWithDefault<>(indexMap.toArray(), UNCHANGED));
 		}
 		
 		//put
@@ -375,8 +369,6 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		public Collection<? extends AttributeListCreator.ListModificationEntry<?>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
 		}
-		
-
 	}
 	
 	class AttributeListChangeEvent implements ChangeEvent<TYPE> {
