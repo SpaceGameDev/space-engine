@@ -16,4 +16,5 @@ repositories {
 
 dependencies {
     compile project(':space-util')
+    compile project(':space-engine')
 }
