@@ -6,8 +6,8 @@ apply plugin: 'java'
 properties.putAll parent.properties
 
 configurations {
-    compile.dependencies.addAll parent.configurations.compile.dependencies
-    testCompile.dependencies.addAll parent.configurations.testCompile.dependencies
+    implementation.dependencies.addAll parent.configurations.implementation.dependencies
+    testImplementation.dependencies.addAll parent.configurations.testImplementation.dependencies
 }
 
 repositories {
@@ -15,6 +15,5 @@ repositories {
 }
 
 dependencies {
-    compile project(':space-util')
-    compile project(':space-engine')
+    implementation project(':space-engine')
 }

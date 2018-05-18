@@ -6,8 +6,8 @@ apply plugin: 'java'
 properties.putAll parent.properties
 
 configurations {
-    compile.dependencies.addAll parent.configurations.compile.dependencies
-    testCompile.dependencies.addAll parent.configurations.testCompile.dependencies
+    implementation.dependencies.addAll parent.configurations.implementation.dependencies
+    testImplementation.dependencies.addAll parent.configurations.testImplementation.dependencies
 }
 
 repositories {
@@ -15,14 +15,12 @@ repositories {
 }
 
 dependencies {
-    compile project(':space-util')
-    compile project(':space-engine')
-    compile project(':space-engine:space-engine-window')
+    implementation project(':space-engine:space-engine-window')
 
-    compile "org.lwjgl:lwjgl:$parent.lwjglVersion"
-    compile "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
-    compile "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"
-    compile "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
-    compile "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
-    compile "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
+    implementation "org.lwjgl:lwjgl:$parent.lwjglVersion"
+    implementation "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
+    implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"
+    implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
+    implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
+    implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
 }
