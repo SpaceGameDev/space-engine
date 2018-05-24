@@ -1,5 +1,6 @@
 package space.engine.window.exception;
 
+import org.jetbrains.annotations.Nullable;
 import space.util.string.builder.CharBufferBuilder1D;
 
 public class WindowException extends RuntimeException {
@@ -21,7 +22,7 @@ public class WindowException extends RuntimeException {
 		super(cause);
 	}
 	
-	public WindowException(int errorId, String errorName, String desc) {
+	public WindowException(int errorId, @Nullable String errorName, String desc) {
 		//@formatter:off
 		super(new CharBufferBuilder1D<>()
 				.append(errorName != null ? errorName : UNKNOWN_ERROR_ID)

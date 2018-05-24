@@ -38,7 +38,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	//monitor
 	@NotNull
 	@Override
-	public Monitor[] getMonitors() {
+	public Monitor[] getAllMonitors() {
 		BufferAllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
 		try {
 			alloc.push();

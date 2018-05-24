@@ -2,6 +2,9 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The Monitor allows you to get physical properties of the actual Monitor on a system.
+ */
 public interface Monitor {
 	
 	/**

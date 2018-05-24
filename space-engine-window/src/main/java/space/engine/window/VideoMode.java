@@ -2,50 +2,67 @@ package space.engine.window;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The {@link VideoMode} is a Description of how a Window will be in it's fundamental properties.
+ * <b>NOTE: all of these properties are "hints", not actual forced properties!</b>
+ * The result may differ from the hints you set, depending on implementation.
+ * There are two mayor types: {@link VideoModeMonitor} and {@link VideoModeDesktop}. There may be other types created,
+ * but if unsupported the Window implementation may throw an Exception.
+ * <p>
+ * Shared Properties:
+ * <ul>
+ * <li>{@link VideoModeMonitor#width()}</li>
+ * <li>{@link VideoModeMonitor#height()}</li>
+ * </ul>
+ * <p>
+ * additional Properties of {@link VideoModeMonitor}:
+ * <ul>
+ * <li>{@link VideoModeMonitor#refreshRate()}</li>
+ * <li>{@link VideoModeMonitor#bitsR()}</li>
+ * <li>{@link VideoModeMonitor#bitsG()}</li>
+ * <li>{@link VideoModeMonitor#bitsB()}</li>
+ * </ul>
+ * <p>
+ * additional Properties of {@link VideoModeDesktop}:
+ * <ul>
+ * <li>{@link VideoModeDesktop#hasTransparency()} (if supported)</li>
+ * </ul>
+ */
 public interface VideoMode {
-	
-	@Nullable Monitor getMonitor();
 	
 	int width();
 	
 	int height();
 	
-	/**
-	 * default: -1
-	 */
-	int refreshRate();
-	
-	/**
-	 * default: -1
-	 */
-	int bitsR();
-	
-	/**
-	 * default: -1
-	 */
-	int bitsG();
-	
-	/**
-	 * default: -1
-	 */
-	int bitsB();
-	
-	/**
-	 * default: -1
-	 */
-	int bitsA();
-	
-	static VideoMode createVideoModeWindowed(int width, int height) {
-		return createVideoModeWindowed(width, height, false);
+	interface VideoModeMonitor extends VideoMode {
+		
+		@Nullable Monitor getMonitor();
+		
+		int refreshRate();
+		
+		int bitsR();
+		
+		int bitsG();
+		
+		int bitsB();
 	}
 	
-	static VideoMode createVideoModeWindowed(int width, int height, boolean hasTransparent) {
-		return new VideoMode() {
-			@Override
-			public Monitor getMonitor() {
-				return null;
-			}
-			
+	interface VideoModeDesktop extends VideoMode {
+		
+		int posX();
+		
+		int posY();
+		
+		boolean hasTransparency();
+	}
+	
+	//create VideoMode for Desktop
+	static VideoMode createVideoModeDesktop(int width, int height) {
+		return createVideoModeDesktop(width, height, 0, 0, false);
+	}
+	
+	static VideoMode createVideoModeDesktop(int width, int height, int posX, int posY, boolean hasTransparency) {
+		return new VideoModeDesktop() {
 			@Override
 			public int width() {
 				return width;
@@ -57,28 +74,18 @@ public interface VideoMode {
 			}
 			
 			@Override
-			public int refreshRate() {
-				return -1;
+			public int posX() {
+				return posX;
 			}
 			
 			@Override
-			public int bitsR() {
-				return -1;
+			public int posY() {
+				return posY;
 			}
 			
 			@Override
-			public int bitsG() {
-				return -1;
-			}
-			
-			@Override
-			public int bitsB() {
-				return -1;
-			}
-			
-			@Override
-			public int bitsA() {
-				return hasTransparent ? 8 : 0;
+			public boolean hasTransparency() {
+				return hasTransparency;
 			}
 		};
 	}

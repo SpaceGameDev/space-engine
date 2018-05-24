@@ -6,6 +6,13 @@ import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreator.IAttributeList;
 import space.util.key.attribute.AttributeListCreatorImpl;
 
+/**
+ * The {@link WindowContext} is the Conext you do all your drawing with.
+ *
+ * <b>If you are using OpenGL or OpenGL ES:</b><br>
+ * The Thread you create the Context with is the Thread you render everything with.
+ * If you have a finished FrameBuffer, call {@link Window#openGL_SwapFramebuffer(int)} or {@link Window#openGL_ES_SwapFramebuffer(int)} respectively.
+ */
 @SuppressWarnings("unused")
 public interface WindowContext extends Freeable {
 	
@@ -15,7 +22,7 @@ public interface WindowContext extends Freeable {
 	AttributeListCreatorImpl<WindowContext> CREATOR = new AttributeListCreatorImpl<>();
 	
 	//api
-	Key<ApiType> API_TYPE = CREATOR.generateKey(ApiType.NONE);
+	Key<Object> API_TYPE = CREATOR.generateKey(ApiType.NONE);
 	
 	//OpenGL / OpenGL ES
 	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
