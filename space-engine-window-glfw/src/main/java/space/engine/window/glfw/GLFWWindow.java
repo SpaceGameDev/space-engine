@@ -1,7 +1,7 @@
 package space.engine.window.glfw;
 
+import space.engine.window.VideoMode;
 import space.engine.window.Window;
-import space.engine.window.WindowMonitor.IVideoMode;
 import space.engine.window.exception.WindowException;
 import space.engine.window.glfw.GLFWMonitor.GLFWVideoMode;
 import space.util.baseobject.Freeable.FreeableWithStorage;
@@ -37,7 +37,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		WindowMode windowMode = format.get(WINDOW_MODE);
 		boolean fullscreen = windowMode == FULLSCREEN;
 		
-		IVideoMode<?> videoMode = format.get(VIDEO_MODE);
+		VideoMode videoMode = format.get(VIDEO_MODE);
 		GLFWMonitor monitor = null;
 		if (fullscreen) {
 			checkVideoMode(videoMode);
@@ -91,12 +91,12 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		//main window settings
 		Consumer<ChangeEvent<?>> windowChange = changeEvent -> {
 			ChangeEventEntry<WindowMode> windowMode = changeEvent.getEntry(WINDOW_MODE);
-			ChangeEventEntry<IVideoMode<?>> videoMode = changeEvent.getEntry(VIDEO_MODE);
+			ChangeEventEntry<VideoMode> videoMode = changeEvent.getEntry(VIDEO_MODE);
 			ChangeEventEntry<Integer> posx = changeEvent.getEntry(POSX);
 			ChangeEventEntry<Integer> posy = changeEvent.getEntry(POSY);
 			
 			if (videoMode.hasChanged() || windowMode.hasChanged()) {
-				IVideoMode<?> videoModeNew = videoMode.getNew();
+				VideoMode videoModeNew = videoMode.getNew();
 				long monitorPointer = 0;
 				if (windowMode.getNew() == FULLSCREEN) {
 					checkVideoMode(videoModeNew);
@@ -122,7 +122,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		
 		//fbo
 		changeEventHelper.putEntry(changeEventEntry -> {
-			IVideoMode<?> videoMode = changeEventEntry.getNew();
+			VideoMode videoMode = changeEventEntry.getNew();
 			glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_RED_BITS, videoMode.bitsR());
 			glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_GREEN_BITS, videoMode.bitsG());
 			glfwSetWindowAttrib(storage.getWindowPointer(), GLFW_BLUE_BITS, videoMode.bitsB());
@@ -209,7 +209,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		}
 	}
 	
-	private static void checkVideoMode(IVideoMode<?> videoMode) {
+	private static void checkVideoMode(VideoMode videoMode) {
 		if (!(videoMode instanceof GLFWVideoMode))
 			throw new WindowException(new CharBufferBuilder2D<>().append("VIDEO_MODE was not of Type GLFWVideoMode, instead was").append(videoMode.getClass().getName()).append(": ").append(videoMode).toString());
 	}

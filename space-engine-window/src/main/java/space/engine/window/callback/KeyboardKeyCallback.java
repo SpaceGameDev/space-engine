@@ -1,6 +1,5 @@
 package space.engine.window.callback;
 
-import space.engine.window.Keys.PressType;
 import space.engine.window.Window;
 
 @FunctionalInterface

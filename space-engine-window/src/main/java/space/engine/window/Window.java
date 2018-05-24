@@ -1,6 +1,5 @@
 package space.engine.window;
 
-import space.engine.window.WindowMonitor.IVideoMode;
 import space.engine.window.callback.KeyboardCharCallback;
 import space.engine.window.callback.KeyboardKeyCallback;
 import space.engine.window.callback.MouseClickCallback;
@@ -15,8 +14,6 @@ import space.util.baseobject.Freeable;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreatorImpl;
 
-import static java.lang.Boolean.FALSE;
-
 public interface Window extends Freeable {
 	
 	void makeContextCurrent();
@@ -25,33 +22,20 @@ public interface Window extends Freeable {
 	
 	void pollEvents();
 	
-	//AttributeList
+	//attributes
 	AttributeListCreatorImpl<Window> CREATOR = new AttributeListCreatorImpl<>();
 	
 	//main window settings
 	Key<Integer> POSX = CREATOR.generateKey();
 	Key<Integer> POSY = CREATOR.generateKey();
 	Key<WindowMode> WINDOW_MODE = CREATOR.generateKey(WindowMode.WINDOWED);
-	Key<IVideoMode<?>> VIDEO_MODE = CREATOR.generateKey(WindowMonitor.createVideoModeWindowed(800, 600));
+	Key<VideoMode> VIDEO_MODE = CREATOR.generateKey(VideoMode.createVideoModeWindowed(800, 600));
 	
 	//additional window settings
 	Key<String> TITLE = CREATOR.generateKey("Untitled Window");
 	Key<Boolean> VISIBLE = CREATOR.generateKey(Boolean.TRUE);
 	Key<Boolean> RESIZEABLE = CREATOR.generateKey(Boolean.FALSE);
 	Key<Boolean> DOUBLEBUFFER = CREATOR.generateKey(Boolean.TRUE);
-	
-	//fbo
-	//RGB are defined with VIDEO_MODE
-	Key<Integer> FBO_A = CREATOR.generateKey(0);
-	Key<Integer> FBO_DEPTH = CREATOR.generateKey(0);
-	Key<Integer> FBO_STENCIL = CREATOR.generateKey(0);
-	
-	Key<GLApiType> GL_API_TYPE = CREATOR.generateKey(GLApiType.NONE);
-	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
-	Key<Integer> GL_VERSION_MAJOR = CREATOR.generateKey(2);
-	Key<Integer> GL_VERSION_MINOR = CREATOR.generateKey(1);
-	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(FALSE);
-	Key<Window> GL_CONTEXT_SHARE = CREATOR.generateKey();
 	
 	//callbacks
 	Key<KeyboardCharCallback> CHAR_CALLBACK = CREATOR.generateKey();
@@ -70,22 +54,6 @@ public interface Window extends Freeable {
 		WINDOWED,
 		FULLSCREEN,
 		BORDERLESS
-		
-	}
-	
-	enum GLApiType {
-		
-		GL,
-		GL_ES,
-		NONE
-		
-	}
-	
-	enum GLProfile {
-		
-		PROFILE_ANY,
-		PROFILE_CORE,
-		PROFILE_COMPAT
 		
 	}
 }

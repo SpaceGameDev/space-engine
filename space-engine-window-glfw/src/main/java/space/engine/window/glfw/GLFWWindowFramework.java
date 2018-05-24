@@ -1,10 +1,10 @@
 package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
+import space.engine.window.Monitor;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowFramework;
-import space.engine.window.WindowMonitor;
 import space.util.buffer.array.ArrayBufferLong;
 import space.util.buffer.array.ArrayBufferLong.ArrayBufferLongSingle;
 import space.util.buffer.array.ArrayBufferPointer;
@@ -35,7 +35,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	
 	//monitor
 	@Override
-	public WindowMonitor[] getMonitors() {
+	public Monitor[] getMonitors() {
 		BufferAllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
 		try {
 			alloc.push();
@@ -43,7 +43,7 @@ public class GLFWWindowFramework implements WindowFramework {
 			ArrayBufferPointer monitorList = ArrayBufferPointer.alloc(alloc::allocNoFree, nglfwGetMonitors(monitorCnt.address()), monitorCnt.getLong());
 			
 			int length = (int) monitorList.length();
-			WindowMonitor[] ret = new WindowMonitor[length];
+			Monitor[] ret = new Monitor[length];
 			for (int i = 0; i < length; i++)
 				ret[i] = new GLFWMonitor(monitorList.getPointer(i));
 			return ret;
@@ -53,7 +53,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	}
 	
 	@Override
-	public WindowMonitor getPrimaryMonitor() {
+	public Monitor getPrimaryMonitor() {
 		return new GLFWMonitor(glfwGetPrimaryMonitor());
 	}
 	

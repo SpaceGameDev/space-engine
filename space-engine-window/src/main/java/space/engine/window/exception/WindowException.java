@@ -21,10 +21,6 @@ public class WindowException extends RuntimeException {
 		super(cause);
 	}
 	
-	public WindowException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-	
 	public WindowException(int errorId, String errorName, String desc) {
 		//@formatter:off
 		super(new CharBufferBuilder1D<>()

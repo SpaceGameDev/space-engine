@@ -3,9 +3,9 @@ package space.engine.window.glfw;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import space.engine.Side;
+import space.engine.window.Monitor;
 import space.engine.window.Window;
 import space.engine.window.WindowFramework;
-import space.engine.window.WindowMonitor;
 import space.util.buffer.alloc.DefaultBufferAllocator;
 import space.util.buffer.string.DefaultStringConverter;
 import space.util.freeableStorage.FreeableStorageCleaner;
@@ -32,6 +32,7 @@ public class GLFWTest {
 	public static final double OFFSET2 = OFFSET1 * 2;
 	
 	public static void main(String[] args) throws Exception {
+		System.out.println();
 		//attributes
 		System.setProperty("org.lwjgl.util.NoChecks", "true");
 		IAttributeListModification<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
@@ -53,7 +54,7 @@ public class GLFWTest {
 		//window
 		IAttributeListModification<Window> attListMod = Window.CREATOR.createModify();
 		attListMod.put(WINDOW_MODE, WindowMode.WINDOWED);
-		attListMod.put(VIDEO_MODE, WindowMonitor.createVideoModeWindowed(800, 600));
+		attListMod.put(VIDEO_MODE, Monitor.createVideoModeWindowed(800, 600));
 		
 		attListMod.put(TITLE, "GLFWTest Window");
 		attListMod.put(GL_API_TYPE, GLApiType.GL);

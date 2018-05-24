@@ -2,11 +2,12 @@ package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
-import space.engine.window.WindowMonitor;
+import space.engine.window.Monitor;
+import space.engine.window.VideoMode;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class GLFWMonitor implements WindowMonitor {
+public class GLFWMonitor implements Monitor {
 	
 	public long pointer;
 	public String name;
@@ -14,8 +15,8 @@ public class GLFWMonitor implements WindowMonitor {
 	public int physicalHeight;
 	public int posX;
 	public int posY;
-	public IVideoMode currentVideoMode;
-	public IVideoMode[] availableVideoModes;
+	public VideoMode currentVideoMode;
+	public VideoMode[] availableVideoModes;
 	
 	public GLFWMonitor(long pointer) {
 		this.pointer = pointer;
@@ -38,7 +39,7 @@ public class GLFWMonitor implements WindowMonitor {
 		//videoMode
 		currentVideoMode = new GLFWVideoMode(glfwGetVideoMode(pointer));
 		Buffer modes = glfwGetVideoModes(pointer);
-		IVideoMode[] array = new IVideoMode[modes.remaining()];
+		VideoMode[] array = new VideoMode[modes.remaining()];
 		for (GLFWVidMode mode : modes)
 			array[modes.position()] = new GLFWVideoMode(mode);
 		availableVideoModes = array;
@@ -70,16 +71,16 @@ public class GLFWMonitor implements WindowMonitor {
 	}
 	
 	@Override
-	public IVideoMode getCurrentVideoMode() {
+	public VideoMode getDefaultVideoMode() {
 		return currentVideoMode;
 	}
 	
 	@Override
-	public IVideoMode[] getAvailableVideoModes() {
+	public VideoMode[] getAvailableVideoModes() {
 		return availableVideoModes;
 	}
 	
-	public class GLFWVideoMode implements IVideoMode<GLFWMonitor> {
+	public class GLFWVideoMode implements VideoMode {
 		
 		public GLFWVidMode mode;
 		

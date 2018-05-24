@@ -7,9 +7,7 @@ public interface WindowFramework extends Freeable {
 	
 	WindowContext createContext(IAttributeList<WindowContext> format);
 	
-	Window createWindow(IAttributeList<Window> format);
+	Monitor[] getMonitors();
 	
-	WindowMonitor[] getMonitors();
-	
-	WindowMonitor getPrimaryMonitor();
+	Monitor getPrimaryMonitor();
 }
