@@ -1,13 +1,14 @@
 package space.engine.window;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 import space.util.key.attribute.AttributeListCreator.IAttributeList;
 
 public interface WindowFramework extends Freeable {
 	
-	WindowContext createContext(IAttributeList<WindowContext> format);
+	@NotNull WindowContext createContext(@NotNull IAttributeList<WindowContext> format);
 	
-	Monitor[] getMonitors();
+	@NotNull Monitor[] getMonitors();
 	
-	Monitor getPrimaryMonitor();
+	@NotNull Monitor getPrimaryMonitor();
 }

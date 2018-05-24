@@ -1,5 +1,6 @@
 package space.engine.window.glfw;
 
+import org.jetbrains.annotations.NotNull;
 import space.engine.window.VideoMode;
 import space.engine.window.Window;
 import space.engine.window.exception.WindowException;
@@ -136,6 +137,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		format.getChangeEvent().addHook(changeEventHelper);
 	}
 	
+	@NotNull
 	@Override
 	public FreeableStorage getStorage() {
 		return storage;

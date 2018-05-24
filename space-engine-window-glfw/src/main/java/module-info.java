@@ -10,4 +10,6 @@ module space.engine.window.glfw {
 	requires org.lwjgl.glfw;
 	requires org.lwjgl.opengl;
 	
+	requires annotations;
+	
 }

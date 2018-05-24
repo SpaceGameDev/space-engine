@@ -7,4 +7,6 @@ module space.engine.window {
 	requires space.util;
 	requires space.engine;
 	
+	requires annotations;
+	
 }

@@ -1,5 +1,6 @@
 package space.engine.window.glfw;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import space.engine.window.Monitor;
 import space.engine.window.Window;
@@ -23,6 +24,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	public GLFWInstance glfwInstance = GLFWInstance.getInstance();
 	
 	//window
+	@NotNull
 	@Override
 	public WindowContext createContext(IAttributeList<WindowContext> format) {
 		return null;
@@ -34,6 +36,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	}
 	
 	//monitor
+	@NotNull
 	@Override
 	public Monitor[] getMonitors() {
 		BufferAllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
@@ -52,6 +55,7 @@ public class GLFWWindowFramework implements WindowFramework {
 		}
 	}
 	
+	@NotNull
 	@Override
 	public Monitor getPrimaryMonitor() {
 		return new GLFWMonitor(glfwGetPrimaryMonitor());

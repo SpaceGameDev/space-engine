@@ -1,8 +1,10 @@
 package space.engine.window;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface VideoMode {
 	
-	Monitor getMonitor();
+	@Nullable Monitor getMonitor();
 	
 	int width();
 	

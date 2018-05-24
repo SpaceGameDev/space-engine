@@ -1,5 +1,6 @@
 package space.engine.window;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreator.IAttributeList;
@@ -8,7 +9,7 @@ import space.util.key.attribute.AttributeListCreatorImpl;
 @SuppressWarnings("unused")
 public interface WindowContext extends Freeable {
 	
-	Window createWindow(IAttributeList<Window> format);
+	@NotNull Window createWindow(@NotNull IAttributeList<Window> format);
 	
 	//attributes
 	AttributeListCreatorImpl<WindowContext> CREATOR = new AttributeListCreatorImpl<>();

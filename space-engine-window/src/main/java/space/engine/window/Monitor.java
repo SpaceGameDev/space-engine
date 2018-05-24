@@ -1,11 +1,13 @@
 package space.engine.window;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Monitor {
 	
 	/**
 	 * name of the Monitor for identification
 	 */
-	String name();
+	@NotNull String name();
 	
 	/**
 	 * width in mm
@@ -30,10 +32,10 @@ public interface Monitor {
 	/**
 	 * the default video mode used of the desktop environment
 	 */
-	VideoMode getDefaultVideoMode();
+	@NotNull VideoMode getDefaultVideoMode();
 	
 	/**
 	 * get all available video modes
 	 */
-	VideoMode[] getAvailableVideoModes();
+	@NotNull VideoMode[] getAvailableVideoModes();
 }

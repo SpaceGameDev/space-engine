@@ -1,5 +1,6 @@
 package space.engine;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.stack.BufferAllocatorStack;
 import space.util.buffer.string.BufferStringConverter;
@@ -20,6 +21,7 @@ public class Side {
 	
 	private static final ThreadLocal<IAttributeList<Side>> THREAD_LOCAL = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
 	
+	@NotNull
 	public static IAttributeList<Side> getSide() {
 		return THREAD_LOCAL.get();
 	}

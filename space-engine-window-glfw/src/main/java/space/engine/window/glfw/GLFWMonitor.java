@@ -1,5 +1,6 @@
 package space.engine.window.glfw;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
 import space.engine.window.Monitor;
@@ -45,6 +46,7 @@ public class GLFWMonitor implements Monitor {
 		availableVideoModes = array;
 	}
 	
+	@NotNull
 	@Override
 	public String name() {
 		return name;
@@ -70,11 +72,13 @@ public class GLFWMonitor implements Monitor {
 		return posY;
 	}
 	
+	@NotNull
 	@Override
 	public VideoMode getDefaultVideoMode() {
 		return currentVideoMode;
 	}
 	
+	@NotNull
 	@Override
 	public VideoMode[] getAvailableVideoModes() {
 		return availableVideoModes;
