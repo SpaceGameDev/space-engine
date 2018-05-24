@@ -1,5 +1,6 @@
 package space.util.gui.monofont.tsh.elements;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.gui.GuiCreator;
 import space.util.gui.GuiElement;
 import space.util.gui.monofont.MonofontGuiElement;
@@ -52,162 +53,162 @@ public class MonofontTSHObjects extends MonofontGuiElementCaching implements ToS
 	}
 	
 	@Override
-	public void add(String name, byte obj) {
+	public void add(@NotNull String name, byte obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, short obj) {
+	public void add(@NotNull String name, short obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, int obj) {
+	public void add(@NotNull String name, int obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, long obj) {
+	public void add(@NotNull String name, long obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, float obj) {
+	public void add(@NotNull String name, float obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, double obj) {
+	public void add(@NotNull String name, double obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, boolean obj) {
+	public void add(@NotNull String name, boolean obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, char obj) {
+	public void add(@NotNull String name, char obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, byte[] obj, int from, int to) {
+	public void add(@NotNull String name, byte[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, short[] obj, int from, int to) {
+	public void add(@NotNull String name, short[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, int[] obj, int from, int to) {
+	public void add(@NotNull String name, int[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, long[] obj, int from, int to) {
+	public void add(@NotNull String name, long[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, float[] obj, int from, int to) {
+	public void add(@NotNull String name, float[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, double[] obj, int from, int to) {
+	public void add(@NotNull String name, double[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, boolean[] obj, int from, int to) {
+	public void add(@NotNull String name, boolean[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, char[] obj, int from, int to) {
+	public void add(@NotNull String name, char[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void add(String name, Object obj) {
+	public void add(@NotNull String name, Object obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, Object[] obj, int from, int to) {
+	public void add(@NotNull String name, Object[] obj, int from, int to) {
 		tshObjectsInstance.add(name, obj, from, to);
 	}
 	
 	@Override
-	public void addNull(String name) {
+	public void addNull(@NotNull String name) {
 		tshObjectsInstance.addNull(name);
 	}
 	
 	@Override
-	public void add(String name, byte[] obj) {
+	public void add(@NotNull String name, byte[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, short[] obj) {
+	public void add(@NotNull String name, short[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, int[] obj) {
+	public void add(@NotNull String name, int[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, long[] obj) {
+	public void add(@NotNull String name, long[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, float[] obj) {
+	public void add(@NotNull String name, float[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, double[] obj) {
+	public void add(@NotNull String name, double[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, boolean[] obj) {
+	public void add(@NotNull String name, boolean[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, char[] obj) {
+	public void add(@NotNull String name, char[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, Object[] obj) {
+	public void add(@NotNull String name, Object[] obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, String obj) {
+	public void add(@NotNull String name, String obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, CharSequence obj) {
+	public void add(@NotNull String name, CharSequence obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, String2D obj) {
+	public void add(@NotNull String name, String2D obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 	
 	@Override
-	public void add(String name, CharSequence2D obj) {
+	public void add(@NotNull String name, CharSequence2D obj) {
 		tshObjectsInstance.add(name, obj);
 	}
 }

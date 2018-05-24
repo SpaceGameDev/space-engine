@@ -1,5 +1,6 @@
 package space.util.string.toStringHelper;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.ArrayList;
@@ -26,99 +27,99 @@ public abstract class AbstractToStringHelperObjectsInstance<T> implements ToStri
 	
 	//native
 	@Override
-	public void add(String name, byte obj) {
+	public void add(@NotNull String name, byte obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, short obj) {
+	public void add(@NotNull String name, short obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, int obj) {
+	public void add(@NotNull String name, int obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, long obj) {
+	public void add(@NotNull String name, long obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, float obj) {
+	public void add(@NotNull String name, float obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, double obj) {
+	public void add(@NotNull String name, double obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, boolean obj) {
+	public void add(@NotNull String name, boolean obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, char obj) {
+	public void add(@NotNull String name, char obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	//array
 	@Override
-	public void add(String name, byte[] obj, int from, int to) {
+	public void add(@NotNull String name, byte[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, short[] obj, int from, int to) {
+	public void add(@NotNull String name, short[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, int[] obj, int from, int to) {
+	public void add(@NotNull String name, int[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, long[] obj, int from, int to) {
+	public void add(@NotNull String name, long[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, float[] obj, int from, int to) {
+	public void add(@NotNull String name, float[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, double[] obj, int from, int to) {
+	public void add(@NotNull String name, double[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, boolean[] obj, int from, int to) {
+	public void add(@NotNull String name, boolean[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void add(String name, char[] obj, int from, int to) {
+	public void add(@NotNull String name, char[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	//object
 	@Override
-	public void add(String name, Object obj) {
+	public void add(@NotNull String name, Object obj) {
 		list.add(new Entry<>(name, helper.toString(obj)));
 	}
 	
 	@Override
-	public void add(String name, Object[] obj, int from, int to) {
+	public void add(@NotNull String name, Object[] obj, int from, int to) {
 		list.add(new Entry<>(name, helper.toString(obj, from, to)));
 	}
 	
 	@Override
-	public void addNull(String name) {
+	public void addNull(@NotNull String name) {
 		list.add(new Entry<>(name, helper.toStringNull()));
 	}
 	

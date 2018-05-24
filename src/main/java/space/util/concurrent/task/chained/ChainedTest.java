@@ -1,6 +1,5 @@
 package space.util.concurrent.task.chained;
 
-import space.util.baseobject.ToStringDefaultEntries;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.typehandler.TypeConsumer;
 import space.util.delegate.specific.IntList;
@@ -25,7 +24,6 @@ public class ChainedTest {
 	
 	public static void main(String[] args) throws Exception {
 		ToStringHelper.setDefault(MonofontGuiApi.TSH);
-		ToStringDefaultEntries.init();
 		try {
 			if (prestart)
 				pool.prestartAllCoreThreads();

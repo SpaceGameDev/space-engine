@@ -1,6 +1,7 @@
 package space.util.dependency;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
 import space.util.baseobject.exceptions.InvalidSetException;
@@ -9,26 +10,30 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 public class NoDepDependency implements Setable, ToString, Dependency {
 	
+	@Nullable
 	public String uuid;
 	
 	public NoDepDependency() {
 	}
 	
-	public NoDepDependency(String uuid) {
+	public NoDepDependency(@Nullable String uuid) {
 		this.uuid = uuid;
 	}
 	
 	@Override
+	@Nullable
 	public String uuid() {
 		return uuid;
 	}
 	
 	@Override
+	@Nullable
 	public String[] requires() {
 		return null;
 	}
 	
 	@Override
+	@Nullable
 	public String[] requiredBy() {
 		return null;
 	}
@@ -54,14 +59,14 @@ public class NoDepDependency implements Setable, ToString, Dependency {
 	
 	@Override
 	public int hashCode() {
-		return uuid.hashCode();
+		return uuid != null ? uuid.hashCode() : 0;
 	}
 	
 	@NotNull
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("uuid", this.uuid);
+		tsh.add("uuid", (Object) this.uuid);
 		return tsh.build();
 	}
 	

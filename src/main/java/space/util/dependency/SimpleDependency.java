@@ -1,6 +1,7 @@
 package space.util.dependency;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
 import space.util.baseobject.exceptions.InvalidSetException;
@@ -9,35 +10,38 @@ import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInst
 
 public class SimpleDependency implements Setable, ToString, Dependency {
 	
+	@Nullable
 	public String uuid;
+	@Nullable
 	public String[] requires;
+	@Nullable
 	public String[] requiredBy;
 	public int defaultPriority;
 	
 	public SimpleDependency() {
 	}
 	
-	public SimpleDependency(String uuid) {
+	public SimpleDependency(@Nullable String uuid) {
 		this(uuid, null, null, 0);
 	}
 	
-	public SimpleDependency(String uuid, int defaultPriority) {
+	public SimpleDependency(@Nullable String uuid, int defaultPriority) {
 		this(uuid, null, null, defaultPriority);
 	}
 	
-	public SimpleDependency(String uuid, String[] requires) {
+	public SimpleDependency(@Nullable String uuid, @Nullable String[] requires) {
 		this(uuid, requires, null, 0);
 	}
 	
-	public SimpleDependency(String uuid, String[] requires, int defaultPriority) {
+	public SimpleDependency(@Nullable String uuid, @Nullable String[] requires, int defaultPriority) {
 		this(uuid, requires, null, defaultPriority);
 	}
 	
-	public SimpleDependency(String uuid, String[] requires, String[] requiredBy) {
+	public SimpleDependency(@Nullable String uuid, @Nullable String[] requires, @Nullable String[] requiredBy) {
 		this(uuid, requires, requiredBy, 0);
 	}
 	
-	public SimpleDependency(String uuid, String[] requires, String[] requiredBy, int defaultPriority) {
+	public SimpleDependency(@Nullable String uuid, @Nullable String[] requires, @Nullable String[] requiredBy, int defaultPriority) {
 		this.uuid = uuid;
 		this.requires = requires;
 		this.requiredBy = requiredBy;
@@ -66,7 +70,7 @@ public class SimpleDependency implements Setable, ToString, Dependency {
 	
 	@Override
 	public int hashCode() {
-		return uuid.hashCode();
+		return uuid == null ? 0 : uuid.hashCode();
 	}
 	
 	@Override
@@ -90,7 +94,7 @@ public class SimpleDependency implements Setable, ToString, Dependency {
 	@Override
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("uuid", uuid);
+		tsh.add("uuid", (Object) uuid);
 		tsh.add("requires", requires);
 		tsh.add("requiredBy", requiredBy);
 		tsh.add("defaultPriority", defaultPriority);

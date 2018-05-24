@@ -1,6 +1,7 @@
 package space.util.string.toStringHelper;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
@@ -32,93 +33,102 @@ public interface ToStringHelper<T> {
 	}
 	
 	//native
-	T toString(byte b);
+	@NotNull T toString(byte b);
 	
-	T toString(short s);
+	@NotNull T toString(short s);
 	
-	T toString(int i);
+	@NotNull T toString(int i);
 	
-	T toString(long l);
+	@NotNull T toString(long l);
 	
-	T toString(float f);
+	@NotNull T toString(float f);
 	
-	T toString(double d);
+	@NotNull T toString(double d);
 	
-	T toString(boolean b);
+	@NotNull T toString(boolean b);
 	
-	T toString(char c);
+	@NotNull T toString(char c);
 	
 	//array
-	default T toString(byte[] obj) {
+	@NotNull
+	default T toString(@Nullable byte[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(short[] obj) {
+	@NotNull
+	default T toString(@Nullable short[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(int[] obj) {
+	@NotNull
+	default T toString(@Nullable int[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(long[] obj) {
+	@NotNull
+	default T toString(@Nullable long[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(float[] obj) {
+	@NotNull
+	default T toString(@Nullable float[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(double[] obj) {
+	@NotNull
+	default T toString(@Nullable double[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(boolean[] obj) {
+	@NotNull
+	default T toString(@Nullable boolean[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	default T toString(char[] obj) {
+	@NotNull
+	default T toString(@Nullable char[] obj) {
 		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
 	//array from to
-	T toString(byte[] obj, int from, int to);
+	@NotNull T toString(@Nullable byte[] obj, int from, int to);
 	
-	T toString(short[] obj, int from, int to);
+	@NotNull T toString(@Nullable short[] obj, int from, int to);
 	
-	T toString(int[] obj, int from, int to);
+	@NotNull T toString(@Nullable int[] obj, int from, int to);
 	
-	T toString(long[] obj, int from, int to);
+	@NotNull T toString(@Nullable long[] obj, int from, int to);
 	
-	T toString(float[] obj, int from, int to);
+	@NotNull T toString(@Nullable float[] obj, int from, int to);
 	
-	T toString(double[] obj, int from, int to);
+	@NotNull T toString(@Nullable double[] obj, int from, int to);
 	
-	T toString(boolean[] obj, int from, int to);
+	@NotNull T toString(@Nullable boolean[] obj, int from, int to);
 	
-	T toString(char[] obj, int from, int to);
+	@NotNull T toString(@Nullable char[] obj, int from, int to);
 	
 	//array object
-	default T toString(Object[] obj) {
-		return toString(obj, 0, obj.length);
+	@NotNull
+	default T toString(@Nullable Object[] obj) {
+		return obj == null ? toStringNull() : toString(obj, 0, obj.length);
 	}
 	
-	T toString(Object[] obj, int from, int to);
+	@NotNull T toString(@Nullable Object[] obj, int from, int to);
 	
 	//String
-	T toString(CharSequence str);
+	@NotNull T toString(CharSequence str);
 	
-	T toString(String str);
+	@NotNull T toString(String str);
 	
-	T toString(CharSequence2D str);
+	@NotNull T toString(CharSequence2D str);
 	
-	T toString(String2D str);
+	@NotNull T toString(String2D str);
 	
 	//null
-	T toStringNull();
+	@NotNull T toStringNull();
 	
 	//object
-	default T toString(Object o) {
+	default T toString(@Nullable Object o) {
 		//null
 		if (o == null)
 			return toStringNull();
@@ -173,14 +183,14 @@ public interface ToStringHelper<T> {
 	}
 	
 	//modifier
-	T createModifier(String modifier, Object value);
+	@NotNull T createModifier(@NotNull String modifier, @Nullable Object value);
 	
 	//objects
 	
 	/**
 	 * an object mapper mapping names of fields to values
 	 */
-	ToStringHelperObjectsInstance<T> createObjectInstance(Object obj);
+	@NotNull ToStringHelperObjectsInstance<T> createObjectInstance(@NotNull Object obj);
 	
 	/**
 	 * an object mapper mapping names of fields to values
@@ -188,73 +198,73 @@ public interface ToStringHelper<T> {
 	interface ToStringHelperObjectsInstance<T> {
 		
 		//primitive
-		void add(String name, byte obj);
+		void add(@NotNull String name, byte obj);
 		
-		void add(String name, short obj);
+		void add(@NotNull String name, short obj);
 		
-		void add(String name, int obj);
+		void add(@NotNull String name, int obj);
 		
-		void add(String name, long obj);
+		void add(@NotNull String name, long obj);
 		
-		void add(String name, float obj);
+		void add(@NotNull String name, float obj);
 		
-		void add(String name, double obj);
+		void add(@NotNull String name, double obj);
 		
-		void add(String name, boolean obj);
+		void add(@NotNull String name, boolean obj);
 		
-		void add(String name, char obj);
+		void add(@NotNull String name, char obj);
 		
 		//array
-		default void add(String name, byte[] obj) {
+		default void add(@NotNull String name, @Nullable byte[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, short[] obj) {
+		default void add(@NotNull String name, @Nullable short[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, int[] obj) {
+		default void add(@NotNull String name, @Nullable int[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, long[] obj) {
+		default void add(@NotNull String name, @Nullable long[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, float[] obj) {
+		default void add(@NotNull String name, @Nullable float[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, double[] obj) {
+		default void add(@NotNull String name, @Nullable double[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, boolean[] obj) {
+		default void add(@NotNull String name, @Nullable boolean[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		default void add(String name, char[] obj) {
+		default void add(@NotNull String name, @Nullable char[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
@@ -262,50 +272,50 @@ public interface ToStringHelper<T> {
 		}
 		
 		//array from to
-		void add(String name, byte[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable byte[] obj, int from, int to);
 		
-		void add(String name, short[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable short[] obj, int from, int to);
 		
-		void add(String name, int[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable int[] obj, int from, int to);
 		
-		void add(String name, long[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable long[] obj, int from, int to);
 		
-		void add(String name, float[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable float[] obj, int from, int to);
 		
-		void add(String name, double[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable double[] obj, int from, int to);
 		
-		void add(String name, boolean[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable boolean[] obj, int from, int to);
 		
-		void add(String name, char[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable char[] obj, int from, int to);
 		
 		//object
-		void add(String name, Object obj);
+		void add(@NotNull String name, @Nullable Object obj);
 		
-		void addNull(String name);
+		void addNull(@NotNull String name);
 		
-		default void add(String name, Object[] obj) {
+		default void add(@NotNull String name, @Nullable Object[] obj) {
 			if (obj == null)
 				addNull(name);
 			else
 				add(name, obj, 0, obj.length);
 		}
 		
-		void add(String name, Object[] obj, int from, int to);
+		void add(@NotNull String name, @Nullable Object[] obj, int from, int to);
 		
 		//extra
-		default void add(String name, String obj) {
+		default void add(@NotNull String name, String obj) {
 			add(name, (CharSequence) obj);
 		}
 		
-		default void add(String name, CharSequence obj) {
+		default void add(@NotNull String name, CharSequence obj) {
 			add(name, (Object) obj);
 		}
 		
-		default void add(String name, String2D obj) {
+		default void add(@NotNull String name, String2D obj) {
 			add(name, (CharSequence2D) obj);
 		}
 		
-		default void add(String name, CharSequence2D obj) {
+		default void add(@NotNull String name, CharSequence2D obj) {
 			add(name, (Object) obj);
 		}
 		
@@ -317,22 +327,23 @@ public interface ToStringHelper<T> {
 	/**
 	 * mappers map one thing (pos[1] = 0) to another (pos[1] = 1)
 	 */
-	ToStringHelperTable<T> createMapper(String name, String separator, boolean align);
+	@NotNull ToStringHelperTable<T> createMapper(@NotNull String name, @NotNull String separator, boolean align);
 	
 	//tables
 	
 	/**
 	 * tables can be infinite in any of their (infinite) dimensions
 	 */
-	ToStringHelperTable<T> createTable(String name, int dimensions);
+	@NotNull ToStringHelperTable<T> createTable(@NotNull String name, int dimensions);
 	
 	interface ToStringHelperTable<T> {
 		
-		Object put(int[] pos, Object object);
+		Object put(int[] pos, @Nullable Object object);
 		
 		T build();
 	}
 	
+	@NotNull
 	static <VALUE> IndexMultiMap<VALUE> getOptimalMultiMap(int dimensions) {
 		if (dimensions <= 0)
 			throw new IllegalArgumentException("Dimension " + dimensions + " <= 0");
