@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
@@ -119,8 +120,9 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		this.indexMap = indexMap;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		return tsh.build();
@@ -190,6 +192,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return ret;
 		}
 		
+		@NotNull
 		@Override
 		public IndexMap.Entry<T> getEntry(int index) {
 			return new Entry(indexMap.getEntry(index));
@@ -197,7 +200,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public T[] toArray(T[] a) {
+		public T[] toArray(@NotNull T[] a) {
 			F[] org = indexMap.toArray();
 			if (a.length < org.length) {
 				//new instance
@@ -215,17 +218,17 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void addAll(Collection<? extends T> coll) {
+		public void addAll(@NotNull Collection<? extends T> coll) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public void putAll(IndexMap<? extends T> indexMap) {
+		public void putAll(@NotNull IndexMap<? extends T> indexMap) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public void putAllIfAbsent(IndexMap<? extends T> indexMap) {
+		public void putAllIfAbsent(@NotNull IndexMap<? extends T> indexMap) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -251,7 +254,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
+		public boolean replace(int index, T oldValue, @NotNull Supplier<? extends T> newValue) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -266,32 +269,35 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T compute(int index, ComputeFunction<? super T, ? extends T> function) {
+		public T compute(int index, @NotNull ComputeFunction<? super T, ? extends T> function) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public T computeIfAbsent(int index, Supplier<? extends T> supplier) {
+		public T computeIfAbsent(int index, @NotNull Supplier<? extends T> supplier) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
-		public T computeIfPresent(int index, Supplier<? extends T> supplier) {
+		public T computeIfPresent(int index, @NotNull Supplier<? extends T> supplier) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.OneDirectionalUnmodifiable<>(indexMap.values(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public Collection<IndexMap.Entry<T>> table() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", this.indexMap);
 			tsh.add("remap", this.remap);
@@ -345,8 +351,9 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 				return toString0();
 			}
 			
+			@NotNull
 			@Override
-			public <TSH> TSH toTSH(ToStringHelper<TSH> api) {
+			public <TSH> TSH toTSH(@NotNull ToStringHelper<TSH> api) {
 				ToStringHelperObjectsInstance<TSH> tsh = api.createObjectInstance(this);
 				tsh.add("entry", this.entry);
 				return tsh.build();
@@ -363,13 +370,15 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			this.reverse = reverse;
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.values(), remap, reverse);
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", this.indexMap);
 			tsh.add("remap", this.remap);
@@ -402,23 +411,24 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return remap.apply(indexMap.remove(index));
 		}
 		
+		@NotNull
 		@Override
 		public IndexMap.Entry<T> getEntry(int index) {
 			return new Entry(indexMap.getEntry(index));
 		}
 		
 		@Override
-		public void addAll(Collection<? extends T> coll) {
+		public void addAll(@NotNull Collection<? extends T> coll) {
 			indexMap.addAll(new ConvertingCollection.OneDirectionalUnmodifiable<>(coll, reverseSparse));
 		}
 		
 		@Override
-		public void putAll(IndexMap<? extends T> indexMap) {
+		public void putAll(@NotNull IndexMap<? extends T> indexMap) {
 			this.indexMap.putAll(new ConvertingIndexMap.OneDirectionalUnmodifiable<>(indexMap, reverseSparse));
 		}
 		
 		@Override
-		public void putAllIfAbsent(IndexMap<? extends T> indexMap) {
+		public void putAllIfAbsent(@NotNull IndexMap<? extends T> indexMap) {
 			this.indexMap.putAllIfAbsent(new OneDirectionalUnmodifiable<>(indexMap, reverseSparse));
 		}
 		
@@ -440,7 +450,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
+		public boolean replace(int index, T oldValue, @NotNull Supplier<? extends T> newValue) {
 			boolean[] ret = new boolean[1];
 			indexMap.compute(index, (index1, currValue) -> (ret[0] = Objects.equals(remap.apply(currValue), oldValue)) ? reverseSparse.apply(newValue.get()) : currValue);
 			return ret[0];
@@ -454,7 +464,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T compute(int index, ComputeFunction<? super T, ? extends T> function) {
+		public T compute(int index, @NotNull ComputeFunction<? super T, ? extends T> function) {
 			return remap.apply(indexMap.compute(index, (index1, f1) -> {
 				T t1 = remap.apply(f1);
 				T t2 = function.apply(index, t1);
@@ -463,12 +473,12 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public T computeIfAbsent(int index, Supplier<? extends T> supplier) {
+		public T computeIfAbsent(int index, @NotNull Supplier<? extends T> supplier) {
 			return remap.apply(indexMap.computeIfAbsent(index, () -> reverseSparse.apply(supplier.get())));
 		}
 		
 		@Override
-		public T computeIfPresent(int index, Supplier<? extends T> supplier) {
+		public T computeIfPresent(int index, @NotNull Supplier<? extends T> supplier) {
 			return remap.apply(indexMap.computeIfPresent(index, () -> reverseSparse.apply(supplier.get())));
 		}
 		
@@ -477,13 +487,15 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			indexMap.clear();
 		}
 		
+		@NotNull
 		@Override
 		public Collection<IndexMap.Entry<T>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", this.indexMap);
 			tsh.add("remap", this.remap);
@@ -528,7 +540,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean replace(int index, T oldValue, Supplier<? extends T> newValue) {
+		public boolean replace(int index, T oldValue, @NotNull Supplier<? extends T> newValue) {
 			return indexMap.replace(index, reverse.apply(oldValue), () -> reverseSparse.apply(newValue.get()));
 		}
 		
@@ -537,8 +549,9 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return indexMap.remove(index, reverse.apply(value));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", this.indexMap);
 			tsh.add("remap", this.remap);
@@ -547,6 +560,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			return tsh.build();
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.values(), remap, reverse);

@@ -1,5 +1,6 @@
 package space.util.buffer.direct;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -19,8 +20,9 @@ public class SubDirectBuffer extends NotFreeableDirectBuffer {
 		parent = null;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("isFreed", this.storage.isFreed());
 		tsh.add("parent", this.parent);

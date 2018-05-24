@@ -1,5 +1,6 @@
 package space.util.concurrent.task.creator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.typehandler.TypeHandler;
 
@@ -11,13 +12,13 @@ import java.util.concurrent.Executor;
 @FunctionalInterface
 public interface TaskCreator<FUNCTION> {
 	
-	Task create(TypeHandler<FUNCTION> handler);
+	@NotNull Task create(@NotNull TypeHandler<FUNCTION> handler);
 	
-	default Task execute(TypeHandler<FUNCTION> handler) {
+	default @NotNull Task execute(@NotNull TypeHandler<FUNCTION> handler) {
 		return execute(Runnable::run, handler);
 	}
 	
-	default Task execute(Executor executor, TypeHandler<FUNCTION> handler) {
+	default @NotNull Task execute(@NotNull Executor executor, @NotNull TypeHandler<FUNCTION> handler) {
 		Task task = create(handler);
 		task.submit(executor);
 		return task;

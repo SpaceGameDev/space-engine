@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.delegate.map.entry.UnmodifiableEntry;
 import space.util.delegate.set.ConvertingSet;
@@ -31,7 +32,7 @@ public class UnmodifiableMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
+	public void putAll(@NotNull Map<? extends K, ? extends V> m) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -85,16 +86,19 @@ public class UnmodifiableMap<K, V> extends DelegatingMap<K, V> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
 	public Set<K> keySet() {
 		return new UnmodifiableSet<>(map.keySet());
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		return new UnmodifiableCollection<>(map.values());
 	}
 	
+	@NotNull
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		return new ConvertingSet.BiDirectionalUnmodifiable<Entry<K, V>, Entry<K, V>>(map.entrySet(), UnmodifiableEntry::new, entry -> entry instanceof UnmodifiableEntry ? ((UnmodifiableEntry) entry).entry : null);

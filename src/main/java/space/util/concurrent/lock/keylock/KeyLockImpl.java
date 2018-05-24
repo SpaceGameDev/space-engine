@@ -1,5 +1,6 @@
 package space.util.concurrent.lock.keylock;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.awaitable.OneToOneSignalable;
 
 import java.util.concurrent.TimeUnit;
@@ -11,7 +12,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	
 	//lock
 	@Override
-	public synchronized void lock(KEY key) {
+	public synchronized void lock(@NotNull KEY key) {
 		while (!tryLock(key))
 			try {
 				await();
@@ -21,7 +22,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	}
 	
 	@Override
-	public synchronized void lock(KEY key, long time, TimeUnit unit) {
+	public synchronized void lock(@NotNull KEY key, long time, @NotNull TimeUnit unit) {
 		while (!tryLock(key))
 			try {
 				await(time, unit);
@@ -31,19 +32,19 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	}
 	
 	@Override
-	public synchronized void lockInterruptibly(KEY key) throws InterruptedException {
+	public synchronized void lockInterruptibly(@NotNull KEY key) throws InterruptedException {
 		while (!tryLock(key))
 			await();
 	}
 	
 	@Override
-	public synchronized void lockInterruptibly(KEY key, long time, TimeUnit unit) throws InterruptedException {
+	public synchronized void lockInterruptibly(@NotNull KEY key, long time, TimeUnit unit) throws InterruptedException {
 		while (!tryLock(key))
 			await(time, unit);
 	}
 	
 	@Override
-	public synchronized boolean tryLock(KEY key) {
+	public synchronized boolean tryLock(@NotNull KEY key) {
 		if (currentKey == null) {
 			currentKey = key;
 			stackLevel = 1;
@@ -59,7 +60,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	
 	//unlock
 	@Override
-	public synchronized boolean tryUnlock(KEY key) {
+	public synchronized boolean tryUnlock(@NotNull KEY key) {
 		if (currentKey == null || currentKey != key)
 			return false;
 		unlock();
@@ -67,7 +68,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	}
 	
 	@Override
-	public synchronized void unlock(KEY key) {
+	public synchronized void unlock(@NotNull KEY key) {
 		if (currentKey == null)
 			throw new IllegalStateException("Not locked!");
 		if (currentKey != key)
@@ -92,6 +93,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 		return currentKey != null;
 	}
 	
+	@NotNull
 	@Override
 	public synchronized KEY getHolder() {
 		return currentKey;

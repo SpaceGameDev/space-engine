@@ -1,5 +1,6 @@
 package space.util.baseobject;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.String2D;
 
 public interface Dumpable {
@@ -15,5 +16,5 @@ public interface Dumpable {
 		return MAX_DUMP.get();
 	}
 	
-	String2D dump();
+	@NotNull String2D dump();
 }

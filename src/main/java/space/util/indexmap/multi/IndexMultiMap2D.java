@@ -1,5 +1,6 @@
 package space.util.indexmap.multi;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 
 import java.util.AbstractCollection;
@@ -152,6 +153,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		return buf[x];
 	}
 	
+	@NotNull
 	@Override
 	public IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos) {
 		return new Entry(pos);
@@ -248,11 +250,13 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 		buffer[h] = n;
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return new IndexMultiMap.IndexMultiMapTableIteratorToNormalIterator<>(table());
 	}
 	
+	@NotNull
 	@Override
 	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
 		return new Table();
@@ -260,6 +264,7 @@ public class IndexMultiMap2D<VALUE> implements IndexMultiMap<VALUE> {
 	
 	public class Table extends AbstractCollection<IndexMultiMapEntry<VALUE>> {
 		
+		@NotNull
 		@Override
 		public Iterator<IndexMultiMapEntry<VALUE>> iterator() {
 			return new EntryIterator();

@@ -1,5 +1,7 @@
 package space.util.dependency;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.dependency.exception.CircleDependencyException;
 
 import java.util.Comparator;
@@ -59,17 +61,17 @@ public interface Dependency extends Comparable<Dependency> {
 	/**
 	 * a String on which Identification of the Function in possible
 	 */
-	String uuid();
+	@Nullable String uuid();
 	
 	/**
 	 * anything in this array has be executed before this is executed
 	 */
-	String[] requires();
+	@Nullable String[] requires();
 	
 	/**
 	 * anything in this array will be executed after this is executed
 	 */
-	String[] requiredBy();
+	@Nullable String[] requiredBy();
 	
 	/**
 	 * the default priority if no dependency is given
@@ -91,31 +93,35 @@ public interface Dependency extends Comparable<Dependency> {
 	}
 	
 	@Override
-	default int compareTo(Dependency o) {
+	default int compareTo(@NotNull Dependency o) {
 		return COMPARATOR.compare(this, o);
 	}
 	
-	static boolean find(Dependency func, String[] array) {
+	static boolean find(@NotNull Dependency func, @Nullable String[] array) {
 		if (array == null)
 			return false;
 		
+		String uuid = func.uuid();
+		if (uuid == null)
+			return false;
+		
 		for (String str : array) {
-			String uuid = func.uuid();
-			if (uuid != null && ((Dependency.isPartialMatchingPattern(str) && uuid.contains(getPartialMatchingPattern(str))) || uuid.equals(str)))
+			if (str != null && (Dependency.isPartialMatchingPattern(str) && uuid.contains(getPartialMatchingPattern(str)) || uuid.equals(str)))
 				return true;
 		}
 		return false;
 	}
 	
-	static boolean isUuidValid(String uuid) {
+	static boolean isUuidValid(@NotNull String uuid) {
 		return uuid.indexOf(STAR) == -1;
 	}
 	
-	static boolean isPartialMatchingPattern(String str) {
+	static boolean isPartialMatchingPattern(@NotNull String str) {
 		return str.charAt(str.length() - 1) == STAR;
 	}
 	
-	static String getPartialMatchingPattern(String str) {
+	@NotNull
+	static String getPartialMatchingPattern(@NotNull String str) {
 		return str.substring(0, str.length() - 1);
 	}
 }

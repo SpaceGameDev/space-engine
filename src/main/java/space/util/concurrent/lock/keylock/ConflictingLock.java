@@ -1,5 +1,6 @@
 package space.util.concurrent.lock.keylock;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.awaitable.Awaitable;
 import space.util.concurrent.awaitable.LockLikeSignalable;
 import space.util.indexmap.IndexMap;
@@ -149,7 +150,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	
 	//lock
 	@Override
-	public void lock(Key<?> key) {
+	public void lock(@NotNull Key<?> key) {
 		check(key);
 		while (true) {
 			Awaitable await;
@@ -170,7 +171,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	}
 	
 	@Override
-	public void lock(Key<?> key, long time, TimeUnit unit) {
+	public void lock(@NotNull Key<?> key, long time, TimeUnit unit) {
 		check(key);
 		while (true) {
 			Awaitable await;
@@ -191,7 +192,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	}
 	
 	@Override
-	public void lockInterruptibly(Key<?> key) throws InterruptedException {
+	public void lockInterruptibly(@NotNull Key<?> key) throws InterruptedException {
 		check(key);
 		while (true) {
 			Awaitable await;
@@ -207,7 +208,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	}
 	
 	@Override
-	public synchronized void lockInterruptibly(Key<?> key, long time, TimeUnit unit) throws InterruptedException {
+	public synchronized void lockInterruptibly(@NotNull Key<?> key, long time, TimeUnit unit) throws InterruptedException {
 		check(key);
 		while (true) {
 			Awaitable await;
@@ -223,7 +224,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	}
 	
 	@Override
-	public synchronized boolean tryLock(Key<?> key) {
+	public synchronized boolean tryLock(@NotNull Key<?> key) {
 		check(key);
 		Awaitable await;
 		synchronized (this) {
@@ -238,14 +239,14 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 	
 	//unlock
 	@Override
-	public synchronized void unlock(Key<?> key) {
+	public synchronized void unlock(@NotNull Key<?> key) {
 		check(key);
 		internalForceUnlock(key);
 	}
 	
 	//unsupported
 	@Override
-	public synchronized boolean tryUnlock(Key<?> key) {
+	public synchronized boolean tryUnlock(@NotNull Key<?> key) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -255,6 +256,7 @@ public class ConflictingLock implements KeyLock<Key<?>> {
 		throw new UnsupportedOperationException();
 	}
 	
+	@NotNull
 	@Override
 	@Deprecated
 	public Key<?> getHolder() {

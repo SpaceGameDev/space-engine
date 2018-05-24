@@ -1,5 +1,7 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +58,7 @@ public class SupplierMap<K, V> implements Map<K, V> {
 	}
 	
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
+	public void putAll(@NotNull Map<? extends K, ? extends V> m) {
 		map.get().putAll(m);
 	}
 	
@@ -65,16 +67,19 @@ public class SupplierMap<K, V> implements Map<K, V> {
 		map.get().clear();
 	}
 	
+	@NotNull
 	@Override
 	public Set<K> keySet() {
 		return map.get().keySet();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		return map.get().values();
 	}
 	
+	@NotNull
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		return map.get().entrySet();

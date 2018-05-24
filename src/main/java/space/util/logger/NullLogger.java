@@ -1,5 +1,6 @@
 package space.util.logger;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.CharSequence2D;
 
 /**
@@ -13,6 +14,7 @@ public class NullLogger implements Logger {
 	}
 	
 	//subLogger
+	@NotNull
 	@Override
 	public String name() {
 		return "null";
@@ -23,6 +25,7 @@ public class NullLogger implements Logger {
 		return null;
 	}
 	
+	@NotNull
 	@Override
 	public Logger subLogger(String name) {
 		return this;
@@ -30,17 +33,17 @@ public class NullLogger implements Logger {
 	
 	//log
 	@Override
-	public void log(LogLevel level, String str) {
+	public void log(@NotNull LogLevel level, @NotNull String str) {
 	
 	}
 	
 	@Override
-	public void log(LogLevel level, CharSequence2D str) {
+	public void log(@NotNull LogLevel level, @NotNull CharSequence2D str) {
 	
 	}
 	
 	@Override
-	public void logDirect(LogMessage msg) {
+	public void logDirect(@NotNull LogMessage msg) {
 	
 	}
 }

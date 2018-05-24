@@ -1,5 +1,6 @@
 package space.util.key.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
@@ -32,6 +33,7 @@ public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 		this.def = def;
 	}
 	
+	@NotNull
 	@Override
 	public FreeableStorage getStorage() {
 		return storage;
@@ -89,8 +91,9 @@ public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 	}
 	
 	//toString
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("id", storage.getID());
 		return tsh.build();

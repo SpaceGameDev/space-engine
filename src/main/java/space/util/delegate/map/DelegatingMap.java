@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -57,7 +58,7 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 	}
 	
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
+	public void putAll(@NotNull Map<? extends K, ? extends V> m) {
 		map.putAll(m);
 	}
 	
@@ -66,16 +67,19 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 		map.clear();
 	}
 	
+	@NotNull
 	@Override
 	public Set<K> keySet() {
 		return map.keySet();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		return map.values();
 	}
 	
+	@NotNull
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		return map.entrySet();
@@ -136,8 +140,9 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 		return map.merge(key, value, remappingFunction);
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("delegate", map);
 	}
 	

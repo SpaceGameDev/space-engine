@@ -1,5 +1,6 @@
 package space.util.logger;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.chained.ChainedTaskBuilderImpl;
 import space.util.concurrent.task.typehandler.TypeBiConsumer;
 import space.util.concurrent.task.typehandler.TypeHandler;
@@ -32,6 +33,7 @@ public class BaseLogger extends AbstractLogger {
 	}
 	
 	//subLogger
+	@NotNull
 	@Override
 	public String name() {
 		return "root";
@@ -42,6 +44,7 @@ public class BaseLogger extends AbstractLogger {
 		return null;
 	}
 	
+	@NotNull
 	@Override
 	public Logger subLogger(String name) {
 		return new SubLogger(this, name);
@@ -53,7 +56,7 @@ public class BaseLogger extends AbstractLogger {
 		try {
 			handler.execute(new TypeHandler<>() {
 				@Override
-				public void accept(Prefix consumer) {
+				public void accept(@NotNull Prefix consumer) {
 					consumer.accept(msg);
 				}
 				

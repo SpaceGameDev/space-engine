@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap.entry;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMap.Entry;
@@ -48,8 +49,9 @@ public class DelegatingEntry<VALUE> implements Entry<VALUE>, ToString {
 		return (this == obj) || (this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue()));
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		return api.createModifier("delegate", entry);
 	}
 	

@@ -1,5 +1,6 @@
 package space.util.concurrent.lock.rwlock;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.lock.keylock.KeyLock;
 import space.util.concurrent.lock.keylock.KeyLockImpl;
 import space.util.concurrent.lock.simplelock.SimpleLock;
@@ -29,11 +30,13 @@ public class RWLockImpl implements RWLock {
 		this.wLock = wLock;
 	}
 	
+	@NotNull
 	@Override
 	public SimpleLock readLock() {
 		return rLock;
 	}
 	
+	@NotNull
 	@Override
 	public SimpleLock writeLock() {
 		return wLock;

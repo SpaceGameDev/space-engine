@@ -1,5 +1,6 @@
 package space.util.string.builder;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.annotation.Self;
 
@@ -52,6 +53,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 	}
 	
 	//length
+	@NotNull
 	@Override
 	public SELF setLength(int length) {
 		pos = buffer.length - length;
@@ -59,6 +61,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF addLength(int length) {
 		pos -= length;
@@ -66,6 +69,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF reduceLength(int length) {
 		pos += length;
@@ -74,6 +78,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 	}
 	
 	//append
+	@NotNull
 	@Override
 	public SELF append(String str) {
 		int l = str.length();
@@ -84,6 +89,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF append(char[] str) {
 		int l = str.length;
@@ -94,6 +100,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF append(char c) {
 		int start = ensureCapacityBackward(pos - 1);
@@ -103,6 +110,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF fill(int l, char c) {
 		int start = ensureCapacityBackward(pos - l);
@@ -130,11 +138,13 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 		return new String(buffer, start, end - start);
 	}
 	
+	@NotNull
 	@Override
 	public char[] getChars() {
 		return Arrays.copyOfRange(buffer, pos, buffer.length);
 	}
 	
+	@NotNull
 	@Override
 	public String toString() {
 		return new String(buffer, pos, buffer.length - pos);

@@ -1,5 +1,7 @@
 package space.util.logger;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class AbstractLogger implements Logger {
 	
 	public LogLevel minLevel = LogLevel.INFO;
@@ -8,7 +10,7 @@ public abstract class AbstractLogger implements Logger {
 		this.minLevel = minLevel;
 	}
 	
-	public final void logDirect(LogMessage msg) {
+	public final void logDirect(@NotNull LogMessage msg) {
 		if (minLevel.allowLog(msg.level))
 			logDirect0(msg);
 	}

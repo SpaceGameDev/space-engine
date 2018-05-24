@@ -1,5 +1,7 @@
 package space.util.concurrent.lock.simplelock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -10,11 +12,11 @@ public interface SimpleLock {
 	//lock
 	void lock();
 	
-	void lock(long time, TimeUnit unit);
+	void lock(long time, @NotNull TimeUnit unit);
 	
 	void lockInterruptibly() throws InterruptedException;
 	
-	void lockInterruptibly(long time, TimeUnit unit) throws InterruptedException;
+	void lockInterruptibly(long time, @NotNull TimeUnit unit) throws InterruptedException;
 	
 	boolean tryLock();
 	
@@ -33,7 +35,7 @@ public interface SimpleLock {
 	 */
 	boolean isLocked();
 	
-	default void execute(Runnable command) {
+	default void execute(@NotNull Runnable command) {
 		lock();
 		try {
 			command.run();
@@ -42,7 +44,7 @@ public interface SimpleLock {
 		}
 	}
 	
-	default void executeInterruptibly(Runnable command) {
+	default void executeInterruptibly(@NotNull Runnable command) {
 		try {
 			lockInterruptibly();
 			try {

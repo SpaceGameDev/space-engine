@@ -1,5 +1,6 @@
 package space.util.delegate.list;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.delegate.list.listiterator.ModificationAwareListIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -28,6 +29,7 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 		this.onModification = onModification;
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return new ModificationAwareIterator<>(list.iterator(), onModification);
@@ -50,7 +52,7 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		boolean ret = list.addAll(c);
 		if (ret)
 			onModification.run();
@@ -58,7 +60,7 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends E> c) {
 		boolean ret = list.addAll(index, c);
 		if (ret)
 			onModification.run();
@@ -66,13 +68,13 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		onModification.run();
 		return list.removeAll(c);
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		boolean ret = list.retainAll(c);
 		if (ret)
 			onModification.run();
@@ -125,16 +127,19 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 		return ret;
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator() {
 		return new ModificationAwareListIterator<>(list.listIterator(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator(int index) {
 		return new ModificationAwareListIterator<>(list.listIterator(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		return new ModificationAwareList<>(super.subList(fromIndex, toIndex), onModification);
@@ -163,8 +168,9 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 		return list.parallelStream();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);
 		tsh.add("onModification", this.onModification);

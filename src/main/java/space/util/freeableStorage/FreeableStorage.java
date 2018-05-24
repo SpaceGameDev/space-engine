@@ -1,5 +1,6 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 
 /**
@@ -43,9 +44,9 @@ public interface FreeableStorage extends Freeable {
 	 *
 	 * @return a {@link FreeableStorageList} to hook into
 	 */
-	FreeableStorageList getSubList();
+	@NotNull FreeableStorageList getSubList();
 	
-	static FreeableStorageImpl createAnonymous(FreeableStorage... parents) {
+	static @NotNull FreeableStorageImpl createAnonymous(@NotNull FreeableStorage... parents) {
 		return new FreeableStorageImpl(null, parents) {
 			@Override
 			protected void handleFree() {

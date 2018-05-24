@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap.entry;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -20,8 +21,9 @@ public class ModificationAwareEntry<VALUE> extends DelegatingEntry<VALUE> {
 		onModification.run();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("entry", this.entry);
 		tsh.add("onModification", this.onModification);

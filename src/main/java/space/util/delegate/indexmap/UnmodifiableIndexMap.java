@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.delegate.indexmap.entry.UnmodifiableEntry;
@@ -28,6 +29,7 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
 	public Entry<VALUE> getEntry(int index) {
 		return new UnmodifiableEntry<>(indexMap.getEntry(index));
@@ -44,17 +46,17 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public void addAll(Collection<? extends VALUE> coll) {
+	public void addAll(@NotNull Collection<? extends VALUE> coll) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public void putAll(IndexMap<? extends VALUE> indexMap) {
+	public void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -74,12 +76,12 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -89,12 +91,12 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -103,18 +105,21 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return new UnmodifiableCollection<>(super.values());
 	}
 	
+	@NotNull
 	@Override
 	public Collection<Entry<VALUE>> table() {
 		return new ConvertingCollection.BiDirectionalUnmodifiable<>(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("unmodifiable", indexMap);
 	}
 }

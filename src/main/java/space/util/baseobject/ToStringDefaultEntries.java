@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
-public class ToStringDefaultEntries {
+class ToStringDefaultEntries {
 	
 	//constant
 	private static final BiFunction<ToStringHelper<?>, Collection, Object> ENTRY_LIST = (api, list) -> {
@@ -30,13 +30,13 @@ public class ToStringDefaultEntries {
 	};
 	
 	//init
-	public static Void init0() {
+	static Void init0() {
 		init();
 		return null;
 	}
 	
 	@SuppressWarnings({"RedundantCast", "unchecked", "MismatchedQueryAndUpdateOfCollection"})
-	public static void init() {
+	private static void init() {
 		//List
 		ToString.manualEntry(ArrayList.class, ENTRY_LIST);
 		ToString.manualEntry(LinkedList.class, ENTRY_LIST);

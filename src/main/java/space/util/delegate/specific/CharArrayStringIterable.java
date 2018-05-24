@@ -1,5 +1,6 @@
 package space.util.delegate.specific;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -43,6 +44,7 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 		return Arrays.binarySearch(array, o) != 0;
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<String> iterator() {
 		return new Iteratorable<>() {
@@ -61,14 +63,16 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 		};
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return array.clone();
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousSystemArraycopy")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		if (array.getClass().isAssignableFrom(a.getClass()))
 			throw new IllegalArgumentException();
 		System.arraycopy(array, 0, a, 0, array.length);
@@ -86,7 +90,7 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 	}
 	
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		for (Object o : c)
 			if (!contains(o))
 				return false;
@@ -94,17 +98,17 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends String> c) {
+	public boolean addAll(@NotNull Collection<? extends String> c) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -113,8 +117,9 @@ public class CharArrayStringIterable implements ToString, Collection<String> {
 		throw new UnsupportedOperationException();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("array", this.array);
 		return tsh.build();

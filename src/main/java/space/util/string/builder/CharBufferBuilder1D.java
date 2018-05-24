@@ -1,5 +1,6 @@
 package space.util.string.builder;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.annotation.Self;
 
@@ -39,6 +40,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return pos;
 	}
 	
+	@NotNull
 	@Override
 	public SELF setLength(int length) {
 		pos = length;
@@ -47,6 +49,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF addLength(int length) {
 		pos += length;
@@ -54,6 +57,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF reduceLength(int length) {
 		pos -= length;
@@ -61,8 +65,9 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(String str) {
+	public SELF append(@NotNull String str) {
 		int l = str.length();
 		int start = pos;
 		setLength(pos + l);
@@ -71,8 +76,9 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(char[] str) {
+	public SELF append(@NotNull char[] str) {
 		int l = str.length;
 		int start = pos;
 		setLength(pos + l);
@@ -81,6 +87,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF append(char c) {
 		int start = pos;
@@ -90,6 +97,7 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public SELF fill(int l, char c) {
 		int start = pos;
@@ -100,11 +108,13 @@ public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> i
 	}
 	
 	//get result
+	@NotNull
 	@Override
 	public char[] getChars() {
 		return Arrays.copyOfRange(buffer, 0, pos);
 	}
 	
+	@NotNull
 	@Override
 	public String toString() {
 		return new String(buffer, 0, pos);

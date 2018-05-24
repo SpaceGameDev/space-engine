@@ -1,5 +1,6 @@
 package space.util.delegate.specific;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -111,8 +112,9 @@ public class IntList implements ToString {
 		return ret;
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.toString(array, 0, size);
 	}
 	

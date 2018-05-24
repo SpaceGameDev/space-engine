@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.ReferenceCollection;
 import space.util.delegate.util.ReferenceUtil;
 
@@ -22,6 +23,7 @@ public class ReferenceMap<K, V> extends ConvertingMap.BiDirectionalSparse<K, Ref
 		this.reverseSparse = refCreator;
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		return new ReferenceCollection<>(map.values(), reverseSparse);

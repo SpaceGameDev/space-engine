@@ -1,5 +1,6 @@
 package space.util.gui.monofont;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.gui.GuiElement;
 import space.util.string.CharSequence2D;
@@ -29,6 +30,7 @@ public abstract class MonofontGuiElement implements ToString, GuiElement, ToStri
 	//toString
 	public abstract CharSequence2D buildSequence2D();
 	
+	@NotNull
 	@Override
 	public CharSequence2D toString2D() {
 		return buildSequence2D();
@@ -39,8 +41,9 @@ public abstract class MonofontGuiElement implements ToString, GuiElement, ToStri
 		return buildSequence2D().toString();
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		if (api instanceof MonofontGuiApi)
 			//noinspection unchecked
 			return (T) this;

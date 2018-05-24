@@ -1,5 +1,7 @@
 package space.util.concurrent.task.typehandler;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 public class TypeConsumer<T> implements TypeHandler<Consumer<T>> {
@@ -11,7 +13,7 @@ public class TypeConsumer<T> implements TypeHandler<Consumer<T>> {
 	}
 	
 	@Override
-	public void accept(Consumer<T> c) {
+	public void accept(@NotNull Consumer<T> c) {
 		c.accept(obj);
 	}
 }

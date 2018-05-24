@@ -1,5 +1,6 @@
 package space.util.delegate.set;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.DelegatingCollection;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -16,8 +17,9 @@ public class SetCast<E> extends DelegatingCollection<E> implements Set<E> {
 		super(coll);
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("cast(Set)", coll);
 	}
 }

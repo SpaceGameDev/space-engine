@@ -1,5 +1,7 @@
 package space.util.concurrent.event;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An {@link Event} is something you can {@link Event#addHook(Object)} and {@link Event#removeHook(Object)} Hooks,
  * which called when the {@link Event} is triggered. <b>The way it will be triggered is not defined.</b>
@@ -13,7 +15,7 @@ public interface Event<FUNCTION> {
 	 *
 	 * @param hook the Hook to add
 	 */
-	void addHook(FUNCTION hook);
+	void addHook(@NotNull FUNCTION hook);
 	
 	/**
 	 * Removes a Hook.<br>
@@ -21,5 +23,5 @@ public interface Event<FUNCTION> {
 	 *
 	 * @param hook the Hook to be removed
 	 */
-	boolean removeHook(FUNCTION hook);
+	boolean removeHook(@NotNull FUNCTION hook);
 }

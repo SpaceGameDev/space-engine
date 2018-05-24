@@ -1,5 +1,6 @@
 package space.util.concurrent.task.chained;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.event.Event;
 import space.util.concurrent.task.creator.TaskCreator;
 import space.util.dependency.Dependency;
@@ -10,7 +11,7 @@ public interface ChainedTaskBuilder<FUNCTION> extends TaskCreator<FUNCTION>, Eve
 	
 	//addHook
 	@Override
-	void addHook(ChainedTaskEntry<FUNCTION> task);
+	void addHook(@NotNull ChainedTaskEntry<FUNCTION> task);
 	
 	default ChainedTaskEntry<FUNCTION> addHook(Dependency dependency, FUNCTION function) {
 		ChainedTaskEntry<FUNCTION> ret = new ChainedTaskEntry<>(dependency, function);
@@ -44,5 +45,5 @@ public interface ChainedTaskBuilder<FUNCTION> extends TaskCreator<FUNCTION>, Eve
 	
 	//other
 	@Override
-	boolean removeHook(ChainedTaskEntry<FUNCTION> task);
+	boolean removeHook(@NotNull ChainedTaskEntry<FUNCTION> task);
 }

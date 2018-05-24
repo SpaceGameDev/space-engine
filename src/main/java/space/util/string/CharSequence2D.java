@@ -1,5 +1,7 @@
 package space.util.string;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * height: dimension[0]
  * length: dimension[1]
@@ -14,14 +16,16 @@ public interface CharSequence2D extends ToString2D {
 	int maxLength();
 	
 	//get result
-	char[][] getChars();
+	@NotNull char[][] getChars();
 	
 	//toString
+	@NotNull
 	@Override
 	default CharSequence2D toString2D() {
 		return this;
 	}
 	
+	@NotNull
 	default String toString0() {
 		char[][] chars = getChars();
 		

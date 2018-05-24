@@ -1,5 +1,6 @@
 package space.util.delegate.collection;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ConvertingIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -128,8 +129,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		this.coll = coll;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
 		return tsh.build();
@@ -167,11 +169,13 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return false;
 		}
 		
+		@NotNull
 		@Override
 		public Iterator<T> iterator() {
 			return ConvertingIterator.createConverterOneDirectionalUnmodifiable(coll.iterator(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public Object[] toArray() {
 			//noinspection unchecked
@@ -182,9 +186,10 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return ret;
 		}
 		
+		@NotNull
 		@Override
 		@SuppressWarnings("unchecked")
-		public <T1> T1[] toArray(T1[] a) {
+		public <T1> T1[] toArray(@NotNull T1[] a) {
 			F[] org = (F[]) coll.toArray();
 			if (a.length < org.length) {
 				//new instance
@@ -212,7 +217,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			for (F f : coll)
 				if (!c.contains(remap.apply(f)))
 					return false;
@@ -220,12 +225,12 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		public boolean addAll(Collection<? extends T> c) {
+		public boolean addAll(@NotNull Collection<? extends T> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
@@ -235,7 +240,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
@@ -249,8 +254,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			coll.forEach(f -> action.accept(remap.apply(f)));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
@@ -276,12 +282,13 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			return coll.containsAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
@@ -317,12 +324,12 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		}
 		
 		@Override
-		public boolean addAll(Collection<? extends T> c) {
+		public boolean addAll(@NotNull Collection<? extends T> c) {
 			return coll.addAll(new OneDirectionalUnmodifiable<>(c, reverseSparse));
 		}
 		
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			boolean mod = false;
 			Iterator<F> iter = coll.iterator();
 			while (iter.hasNext()) {
@@ -335,13 +342,14 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return mod;
 		}
 		
+		@NotNull
 		@Override
 		public Iterator<T> iterator() {
 			return ConvertingIterator.createConverterOneDirectional(coll.iterator(), remap);
 		}
 		
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			boolean mod = false;
 			Iterator<F> iter = coll.iterator();
 			while (iter.hasNext()) {
@@ -364,8 +372,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return coll.removeIf(f -> filter.test(remap.apply(f)));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
@@ -395,13 +404,13 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			return coll.removeAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			return coll.retainAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
 		}
 		
@@ -411,8 +420,9 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			return coll.contains(reverse.apply((T) o));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("coll", this.coll);
 			tsh.add("remap", this.remap);
@@ -423,7 +433,7 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			return coll.containsAll(new OneDirectionalUnmodifiable<>((Collection<T>) c, reverse));
 		}
 	}

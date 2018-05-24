@@ -1,5 +1,6 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.freeableStorage.FreeableStorageList.Entry;
 
 import java.lang.ref.WeakReference;
@@ -56,6 +57,7 @@ public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements
 	}
 	
 	//children
+	@NotNull
 	@Override
 	public synchronized FreeableStorageList getSubList() {
 		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));

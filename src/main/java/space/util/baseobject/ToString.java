@@ -1,5 +1,6 @@
 package space.util.baseobject;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +53,7 @@ public interface ToString {
 	 * @param api the {@link ToStringHelper} which should be used
 	 * @return the TSH-return-type Object
 	 */
-	<T> T toTSH(ToStringHelper<T> api);
+	@NotNull <T> T toTSH(@NotNull ToStringHelper<T> api);
 	
 	/**
 	 * get the TSH-return-type of a specific object.
@@ -60,6 +61,7 @@ public interface ToString {
 	 *
 	 * @return the TSH-return-type Object
 	 */
+	@NotNull
 	default Object toTSH() {
 		return toTSH(ToStringHelper.getDefault());
 	}

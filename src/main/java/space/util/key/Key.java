@@ -1,5 +1,7 @@
 package space.util.key;
 
+import org.jetbrains.annotations.Nullable;
+
 @FunctionalInterface
 @SuppressWarnings("unused")
 public interface Key<T> {
@@ -12,6 +14,7 @@ public interface Key<T> {
 	/**
 	 * gets the default value of this key. If not overridden, it will return null.
 	 */
+	@Nullable
 	default T getDefaultValue() {
 		return null;
 	}

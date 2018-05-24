@@ -77,4 +77,6 @@ module space.util {
 //	exports space.util.unsafe; //do NOT export
 	
 	requires jdk.unsupported;
+	
+	requires annotations;
 }

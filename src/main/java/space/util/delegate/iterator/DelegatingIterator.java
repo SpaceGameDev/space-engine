@@ -1,5 +1,6 @@
 package space.util.delegate.iterator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -39,8 +40,9 @@ public class DelegatingIterator<E> implements ToString, Iteratorable<E> {
 	}
 	
 	//toString
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("delegate", iter);
 	}
 	

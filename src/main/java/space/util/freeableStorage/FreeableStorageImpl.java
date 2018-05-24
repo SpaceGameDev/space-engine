@@ -1,5 +1,6 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorageList.Entry;
 
@@ -64,6 +65,7 @@ public abstract class FreeableStorageImpl extends PhantomReference<Object> imple
 	}
 	
 	//children
+	@NotNull
 	@Override
 	public synchronized FreeableStorageList getSubList() {
 		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));

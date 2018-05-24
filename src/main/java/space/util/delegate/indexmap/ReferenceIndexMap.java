@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -22,8 +23,9 @@ public class ReferenceIndexMap<VALUE> extends ConvertingIndexMap.BiDirectionalSp
 		this.reverseSparse = refCreator;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("refCreator", this.reverseSparse);

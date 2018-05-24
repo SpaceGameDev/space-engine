@@ -1,5 +1,7 @@
 package space.util.concurrent.task.typehandler;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TypeSingleThreadedOnly<FUNCTION> implements TypeHandler<FUNCTION> {
 	
 	public TypeHandler<FUNCTION> handler;
@@ -9,7 +11,7 @@ public class TypeSingleThreadedOnly<FUNCTION> implements TypeHandler<FUNCTION> {
 	}
 	
 	@Override
-	public void accept(FUNCTION function) {
+	public void accept(@NotNull FUNCTION function) {
 		handler.accept(function);
 	}
 	

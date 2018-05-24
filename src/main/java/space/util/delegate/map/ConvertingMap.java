@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.list.ConvertingList;
@@ -126,8 +127,9 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		this.map = map;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		return tsh.build();
@@ -186,7 +188,7 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		}
 		
 		@Override
-		public void putAll(Map<? extends K, ? extends T> m) {
+		public void putAll(@NotNull Map<? extends K, ? extends T> m) {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
@@ -195,16 +197,19 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			map.clear();
 		}
 		
+		@NotNull
 		@Override
 		public Set<K> keySet() {
 			return new UnmodifiableSet<>(map.keySet());
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.OneDirectionalUnmodifiable<>(map.values(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public Set<Map.Entry<K, T>> entrySet() {
 			return new ConvertingSet.BiDirectionalUnmodifiable<>(map.entrySet(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
@@ -267,8 +272,9 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("map", this.map);
 			tsh.add("remap", this.remap);
@@ -318,8 +324,9 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 				return toString0();
 			}
 			
+			@NotNull
 			@Override
-			public <TSH> TSH toTSH(ToStringHelper<TSH> api) {
+			public <TSH> TSH toTSH(@NotNull ToStringHelper<TSH> api) {
 				ToStringHelperObjectsInstance<TSH> tsh = api.createObjectInstance(this);
 				tsh.add("entry", this.entry);
 				return tsh.build();
@@ -342,13 +349,15 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			return map.containsValue(reverse.apply((T) value));
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectionalUnmodifiable<>(map.values(), remap, reverse);
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("map", this.map);
 			tsh.add("remap", this.remap);
@@ -377,20 +386,23 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		}
 		
 		@Override
-		public void putAll(Map<? extends K, ? extends T> m) {
+		public void putAll(@NotNull Map<? extends K, ? extends T> m) {
 			map.putAll(new ConvertingMap.OneDirectionalUnmodifiable<>(m, reverseSparse));
 		}
 		
+		@NotNull
 		@Override
 		public Set<K> keySet() {
 			return map.keySet();
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectionalSparse<>(map.values(), remap, reverseSparse);
 		}
 		
+		@NotNull
 		@Override
 		public Set<Map.Entry<K, T>> entrySet() {
 			return new ConvertingSet.BiDirectional<Map.Entry<K, F>, Map.Entry<K, T>>(map.entrySet(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((BiDirectionalSparse.Entry) entry).entry : null);
@@ -509,6 +521,7 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 			return map.containsValue(reverse.apply((T) value));
 		}
 		
+		@NotNull
 		@Override
 		public Collection<T> values() {
 			return new ConvertingCollection.BiDirectional<>(map.values(), remap, reverse);

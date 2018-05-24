@@ -1,5 +1,6 @@
 package space.util.primitive;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.SystemInfo;
 import space.util.baseobject.ToString;
 import space.util.math.UnsignedMath;
@@ -66,8 +67,9 @@ public class NativeType implements ToString {
 		return ISALIGNED ? number >>> SHIFT : number / BYTES;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("BYTES", this.BYTES);
 		tsh.add("BITS", this.BITS);

@@ -1,5 +1,6 @@
 package space.util.indexmap.multi;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.UnmodifiableCollection;
 import space.util.indexmap.IndexMap;
@@ -81,6 +82,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 		return indexMap.get(i);
 	}
 	
+	@NotNull
 	@Override
 	public IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos) {
 		int i = getListIndex(pos);
@@ -124,11 +126,13 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	//values
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return modifiable ? indexMap.values() : new UnmodifiableCollection<>(indexMap.values());
 	}
 	
+	@NotNull
 	@Override
 	public Collection<IndexMultiMapEntry<VALUE>> table(int[] pos) {
 		if (pos.length <= relativePos.length) {

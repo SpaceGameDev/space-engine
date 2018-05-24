@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Cache;
 import space.util.delegate.util.CacheUtil;
 import space.util.indexmap.IndexMap;
@@ -58,7 +59,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		boolean[] chg = new boolean[1];
 		super.computeIfAbsent(index, () -> {
 			chg[0] = true;
@@ -79,14 +80,16 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 		return chg[0] || super.remove(index, value);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("def", this.def);
 		return tsh.build();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		if (allowIterateOverExisting)
@@ -112,7 +115,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public VALUE[] toArray(VALUE[] a) {
+	public VALUE[] toArray(@NotNull VALUE[] a) {
 		if (allowIterateOverExisting)
 			return super.toArray(a);
 		throw new UnsupportedOperationException("Cache iteration not allowed!");
@@ -124,6 +127,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 		return value == null ? def : value;
 	}
 	
+	@NotNull
 	@Override
 	public IndexMap.Entry<VALUE> getEntry(int index) {
 		super.computeIfAbsent(index, () -> this.def.apply(index));
@@ -131,7 +135,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		indexMap.table().forEach(entry -> super.computeIfAbsent(entry.getIndex(), () -> {
 			VALUE defValue = def.apply(entry.getIndex());
 			return defValue != null ? defValue : entry.getValue();
@@ -147,7 +151,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		return super.computeIfAbsent(index, () -> {
 			VALUE defValue = def.apply(index);
 			return defValue != null ? defValue : supplier.get();
@@ -155,7 +159,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	}
 	
 	@Override
-	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		return super.compute(index, (index1, value) -> {
 			if (value == null)
 				value = def.apply(index1);
@@ -163,6 +167,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 		});
 	}
 	
+	@NotNull
 	@Override
 	public Collection<IndexMap.Entry<VALUE>> table() {
 		if (allowIterateOverExisting)

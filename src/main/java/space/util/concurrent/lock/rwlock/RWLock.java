@@ -1,5 +1,6 @@
 package space.util.concurrent.lock.rwlock;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.lock.simplelock.SimpleLock;
 
 /**
@@ -7,7 +8,7 @@ import space.util.concurrent.lock.simplelock.SimpleLock;
  */
 public interface RWLock {
 	
-	SimpleLock readLock();
+	@NotNull SimpleLock readLock();
 	
-	SimpleLock writeLock();
+	@NotNull SimpleLock writeLock();
 }

@@ -1,5 +1,6 @@
 package space.util.concurrent.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.Task;
 
 import java.util.concurrent.CancellationException;
@@ -63,10 +64,11 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 	}
 	
 	@Override
-	public void submit(Executor executor) {
+	public void submit(@NotNull Executor executor) {
 		executor.execute(this);
 	}
 	
+	@NotNull
 	@Override
 	public Throwable getException() {
 		return exception;

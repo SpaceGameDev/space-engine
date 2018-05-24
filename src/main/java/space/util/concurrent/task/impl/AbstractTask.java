@@ -1,5 +1,6 @@
 package space.util.concurrent.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
 
@@ -74,7 +75,7 @@ public abstract class AbstractTask implements Task {
 	protected abstract void cancel0(boolean mayInterrupt);
 	
 	//event
-	public synchronized void addHook(Consumer<Task> func) {
+	public synchronized void addHook(@NotNull Consumer<Task> func) {
 		if (hooksRan) {
 			func.accept(this);
 			return;
@@ -86,7 +87,7 @@ public abstract class AbstractTask implements Task {
 	}
 	
 	@Override
-	public synchronized boolean removeHook(Consumer<Task> hook) {
+	public synchronized boolean removeHook(@NotNull Consumer<Task> hook) {
 		return events != null && events.remove(hook);
 	}
 	
@@ -128,6 +129,7 @@ public abstract class AbstractTask implements Task {
 		return result != null;
 	}
 	
+	@NotNull
 	@Override
 	public TaskResult getResult() {
 		return result;

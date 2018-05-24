@@ -1,5 +1,6 @@
 package space.util.delegate.collection;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.ModificationAwareIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -42,19 +43,22 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		return coll.contains(o);
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return new ModificationAwareIterator<>(coll.iterator(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return coll.toArray();
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousToArrayCall")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return coll.toArray(a);
 	}
 	
@@ -76,12 +80,12 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return coll.containsAll(c);
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		boolean ret = coll.addAll(c);
 		if (ret)
 			onModification.run();
@@ -89,7 +93,7 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		boolean ret = coll.removeAll(c);
 		if (ret)
 			onModification.run();
@@ -105,7 +109,7 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		boolean ret = coll.retainAll(c);
 		if (ret)
 			onModification.run();
@@ -138,8 +142,9 @@ public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 		coll.forEach(action);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
 		tsh.add("onModification", this.onModification);

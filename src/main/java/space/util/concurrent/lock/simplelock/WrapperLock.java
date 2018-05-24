@@ -1,5 +1,6 @@
 package space.util.concurrent.lock.simplelock;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.lock.keylock.KeyLockImpl;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ public class WrapperLock<KEY> implements SimpleLock {
 	}
 	
 	@Override
-	public void lock(long time, TimeUnit unit) {
+	public void lock(long time, @NotNull TimeUnit unit) {
 		lock.lock(key.get(), time, unit);
 	}
 	
@@ -38,7 +39,7 @@ public class WrapperLock<KEY> implements SimpleLock {
 	}
 	
 	@Override
-	public void lockInterruptibly(long time, TimeUnit unit) throws InterruptedException {
+	public void lockInterruptibly(long time, @NotNull TimeUnit unit) throws InterruptedException {
 		lock.lockInterruptibly(key.get(), time, unit);
 	}
 	

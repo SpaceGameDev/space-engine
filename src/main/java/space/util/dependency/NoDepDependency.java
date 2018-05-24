@@ -1,5 +1,6 @@
 package space.util.dependency;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
 import space.util.baseobject.exceptions.InvalidSetException;
@@ -43,7 +44,7 @@ public class NoDepDependency implements Setable, ToString, Dependency {
 	}
 	
 	@Override
-	public void set(Object obj) throws InvalidSetException {
+	public void set(@NotNull Object obj) throws InvalidSetException {
 		if (!(obj instanceof Dependency))
 			throw new InvalidSetException(obj.getClass());
 		
@@ -56,8 +57,9 @@ public class NoDepDependency implements Setable, ToString, Dependency {
 		return uuid.hashCode();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("uuid", this.uuid);
 		return tsh.build();

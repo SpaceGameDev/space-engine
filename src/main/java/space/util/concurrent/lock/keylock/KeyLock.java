@@ -1,5 +1,7 @@
 package space.util.concurrent.lock.keylock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -8,23 +10,23 @@ import java.util.concurrent.TimeUnit;
 public interface KeyLock<KEY> {
 	
 	//lock
-	void lock(KEY key);
+	void lock(@NotNull KEY key);
 	
-	void lock(KEY key, long time, TimeUnit unit);
+	void lock(@NotNull KEY key, long time, TimeUnit unit);
 	
-	void lockInterruptibly(KEY key) throws InterruptedException;
+	void lockInterruptibly(@NotNull KEY key) throws InterruptedException;
 	
-	void lockInterruptibly(KEY key, long time, TimeUnit unit) throws InterruptedException;
+	void lockInterruptibly(@NotNull KEY key, long time, TimeUnit unit) throws InterruptedException;
 	
-	boolean tryLock(KEY key);
+	boolean tryLock(@NotNull KEY key);
 	
 	//unlock
-	void unlock(KEY key);
+	void unlock(@NotNull KEY key);
 	
 	/**
 	 * may be an {@link UnsupportedOperationException}
 	 */
-	boolean tryUnlock(KEY key);
+	boolean tryUnlock(@NotNull KEY key);
 	
 	//getter
 	
@@ -36,9 +38,9 @@ public interface KeyLock<KEY> {
 	/**
 	 * may be an {@link UnsupportedOperationException}
 	 */
-	KEY getHolder();
+	@NotNull KEY getHolder();
 	
-	default void execute(KEY key, Runnable command) {
+	default void execute(@NotNull KEY key, Runnable command) {
 		lock(key);
 		try {
 			command.run();
@@ -47,7 +49,7 @@ public interface KeyLock<KEY> {
 		}
 	}
 	
-	default void executeInterruptibly(KEY key, Runnable command) {
+	default void executeInterruptibly(@NotNull KEY key, Runnable command) {
 		try {
 			lockInterruptibly(key);
 			try {

@@ -1,5 +1,6 @@
 package space.util.buffer.direct;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Dumpable;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
@@ -35,6 +36,7 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 		this.storage = new Storage(this, address, capacity, parents);
 	}
 	
+	@NotNull
 	@Override
 	public FreeableStorage getStorage() {
 		return storage;
@@ -67,8 +69,9 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 			return capacity;
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("isFreed", this.isFreed());
 			tsh.add("address", this.address);
@@ -100,6 +103,7 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 	}
 	
 	//Dumpable
+	@NotNull
 	@Override
 	public String2D dump() {
 		if (storage.capacity() > Dumpable.getMaxDump())
@@ -369,8 +373,9 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 		UNSAFE.copyMemory(src.address() + srcPos, storage.address() + offset, length);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("isFreed", this.storage.isFreed());
 		tsh.add("address", this.storage.address);

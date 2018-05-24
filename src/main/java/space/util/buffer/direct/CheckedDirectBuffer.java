@@ -1,5 +1,6 @@
 package space.util.buffer.direct;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.buffer.exception.BufferAddressNullException;
 import space.util.buffer.exception.BufferOutOfBoundsException;
 import space.util.freeableStorage.FreeableStorage;
@@ -38,6 +39,7 @@ public class CheckedDirectBuffer implements DirectBuffer {
 	}
 	
 	//delegates
+	@NotNull
 	@Override
 	public FreeableStorage getStorage() {
 		return buffer.getStorage();
@@ -58,6 +60,7 @@ public class CheckedDirectBuffer implements DirectBuffer {
 		buffer.clear();
 	}
 	
+	@NotNull
 	@Override
 	public String2D dump() {
 		return buffer.dump();

@@ -1,5 +1,8 @@
 package space.util.key.attribute;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.event.Event;
 import space.util.key.Key;
 import space.util.key.KeyGenerator;
@@ -26,21 +29,23 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	/**
 	 * creates a new {@link IAttributeList IAttributeList}
 	 */
-	IAttributeList<TYPE> create();
+	@NotNull IAttributeList<TYPE> create();
 	
 	/**
 	 * creates a new {@link IAttributeListModification IAttributeListModification}
 	 */
-	IAttributeListModification<TYPE> createModify();
+	@NotNull IAttributeListModification<TYPE> createModify();
 	
+	@NotNull
 	@Override
 	<T> Key<T> generateKey();
 	
+	@NotNull
 	@Override
 	<T> Key<T> generateKey(Supplier<T> defaultValue);
 	
 	@Override
-	boolean isKeyOf(Key<?> key);
+	boolean isKeyOf(@NotNull Key<?> key);
 	
 	//abstract version
 	interface IAbstractAttributeList<TYPE> {
@@ -56,13 +61,13 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * <li>an actual value Object of type V</li>
 		 * </ul>
 		 */
-		<V> Object getDirect(Key<V> key);
+		@Nullable <V> Object getDirect(@NotNull Key<V> key);
 		
-		default <V> boolean isDefault(Key<V> key) {
+		default <V> boolean isDefault(@NotNull Key<V> key) {
 			return getDirect(key) == DEFAULT;
 		}
 		
-		default <V> boolean isNotDefault(Key<V> key) {
+		default <V> boolean isNotDefault(@NotNull Key<V> key) {
 			return getDirect(key) != DEFAULT;
 		}
 		
@@ -76,12 +81,13 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * gets the {@link AttributeListCreator} of this AttributeList
 		 */
-		AttributeListCreator<TYPE> getCreator();
+		@NotNull AttributeListCreator<TYPE> getCreator();
 		
 		/**
 		 * creates a new {@link IAttributeListModification IAttributeListModification}.
 		 * Calls <code>this.{@link IAbstractAttributeList#getCreator()}.{@link AttributeListCreator#createModify()}</code> by default.
 		 */
+		@NotNull
 		default IAttributeListModification<TYPE> createModify() {
 			return getCreator().createModify();
 		}
@@ -89,20 +95,20 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * gets an {@link java.util.Iterator} over all values
 		 */
-		Collection<?> values();
+		@NotNull Collection<?> values();
 		
 		/**
 		 * gets an {@link java.util.Iterator} over all index / value pairs
 		 */
-		Collection<? extends AbstractEntry<?>> table();
+		@NotNull Collection<? extends AbstractEntry<?>> table();
 	}
 	
 	interface AbstractEntry<V> {
 		
-		Key<V> getKey();
+		@NotNull Key<V> getKey();
 		
 		//value
-		Object getValueDirect();
+		@Nullable Object getValueDirect();
 	}
 	
 	//list itself
@@ -122,11 +128,12 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * Gets the value for a given {@link Key} or the default value if the value is equal to {@link IAttributeList#DEFAULT}
 		 */
-		<V> V get(Key<V> key);
+		@NotNull <V> V get(Key<V> key);
 		
 		/**
 		 * Gets the value for a given {@link Key} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT}
 		 */
+		@Contract("_, null -> null;_, !null -> !null")
 		<V> V getOrDefault(Key<V> key, V def);
 		
 		//other
@@ -135,7 +142,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * Gets the {@link Event} to use {@link Event#addHook(Object)} to add Hooks.
 		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
 		 */
-		Event<Consumer<ChangeEvent<?>>> getChangeEvent();
+		@NotNull Event<Consumer<ChangeEvent<?>>> getChangeEvent();
 		
 		/**
 		 * Applies a certain modification.<br>
@@ -147,15 +154,15 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * <li>apply the changes to this object</li>
 		 * </ul>
 		 */
-		void apply(IAttributeListModification<TYPE> mod);
+		void apply(@NotNull IAttributeListModification<TYPE> mod);
 		
 		@Override
-		Collection<? extends ListEntry<?>> table();
+		@NotNull Collection<? extends ListEntry<?>> table();
 	}
 	
 	interface ListEntry<V> extends AbstractEntry<V> {
 		
-		V getValue();
+		@Nullable V getValue();
 	}
 	
 	//modification
@@ -176,17 +183,17 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * sets the value to v for a given {@link Key}
 		 */
-		<V> void put(Key<V> key, V v);
+		<V> void put(Key<V> key, @Nullable V v);
 		
 		/**
 		 * sets the value to v for a given {@link Key}, directly so you can use {@link IAttributeList#UNCHANGED} or {@link IAttributeList#DEFAULT}
 		 */
-		<V> void putDirect(Key<V> key, Object v);
+		<V> void putDirect(Key<V> key, @Nullable Object v);
 		
 		/**
 		 * sets the value for a given {@link Key} and returns the previous value
 		 */
-		<V> V putAndGet(Key<V> key, V v);
+		<V> V putAndGet(Key<V> key, @Nullable V v);
 		
 		/**
 		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key}
@@ -196,7 +203,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key} if the current value is equal to v
 		 */
-		<V> boolean reset(Key<V> key, V v);
+		<V> boolean reset(Key<V> key, @Nullable V v);
 		
 		/**
 		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key}
@@ -206,22 +213,22 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key} if the current value is equal to v
 		 */
-		<V> boolean setDefault(Key<V> key, V v);
+		<V> boolean setDefault(Key<V> key, @Nullable V v);
 		
 		/**
 		 * sets the value for a given {@link Key} if the current value is equal to the old value
 		 */
-		<V> boolean replace(Key<V> key, V oldValue, V newValue);
+		<V> boolean replace(Key<V> key, @Nullable V oldValue, @Nullable V newValue);
 		
 		/**
 		 * sets the value for a given {@link Key} if the current value is equal to the old value
 		 */
-		<V> boolean replace(Key<V> key, V oldValue, Supplier<? extends V> newValue);
+		<V> boolean replace(Key<V> key, @Nullable V oldValue, @NotNull Supplier<? extends V> newValue);
 		
 		/**
 		 * copies from either an {@link IAttributeList} or {@link IAttributeListModification} all the {@link Key IKeys} over
 		 */
-		void copyOver(IAbstractAttributeList list, Key<?>... keys);
+		void copyOver(@NotNull IAbstractAttributeList list, @NotNull Key<?>... keys);
 		
 		//other
 		
@@ -230,17 +237,18 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 */
 		void clear();
 		
-		IAttributeList<TYPE> createNewList();
+		@NotNull IAttributeList<TYPE> createNewList();
 		
+		@NotNull
 		@Override
 		Collection<? extends ListModificationEntry<?>> table();
 	}
 	
 	interface ListModificationEntry<V> extends AbstractEntry<V> {
 		
-		void put(V v);
+		void put(@Nullable V v);
 		
-		void putDirect(Object v);
+		void putDirect(@Nullable Object v);
 		
 		void setDefault();
 		
@@ -264,12 +272,11 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	 */
 	interface ChangeEvent<TYPE> {
 		
-		//get lists
-		IAttributeList<TYPE> getOldList();
+		@NotNull IAttributeList<TYPE> getOldList();
 		
-		IAttributeListModification<TYPE> getMod();
+		@NotNull IAttributeListModification<TYPE> getMod();
 		
-		<V> ChangeEventEntry<V> getEntry(Key<V> key);
+		@NotNull <V> ChangeEventEntry<V> getEntry(@NotNull Key<V> key);
 	}
 	
 	/**
@@ -281,20 +288,20 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	interface ChangeEventEntry<V> {
 		
 		//get
-		Key<V> getKey();
+		@NotNull Key<V> getKey();
 		
-		Object getOldDirect();
+		@Nullable Object getOldDirect();
 		
-		V getOld();
+		@Nullable V getOld();
 		
-		Object getMod();
+		@Nullable Object getMod();
 		
-		Object getNewDirect();
+		@Nullable Object getNewDirect();
 		
-		V getNew();
+		@Nullable V getNew();
 		
 		//set
-		void setMod(Object newmod);
+		void setMod(@Nullable Object newmod);
 		
 		default boolean isUnchanged() {
 			return getNewDirect() == UNCHANGED;

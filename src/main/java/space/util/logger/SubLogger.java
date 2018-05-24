@@ -1,5 +1,7 @@
 package space.util.logger;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SubLogger extends AbstractLogger {
 	
 	public AbstractLogger parent;
@@ -11,6 +13,7 @@ public class SubLogger extends AbstractLogger {
 	}
 	
 	//subLogger
+	@NotNull
 	@Override
 	public String name() {
 		return name;
@@ -21,6 +24,7 @@ public class SubLogger extends AbstractLogger {
 		return parent;
 	}
 	
+	@NotNull
 	@Override
 	public Logger subLogger(String name) {
 		return new SubLogger(this, name);

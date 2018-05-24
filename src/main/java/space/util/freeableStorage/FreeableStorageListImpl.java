@@ -1,5 +1,6 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -45,8 +46,9 @@ public abstract class FreeableStorageListImpl implements Freeable {
 			next = this;
 		}
 		
+		@NotNull
 		@Override
-		public FreeableStorageListEntry insert(FreeableStorage storage) {
+		public FreeableStorageListEntry insert(@NotNull FreeableStorage storage) {
 			return new FreeableStorageListEntry(storage);
 		}
 		
@@ -68,8 +70,9 @@ public abstract class FreeableStorageListImpl implements Freeable {
 			}
 		}
 		
+		@NotNull
 		@Override
-		public <T> T toTSH(ToStringHelper<T> api) {
+		public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 			int size = 0;
 			FreeableStorageListImpl next = this;
 			while ((next = next.next) != this)

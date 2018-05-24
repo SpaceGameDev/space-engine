@@ -1,5 +1,6 @@
 package space.util.buffer.array;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.annotation.Self;
 import space.util.buffer.Buffer;
 import space.util.buffer.direct.DirectBuffer;
@@ -61,11 +62,13 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 		buffer.clear();
 	}
 	
+	@NotNull
 	@Override
 	public String2D dump() {
 		return buffer.dump();
 	}
 	
+	@NotNull
 	@Override
 	public FreeableStorage getStorage() {
 		return buffer.getStorage();

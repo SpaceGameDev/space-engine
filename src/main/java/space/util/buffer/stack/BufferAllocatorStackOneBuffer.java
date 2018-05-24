@@ -1,5 +1,6 @@
 package space.util.buffer.stack;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.baseobject.Dumpable;
 import space.util.baseobject.ToString;
@@ -109,12 +110,14 @@ public class BufferAllocatorStackOneBuffer implements BufferAllocatorStack, ToSt
 	}
 	
 	//dump
+	@NotNull
 	public String2D dump() {
 		return buffer.dump();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
 		tsh.add("storage", this.storage);

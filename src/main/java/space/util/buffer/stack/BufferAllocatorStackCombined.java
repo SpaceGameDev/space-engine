@@ -1,5 +1,6 @@
 package space.util.buffer.stack;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.buffer.alloc.BufferAllocator;
 import space.util.buffer.direct.DirectBuffer;
@@ -93,8 +94,9 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
 		tsh.add("oneBuffer", this.oneBuffer);

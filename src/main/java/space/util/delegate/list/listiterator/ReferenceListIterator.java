@@ -1,5 +1,6 @@
 package space.util.delegate.list.listiterator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.util.ReferenceUtil;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -22,8 +23,9 @@ public class ReferenceListIterator<E> extends ConvertingListIterator.BiDirection
 		this.reverse = refCreator;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("listIterator", this.listIterator);
 		tsh.add("refCreator", this.reverse);

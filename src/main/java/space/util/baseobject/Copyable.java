@@ -1,6 +1,8 @@
 package space.util.baseobject;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Copyable {
 	
-	Object copy();
+	@NotNull Object copy();
 }

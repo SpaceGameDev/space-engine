@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.collection.ModificationAwareCollection;
 import space.util.delegate.indexmap.entry.ModificationAwareEntry;
@@ -43,21 +44,21 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public void addAll(Collection<? extends VALUE> coll) {
+	public void addAll(@NotNull Collection<? extends VALUE> coll) {
 		super.addAll(coll);
 		if (!coll.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
-	public void putAll(IndexMap<? extends VALUE> indexMap) {
+	public void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		super.putAll(indexMap);
 		if (!indexMap.isEmpty())
 			onModification.run();
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
 		if (!indexMap.isEmpty())
 			onModification.run();
@@ -88,14 +89,14 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		VALUE ret = super.compute(index, function);
 		onModification.run();
 		return ret;
 	}
 	
 	@Override
-	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		boolean[] mod = new boolean[1];
 		VALUE ret = super.computeIfAbsent(index, () -> {
 			mod[0] = true;
@@ -115,7 +116,7 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		boolean ret = super.replace(index, oldValue, newValue);
 		if (ret)
 			onModification.run();
@@ -123,7 +124,7 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		boolean[] mod = new boolean[1];
 		VALUE ret = super.computeIfAbsent(index, () -> {
 			mod[0] = true;
@@ -140,23 +141,27 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 		onModification.run();
 	}
 	
+	@NotNull
 	@Override
 	public Entry<VALUE> getEntry(int index) {
 		return new ModificationAwareEntry<>(super.getEntry(index), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return new ModificationAwareCollection<>(super.values(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public Collection<Entry<VALUE>> table() {
 		return new ModificationAwareCollection<>(new ConvertingCollection.BiDirectional<>(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<VALUE>) modEntry).entry : null), onModification);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", this.indexMap);
 		tsh.add("onModification", this.onModification);

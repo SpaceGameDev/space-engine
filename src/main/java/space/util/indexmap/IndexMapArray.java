@@ -1,5 +1,6 @@
 package space.util.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
@@ -84,6 +85,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		return array[index];
 	}
 	
+	@NotNull
 	@Override
 	public IndexMap.Entry<VALUE> getEntry(int index) {
 		return new Entry(index);
@@ -116,7 +118,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE[] toArray(VALUE[] array) {
+	public VALUE[] toArray(@NotNull VALUE[] array) {
 		if (array.length < length)
 			array = (VALUE[]) new Object[length];
 		System.arraycopy(this.array, 0, array, 0, length);
@@ -125,19 +127,19 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	//addAll
 	@Override
-	public void addAll(Collection<? extends VALUE> coll) {
+	public void addAll(@NotNull Collection<? extends VALUE> coll) {
 		ensureCapacity(length + coll.size());
 		IndexMap.super.addAll(coll);
 	}
 	
 	@Override
-	public void putAll(IndexMap<? extends VALUE> indexMap) {
+	public void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		ensureCapacity(indexMap.size());
 		IndexMap.super.putAll(indexMap);
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		ensureCapacity(indexMap.size());
 		IndexMap.super.putAllIfAbsent(indexMap);
 	}
@@ -185,7 +187,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
@@ -210,12 +212,12 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	//compute
 	@Override
-	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		return putAndExpand(index, function.apply(index, get(index)));
 	}
 	
 	@Override
-	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		VALUE curr = get(index);
 		if (curr != null)
 			return curr;
@@ -226,7 +228,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		if (get(index) == null)
 			return null;
 		
@@ -241,9 +243,11 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		Arrays.fill(array, 0, length, getDefault());
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return new AbstractCollection<>() {
+			@NotNull
 			@Override
 			public Iterator<VALUE> iterator() {
 				return new Iteratorable<>() {
@@ -273,9 +277,11 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		};
 	}
 	
+	@NotNull
 	@Override
 	public Collection<IndexMap.Entry<VALUE>> table() {
 		return new AbstractCollection<>() {
+			@NotNull
 			@Override
 			public Iterator<IndexMap.Entry<VALUE>> iterator() {
 				return new Iteratorable<>() {
@@ -311,8 +317,9 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		};
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.toString(array, 0, length);
 	}
 	

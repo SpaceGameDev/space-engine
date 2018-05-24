@@ -1,5 +1,6 @@
 package space.util.string.toStringHelper;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMapArray;
 import space.util.indexmap.multi.IndexMultiMap;
@@ -17,15 +18,16 @@ import java.util.function.Supplier;
  */
 public interface ToStringHelper<T> {
 	
+	@NotNull
 	static ToStringHelper<?> getDefault() {
 		return ToStringHelperGetter.DEFAULT.get();
 	}
 	
-	static void setDefault(Supplier<ToStringHelper<?>> tsh) {
+	static void setDefault(@NotNull Supplier<ToStringHelper<?>> tsh) {
 		ToStringHelperGetter.DEFAULT = tsh;
 	}
 	
-	static void setDefault(ToStringHelper<?> tsh) {
+	static void setDefault(@NotNull ToStringHelper<?> tsh) {
 		ToStringHelperGetter.DEFAULT = () -> tsh;
 	}
 	

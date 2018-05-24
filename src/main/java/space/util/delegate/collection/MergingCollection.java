@@ -1,5 +1,6 @@
 package space.util.delegate.collection;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.MergingIterator;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -68,19 +69,22 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 		return false;
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return MergingIterator.fromIterable(collections);
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return toArray(new Object[size()]);
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousSystemArraycopy")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		int pos = 0;
 		for (Collection<E> e : collections) {
 			Object[] o = e.toArray();
@@ -108,7 +112,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	
 	//all
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		for (Collection<E> e : collections)
 			if (!e.containsAll(c))
 				return false;
@@ -116,14 +120,14 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		if (addColl == null)
 			throw new UnsupportedOperationException();
 		return addColl.addAll(c);
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		boolean ret = false;
 		for (Collection<E> e : collections)
 			if (e.removeAll(c))
@@ -132,7 +136,7 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		boolean ret = false;
 		for (Collection<E> e : collections)
 			if (e.retainAll(c))
@@ -147,8 +151,9 @@ public class MergingCollection<E> implements ToString, Collection<E> {
 			e.clear();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("addColl", this.addColl);
 		tsh.add("collections", this.collections);

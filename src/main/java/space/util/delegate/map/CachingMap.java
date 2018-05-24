@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Cache;
 import space.util.delegate.util.CacheUtil;
 
@@ -63,6 +64,7 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 		return ret == null ? defaultValue : ret;
 	}
 	
+	@NotNull
 	@Override
 	public Set<K> keySet() {
 		if (allowIterateOverExisting)
@@ -70,6 +72,7 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	
+	@NotNull
 	@Override
 	public Set<Map.Entry<K, V>> entrySet() {
 		if (allowIterateOverExisting)
@@ -134,6 +137,7 @@ public class CachingMap<K, V> extends ConvertingMap.BiDirectional<K, V, V> imple
 		});
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		if (allowIterateOverExisting)

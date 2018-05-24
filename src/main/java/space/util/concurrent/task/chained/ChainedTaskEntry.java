@@ -1,5 +1,6 @@
 package space.util.concurrent.task.chained;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.dependency.Dependency;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -20,12 +21,13 @@ public class ChainedTaskEntry<FUNCTION> implements ToString, Comparable<ChainedT
 	}
 	
 	@Override
-	public int compareTo(ChainedTaskEntry<FUNCTION> o) {
+	public int compareTo(@NotNull ChainedTaskEntry<FUNCTION> o) {
 		return COMPARATOR.compare(this, o);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("dependency", this.dependency);
 		tsh.add("function", this.function);

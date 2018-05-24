@@ -1,5 +1,6 @@
 package space.util.key.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.indexmap.ReferenceIndexMap;
 import space.util.delegate.specific.IntList;
@@ -26,11 +27,13 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	}
 	
 	//generate
+	@NotNull
 	@Override
 	public synchronized <T> DisposableKey<T> generateKey() {
 		return generateKey(() -> null);
 	}
 	
+	@NotNull
 	@Override
 	public synchronized <T> DisposableKey<T> generateKey(Supplier<T> def) {
 		DisposableKey<T> key = new DisposableKey<>(disposed != null && !disposed.isEmpty() ? disposed.poll() : counter++, this, def);
@@ -49,6 +52,7 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 		return key instanceof DisposableKey && ((DisposableKey) key).storage.gen == this;
 	}
 	
+	@NotNull
 	@Override
 	public Collection<Key<?>> getKeys() {
 		return allKeys.values();
@@ -62,8 +66,9 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	}
 	
 	//toString
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("counter", this.counter);
 		tsh.add("disposed", this.disposed == null ? "disabled" : Integer.toString(this.disposed.size()) + " Entries");

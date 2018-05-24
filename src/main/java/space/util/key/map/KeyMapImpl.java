@@ -1,5 +1,6 @@
 package space.util.key.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.indexmap.IndexMap;
@@ -78,7 +79,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE putIfAbsent(Key<?> key, Supplier<? extends VALUE> v) {
+	public VALUE putIfAbsent(Key<?> key, @NotNull Supplier<? extends VALUE> v) {
 		check(key);
 		return map.computeIfAbsent(key.getID(), v);
 	}
@@ -90,7 +91,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean replace(Key<?> key, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(Key<?> key, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);
 	}
@@ -111,18 +112,21 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 		map.clear();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return map.values();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<? extends Entry> table() {
 		return new ConvertingCollection.BiDirectional<>(map.table(), EntryImpl::new, entry -> map.getEntry(entry.getKey().getID()));
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		tsh.add("gen", this.gen);
@@ -142,6 +146,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 			this.entry = entry;
 		}
 		
+		@NotNull
 		@Override
 		public Key<?> getKey() {
 			return gen.getKey(entry.getIndex());
@@ -155,10 +160,12 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	
 	public static class KeyMapImplWithGenerator<VALUE> extends KeyMapImpl<VALUE> implements KeyGenerator {
 		
+		@NotNull
 		public <T> Key<T> generateKey() {
 			return gen.generateKey();
 		}
 		
+		@NotNull
 		public <T> Key<T> generateKey(Supplier<T> def) {
 			return gen.generateKey(def);
 		}
@@ -172,6 +179,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 			return gen.isKeyOf(key);
 		}
 		
+		@NotNull
 		public Collection<Key<?>> getKeys() {
 			return gen.getKeys();
 		}

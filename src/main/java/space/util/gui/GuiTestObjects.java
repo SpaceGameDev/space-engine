@@ -1,5 +1,6 @@
 package space.util.gui;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.String2D;
@@ -25,8 +26,9 @@ public class GuiTestObjects {
 			this.name2D = name2D;
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("name", this.name);
 			tsh.add("name2D", this.name2D);

@@ -1,5 +1,6 @@
 package space.util.concurrent.task.chained;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Cache;
 import space.util.baseobject.ToString;
 import space.util.concurrent.task.Task;
@@ -77,18 +78,19 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	
 	//hooks
 	@Override
-	public void addHook(ChainedTaskEntry<FUNCTION> task) {
+	public void addHook(@NotNull ChainedTaskEntry<FUNCTION> task) {
 		list.add(task);
 	}
 	
 	@Override
-	public boolean removeHook(ChainedTaskEntry<FUNCTION> task) {
+	public boolean removeHook(@NotNull ChainedTaskEntry<FUNCTION> task) {
 		return list.remove(task);
 	}
 	
 	//create
+	@NotNull
 	@Override
-	public Task create(TypeHandler<FUNCTION> handler) {
+	public Task create(@NotNull TypeHandler<FUNCTION> handler) {
 		return (singlethreadedOnly || !handler.allowMultithreading()) ? getSinglethread().create(handler) : getMultithread().create(handler);
 	}
 	
@@ -122,8 +124,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		}
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("singlethreadedOnly", this.singlethreadedOnly);
 		tsh.add("optimizeExecutionPriority", this.multithreadedOptimizeExecutionPriority);
@@ -214,8 +217,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 				return Objects.hash(dep.uuid());
 			}
 			
+			@NotNull
 			@Override
-			public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 				ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 				tsh.add("func", this.func);
 				tsh.add("dep", this.dep);
@@ -230,8 +234,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 			}
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("allNodes", this.allNodes);
 			tsh.add("firstNodes", this.firstNodes);
@@ -272,7 +277,7 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 			}
 			
 			@Override
-			public synchronized void submit(Executor executor) {
+			public synchronized void submit(@NotNull Executor executor) {
 				if (startExecution())
 					return;
 				this.executor = executor;
@@ -311,8 +316,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 						map.get(node).call();
 				}
 				
+				@NotNull
 				@Override
-				public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+				public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 					ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 					tsh.add("executionStarted", this.executionStarted);
 					tsh.add("result", this.result);
@@ -328,8 +334,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 				}
 			}
 			
+			@NotNull
 			@Override
-			public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+			public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 				ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 				tsh.add("executionStarted", this.executionStarted);
 				tsh.add("result", this.result);
@@ -347,8 +354,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 			}
 		}
 		
+		@NotNull
 		@Override
-		public Task create(TypeHandler<FUNCTION> handler) {
+		public Task create(@NotNull TypeHandler<FUNCTION> handler) {
 			return new ChainedTaskMultithreadedTask(handler);
 		}
 	}
@@ -404,11 +412,12 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 			}
 		}
 		
+		@NotNull
 		@Override
-		public Task create(TypeHandler<FUNCTION> handler) {
+		public Task create(@NotNull TypeHandler<FUNCTION> handler) {
 			return new MultiTask(task.stream().map((TypeHandlerTaskCreator<FUNCTION> task) -> task.create(handler)).collect(Collectors.toList())) {
 				@Override
-				public synchronized void submit(Executor executor) {
+				public synchronized void submit(@NotNull Executor executor) {
 					if (startExecution())
 						return;
 					executor.execute(() -> {
@@ -419,8 +428,9 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 			};
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("task", this.task);
 			return tsh.build();

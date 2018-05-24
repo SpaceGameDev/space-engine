@@ -1,5 +1,8 @@
 package space.util.key;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -14,7 +17,7 @@ public interface KeyGenerator {
 	 * @param <T> the {@link Key Key's} generic
 	 * @return the new {@link Key}
 	 */
-	<T> Key<T> generateKey();
+	@NotNull <T> Key<T> generateKey();
 	
 	/**
 	 * generates a new {@link Key}
@@ -23,6 +26,7 @@ public interface KeyGenerator {
 	 * @param def the default value
 	 * @return the new {@link Key}
 	 */
+	@NotNull
 	default <T> Key<T> generateKey(T def) {
 		return generateKey(() -> def);
 	}
@@ -34,25 +38,31 @@ public interface KeyGenerator {
 	 * @param def the Supplier of the default value
 	 * @return the new {@link Key}
 	 */
-	<T> Key<T> generateKey(Supplier<T> def);
+	@NotNull <T> Key<T> generateKey(Supplier<T> def);
 	
 	//key
 	
 	/**
+	 * gets the key of an id
+	 *
 	 * @param id the id of the {@link Key}
 	 * @return the {@link Key} associated with the id
 	 */
-	Key<?> getKey(int id);
+	@Nullable Key<?> getKey(int id);
 	
 	/**
+	 * checks weather the key is from this generator
+	 *
 	 * @return true if the key was made by this generator and is valid
 	 */
 	boolean isKeyOf(Key<?> key);
 	
 	/**
+	 * gets all keys
+	 *
 	 * @return all {@link Key IKeys} available
 	 */
-	Collection<Key<?>> getKeys();
+	@NotNull Collection<Key<?>> getKeys();
 	
 	/**
 	 * every key generated will be submitted to the Consumer
@@ -62,6 +72,7 @@ public interface KeyGenerator {
 	 */
 	default KeyGenerator whenGenerated(Consumer<Key<?>> onGen) {
 		return new KeyGenerator() {
+			@NotNull
 			@Override
 			public <T> Key<T> generateKey() {
 				Key<T> key = KeyGenerator.this.generateKey();
@@ -69,6 +80,7 @@ public interface KeyGenerator {
 				return key;
 			}
 			
+			@NotNull
 			@Override
 			public <T> Key<T> generateKey(T def) {
 				Key<T> key = KeyGenerator.this.generateKey(def);
@@ -76,6 +88,7 @@ public interface KeyGenerator {
 				return key;
 			}
 			
+			@NotNull
 			@Override
 			public <T> Key<T> generateKey(Supplier<T> def) {
 				Key<T> key = KeyGenerator.this.generateKey(def);
@@ -93,6 +106,7 @@ public interface KeyGenerator {
 				return KeyGenerator.this.isKeyOf(key);
 			}
 			
+			@NotNull
 			@Override
 			public Collection<Key<?>> getKeys() {
 				return KeyGenerator.this.getKeys();

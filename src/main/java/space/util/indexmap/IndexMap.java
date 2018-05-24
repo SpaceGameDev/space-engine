@@ -1,5 +1,7 @@
 package space.util.indexmap;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.Empties;
 
 import java.util.Collection;
@@ -24,28 +26,28 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default void add(VALUE value) {
+	default void add(@Nullable VALUE value) {
 		put(size(), value);
 	}
 	
-	VALUE get(int index);
+	@Nullable VALUE get(int index);
 	
-	Entry<VALUE> getEntry(int index);
+	@NotNull Entry<VALUE> getEntry(int index);
 	
-	VALUE put(int index, VALUE value);
+	@Nullable VALUE put(int index, @Nullable VALUE value);
 	
-	VALUE remove(int index);
+	@Nullable VALUE remove(int index);
 	
-	VALUE[] toArray();
+	@Nullable VALUE[] toArray();
 	
-	VALUE[] toArray(VALUE[] array);
+	@Nullable VALUE[] toArray(@NotNull VALUE[] array);
 	
 	//addAll
-	default void addAll(Collection<? extends VALUE> coll) {
+	default void addAll(@NotNull Collection<? extends VALUE> coll) {
 		coll.forEach(this::add);
 	}
 	
-	default void putAll(IndexMap<? extends VALUE> indexMap) {
+	default void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		for (Entry<? extends VALUE> entry : indexMap.table()) {
 			VALUE value = entry.getValue();
 			if (value != null)
@@ -53,18 +55,20 @@ public interface IndexMap<VALUE> {
 		}
 	}
 	
-	default void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	default void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		for (Entry<? extends VALUE> entry : indexMap.table())
 			computeIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	
 	//advanced access
-	default VALUE getOrDefault(int index, VALUE def) {
+	@Nullable
+	default VALUE getOrDefault(int index, @Nullable VALUE def) {
 		VALUE v = get(index);
 		return v == null ? def : v;
 	}
 	
-	default VALUE putIfAbsent(int index, VALUE value) {
+	@Nullable
+	default VALUE putIfAbsent(int index, @Nullable VALUE value) {
 		VALUE oldValue = get(index);
 		if (oldValue != null)
 			return oldValue;
@@ -73,7 +77,8 @@ public interface IndexMap<VALUE> {
 		return value;
 	}
 	
-	default VALUE putIfPresent(int index, VALUE value) {
+	@Nullable
+	default VALUE putIfPresent(int index, @Nullable VALUE value) {
 		VALUE oldValue = get(index);
 		if (oldValue == null)
 			return null;
@@ -82,7 +87,7 @@ public interface IndexMap<VALUE> {
 		return value;
 	}
 	
-	default boolean replace(int index, VALUE oldValue, VALUE newValue) {
+	default boolean replace(int index, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
 		if (Objects.equals(get(index), oldValue)) {
 			put(index, newValue);
 			return true;
@@ -90,7 +95,7 @@ public interface IndexMap<VALUE> {
 		return false;
 	}
 	
-	default boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	default boolean replace(int index, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		if (Objects.equals(get(index), oldValue)) {
 			put(index, newValue.get());
 			return true;
@@ -98,7 +103,7 @@ public interface IndexMap<VALUE> {
 		return false;
 	}
 	
-	default boolean remove(int index, VALUE value) {
+	default boolean remove(int index, @Nullable VALUE value) {
 		if (get(index) == value) {
 			remove(index);
 			return true;
@@ -107,7 +112,8 @@ public interface IndexMap<VALUE> {
 	}
 	
 	//compute
-	default VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	@Nullable
+	default VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		VALUE oldValue = get(index);
 		VALUE newValue = function.apply(index, oldValue);
 		if (Objects.equals(oldValue, newValue))
@@ -115,14 +121,16 @@ public interface IndexMap<VALUE> {
 		return newValue;
 	}
 	
-	default VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	@Nullable
+	default VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		VALUE oldValue = get(index);
 		if (oldValue == null)
 			put(index, oldValue = supplier.get());
 		return oldValue;
 	}
 	
-	default VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	@Nullable
+	default VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		VALUE oldValue = get(index);
 		if (oldValue != null)
 			put(index, oldValue = supplier.get());
@@ -132,18 +140,18 @@ public interface IndexMap<VALUE> {
 	//other
 	void clear();
 	
-	Collection<VALUE> values();
+	@NotNull Collection<VALUE> values();
 	
-	Collection<Entry<VALUE>> table();
+	@NotNull Collection<Entry<VALUE>> table();
 	
 	//entry
 	interface Entry<VALUE> {
 		
 		int getIndex();
 		
-		VALUE getValue();
+		@Nullable VALUE getValue();
 		
-		void setValue(VALUE v);
+		void setValue(@Nullable VALUE v);
 		
 		default void remove() {
 			setValue(null);

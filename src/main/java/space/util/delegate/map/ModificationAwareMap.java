@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.collection.ModificationAwareCollection;
 import space.util.delegate.map.entry.ModificationAwareEntry;
 import space.util.delegate.set.ConvertingSet;
@@ -38,7 +39,7 @@ public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
+	public void putAll(@NotNull Map<? extends K, ? extends V> m) {
 		map.putAll(m);
 		if (m.size() != 0)
 			onModification.run();
@@ -51,16 +52,19 @@ public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 			onModification.run();
 	}
 	
+	@NotNull
 	@Override
 	public Set<K> keySet() {
 		return new ModificationAwareSet<>(map.keySet(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public Collection<V> values() {
 		return new ModificationAwareCollection<>(map.values(), onModification);
 	}
 	
+	@NotNull
 	@Override
 	public Set<Map.Entry<K, V>> entrySet() {
 		return new ModificationAwareSet<>(new ConvertingSet.BiDirectional<>(map.entrySet(), entry -> entry == null ? null : new ModificationAwareEntry<>(entry), entry -> entry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<K, V>) entry).entry : null), onModification);

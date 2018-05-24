@@ -1,5 +1,6 @@
 package space.util.key.attribute;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.concurrent.event.Event;
 import space.util.concurrent.event.SimpleEvent;
@@ -36,21 +37,24 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	}
 	
 	//delegate to gen
+	@NotNull
 	@Override
 	public <T> Key<T> generateKey() {
 		return gen.generateKey();
 	}
 	
+	@NotNull
 	@Override
 	public <T> Key<T> generateKey(Supplier<T> def) {
 		return gen.generateKey(def);
 	}
 	
 	@Override
-	public boolean isKeyOf(Key<?> key) {
+	public boolean isKeyOf(@NotNull Key<?> key) {
 		return gen.isKeyOf(key);
 	}
 	
+	@NotNull
 	@Override
 	public <T> Key<T> generateKey(T def) {
 		return gen.generateKey(def);
@@ -61,6 +65,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		return gen.getKey(id);
 	}
 	
+	@NotNull
 	@Override
 	public Collection<Key<?>> getKeys() {
 		return gen.getKeys();
@@ -71,19 +76,22 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	}
 	
 	//create
+	@NotNull
 	@Override
 	public AttributeList create() {
 		return new AttributeList();
 	}
 	
+	@NotNull
 	@Override
 	public AttributeListModification createModify() {
 		return new AttributeListModification();
 	}
 	
 	//toString
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("gen", this.gen);
 		return tsh.build();
@@ -109,7 +117,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		//get
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> Object getDirect(Key<V> key) {
+		public <V> Object getDirect(@NotNull Key<V> key) {
 			check(key);
 			return indexMap.get(key.getID());
 		}
@@ -120,19 +128,22 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			return indexMap.size();
 		}
 		
+		@NotNull
 		@Override
 		public AttributeListCreator<TYPE> getCreator() {
 			return AttributeListCreatorImpl.this;
 		}
 		
+		@NotNull
 		@Override
 		public Collection<Object> values() {
 			return indexMap.values();
 		}
 		
 		//toString
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("indexMap", indexMap);
 			tsh.add("creator", AttributeListCreatorImpl.this);
@@ -152,6 +163,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 				this.key = key;
 			}
 			
+			@NotNull
 			@Override
 			public Key<V> getKey() {
 				return key;
@@ -173,6 +185,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		}
 		
 		//get
+		@NotNull
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> V get(Key<V> key) {
@@ -189,13 +202,14 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		}
 		
 		//other
+		@NotNull
 		@Override
 		public Event<Consumer<ChangeEvent<?>>> getChangeEvent() {
 			return changeEvent;
 		}
 		
 		@Override
-		public synchronized void apply(IAttributeListModification<TYPE> mod2) {
+		public synchronized void apply(@NotNull IAttributeListModification<TYPE> mod2) {
 			//same check
 			AttributeListModification mod = AttributeListCreatorImpl.this.createModify();
 			mod2.table().forEach(entry -> {
@@ -228,6 +242,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			}
 		}
 		
+		@NotNull
 		@Override
 		public Collection<? extends AttributeListCreator.ListEntry<?>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
@@ -305,13 +320,13 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean replace(Key<V> key, V oldValue, Supplier<? extends V> newValue) {
+		public <V> boolean replace(Key<V> key, V oldValue, @NotNull Supplier<? extends V> newValue) {
 			check(key);
 			return indexMap.replace(key.getID(), oldValue, newValue);
 		}
 		
 		@Override
-		public void copyOver(IAbstractAttributeList list, Key<?>... keys) {
+		public void copyOver(@NotNull IAbstractAttributeList list, @NotNull Key<?>... keys) {
 			if (list.getCreator() != AttributeListCreatorImpl.this)
 				throw new IllegalKeyException("List not of same generator type");
 			
@@ -327,6 +342,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			indexMap.clear();
 		}
 		
+		@NotNull
 		@Override
 		public IAttributeList<TYPE> createNewList() {
 			AttributeList list = new AttributeList();
@@ -365,6 +381,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			}
 		}
 		
+		@NotNull
 		@Override
 		public Collection<? extends AttributeListCreator.ListModificationEntry<?>> table() {
 			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListModificationEntry<>(gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
@@ -381,21 +398,25 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			this.mod = mod;
 		}
 		
+		@NotNull
 		@Override
 		public IAttributeList<TYPE> getOldList() {
 			return oldList;
 		}
 		
+		@NotNull
 		@Override
 		public IAttributeListModification<TYPE> getMod() {
 			return mod;
 		}
 		
+		@NotNull
 		@Override
-		public <V> ChangeEventEntry<V> getEntry(Key<V> key) {
+		public <V> ChangeEventEntry<V> getEntry(@NotNull Key<V> key) {
 			return new ChangeEventEntry<>() {
 				
 				//get
+				@NotNull
 				@Override
 				public Key<V> getKey() {
 					return key;

@@ -1,5 +1,7 @@
 package space.util.delegate.iterator;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -24,6 +26,7 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 	};
 	
 	//this is the Magic!     - and it is so simple
+	@NotNull
 	@Override
 	default Iterator<T> iterator() {
 		return this;

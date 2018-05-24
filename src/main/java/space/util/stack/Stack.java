@@ -1,5 +1,7 @@
 package space.util.stack;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Works <b><i>similar</i></b> to a stack, you can push() values on it and can retrieve them with pop().
  * You have the option of just push()-ing and pop()-ing
@@ -7,11 +9,11 @@ package space.util.stack;
  */
 public interface Stack<T> {
 	
-	void push(T t);
+	void push(@Nullable T t);
 	
-	long pushPointer(T t);
+	long pushPointer(@Nullable T t);
 	
-	T pop();
+	@Nullable T pop();
 	
-	T popPointer(long pointer);
+	@Nullable T popPointer(long pointer);
 }

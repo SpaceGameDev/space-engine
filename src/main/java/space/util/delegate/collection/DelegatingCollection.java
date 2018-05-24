@@ -1,5 +1,6 @@
 package space.util.delegate.collection;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -37,19 +38,22 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 		return coll.contains(o);
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return coll.iterator();
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return coll.toArray();
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousToArrayCall")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return coll.toArray(a);
 	}
 	
@@ -64,17 +68,17 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return coll.containsAll(c);
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		return coll.addAll(c);
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		return coll.removeAll(c);
 	}
 	
@@ -84,7 +88,7 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		return coll.retainAll(c);
 	}
 	
@@ -113,8 +117,9 @@ public class DelegatingCollection<E> implements ToString, Collection<E> {
 		coll.forEach(action);
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("delegate", coll);
 	}
 	

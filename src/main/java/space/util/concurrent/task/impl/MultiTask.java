@@ -1,5 +1,6 @@
 package space.util.concurrent.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.CollectiveExecutionException;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
@@ -43,7 +44,7 @@ public class MultiTask extends AbstractTask {
 	}
 	
 	@Override
-	public synchronized void submit(Executor executor) {
+	public synchronized void submit(@NotNull Executor executor) {
 		if (startExecution())
 			return;
 		for (Task task : subTasks)
@@ -99,6 +100,7 @@ public class MultiTask extends AbstractTask {
 	}
 	
 	//state
+	@NotNull
 	@Override
 	public Throwable getException() {
 		return exception;

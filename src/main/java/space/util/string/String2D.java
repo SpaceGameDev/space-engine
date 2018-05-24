@@ -1,5 +1,7 @@
 package space.util.string;
 
+import org.jetbrains.annotations.NotNull;
+
 public class String2D implements CharSequence2D {
 	
 	public static final String2D EMPTY = new String2D(new char[0][], 0);
@@ -76,6 +78,7 @@ public class String2D implements CharSequence2D {
 		return l;
 	}
 	
+	@NotNull
 	@Override
 	public char[][] getChars() {
 		return buffer;

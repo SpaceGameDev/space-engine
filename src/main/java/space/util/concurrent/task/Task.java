@@ -1,5 +1,6 @@
 package space.util.concurrent.task;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.awaitable.Awaitable;
 import space.util.concurrent.event.Event;
 
@@ -22,7 +23,7 @@ public interface Task extends Event<Consumer<Task>>, Awaitable {
 	 *
 	 * @param executor to submit any tasks to
 	 */
-	void submit(Executor executor);
+	void submit(@NotNull Executor executor);
 	
 	/**
 	 * cancels the execution of the task
@@ -74,6 +75,7 @@ public interface Task extends Event<Consumer<Task>>, Awaitable {
 	 *
 	 * @return the {@link TaskResult} of the {@link Task} or null, if not already finished
 	 */
+	@NotNull
 	TaskResult getResult();
 	
 	/**
@@ -81,6 +83,7 @@ public interface Task extends Event<Consumer<Task>>, Awaitable {
 	 *
 	 * @return the {@link Exception} thrown or null
 	 */
+	@NotNull
 	Throwable getException();
 	
 	//await

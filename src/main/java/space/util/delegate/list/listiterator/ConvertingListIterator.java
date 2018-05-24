@@ -1,5 +1,6 @@
 package space.util.delegate.list.listiterator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -77,8 +78,9 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 		this.listIterator = listIterator;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("listIterator", this.listIterator);
 		return tsh.build();
@@ -148,8 +150,9 @@ public abstract class ConvertingListIterator<F, T> implements ListIterator<T>, T
 			listIterator.forEachRemaining(f -> action.accept(remap.apply(f)));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("listIterator", this.listIterator);
 			tsh.add("remap", this.remap);

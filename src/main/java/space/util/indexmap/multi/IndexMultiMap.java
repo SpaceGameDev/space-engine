@@ -1,5 +1,7 @@
 package space.util.indexmap.multi;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.indexmap.IndexMap;
 
 import java.util.AbstractCollection;
@@ -62,32 +64,34 @@ public interface IndexMultiMap<VALUE> {
 		return get(pos) != null;
 	}
 	
-	default void add(VALUE v) {
+	default void add(@Nullable VALUE v) {
 		put(new int[] {size()}, v);
 	}
 	
-	default void add(int[] pos, VALUE v) {
+	default void add(int[] pos, @Nullable VALUE v) {
 		int[] p = new int[pos.length + 1];
 		System.arraycopy(pos, 0, p, 0, pos.length);
 		p[pos.length] = size(pos);
 		put(p, v);
 	}
 	
-	VALUE get(int[] pos);
+	@Nullable VALUE get(int[] pos);
 	
-	IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos);
+	@NotNull IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos);
 	
-	VALUE put(int[] pos, VALUE v);
+	@Nullable VALUE put(int[] pos, @Nullable VALUE v);
 	
-	VALUE remove(int[] pos);
+	@Nullable VALUE remove(int[] pos);
 	
 	//advanced access
-	default VALUE getOrDefault(int[] pos, VALUE def) {
+	@Nullable
+	default VALUE getOrDefault(int[] pos, @Nullable VALUE def) {
 		VALUE v = get(pos);
 		return v == null ? def : v;
 	}
 	
-	default VALUE putIfAbsent(int[] pos, VALUE v) {
+	@Nullable
+	default VALUE putIfAbsent(int[] pos, @Nullable VALUE v) {
 		VALUE c = get(pos);
 		if (c != null)
 			return c;
@@ -96,7 +100,8 @@ public interface IndexMultiMap<VALUE> {
 		return c;
 	}
 	
-	default VALUE putIfAbsent(int[] pos, Supplier<VALUE> v) {
+	@Nullable
+	default VALUE putIfAbsent(int[] pos, @NotNull Supplier<VALUE> v) {
 		VALUE c = get(pos);
 		if (c != null)
 			return c;
@@ -105,13 +110,14 @@ public interface IndexMultiMap<VALUE> {
 		return c;
 	}
 	
-	default VALUE replace(int[] pos, VALUE newValue) {
+	@Nullable
+	default VALUE replace(int[] pos, @Nullable VALUE newValue) {
 		if (contains(pos))
 			return put(pos, newValue);
 		return null;
 	}
 	
-	default boolean replace(int[] pos, VALUE oldValue, VALUE newValue) {
+	default boolean replace(int[] pos, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
 		if (Objects.equals(get(pos), oldValue)) {
 			put(pos, newValue);
 			return true;
@@ -119,7 +125,7 @@ public interface IndexMultiMap<VALUE> {
 		return false;
 	}
 	
-	default boolean replace(int[] pos, VALUE oldValue, Supplier<VALUE> newValue) {
+	default boolean replace(int[] pos, @Nullable VALUE oldValue, @NotNull Supplier<VALUE> newValue) {
 		if (Objects.equals(get(pos), oldValue)) {
 			put(pos, newValue.get());
 			return true;
@@ -127,7 +133,7 @@ public interface IndexMultiMap<VALUE> {
 		return false;
 	}
 	
-	default boolean remove(int[] pos, VALUE v) {
+	default boolean remove(int[] pos, @Nullable VALUE v) {
 		VALUE c = get(pos);
 		if (c == v) {
 			remove(pos);
@@ -143,21 +149,22 @@ public interface IndexMultiMap<VALUE> {
 	
 	void clear(int[] pos);
 	
-	Collection<VALUE> values();
+	@NotNull Collection<VALUE> values();
 	
+	@NotNull
 	default Collection<IndexMultiMapEntry<VALUE>> table() {
 		return table(EMPTYINT);
 	}
 	
-	Collection<IndexMultiMapEntry<VALUE>> table(int[] pos);
+	@NotNull Collection<IndexMultiMapEntry<VALUE>> table(int[] pos);
 	
 	interface IndexMultiMapEntry<VALUE> {
 		
 		int[] getIndex();
 		
-		VALUE getValue();
+		@Nullable VALUE getValue();
 		
-		void setValue(VALUE v);
+		void setValue(@Nullable VALUE v);
 	}
 	
 	class IndexMultiMapTableIteratorToNormalIterator<VALUE> extends AbstractCollection<VALUE> {
@@ -168,6 +175,7 @@ public interface IndexMultiMap<VALUE> {
 			this.coll = coll;
 		}
 		
+		@NotNull
 		@Override
 		public Iterator<VALUE> iterator() {
 			return new Iterator<>() {
@@ -178,6 +186,7 @@ public interface IndexMultiMap<VALUE> {
 					return iter.hasNext();
 				}
 				
+				@Nullable
 				@Override
 				public VALUE next() {
 					return iter.next().getValue();

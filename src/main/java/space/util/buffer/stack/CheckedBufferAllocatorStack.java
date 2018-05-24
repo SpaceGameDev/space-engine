@@ -1,5 +1,6 @@
 package space.util.buffer.stack;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.buffer.direct.CheckedDirectBuffer;
 import space.util.buffer.direct.DirectBuffer;
@@ -60,8 +61,9 @@ public class CheckedBufferAllocatorStack implements BufferAllocatorStack, ToStri
 		alloc.popPointer(pointer);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("alloc", this.alloc);
 		return tsh.build();

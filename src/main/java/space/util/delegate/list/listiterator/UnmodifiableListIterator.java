@@ -1,5 +1,6 @@
 package space.util.delegate.list.listiterator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.ListIterator;
@@ -28,8 +29,9 @@ public class UnmodifiableListIterator<E> extends DelegatingListIterator<E> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("unmodifiable", iter);
 	}
 }

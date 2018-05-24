@@ -1,5 +1,6 @@
 package space.util.delegate.iterator;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.toStringHelper.ToStringHelper;
 
 import java.util.Iterator;
@@ -18,8 +19,9 @@ public class UnmodifiableIterator<E> extends DelegatingIterator<E> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("synchronized", iter);
 	}
 }

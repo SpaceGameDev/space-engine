@@ -1,5 +1,6 @@
 package space.util.string.builder;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.ArrayUtils;
 import space.util.annotation.Self;
 import space.util.string.String2D;
@@ -154,6 +155,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 	}
 	
 	//append
+	@NotNull
 	@Override
 	public SELF append(char v) {
 		int start = posX;
@@ -164,8 +166,9 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(String str) {
+	public SELF append(@NotNull String str) {
 		startEdit();
 		int l = str.length();
 		int start = posX;
@@ -177,8 +180,9 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(char[] str) {
+	public SELF append(@NotNull char[] str) {
 		startEdit();
 		int l = str.length;
 		int start = posX;
@@ -190,8 +194,9 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(char[][] chars) {
+	public SELF append(@NotNull char[][] chars) {
 		startEdit();
 		int absStartX = posX;
 		int absCurrY = posY;
@@ -219,8 +224,9 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
-	public SELF append(char[][] chars, int untily, int untilx, char fillup) {
+	public SELF append(@NotNull char[][] chars, int untily, int untilx, char fillup) {
 		startEdit();
 		int absCurrY = posY;
 		int absStartX = posX;
@@ -266,6 +272,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return posX;
 	}
 	
+	@NotNull
 	@Override
 	public SELF setX(int pos) {
 		posX = pos;
@@ -291,6 +298,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return posY;
 	}
 	
+	@NotNull
 	@Override
 	public SELF setY(int pos) {
 		posY = pos;
@@ -320,6 +328,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 	}
 	
 	//fill
+	@NotNull
 	@Override
 	public SELF fill(int l, char c) {
 		startEdit();
@@ -333,6 +342,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 	}
 	
 	//nextLine
+	@NotNull
 	@Override
 	public SELF nextLine() {
 		startEdit();
@@ -343,6 +353,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		return (SELF) this;
 	}
 	
+	@NotNull
 	@Override
 	public char[][] getChars() {
 		if (beingEdited != 0)
@@ -387,6 +398,7 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		buffer[h] = n;
 	}
 	
+	@NotNull
 	public String2D toString2D() {
 		return new String2D(getChars(), maxX);
 	}

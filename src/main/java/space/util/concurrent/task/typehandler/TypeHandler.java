@@ -1,5 +1,7 @@
 package space.util.concurrent.task.typehandler;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 /**
@@ -11,7 +13,7 @@ import java.util.function.Consumer;
 public interface TypeHandler<FUNCTION> extends Consumer<FUNCTION> {
 	
 	@Override
-	void accept(FUNCTION function);
+	void accept(@NotNull FUNCTION function);
 	
 	default boolean allowMultithreading() {
 		return true;

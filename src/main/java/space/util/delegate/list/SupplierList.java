@@ -1,5 +1,6 @@
 package space.util.delegate.list;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -42,19 +43,22 @@ public class SupplierList<E> implements ToString, List<E> {
 		return list.get().contains(o);
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return list.get().iterator();
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return list.get().toArray();
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousToArrayCall")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return list.get().toArray(a);
 	}
 	
@@ -69,27 +73,27 @@ public class SupplierList<E> implements ToString, List<E> {
 	}
 	
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return list.get().containsAll(c);
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		return list.get().addAll(c);
 	}
 	
 	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends E> c) {
 		return list.get().addAll(index, c);
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		return list.get().removeAll(c);
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		return list.get().retainAll(c);
 	}
 	
@@ -138,16 +142,19 @@ public class SupplierList<E> implements ToString, List<E> {
 		return list.get().lastIndexOf(o);
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator() {
 		return list.get().listIterator();
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator(int index) {
 		return list.get().listIterator(index);
 	}
 	
+	@NotNull
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		return list.get().subList(fromIndex, toIndex);
@@ -178,8 +185,9 @@ public class SupplierList<E> implements ToString, List<E> {
 		list.get().forEach(action);
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("supplier", this.list);
 	}
 	

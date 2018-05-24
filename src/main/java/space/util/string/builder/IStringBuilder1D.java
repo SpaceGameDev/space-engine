@@ -1,22 +1,25 @@
 package space.util.string.builder;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.annotation.Self;
 
 public interface IStringBuilder1D<@Self SELF extends IStringBuilder1D<SELF>> extends IStringBuilder<SELF>, CharSequence {
 	
 	//pos
-	SELF setLength(int length);
+	@NotNull SELF setLength(int length);
 	
+	@NotNull
 	default SELF reduceLength(int length) {
 		return setLength(length() - length);
 	}
 	
+	@NotNull
 	default SELF addLength(int length) {
 		return setLength(length() + length);
 	}
 	
 	//get result
-	char[] getChars();
+	@NotNull char[] getChars();
 	
 	@Override
 	default int length() {

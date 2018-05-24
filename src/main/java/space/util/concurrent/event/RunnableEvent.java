@@ -1,5 +1,6 @@
 package space.util.concurrent.event;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.typehandler.TypeHandler;
 
 /**
@@ -9,5 +10,5 @@ import space.util.concurrent.task.typehandler.TypeHandler;
  */
 public interface RunnableEvent<FUNCTION> extends Event<FUNCTION> {
 	
-	void run(TypeHandler<FUNCTION> type);
+	void run(@NotNull TypeHandler<FUNCTION> type);
 }

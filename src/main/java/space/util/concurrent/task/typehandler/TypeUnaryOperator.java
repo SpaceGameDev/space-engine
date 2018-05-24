@@ -1,5 +1,7 @@
 package space.util.concurrent.task.typehandler;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.UnaryOperator;
 
 public class TypeUnaryOperator<T> implements TypeHandler<UnaryOperator<T>> {
@@ -11,7 +13,7 @@ public class TypeUnaryOperator<T> implements TypeHandler<UnaryOperator<T>> {
 	}
 	
 	@Override
-	public void accept(UnaryOperator<T> unary) {
+	public void accept(@NotNull UnaryOperator<T> unary) {
 		obj = unary.apply(obj);
 	}
 	

@@ -1,5 +1,6 @@
 package space.util.delegate.specific;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -43,6 +44,7 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 		return Arrays.binarySearch(array, o) != 0;
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<String> iterator() {
 		return new Iteratorable<>() {
@@ -61,14 +63,16 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 		};
 	}
 	
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return array.clone();
 	}
 	
+	@NotNull
 	@Override
 	@SuppressWarnings("SuspiciousSystemArraycopy")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		System.arraycopy(array, 0, a, 0, array.length);
 		return a;
 	}
@@ -84,7 +88,7 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 	}
 	
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		for (Object o : c)
 			if (!contains(o))
 				return false;
@@ -92,17 +96,17 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends String> c) {
+	public boolean addAll(@NotNull Collection<? extends String> c) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -111,8 +115,9 @@ public class EnumNameIterable<E extends Enum<E>> implements ToString, Collection
 		throw new UnsupportedOperationException();
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("array", this.array);
 		return tsh.build();

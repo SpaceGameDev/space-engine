@@ -1,5 +1,6 @@
 package space.util.delegate.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.indexmap.IndexMap;
 import space.util.string.toStringHelper.ToStringHelper;
@@ -49,6 +50,7 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 		return indexMap.get(index);
 	}
 	
+	@NotNull
 	@Override
 	public Entry<VALUE> getEntry(int index) {
 		return indexMap.getEntry(index);
@@ -70,22 +72,22 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE[] toArray(VALUE[] array) {
+	public VALUE[] toArray(@NotNull VALUE[] array) {
 		return indexMap.toArray(array);
 	}
 	
 	@Override
-	public void addAll(Collection<? extends VALUE> coll) {
+	public void addAll(@NotNull Collection<? extends VALUE> coll) {
 		indexMap.addAll(coll);
 	}
 	
 	@Override
-	public void putAll(IndexMap<? extends VALUE> indexMap) {
+	public void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.putAll(indexMap);
 	}
 	
 	@Override
-	public void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		this.indexMap.putAllIfAbsent(indexMap);
 	}
 	
@@ -110,7 +112,7 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		return indexMap.replace(index, oldValue, newValue);
 	}
 	
@@ -120,17 +122,17 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		return indexMap.compute(index, function);
 	}
 	
 	@Override
-	public VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		return indexMap.computeIfAbsent(index, supplier);
 	}
 	
 	@Override
-	public VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	public VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		return indexMap.computeIfPresent(index, supplier);
 	}
 	
@@ -139,18 +141,21 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 		indexMap.clear();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return indexMap.values();
 	}
 	
+	@NotNull
 	@Override
 	public Collection<Entry<VALUE>> table() {
 		return indexMap.table();
 	}
 	
+	@NotNull
 	@Override
-	public <T> T toTSH(ToStringHelper<T> api) {
+	public <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return api.createModifier("delegate", indexMap);
 	}
 	

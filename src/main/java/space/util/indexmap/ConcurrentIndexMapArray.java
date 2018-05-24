@@ -1,5 +1,6 @@
 package space.util.indexmap;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.indexmap.IndexMap.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 
@@ -61,6 +62,7 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	//not synchronized
+	@NotNull
 	@Override
 	public Entry<VALUE> getEntry(int index) {
 		return super.getEntry(index);
@@ -82,22 +84,22 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	@Override
-	public synchronized VALUE[] toArray(VALUE[] array) {
+	public synchronized VALUE[] toArray(@NotNull VALUE[] array) {
 		return super.toArray(array);
 	}
 	
 	@Override
-	public synchronized void addAll(Collection<? extends VALUE> coll) {
+	public synchronized void addAll(@NotNull Collection<? extends VALUE> coll) {
 		super.addAll(coll);
 	}
 	
 	@Override
-	public synchronized void putAll(IndexMap<? extends VALUE> indexMap) {
+	public synchronized void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		super.putAll(indexMap);
 	}
 	
 	@Override
-	public synchronized void putAllIfAbsent(IndexMap<? extends VALUE> indexMap) {
+	public synchronized void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
 		super.putAllIfAbsent(indexMap);
 	}
 	
@@ -122,7 +124,7 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	@Override
-	public synchronized boolean replace(int index, VALUE oldValue, Supplier<? extends VALUE> newValue) {
+	public synchronized boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		return super.replace(index, oldValue, newValue);
 	}
 	
@@ -132,17 +134,17 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	@Override
-	public synchronized VALUE compute(int index, ComputeFunction<? super VALUE, ? extends VALUE> function) {
+	public synchronized VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		return super.compute(index, function);
 	}
 	
 	@Override
-	public synchronized VALUE computeIfAbsent(int index, Supplier<? extends VALUE> supplier) {
+	public synchronized VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		return super.computeIfAbsent(index, supplier);
 	}
 	
 	@Override
-	public synchronized VALUE computeIfPresent(int index, Supplier<? extends VALUE> supplier) {
+	public synchronized VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		return super.computeIfPresent(index, supplier);
 	}
 	
@@ -156,6 +158,7 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	/**
 	 * the Collection is weakly consistent
 	 */
+	@NotNull
 	@Override
 	public Collection<VALUE> values() {
 		return super.values();
@@ -166,13 +169,15 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	/**
 	 * the Collection is weakly consistent
 	 */
+	@NotNull
 	@Override
 	public Collection<Entry<VALUE>> table() {
 		return super.table();
 	}
 	
+	@NotNull
 	@Override
-	public synchronized <T> T toTSH(ToStringHelper<T> api) {
+	public synchronized <T> T toTSH(@NotNull ToStringHelper<T> api) {
 		return super.toTSH(api);
 	}
 	

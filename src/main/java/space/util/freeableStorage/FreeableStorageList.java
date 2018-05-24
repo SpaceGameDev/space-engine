@@ -1,9 +1,11 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface FreeableStorageList extends FreeableStorage {
 	
 	//insert
-	Entry insert(FreeableStorage storage);
+	@NotNull Entry insert(@NotNull FreeableStorage storage);
 	
 	//free
 	@Override
@@ -16,6 +18,7 @@ public interface FreeableStorageList extends FreeableStorage {
 	int freePriority();
 	
 	//other
+	@NotNull
 	@Override
 	default FreeableStorageList getSubList() {
 		return this;

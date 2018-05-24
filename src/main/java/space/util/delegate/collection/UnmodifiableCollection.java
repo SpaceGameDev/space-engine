@@ -1,5 +1,6 @@
 package space.util.delegate.collection;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.iterator.UnmodifiableIterator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -18,6 +19,7 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 		super(coll);
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return new UnmodifiableIterator<>(coll.iterator());
@@ -35,12 +37,12 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -50,7 +52,7 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	}
 	
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
@@ -59,8 +61,9 @@ public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("coll", this.coll);
 		return tsh.build();

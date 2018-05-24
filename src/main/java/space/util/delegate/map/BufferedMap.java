@@ -1,5 +1,6 @@
 package space.util.delegate.map;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -75,7 +76,7 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	@Override
-	public synchronized void putAll(Map<? extends K, ? extends V> m) {
+	public synchronized void putAll(@NotNull Map<? extends K, ? extends V> m) {
 		if (hasSink())
 			super.putAll(m);
 		else
@@ -90,16 +91,19 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 			buffer.clear();
 	}
 	
+	@NotNull
 	@Override
 	public synchronized Set<K> keySet() {
 		return hasSink() ? super.keySet() : buffer.keySet();
 	}
 	
+	@NotNull
 	@Override
 	public synchronized Collection<V> values() {
 		return hasSink() ? super.values() : buffer.values();
 	}
 	
+	@NotNull
 	@Override
 	public synchronized Set<Entry<K, V>> entrySet() {
 		return hasSink() ? super.entrySet() : buffer.entrySet();
@@ -166,8 +170,9 @@ public class BufferedMap<K, V> extends DelegatingMap<K, V> {
 		return hasSink() ? super.merge(key, value, remappingFunction) : buffer.merge(key, value, remappingFunction);
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("map", this.map);
 		tsh.add("buffer", this.buffer);

@@ -1,5 +1,7 @@
 package space.util.stack.multistack;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Works <b><i>exactly</i></b> like a stack, you can {@link IMultiStack#put(Object)} values on it
  * and use the {@link IMultiStack#push()}) and {@link IMultiStack#pop()} operations to add more layers and remove them (with their values).
@@ -8,7 +10,7 @@ package space.util.stack.multistack;
  */
 public interface IMultiStack<T> {
 	
-	<X extends T> X put(X t);
+	@Nullable <X extends T> X put(@Nullable X t);
 	
 	void push();
 	

@@ -1,5 +1,6 @@
 package space.util.delegate.list;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
 import space.util.delegate.iterator.ConvertingIterator;
@@ -133,8 +134,9 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		this.list = list;
 	}
 	
+	@NotNull
 	@Override
-	public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("list", this.list);
 		return tsh.build();
@@ -172,11 +174,13 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return false;
 		}
 		
+		@NotNull
 		@Override
 		public Iterator<T> iterator() {
 			return ConvertingIterator.createConverterOneDirectional(list.iterator(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public Object[] toArray() {
 			//noinspection unchecked
@@ -187,9 +191,10 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return ret;
 		}
 		
+		@NotNull
 		@Override
 		@SuppressWarnings("unchecked")
-		public <T1> T1[] toArray(T1[] a) {
+		public <T1> T1[] toArray(@NotNull T1[] a) {
 			F[] org = (F[]) list.toArray();
 			if (a.length < org.length) {
 				//new instance
@@ -219,7 +224,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			for (F f : list)
 				if (!c.contains(remap.apply(f)))
 					return false;
@@ -227,22 +232,22 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
-		public boolean addAll(Collection<? extends T> c) {
+		public boolean addAll(@NotNull Collection<? extends T> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
-		public boolean addAll(int index, Collection<? extends T> c) {
+		public boolean addAll(int index, @NotNull Collection<? extends T> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		
@@ -298,16 +303,19 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return -1;
 		}
 		
+		@NotNull
 		@Override
 		public ListIterator<T> listIterator() {
 			return new ConvertingListIterator.OneDirectionalUnmodifiable<>(list.listIterator(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public ListIterator<T> listIterator(int index) {
 			return new ConvertingListIterator.OneDirectionalUnmodifiable<>(list.listIterator(index), remap);
 		}
 		
+		@NotNull
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
 			return new ConvertingList.OneDirectionalUnmodifiable<>(list.subList(fromIndex, toIndex), remap);
@@ -323,8 +331,9 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			list.forEach(f -> action.accept(remap.apply(f)));
 		}
 		
+		@NotNull
 		@Override
-		public <TSHTYPE> TSHTYPE toTSH(ToStringHelper<TSHTYPE> api) {
+		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("list", this.list);
 			tsh.add("remap", this.remap);
@@ -349,7 +358,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			return list.containsAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
@@ -365,6 +374,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return list.lastIndexOf(reverse.apply((T) o));
 		}
 		
+		@NotNull
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
 			return new ConvertingList.BiDirectionalUnmodifiable<>(list.subList(fromIndex, toIndex), remap, reverse);
@@ -398,17 +408,17 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
-		public boolean addAll(Collection<? extends T> c) {
+		public boolean addAll(@NotNull Collection<? extends T> c) {
 			return list.addAll(new ConvertingCollection.OneDirectionalUnmodifiable<>(c, reverseSparse));
 		}
 		
 		@Override
-		public boolean addAll(int index, Collection<? extends T> c) {
+		public boolean addAll(int index, @NotNull Collection<? extends T> c) {
 			return list.addAll(index, new ConvertingCollection.OneDirectionalUnmodifiable<>(c, reverseSparse));
 		}
 		
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			boolean mod = false;
 			Iterator<F> iter = list.iterator();
 			while (iter.hasNext()) {
@@ -422,7 +432,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			boolean mod = false;
 			Iterator<F> iter = list.iterator();
 			while (iter.hasNext()) {
@@ -469,21 +479,25 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return remap.apply(list.remove(index));
 		}
 		
+		@NotNull
 		@Override
 		public Iterator<T> iterator() {
 			return ConvertingIterator.createConverterOneDirectional(list.iterator(), remap);
 		}
 		
+		@NotNull
 		@Override
 		public ListIterator<T> listIterator() {
 			return new ConvertingListIterator.BiDirectional<>(list.listIterator(), remap, reverseSparse);
 		}
 		
+		@NotNull
 		@Override
 		public ListIterator<T> listIterator(int index) {
 			return new ConvertingListIterator.BiDirectional<>(list.listIterator(index), remap, reverseSparse);
 		}
 		
+		@NotNull
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
 			return new ConvertingList.BiDirectionalSparse<>(list.subList(fromIndex, toIndex), remap, reverseSparse);
@@ -522,19 +536,19 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			return list.removeAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			return list.retainAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(@NotNull Collection<?> c) {
 			return list.containsAll(new ConvertingCollection.BiDirectionalUnmodifiable<>((Collection<T>) c, reverse, remap));
 		}
 		
@@ -550,6 +564,7 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			return list.lastIndexOf(reverse.apply((T) o));
 		}
 		
+		@NotNull
 		@Override
 		public List<T> subList(int fromIndex, int toIndex) {
 			return new ConvertingList.BiDirectional<>(list.subList(fromIndex, toIndex), remap, reverse, reverseSparse);

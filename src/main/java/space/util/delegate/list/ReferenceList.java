@@ -1,5 +1,6 @@
 package space.util.delegate.list;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.iterator.ReferenceIterator;
 import space.util.delegate.list.listiterator.ReferenceListIterator;
 import space.util.delegate.util.ReferenceUtil;
@@ -24,21 +25,25 @@ public class ReferenceList<E> extends ConvertingList.BiDirectionalSparse<Referen
 		this.reverseSparse = refCreator;
 	}
 	
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return new ReferenceIterator<>(list.iterator());
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator() {
 		return new ReferenceListIterator<>(list.listIterator(), reverseSparse);
 	}
 	
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator(int index) {
 		return new ReferenceListIterator<>(list.listIterator(index), reverseSparse);
 	}
 	
+	@NotNull
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		return new ReferenceList<>(list.subList(fromIndex, toIndex), reverseSparse);
