@@ -33,7 +33,9 @@ public class NioByteBufferWrapper {
 	
 	/**
 	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
-	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
+	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 *
+	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
 	 */
 	public static ByteBuffer wrap(DirectBuffer buffer) {
 		long capacity = buffer.capacity();
@@ -44,19 +46,34 @@ public class NioByteBufferWrapper {
 	
 	/**
 	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
-	 * Note that a Reference to buffer should be kept during the existence of the returned ByteBuffer, otherwise you risk a free and with that a SegFault!
+	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 *
+	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
+	 * @param length the length the {@link ByteBuffer} should have (32 bits only!)
 	 */
 	public static ByteBuffer wrap(DirectBuffer buffer, int length) {
-		if (length > buffer.capacity())
-			throw new RuntimeException("length exceeds capacity: " + length + " > " + buffer.capacity());
+		return wrap(buffer, 0, length);
+	}
+	
+	/**
+	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
+	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 *
+	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
+	 * @param offset the offset at which the the returned {@link ByteBuffer} should begin
+	 * @param length the length the {@link ByteBuffer} should have (32 bits only!)
+	 */
+	public static ByteBuffer wrap(DirectBuffer buffer, long offset, int length) {
+		if (offset + length > buffer.capacity())
+			throw new RuntimeException("Total length exceeds capacity: " + (offset + length) + " > " + buffer.capacity());
 		
 		try {
 			ByteBuffer b = (ByteBuffer) UNSAFE.allocateInstance(BYTE_BUFFER_CLASS);
-			UNSAFE.putLong(b, BYTE_BUFFER_ADDRESS, buffer.address());
+			UNSAFE.putLong(b, BYTE_BUFFER_ADDRESS, buffer.address() + offset);
 			UNSAFE.putInt(b, BYTE_BUFFER_CAPACITY, length);
 			
-			b.order(ByteOrder.nativeOrder());
-			b.clear();
+			b.order(ByteOrder.nativeOrder()); //resets the variables 'bigEndian' and 'nativeByteOrder'
+			b.clear(); //resets the variables 'position', 'limit' and 'mark', not clearing the buffer
 			return b;
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);

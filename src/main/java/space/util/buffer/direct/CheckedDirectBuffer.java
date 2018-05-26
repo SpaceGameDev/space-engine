@@ -7,7 +7,8 @@ import space.util.freeableStorage.FreeableStorage;
 import space.util.string.String2D;
 
 /**
- * wraps a {@link DirectBuffer} and checks all parameters, throwing exceptions when going {@link BufferOutOfBoundsException} or {@link BufferAddressNullException}.
+ * Wraps a {@link DirectBuffer} and checks all parameters,
+ * throwing exceptions like {@link BufferOutOfBoundsException} or {@link BufferAddressNullException} when something is wrong.
  */
 public class CheckedDirectBuffer implements DirectBuffer {
 	
@@ -34,7 +35,7 @@ public class CheckedDirectBuffer implements DirectBuffer {
 		
 		if (address == 0)
 			throw new BufferAddressNullException();
-		if (!(0 <= offset && length + offset <= capacity))
+		if (!(0 <= offset && offset + length <= capacity))
 			throw new BufferOutOfBoundsException(address, capacity, offset, length);
 	}
 	

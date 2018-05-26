@@ -6,19 +6,16 @@ import sun.misc.Unsafe;
 import static sun.misc.Unsafe.ARRAY_BOOLEAN_BASE_OFFSET;
 
 /**
- * {@link AllowBooleanArrayCopy#ALLOW_BOOLEAN_ARRAY_COPY} is true if
- * <ul>
- * <li>a boolean being false == 0</li>
- * <li>a boolean being true != 0</li>
- * </ul>
- * This allows us to just copy the booleans instead of converting them individually.
+ * @see AllowBooleanArrayCopy#ALLOW_BOOLEAN_ARRAY_COPY
  */
 public class AllowBooleanArrayCopy {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
 	/**
-	 * @see AllowBooleanArrayCopy
+	 * this is true if booleans are
+	 * <code>false == 0 && true != 0</code>.<br>
+	 * This allows us to just copy any boolean arrays into off-heap buffers instead of converting them individually.
 	 */
 	public static final boolean ALLOW_BOOLEAN_ARRAY_COPY;
 	

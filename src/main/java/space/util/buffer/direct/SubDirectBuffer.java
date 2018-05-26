@@ -1,15 +1,17 @@
 package space.util.buffer.direct;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 public class SubDirectBuffer extends NotFreeableDirectBuffer {
 	
+	@Nullable
 	public Object parent;
 	
-	public SubDirectBuffer(long address, long capacity, Object parent, FreeableStorage... lists) {
+	public SubDirectBuffer(long address, long capacity, @Nullable Object parent, FreeableStorage... lists) {
 		super(address, capacity, lists);
 		this.parent = parent;
 	}

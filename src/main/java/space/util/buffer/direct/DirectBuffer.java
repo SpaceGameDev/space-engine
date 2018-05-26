@@ -3,7 +3,9 @@ package space.util.buffer.direct;
 import space.util.string.String2D;
 
 /**
- * A {@link DirectBuffer} interface, allowing you to
+ * A {@link DirectBuffer} is a piece of memory allocated off-heap.
+ * It can be used to interact with native code more easily, as it will not be affected by the Garbage Collector.
+ * <p>The following functions are available: </p>
  * <ul>
  * <li>get the {@link DirectBuffer#address()}</li>
  * <li>get the {@link DirectBuffer#capacity()}</li>

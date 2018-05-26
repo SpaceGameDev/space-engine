@@ -17,7 +17,8 @@ import static space.util.math.MathUtils.min;
 import static sun.misc.Unsafe.*;
 
 /**
- * A simple <b>UNCHECKED</b> implementation of {@link DirectBuffer}
+ * An <b>UNCHECKED</b> implementation of {@link DirectBuffer}.
+ * <p>Use {@link CheckedDirectBuffer} if you need any access checked.</p>
  */
 public class DirectBufferImpl implements DirectBuffer, ToString {
 	

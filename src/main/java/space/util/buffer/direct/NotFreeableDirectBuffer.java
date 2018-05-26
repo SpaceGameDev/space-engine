@@ -3,7 +3,8 @@ package space.util.buffer.direct;
 import space.util.freeableStorage.FreeableStorage;
 
 /**
- * calling {@link NotFreeableDirectBuffer#free()} will invalidate the Buffer <b>BUT NOT free it</b>
+ * This Buffer will <b>NOT</b> be freed. <br>
+ * Calling {@link NotFreeableDirectBuffer#free()} will invalidate the Buffer <b>BUT NOT free it</b>
  */
 public class NotFreeableDirectBuffer extends DirectBufferImpl {
 	
