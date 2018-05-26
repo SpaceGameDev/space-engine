@@ -1,5 +1,7 @@
 package space.engine.window.glfw;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.window.exception.WindowFrameworkInitializationException;
 import space.util.freeableStorage.FreeableStorage;
@@ -11,10 +13,12 @@ public class GLFWInstance {
 	
 	public static final Object GLFW_SYNC = new Object();
 	
+	//static
+	@Nullable
 	public static Storage instanceRef;
+	@NotNull
 	public static GLFWErrorCallbackI glfwErrorCallback = new GLFWErrorCallback();
 	
-	//static
 	public static synchronized GLFWInstance getInstance() {
 		if (instanceRef != null) {
 			GLFWInstance inst = instanceRef.get();
@@ -28,7 +32,7 @@ public class GLFWInstance {
 	}
 	
 	//object
-	public GLFWInstance() {
+	private GLFWInstance() {
 		if (!glfwInit())
 			throw new WindowFrameworkInitializationException("glfwInit() returned false!");
 		glfwSetErrorCallback(glfwErrorCallback);
