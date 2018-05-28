@@ -5,7 +5,7 @@ import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
-import static space.util.primitive.NativeType.INT64;
+import static space.util.primitive.Primitives.INT64;
 
 public class ArrayBufferLong extends AbstractArrayBuffer<ArrayBufferLong> {
 	

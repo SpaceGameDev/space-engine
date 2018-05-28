@@ -8,30 +8,30 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 @SuppressWarnings("unused")
-public class NativeType implements ToString {
+public class Primitives implements ToString {
 	
-	public static final NativeType BYTE = new NativeType(1, false);
-	public static final NativeType BOOLEAN = new NativeType(1, false);
-	public static final NativeType POINTER = new NativeType(SystemInfo.archBits / 8, false);
+	public static final Primitives BYTE = new Primitives(1, false);
+	public static final Primitives BOOLEAN = new Primitives(1, false);
+	public static final Primitives POINTER = new Primitives(SystemInfo.archBits / 8, false);
 	
-	public static final NativeType NINT8 = new NativeType(1, false);
-	public static final NativeType NINT16 = new NativeType(2, false);
-	public static final NativeType NINT32 = new NativeType(4, false);
-	public static final NativeType NINT64 = new NativeType(8, false);
+	public static final Primitives NINT8 = new Primitives(1, false);
+	public static final Primitives NINT16 = new Primitives(2, false);
+	public static final Primitives NINT32 = new Primitives(4, false);
+	public static final Primitives NINT64 = new Primitives(8, false);
 	
-	public static final NativeType UINT8 = new NativeType(1, false);
-	public static final NativeType UINT16 = new NativeType(2, false);
-	public static final NativeType UINT32 = new NativeType(4, false);
-	public static final NativeType UINT64 = new NativeType(8, false);
+	public static final Primitives UINT8 = new Primitives(1, false);
+	public static final Primitives UINT16 = new Primitives(2, false);
+	public static final Primitives UINT32 = new Primitives(4, false);
+	public static final Primitives UINT64 = new Primitives(8, false);
 	
-	public static final NativeType INT8 = new NativeType(1, true);
-	public static final NativeType INT16 = new NativeType(2, true);
-	public static final NativeType INT32 = new NativeType(4, true);
-	public static final NativeType INT64 = new NativeType(8, true);
+	public static final Primitives INT8 = new Primitives(1, true);
+	public static final Primitives INT16 = new Primitives(2, true);
+	public static final Primitives INT32 = new Primitives(4, true);
+	public static final Primitives INT64 = new Primitives(8, true);
 	
-	public static final NativeType FP16 = new NativeType(2, false);
-	public static final NativeType FP32 = new NativeType(4, false);
-	public static final NativeType FP64 = new NativeType(8, false);
+	public static final Primitives FP16 = new Primitives(2, false);
+	public static final Primitives FP32 = new Primitives(4, false);
+	public static final Primitives FP64 = new Primitives(8, false);
 	
 	public final int BYTES;
 	public final int BITS;
@@ -39,7 +39,7 @@ public class NativeType implements ToString {
 	public final int SHIFT;
 	public final boolean HASSIGN;
 	
-	public NativeType(int bytes, boolean hasSign) {
+	public Primitives(int bytes, boolean hasSign) {
 		this.BYTES = bytes;
 		this.BITS = this.BYTES * 8;
 		this.ISALIGNED = UnsignedMath.isPowerOfTwo(bytes);
@@ -47,7 +47,7 @@ public class NativeType implements ToString {
 		this.HASSIGN = hasSign;
 	}
 	
-	public NativeType(int BYTES, int BITS, boolean ISALIGNED, int SHIFT, boolean HASSIGN) {
+	public Primitives(int BYTES, int BITS, boolean ISALIGNED, int SHIFT, boolean HASSIGN) {
 		this.BYTES = BYTES;
 		this.BITS = BITS;
 		this.ISALIGNED = ISALIGNED;

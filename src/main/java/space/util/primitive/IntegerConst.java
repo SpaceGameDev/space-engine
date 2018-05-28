@@ -1,6 +1,6 @@
 package space.util.primitive;
 
-import static space.util.primitive.NativeType.*;
+import static space.util.primitive.Primitives.*;
 
 public class IntegerConst {
 	

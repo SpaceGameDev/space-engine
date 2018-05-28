@@ -5,7 +5,7 @@ import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
-import static space.util.primitive.NativeType.FP64;
+import static space.util.primitive.Primitives.FP64;
 
 public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	

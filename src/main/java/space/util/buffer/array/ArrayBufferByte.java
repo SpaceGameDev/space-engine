@@ -5,7 +5,7 @@ import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
-import static space.util.primitive.NativeType.INT8;
+import static space.util.primitive.Primitives.INT8;
 
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
