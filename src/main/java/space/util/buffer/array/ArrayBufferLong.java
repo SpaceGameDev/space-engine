@@ -10,11 +10,11 @@ import static space.util.primitive.Primitives.INT64;
 public class ArrayBufferLong extends AbstractArrayBuffer<ArrayBufferLong> {
 	
 	public static ArrayBufferLong alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferLong(alloc.alloc(address, INT64.multiply(length), parents), length);
+		return new ArrayBufferLong(alloc.alloc(address, length * INT64.bytes, parents), length);
 	}
 	
 	public static ArrayBufferLong malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferLong(alloc.malloc(INT64.multiply(length), parents), length);
+		return new ArrayBufferLong(alloc.malloc(length * INT64.bytes, parents), length);
 	}
 	
 	public ArrayBufferLong(DirectBuffer buffer) {
@@ -61,11 +61,11 @@ public class ArrayBufferLong extends AbstractArrayBuffer<ArrayBufferLong> {
 	
 	//single
 	public static ArrayBufferLongSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferLongSingle(alloc.alloc(address, INT64.BYTES, parents));
+		return new ArrayBufferLongSingle(alloc.alloc(address, INT64.bytes, parents));
 	}
 	
 	public static ArrayBufferLongSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferLongSingle(alloc.malloc(INT64.BYTES, parents));
+		return new ArrayBufferLongSingle(alloc.malloc(INT64.bytes, parents));
 	}
 	
 	public static class ArrayBufferLongSingle extends AbstractArrayBuffer<ArrayBufferLongSingle> {
@@ -75,7 +75,7 @@ public class ArrayBufferLong extends AbstractArrayBuffer<ArrayBufferLong> {
 		}
 		
 		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != INT64.BYTES)
+			if (buffer.capacity() != INT64.bytes)
 				throw new IllegalArgumentException("Buffer too big!");
 			return buffer;
 		}

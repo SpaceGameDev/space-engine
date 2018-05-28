@@ -26,17 +26,9 @@ public class Primitive<T> {
 	public final int shift;
 	
 	public Primitive(int bytes) {
-		this(bytes, UnsignedMath.isPowerOfTwo(bytes));
-	}
-	
-	private Primitive(int bytes, boolean isAligned) {
-		this(bytes, bytes * 8, isAligned, isAligned ? UnsignedMath.getPowerOfTwoFloor(bytes) : -1);
-	}
-	
-	public Primitive(int bytes, int bits, boolean isAligned, int shift) {
 		this.bytes = bytes;
-		this.bits = bits;
-		this.isAligned = isAligned;
-		this.shift = shift;
+		this.bits = bytes * 8;
+		this.isAligned = UnsignedMath.isPowerOfTwo(bytes);
+		this.shift = isAligned ? UnsignedMath.getPowerOfTwoFloor(bytes) : -1;
 	}
 }

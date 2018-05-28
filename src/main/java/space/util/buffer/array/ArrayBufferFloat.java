@@ -10,11 +10,11 @@ import static space.util.primitive.Primitives.FP32;
 public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	
 	public static ArrayBufferFloat alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferFloat(alloc.alloc(address, FP32.multiply(length), parents), length);
+		return new ArrayBufferFloat(alloc.alloc(address, length * FP32.bytes, parents), length);
 	}
 	
 	public static ArrayBufferFloat malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferFloat(alloc.malloc(FP32.multiply(length), parents), length);
+		return new ArrayBufferFloat(alloc.malloc(length * FP32.bytes, parents), length);
 	}
 	
 	public ArrayBufferFloat(DirectBuffer buffer) {
@@ -61,11 +61,11 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	
 	//single
 	public static ArrayBufferFloatSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferFloatSingle(alloc.alloc(address, FP32.BYTES, parents));
+		return new ArrayBufferFloatSingle(alloc.alloc(address, FP32.bytes, parents));
 	}
 	
 	public static ArrayBufferFloatSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferFloatSingle(alloc.malloc(FP32.BYTES, parents));
+		return new ArrayBufferFloatSingle(alloc.malloc(FP32.bytes, parents));
 	}
 	
 	public static class ArrayBufferFloatSingle extends AbstractArrayBuffer<ArrayBufferFloatSingle> {
@@ -75,7 +75,7 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 		}
 		
 		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != FP32.BYTES)
+			if (buffer.capacity() != FP32.bytes)
 				throw new IllegalArgumentException("Buffer too big!");
 			return buffer;
 		}

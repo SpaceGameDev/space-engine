@@ -5,20 +5,24 @@ import space.util.annotation.Self;
 import space.util.buffer.Buffer;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
-import space.util.primitive.Primitives;
+import space.util.primitive.Primitive;
 import space.util.string.String2D;
 
 public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> implements Buffer {
 	
 	public final DirectBuffer buffer;
-	public final Primitives type;
+	public final Primitive<?> type;
 	public final long length;
 	
-	public AbstractArrayBuffer(DirectBuffer buffer, Primitives type) {
-		this(buffer, type, type.divide(buffer.capacity()));
+	public AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type) {
+		this(buffer, type, calculateLength(buffer, type));
 	}
 	
-	protected AbstractArrayBuffer(DirectBuffer buffer, Primitives type, long length) {
+	public static long calculateLength(DirectBuffer buffer, Primitive<?> type) {
+		return type.isAligned ? buffer.capacity() >>> type.shift : buffer.capacity() / type.bytes;
+	}
+	
+	protected AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type, long length) {
 		this.buffer = buffer;
 		this.type = type;
 		this.length = length;
@@ -30,11 +34,11 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 	}
 	
 	public long getOffset(long index) {
-		return type.multiply(index);
+		return index * type.bytes;
 	}
 	
 	public long getOffset(long index, long offset) {
-		return type.multiply(index, offset);
+		return index * type.bytes + offset;
 	}
 	
 	//buffer copy

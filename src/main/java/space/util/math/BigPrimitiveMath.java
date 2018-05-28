@@ -1,6 +1,6 @@
 package space.util.math;
 
-import space.util.primitive.IntegerConst;
+import space.util.primitive.Primitives;
 
 import static space.util.Empties.EMPTY_INT_ARRAY;
 
@@ -119,19 +119,19 @@ public class BigPrimitiveMath {
 	
 	//signed
 	public static byte byteFromIntArraySigned(int[] v, boolean sign) {
-		return (byte) ((intFromIntArrayUnsigned(v) & IntegerConst.INT8MaskNumber) | (sign ? 0 : IntegerConst.INT8MaskSign));
+		return (byte) ((intFromIntArrayUnsigned(v) & Primitives.INT8.numberMask) | (sign ? 0 : Primitives.INT8.signMask));
 	}
 	
 	public static short shortFromIntArraySigned(int[] v, boolean sign) {
-		return (short) ((intFromIntArrayUnsigned(v) & IntegerConst.INT16MaskNumber) | (sign ? 0 : IntegerConst.INT16MaskSign));
+		return (short) ((intFromIntArrayUnsigned(v) & Primitives.INT16.numberMask) | (sign ? 0 : Primitives.INT16.signMask));
 	}
 	
 	public static int intFromIntArraySigned(int[] v, boolean sign) {
-		return (intFromIntArrayUnsigned(v) & IntegerConst.INT32MaskNumber) | (sign ? 0 : IntegerConst.INT32MaskSign);
+		return (intFromIntArrayUnsigned(v) & Primitives.INT32.numberMask) | (sign ? 0 : Primitives.INT32.signMask);
 	}
 	
 	public static long longFromIntArraySigned(int[] v, boolean sign) {
-		return (longFromIntArrayUnsigned(v) & IntegerConst.INT64MaskNumber) | (sign ? 0 : IntegerConst.INT64MaskSign);
+		return (longFromIntArrayUnsigned(v) & Primitives.INT64.numberMask) | (sign ? 0 : Primitives.INT64.signMask);
 	}
 	
 	//fixed
@@ -160,18 +160,18 @@ public class BigPrimitiveMath {
 	
 	//getSign
 	public static boolean getSign(byte b) {
-		return (b & IntegerConst.INT8MaskSign) == 0;
+		return (b & Primitives.INT8.signMask) == 0;
 	}
 	
 	public static boolean getSign(short b) {
-		return (b & IntegerConst.INT16MaskSign) == 0;
+		return (b & Primitives.INT16.signMask) == 0;
 	}
 	
 	public static boolean getSign(int b) {
-		return (b & IntegerConst.INT32MaskSign) == 0;
+		return (b & Primitives.INT32.signMask) == 0;
 	}
 	
 	public static boolean getSign(long b) {
-		return (b & IntegerConst.INT64MaskSign) == 0;
+		return (b & Primitives.INT64.signMask) == 0;
 	}
 }

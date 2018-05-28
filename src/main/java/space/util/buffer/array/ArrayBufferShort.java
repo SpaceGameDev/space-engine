@@ -10,11 +10,11 @@ import static space.util.primitive.Primitives.INT16;
 public class ArrayBufferShort extends AbstractArrayBuffer<ArrayBufferShort> {
 	
 	public static ArrayBufferShort alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferShort(alloc.alloc(address, INT16.multiply(length), parents), length);
+		return new ArrayBufferShort(alloc.alloc(address, length * INT16.bytes, parents), length);
 	}
 	
 	public static ArrayBufferShort malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferShort(alloc.malloc(INT16.multiply(length), parents), length);
+		return new ArrayBufferShort(alloc.malloc(length * INT16.bytes, parents), length);
 	}
 	
 	public ArrayBufferShort(DirectBuffer buffer) {
@@ -61,11 +61,11 @@ public class ArrayBufferShort extends AbstractArrayBuffer<ArrayBufferShort> {
 	
 	//single
 	public static ArrayBufferShortSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferShortSingle(alloc.alloc(address, INT16.BYTES, parents));
+		return new ArrayBufferShortSingle(alloc.alloc(address, INT16.bytes, parents));
 	}
 	
 	public static ArrayBufferShortSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferShortSingle(alloc.malloc(INT16.BYTES, parents));
+		return new ArrayBufferShortSingle(alloc.malloc(INT16.bytes, parents));
 	}
 	
 	public static class ArrayBufferShortSingle extends AbstractArrayBuffer<ArrayBufferShortSingle> {
@@ -75,7 +75,7 @@ public class ArrayBufferShort extends AbstractArrayBuffer<ArrayBufferShort> {
 		}
 		
 		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != INT16.BYTES)
+			if (buffer.capacity() != INT16.bytes)
 				throw new IllegalArgumentException("Buffer too big!");
 			return buffer;
 		}

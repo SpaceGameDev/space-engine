@@ -10,11 +10,11 @@ import static space.util.primitive.Primitives.INT8;
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
 	public static ArrayBufferByte alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferByte(alloc.alloc(address, INT8.multiply(length), parents), length);
+		return new ArrayBufferByte(alloc.alloc(address, length * INT8.bytes, parents), length);
 	}
 	
 	public static ArrayBufferByte malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferByte(alloc.malloc(INT8.multiply(length), parents), length);
+		return new ArrayBufferByte(alloc.malloc(length * INT8.bytes, parents), length);
 	}
 	
 	public ArrayBufferByte(DirectBuffer buffer) {
@@ -61,11 +61,11 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
 	//single
 	public static ArrayBufferByteSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferByteSingle(alloc.alloc(address, INT8.BYTES, parents));
+		return new ArrayBufferByteSingle(alloc.alloc(address, INT8.bytes, parents));
 	}
 	
 	public static ArrayBufferByteSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferByteSingle(alloc.malloc(INT8.BYTES, parents));
+		return new ArrayBufferByteSingle(alloc.malloc(INT8.bytes, parents));
 	}
 	
 	public static class ArrayBufferByteSingle extends AbstractArrayBuffer<ArrayBufferByteSingle> {
@@ -75,7 +75,7 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 		}
 		
 		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != INT8.BYTES)
+			if (buffer.capacity() != INT8.bytes)
 				throw new IllegalArgumentException("Buffer too big!");
 			return buffer;
 		}

@@ -10,11 +10,11 @@ import static space.util.primitive.Primitives.FP64;
 public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	
 	public static ArrayBufferDouble alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferDouble(alloc.alloc(address, FP64.multiply(length), parents), length);
+		return new ArrayBufferDouble(alloc.alloc(address, length * FP64.bytes, parents), length);
 	}
 	
 	public static ArrayBufferDouble malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferDouble(alloc.malloc(FP64.multiply(length), parents), length);
+		return new ArrayBufferDouble(alloc.malloc(length * FP64.bytes, parents), length);
 	}
 	
 	public ArrayBufferDouble(DirectBuffer buffer) {
@@ -61,11 +61,11 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	
 	//single
 	public static ArrayBufferDoubleSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferDoubleSingle(alloc.alloc(address, FP64.BYTES, parents));
+		return new ArrayBufferDoubleSingle(alloc.alloc(address, FP64.bytes, parents));
 	}
 	
 	public static ArrayBufferDoubleSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferDoubleSingle(alloc.malloc(FP64.BYTES, parents));
+		return new ArrayBufferDoubleSingle(alloc.malloc(FP64.bytes, parents));
 	}
 	
 	public static class ArrayBufferDoubleSingle extends AbstractArrayBuffer<ArrayBufferDoubleSingle> {
@@ -75,7 +75,7 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 		}
 		
 		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != FP64.BYTES)
+			if (buffer.capacity() != FP64.bytes)
 				throw new IllegalArgumentException("Buffer too big!");
 			return buffer;
 		}

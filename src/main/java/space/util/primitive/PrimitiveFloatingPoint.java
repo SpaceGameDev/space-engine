@@ -1,6 +1,6 @@
 package space.util.primitive;
 
-public class PrimitiveFloatingPoint extends PrimitiveSigned {
+public class PrimitiveFloatingPoint<T> extends PrimitiveSigned<T> {
 	
 	/**
 	 * bit where the fraction starts
@@ -16,6 +16,11 @@ public class PrimitiveFloatingPoint extends PrimitiveSigned {
 	 * size of the fraction
 	 */
 	public final int fractionSize;
+	
+	/**
+	 * mask for only fraction
+	 */
+	public final T fractionMask;
 	
 	/**
 	 * size of the fraction including the leading 1 not in the data type
@@ -37,27 +42,22 @@ public class PrimitiveFloatingPoint extends PrimitiveSigned {
 	 */
 	public final int exponentSize;
 	
-	public PrimitiveFloatingPoint(int bytes, int signBit, int fractionStart, int fractionSize, int exponentStart, int exponentSize) {
-		super(bytes, signBit);
-		
-		this.fractionStart = fractionStart;
-		this.fractionEnd = fractionStart + fractionSize;
-		this.fractionSize = fractionSize;
-		this.fractionFullSize = fractionSize + 1;
-		this.exponentStart = exponentStart;
-		this.exponentEnd = exponentStart + exponentSize;
-		this.exponentSize = exponentSize;
-	}
+	/**
+	 * mask for only exponent
+	 */
+	public final T exponentMask;
 	
-	public PrimitiveFloatingPoint(int bytes, int bits, boolean isAligned, int shift, int signBit, int fractionStart, int fractionSize, int exponentStart, int exponentSize) {
-		super(bytes, bits, isAligned, shift, signBit);
+	public PrimitiveFloatingPoint(int bytes, int signBit, T signMask, T numberMask, int fractionStart, int fractionSize, T fractionMask, int exponentStart, int exponentSize, T exponentMask) {
+		super(bytes, signBit, signMask, numberMask);
 		
 		this.fractionStart = fractionStart;
 		this.fractionEnd = fractionStart + fractionSize;
 		this.fractionSize = fractionSize;
 		this.fractionFullSize = fractionSize + 1;
+		this.fractionMask = fractionMask;
 		this.exponentStart = exponentStart;
 		this.exponentEnd = exponentStart + exponentSize;
 		this.exponentSize = exponentSize;
+		this.exponentMask = exponentMask;
 	}
 }

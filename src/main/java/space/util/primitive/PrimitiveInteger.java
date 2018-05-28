@@ -1,12 +1,20 @@
 package space.util.primitive;
 
-public class PrimitiveInteger extends PrimitiveSigned {
+public class PrimitiveInteger<T> extends PrimitiveSigned<T> {
 	
-	public PrimitiveInteger(int bytes, int signBit) {
-		super(bytes, signBit);
-	}
+	/**
+	 * the min value this Integer can have
+	 */
+	public final T minValue;
 	
-	public PrimitiveInteger(int bytes, int bits, boolean isAligned, int shift, int signBit) {
-		super(bytes, bits, isAligned, shift, signBit);
+	/**
+	 * the max value this Integer can have
+	 */
+	public final T maxValue;
+	
+	public PrimitiveInteger(int bytes, T signMask, T numberMask, T minValue, T maxValue) {
+		super(bytes, bytes * 8 - 1, signMask, numberMask);
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 	}
 }
