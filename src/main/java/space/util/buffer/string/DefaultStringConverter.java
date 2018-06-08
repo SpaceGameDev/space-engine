@@ -1,8 +1,7 @@
 package space.util.buffer.string;
 
-import space.util.buffer.alloc.BufferAllocator;
+import space.util.buffer.NioByteBufferWrapper;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.buffer.direct.NioByteBufferWrapper;
 
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;

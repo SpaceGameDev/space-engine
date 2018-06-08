@@ -8,6 +8,4 @@ public interface Buffer extends FreeableWithStorage, Dumpable {
 	long address();
 	
 	long capacity();
-	
-	void clear();
 }

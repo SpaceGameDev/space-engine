@@ -1,20 +1,14 @@
 package space.util.buffer.array;
 
-import space.util.buffer.alloc.AllocMethod;
-import space.util.buffer.alloc.MallocMethod;
+import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.FreeableStorage;
 
 import static space.util.primitive.Primitives.INT8;
 
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
-	public static ArrayBufferByte alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferByte(alloc.alloc(address, length * INT8.bytes, parents), length);
-	}
-	
-	public static ArrayBufferByte malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferByte(alloc.malloc(length * INT8.bytes, parents), length);
+	public static Allocator<ArrayBufferByte> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new AbstractArrayBuffer.ArrayAllocator<>(alloc, INT8, ArrayBufferByte::new);
 	}
 	
 	public ArrayBufferByte(DirectBuffer buffer) {
@@ -57,35 +51,5 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
 	public void copyFrom(byte[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
-	}
-	
-	//single
-	public static ArrayBufferByteSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferByteSingle(alloc.alloc(address, INT8.bytes, parents));
-	}
-	
-	public static ArrayBufferByteSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
-		return new ArrayBufferByteSingle(alloc.malloc(INT8.bytes, parents));
-	}
-	
-	public static class ArrayBufferByteSingle extends AbstractArrayBuffer<ArrayBufferByteSingle> {
-		
-		protected ArrayBufferByteSingle(DirectBuffer buffer) {
-			super(check(buffer), INT8, 1);
-		}
-		
-		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != INT8.bytes)
-				throw new IllegalArgumentException("Buffer too big!");
-			return buffer;
-		}
-		
-		public byte getByte() {
-			return buffer.getByte(0);
-		}
-		
-		public void putByte(byte b) {
-			buffer.putByte(0, b);
-		}
 	}
 }

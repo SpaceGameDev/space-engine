@@ -3,7 +3,7 @@ package space.util.unsafe;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
 
-import static space.util.buffer.direct.AllowBooleanArrayCopy.ALLOW_BOOLEAN_ARRAY_COPY;
+import static space.util.buffer.AllowBooleanArrayCopy.ALLOW_BOOLEAN_ARRAY_COPY;
 import static sun.misc.Unsafe.*;
 
 public class VMDefinitionInfoDebug {

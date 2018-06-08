@@ -1,5 +1,8 @@
 package space.util.stack.multistack;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.ArrayUtils;
 import space.util.stack.PointerList;
 
@@ -13,22 +16,24 @@ public class MultiStack<T> implements IMultiStack<T> {
 	public int size;
 	public T[] array;
 	
+	@Nullable
 	public Consumer<T> onDelete;
-	public PointerList pointerList = new PointerList();
+	@NotNull
+	public PointerList pointerList;
 	
-	public MultiStack(int initsize) {
-		this(initsize, null);
+	public MultiStack() {
+		this(null);
 	}
 	
-	public MultiStack(Consumer<T> onDelete) {
+	public MultiStack(@Nullable Consumer<T> onDelete) {
 		this(DEFAULT_START_SIZE, onDelete);
 	}
 	
-	public MultiStack(int initSize, Consumer<T> onDelete) {
+	public MultiStack(int initSize, @Nullable Consumer<T> onDelete) {
 		this(initSize, onDelete, new PointerList());
 	}
 	
-	protected MultiStack(int initSize, Consumer<T> onDelete, PointerList pointerList) {
+	public MultiStack(int initSize, @Nullable Consumer<T> onDelete, @NotNull PointerList pointerList) {
 		this.size = 0;
 		//noinspection unchecked
 		this.array = (T[]) new Object[initSize];
@@ -46,6 +51,7 @@ public class MultiStack<T> implements IMultiStack<T> {
 	}
 	
 	@Override
+	@Contract("null -> null; !null -> !null")
 	public <X extends T> X put(X t) {
 		int pos = size++;
 		ensureCapacity(size);
@@ -74,8 +80,7 @@ public class MultiStack<T> implements IMultiStack<T> {
 	public void popPointer(long idl) {
 		int id = (int) idl;
 		if (onDelete != null)
-			for (int i = id; i < size; i++)
-				onDelete.accept(array[i]);
+			Arrays.stream(array, id, size).forEach(onDelete);
 		
 		Arrays.fill(array, id, size, null);
 	}

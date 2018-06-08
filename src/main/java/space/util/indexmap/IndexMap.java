@@ -1,7 +1,6 @@
 package space.util.indexmap;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.util.Empties;
 
 import java.util.Collection;
@@ -26,21 +25,21 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default void add(@Nullable VALUE value) {
+	default void add(VALUE value) {
 		put(size(), value);
 	}
 	
-	@Nullable VALUE get(int index);
+	VALUE get(int index);
 	
 	@NotNull Entry<VALUE> getEntry(int index);
 	
-	@Nullable VALUE put(int index, @Nullable VALUE value);
+	VALUE put(int index, VALUE value);
 	
-	@Nullable VALUE remove(int index);
+	VALUE remove(int index);
 	
-	@Nullable VALUE[] toArray();
+	VALUE[] toArray();
 	
-	@Nullable VALUE[] toArray(@NotNull VALUE[] array);
+	VALUE[] toArray(@NotNull VALUE[] array);
 	
 	//addAll
 	default void addAll(@NotNull Collection<? extends VALUE> coll) {
@@ -61,14 +60,13 @@ public interface IndexMap<VALUE> {
 	}
 	
 	//advanced access
-	@Nullable
-	default VALUE getOrDefault(int index, @Nullable VALUE def) {
+	
+	default VALUE getOrDefault(int index, VALUE def) {
 		VALUE v = get(index);
 		return v == null ? def : v;
 	}
 	
-	@Nullable
-	default VALUE putIfAbsent(int index, @Nullable VALUE value) {
+	default VALUE putIfAbsent(int index, VALUE value) {
 		VALUE oldValue = get(index);
 		if (oldValue != null)
 			return oldValue;
@@ -77,8 +75,8 @@ public interface IndexMap<VALUE> {
 		return value;
 	}
 	
-	@Nullable
-	default VALUE putIfPresent(int index, @Nullable VALUE value) {
+	@SuppressWarnings("ConstantConditions")
+	default VALUE putIfPresent(int index, VALUE value) {
 		VALUE oldValue = get(index);
 		if (oldValue == null)
 			return null;
@@ -87,7 +85,7 @@ public interface IndexMap<VALUE> {
 		return value;
 	}
 	
-	default boolean replace(int index, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
+	default boolean replace(int index, VALUE oldValue, VALUE newValue) {
 		if (Objects.equals(get(index), oldValue)) {
 			put(index, newValue);
 			return true;
@@ -95,7 +93,7 @@ public interface IndexMap<VALUE> {
 		return false;
 	}
 	
-	default boolean replace(int index, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
+	default boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		if (Objects.equals(get(index), oldValue)) {
 			put(index, newValue.get());
 			return true;
@@ -103,7 +101,7 @@ public interface IndexMap<VALUE> {
 		return false;
 	}
 	
-	default boolean remove(int index, @Nullable VALUE value) {
+	default boolean remove(int index, VALUE value) {
 		if (get(index) == value) {
 			remove(index);
 			return true;
@@ -112,7 +110,7 @@ public interface IndexMap<VALUE> {
 	}
 	
 	//compute
-	@Nullable
+	
 	default VALUE compute(int index, @NotNull ComputeFunction<? super VALUE, ? extends VALUE> function) {
 		VALUE oldValue = get(index);
 		VALUE newValue = function.apply(index, oldValue);
@@ -121,7 +119,6 @@ public interface IndexMap<VALUE> {
 		return newValue;
 	}
 	
-	@Nullable
 	default VALUE computeIfAbsent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		VALUE oldValue = get(index);
 		if (oldValue == null)
@@ -129,7 +126,7 @@ public interface IndexMap<VALUE> {
 		return oldValue;
 	}
 	
-	@Nullable
+	@SuppressWarnings("ConstantConditions")
 	default VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		VALUE oldValue = get(index);
 		if (oldValue != null)
@@ -149,10 +146,11 @@ public interface IndexMap<VALUE> {
 		
 		int getIndex();
 		
-		@Nullable VALUE getValue();
+		VALUE getValue();
 		
-		void setValue(@Nullable VALUE v);
+		void setValue(VALUE v);
 		
+		@SuppressWarnings("ConstantConditions")
 		default void remove() {
 			setValue(null);
 		}

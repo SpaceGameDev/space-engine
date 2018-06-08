@@ -66,6 +66,7 @@ public interface ToString {
 		return toTSH(ToStringHelper.getDefault());
 	}
 	
+	@NotNull
 	default String toString0() {
 		return toTSH().toString();
 	}

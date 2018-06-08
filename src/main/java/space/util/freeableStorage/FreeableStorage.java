@@ -26,7 +26,7 @@ import space.util.baseobject.Freeable;
  * If your are using the SpaceEngine you should root it into your Side first. (which is then rooted into {@link FreeableStorage#ROOT_LIST}).
  * You can also get the {@link FreeableStorageList} containing all children of a Storage-Object with {@link FreeableStorage#getSubList()}
  * <p>
- * If you want an {@link FreeableStorage} Object in between without any free-ing capabilities, you can use {@link FreeableStorage#createAnonymous(FreeableStorage...)} to do so.
+ * If you want an {@link FreeableStorage} Object in between without any free-ing capabilities, you can use {@link FreeableStorage#createDummy(FreeableStorage...)} to do so.
  * Have a look into {@link FreeableStorageCleaner} to setup a {@link space.util.logger.Logger} for cleanup information or other things cleanup related.
  */
 public interface FreeableStorage extends Freeable {
@@ -46,7 +46,7 @@ public interface FreeableStorage extends Freeable {
 	 */
 	@NotNull FreeableStorageList getSubList();
 	
-	static @NotNull FreeableStorageImpl createAnonymous(@NotNull FreeableStorage... parents) {
+	static @NotNull FreeableStorageImpl createDummy(@NotNull FreeableStorage... parents) {
 		return new FreeableStorageImpl(null, parents) {
 			@Override
 			protected void handleFree() {

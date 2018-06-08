@@ -1,7 +1,5 @@
 package space.util.buffer.array;
 
-import space.util.buffer.alloc.AllocMethod;
-import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
@@ -13,7 +11,7 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 		return new ArrayBufferFloat(alloc.alloc(address, length * FP32.bytes, parents), length);
 	}
 	
-	public static ArrayBufferFloat malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
+	public static ArrayBufferFloat malloc(Allocator alloc, long length, FreeableStorage... parents) {
 		return new ArrayBufferFloat(alloc.malloc(length * FP32.bytes, parents), length);
 	}
 	
@@ -64,7 +62,7 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 		return new ArrayBufferFloatSingle(alloc.alloc(address, FP32.bytes, parents));
 	}
 	
-	public static ArrayBufferFloatSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
+	public static ArrayBufferFloatSingle mallocSingle(Allocator alloc, FreeableStorage... parents) {
 		return new ArrayBufferFloatSingle(alloc.malloc(FP32.bytes, parents));
 	}
 	

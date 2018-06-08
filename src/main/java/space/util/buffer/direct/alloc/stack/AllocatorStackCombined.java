@@ -1,8 +1,9 @@
-package space.util.buffer.stack;
+package space.util.buffer.direct.alloc.stack;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.ToString;
-import space.util.buffer.alloc.BufferAllocator;
+import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.stack.SimpleStack;
@@ -11,45 +12,45 @@ import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 /**
- * Combines both {@link BufferAllocatorStackBufferList} and {@link BufferAllocatorStackOneBuffer}.
- * Any to be allocated {@link DirectBuffer} below or equal the {@link BufferAllocatorStackCombined#largeThreshold} will be delegated to {@link BufferAllocatorStackOneBuffer OneBuffer},
+ * Combines both {@link BufferAllocatorStackBufferList} and {@link AllocatorStackOneBuffer}.
+ * Any to be allocated {@link DirectBuffer} below or equal the {@link AllocatorStackCombined#largeThreshold} will be delegated to {@link AllocatorStackOneBuffer OneBuffer},
  * anything larger will be delegated to {@link BufferAllocatorStackBufferList BufferList}.
  */
-public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToString {
+public class AllocatorStackCombined implements AllocatorStack<DirectBuffer>, ToString {
 	
 	public static final int DEFAULT_LARGE_THRESHOLD = 64;
 	
-	public final BufferAllocator alloc;
-	public final BufferAllocatorStackOneBuffer oneBuffer;
+	public final Allocator<DirectBuffer> alloc;
+	public final AllocatorStackOneBuffer oneBuffer;
 	public final BufferAllocatorStackBufferList bufferList;
 	
 	public long largeThreshold;
 	public Stack<BiIntEntry> stack = new SimpleStack<>();
 	
 	//constructor
-	public BufferAllocatorStackCombined(BufferAllocator alloc) {
+	public AllocatorStackCombined(Allocator<DirectBuffer> alloc) {
 		this(alloc, DEFAULT_LARGE_THRESHOLD);
 	}
 	
-	public BufferAllocatorStackCombined(BufferAllocator alloc, int largeThreshold, FreeableStorage... lists) {
-		this.largeThreshold = largeThreshold;
-		
+	@SuppressWarnings("ConstantConditions")
+	public AllocatorStackCombined(Allocator<DirectBuffer> alloc, int largeThreshold, FreeableStorage... lists) {
 		this.alloc = alloc;
-		this.oneBuffer = new BufferAllocatorStackOneBuffer(alloc, BufferAllocatorStackOneBuffer.DEFAULT_CAPACITY, null, lists);
+		this.oneBuffer = new AllocatorStackOneBuffer(alloc, AllocatorStackOneBuffer.DEFAULT_CAPACITY, null, lists);
 		this.bufferList = new BufferAllocatorStackBufferList(alloc, null);
+		this.largeThreshold = largeThreshold;
 	}
 	
 	//setLargeThreshold
-	public BufferAllocatorStackCombined setLargeThreshold(long largeThreshold) {
+	public AllocatorStackCombined setLargeThreshold(long largeThreshold) {
 		this.largeThreshold = largeThreshold;
 		return this;
 	}
 	
-	public BufferAllocatorStackCombined setLargeThresholdEverythingOnStack() {
+	public AllocatorStackCombined setLargeThresholdEverythingOnStack() {
 		return setLargeThreshold(Long.MAX_VALUE);
 	}
 	
-	//push
+	//stack
 	@Override
 	public long pushPointer() {
 		return stack.pushPointer(new BiIntEntry(this));
@@ -60,7 +61,6 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 		stack.push(new BiIntEntry(this));
 	}
 	
-	//pop
 	@Override
 	public void popPointer(long pointer) {
 		stack.popPointer(pointer).apply(this);
@@ -71,34 +71,48 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 		stack.pop().apply(this);
 	}
 	
-	//put
+	//stack -> unsupported
 	@Override
 	@Deprecated
+	@Contract("_ -> fail")
 	public <X extends DirectBuffer> X put(X t) {
 		throw new UnsupportedOperationException();
 	}
 	
-	//alloc
+	//create
+	@NotNull
 	@Override
-	public DirectBuffer alloc(long address, long capacity, FreeableStorage... parents) {
-		return bufferList.alloc(address, capacity, parents);
+	public DirectBuffer create(long address, long capacity, @NotNull FreeableStorage... parents) {
+		return bufferList.create(address, capacity, parents);
 	}
 	
+	@NotNull
 	@Override
-	public DirectBuffer allocNoFree(long address, long capacity, FreeableStorage... parents) {
-		return alloc.allocNoFree(address, capacity, parents);
+	public DirectBuffer createNoFree(long address, long capacity, @NotNull FreeableStorage... parents) {
+		return alloc.createNoFree(address, capacity, parents);
 	}
 	
+	//malloc
+	@NotNull
 	@Override
-	public DirectBuffer malloc(long capacity, FreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, @NotNull FreeableStorage... parents) {
 		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
 	}
 	
 	@NotNull
 	@Override
+	public DirectBuffer calloc(long capacity, @NotNull FreeableStorage... parents) {
+		DirectBuffer buffer = malloc(capacity, parents);
+		buffer.clear();
+		return buffer;
+	}
+	
+	//toString
+	@NotNull
+	@Override
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-		tsh.add("alloc", this.alloc);
+		tsh.add("create", this.alloc);
 		tsh.add("oneBuffer", this.oneBuffer);
 		tsh.add("bufferList", this.bufferList);
 		tsh.add("largeThreshold", this.largeThreshold);
@@ -117,12 +131,12 @@ public class BufferAllocatorStackCombined implements BufferAllocatorStack, ToStr
 		public long oneBufferPointer;
 		public long bufferListPointer;
 		
-		public BiIntEntry(BufferAllocatorStackCombined b) {
+		public BiIntEntry(AllocatorStackCombined b) {
 			oneBufferPointer = b.oneBuffer.pushPointer();
 			bufferListPointer = b.bufferList.pushPointer();
 		}
 		
-		public void apply(BufferAllocatorStackCombined b) {
+		public void apply(AllocatorStackCombined b) {
 			b.oneBuffer.popPointer(oneBufferPointer);
 			b.bufferList.popPointer(bufferListPointer);
 		}

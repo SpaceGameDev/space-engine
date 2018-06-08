@@ -1,7 +1,5 @@
 package space.util.buffer.array;
 
-import space.util.buffer.alloc.AllocMethod;
-import space.util.buffer.alloc.MallocMethod;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
@@ -13,7 +11,7 @@ public class ArrayBufferInt extends AbstractArrayBuffer<ArrayBufferInt> {
 		return new ArrayBufferInt(alloc.alloc(address, length * INT32.bytes, parents), length);
 	}
 	
-	public static ArrayBufferInt malloc(MallocMethod alloc, long length, FreeableStorage... parents) {
+	public static ArrayBufferInt malloc(Allocator alloc, long length, FreeableStorage... parents) {
 		return new ArrayBufferInt(alloc.malloc(length * INT32.bytes, parents), length);
 	}
 	
@@ -64,7 +62,7 @@ public class ArrayBufferInt extends AbstractArrayBuffer<ArrayBufferInt> {
 		return new ArrayBufferIntSingle(alloc.alloc(address, INT32.bytes, parents));
 	}
 	
-	public static ArrayBufferIntSingle mallocSingle(MallocMethod alloc, FreeableStorage... parents) {
+	public static ArrayBufferIntSingle mallocSingle(Allocator alloc, FreeableStorage... parents) {
 		return new ArrayBufferIntSingle(alloc.malloc(INT32.bytes, parents));
 	}
 	

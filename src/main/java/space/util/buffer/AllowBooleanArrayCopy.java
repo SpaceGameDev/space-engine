@@ -1,4 +1,4 @@
-package space.util.buffer.direct;
+package space.util.buffer;
 
 import space.util.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;

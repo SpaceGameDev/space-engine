@@ -3,25 +3,55 @@ package space.util.freeableStorage;
 import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 import space.util.baseobject.ToString;
+import space.util.freeableStorage.FreeableStorageList.Entry;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
+/**
+ * Use {@link FreeableStorageListImpl#createList(int)} to create a List.
+ *
+ * @implNote This is just a Base-Object for the inner classes:
+ * {@link FreeableStorageListImpl.List List} and it's {@link Entry Entry}.
+ */
 public abstract class FreeableStorageListImpl implements Freeable {
 	
+	//static creator
+	public static FreeableStorageList createList(int freePriority) {
+		return new List(freePriority);
+	}
+	
+	//object fields
+	/**
+	 * null: entry is freed
+	 * notnull: entry is NOT freed
+	 */
 	public FreeableStorageListImpl prev;
+	
+	/**
+	 * does not affect free status
+	 */
 	public FreeableStorageListImpl next;
 	
-	protected void insertBefore(FreeableStorageListImpl base) {
-		prev = base.prev;
-		next = base;
+	//object methods
+	
+	/**
+	 * Inserts an Entry into the List before this Entry
+	 *
+	 * @param entry Entry to insert
+	 */
+	protected void insertBefore(FreeableStorageListImpl entry) {
+		prev = entry.prev;
+		next = entry;
 		prev.next = this;
 		next.prev = this;
 	}
 	
-	static FreeableStorageList createList(int freePriority) {
-		return new List(freePriority);
-	}
-	
+	/**
+	 * removes an Entry from the List
+	 *
+	 * @param quickRemove true causes the list not to be reconnected, just the entry freed
+	 */
+	@SuppressWarnings("ConstantConditions")
 	protected void remove(boolean quickRemove) {
 		if (!quickRemove) {
 			prev.next = next;
@@ -36,6 +66,10 @@ public abstract class FreeableStorageListImpl implements Freeable {
 		return prev == null;
 	}
 	
+	/**
+	 * The List Implementation. <br>
+	 * This is a looping linked list, so next and prev cannot be null, except it's not in the list (or freed).
+	 */
 	private static class List extends FreeableStorageListImpl implements FreeableStorageList, ToString {
 		
 		public int freePriority;
@@ -48,8 +82,8 @@ public abstract class FreeableStorageListImpl implements Freeable {
 		
 		@NotNull
 		@Override
-		public FreeableStorageListEntry insert(@NotNull FreeableStorage storage) {
-			return new FreeableStorageListEntry(storage);
+		public FreeableStorageListImpl.List.Entry insert(@NotNull FreeableStorage storage) {
+			return new Entry(storage);
 		}
 		
 		@Override
@@ -84,11 +118,16 @@ public abstract class FreeableStorageListImpl implements Freeable {
 			return tsh.build();
 		}
 		
-		private class FreeableStorageListEntry extends FreeableStorageListImpl implements Entry {
+		/**
+		 * This is the Entry class of the List
+		 *
+		 * @see FreeableStorageListImpl.List
+		 */
+		private class Entry extends FreeableStorageListImpl implements FreeableStorageList.Entry {
 			
 			final FreeableStorage freeableStorage;
 			
-			public FreeableStorageListEntry(FreeableStorage freeableStorage) {
+			public Entry(FreeableStorage freeableStorage) {
 				this.freeableStorage = freeableStorage;
 				synchronized (List.this) {
 					insertBefore(List.this);

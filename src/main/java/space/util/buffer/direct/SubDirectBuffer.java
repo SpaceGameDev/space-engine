@@ -6,7 +6,7 @@ import space.util.freeableStorage.FreeableStorage;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class SubDirectBuffer extends NotFreeableDirectBuffer {
+public class SubDirectBuffer extends UnsafeNonFreeDirectBuffer {
 	
 	@Nullable
 	public Object parent;

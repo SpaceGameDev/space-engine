@@ -2,28 +2,70 @@ package space.util.buffer.array;
 
 import org.jetbrains.annotations.NotNull;
 import space.util.annotation.Self;
-import space.util.buffer.Buffer;
+import space.util.buffer.Allocator;
+import space.util.buffer.DelegatingBuffer;
 import space.util.buffer.direct.DirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.primitive.Primitive;
-import space.util.string.String2D;
 
-public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> implements Buffer {
-	
-	public final DirectBuffer buffer;
-	public final Primitive<?> type;
-	public final long length;
-	
-	public AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type) {
-		this(buffer, type, calculateLength(buffer, type));
-	}
+public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> extends DelegatingBuffer<DirectBuffer> {
 	
 	public static long calculateLength(DirectBuffer buffer, Primitive<?> type) {
 		return type.isAligned ? buffer.capacity() >>> type.shift : buffer.capacity() / type.bytes;
 	}
 	
+	public static class ArrayAllocator<T extends AbstractArrayBuffer<T>> implements Allocator<T> {
+		
+		public final Allocator<DirectBuffer> alloc;
+		public final Primitive<?> primitive;
+		public final ArrayCreator<T> creator;
+		
+		public ArrayAllocator(Allocator<DirectBuffer> alloc, Primitive<?> primitive, ArrayCreator<T> creator) {
+			this.alloc = alloc;
+			this.primitive = primitive;
+			this.creator = creator;
+		}
+		
+		@NotNull
+		@Override
+		public T create(long address, long length, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.create(address, length, parents), length * primitive.bytes);
+		}
+		
+		@NotNull
+		@Override
+		public T createNoFree(long address, long length, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.createNoFree(address, length, parents), length * primitive.bytes);
+		}
+		
+		@NotNull
+		@Override
+		public T malloc(long capacity, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.malloc(capacity, parents), capacity * primitive.bytes);
+		}
+		
+		@NotNull
+		@Override
+		public T calloc(long capacity, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.calloc(capacity, parents), capacity * primitive.bytes);
+		}
+	}
+	
+	@FunctionalInterface
+	public interface ArrayCreator<T extends AbstractArrayBuffer<T>> {
+		
+		T create(DirectBuffer buffer, long length);
+	}
+	
+	public final Primitive<?> type;
+	public final long length;
+	
+	protected AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type) {
+		this(buffer, type, calculateLength(buffer, type));
+	}
+	
 	protected AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type, long length) {
-		this.buffer = buffer;
+		super(buffer);
 		this.type = type;
 		this.length = length;
 	}
@@ -50,31 +92,8 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 		buffer.copyFrom(src.buffer, srcOffset, length, offset);
 	}
 	
-	//delegate
-	@Override
-	public long address() {
-		return buffer.address();
-	}
-	
-	@Override
-	public long capacity() {
-		return buffer.capacity();
-	}
-	
-	@Override
+	//other
 	public void clear() {
 		buffer.clear();
-	}
-	
-	@NotNull
-	@Override
-	public String2D dump() {
-		return buffer.dump();
-	}
-	
-	@NotNull
-	@Override
-	public FreeableStorage getStorage() {
-		return buffer.getStorage();
 	}
 }

@@ -1,4 +1,4 @@
-package space.util.buffer.direct;
+package space.util.buffer;
 
 import space.util.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
@@ -32,12 +32,12 @@ public class NioByteBufferWrapper {
 	//wrap methods
 	
 	/**
-	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
-	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * <p><b>Note: A Reference to the {@link Buffer} should be kept during the existence of the returned ByteBuffer!</b></p>
 	 *
-	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
+	 * @param buffer the {@link Buffer} to wrap into a {@link ByteBuffer}
 	 */
-	public static ByteBuffer wrap(DirectBuffer buffer) {
+	public static ByteBuffer wrap(Buffer buffer) {
 		long capacity = buffer.capacity();
 		if (capacity > Integer.MAX_VALUE)
 			throw new RuntimeException("buffer capacity " + capacity + " above int size limits of ByteBuffer");
@@ -45,25 +45,25 @@ public class NioByteBufferWrapper {
 	}
 	
 	/**
-	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
-	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * <p><b>Note: A Reference to the {@link Buffer} should be kept during the existence of the returned ByteBuffer!</b></p>
 	 *
-	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
+	 * @param buffer the {@link Buffer} to wrap into a {@link ByteBuffer}
 	 * @param length the length the {@link ByteBuffer} should have (32 bits only!)
 	 */
-	public static ByteBuffer wrap(DirectBuffer buffer, int length) {
+	public static ByteBuffer wrap(Buffer buffer, int length) {
 		return wrap(buffer, 0, length);
 	}
 	
 	/**
-	 * Wraps a {@link DirectBuffer} to a Java-{@link ByteBuffer}.
-	 * <p><b>Note: A Reference to the {@link DirectBuffer} should be kept during the existence of the returned ByteBuffer!</b></p>
+	 * Wraps a {@link Buffer} to a Java-{@link ByteBuffer}.
+	 * <p><b>Note: A Reference to the {@link Buffer} should be kept during the existence of the returned ByteBuffer!</b></p>
 	 *
-	 * @param buffer the {@link DirectBuffer} to wrap into a {@link ByteBuffer}
+	 * @param buffer the {@link Buffer} to wrap into a {@link ByteBuffer}
 	 * @param offset the offset at which the the returned {@link ByteBuffer} should begin
 	 * @param length the length the {@link ByteBuffer} should have (32 bits only!)
 	 */
-	public static ByteBuffer wrap(DirectBuffer buffer, long offset, int length) {
+	public static ByteBuffer wrap(Buffer buffer, long offset, int length) {
 		if (offset + length > buffer.capacity())
 			throw new RuntimeException("Total length exceeds capacity: " + (offset + length) + " > " + buffer.capacity());
 		

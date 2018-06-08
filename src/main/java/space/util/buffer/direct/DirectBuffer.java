@@ -19,6 +19,9 @@ import space.util.string.String2D;
  */
 public interface DirectBuffer extends space.util.buffer.Buffer {
 	
+	//clear
+	void clear();
+	
 	//single
 	//byte
 	byte getByte(long offset);

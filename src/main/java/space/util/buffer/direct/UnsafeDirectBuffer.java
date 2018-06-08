@@ -3,6 +3,7 @@ package space.util.buffer.direct;
 import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Dumpable;
 import space.util.baseobject.ToString;
+import space.util.buffer.AllowBooleanArrayCopy;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.math.MathUtils;
@@ -20,20 +21,20 @@ import static sun.misc.Unsafe.*;
  * An <b>UNCHECKED</b> implementation of {@link DirectBuffer}.
  * <p>Use {@link CheckedDirectBuffer} if you need any access checked.</p>
  */
-public class DirectBufferImpl implements DirectBuffer, ToString {
+public class UnsafeDirectBuffer implements DirectBuffer, ToString {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
 	
 	public Storage storage;
 	
-	protected DirectBufferImpl() {
+	protected UnsafeDirectBuffer() {
 	}
 	
-	public DirectBufferImpl(long capacity, FreeableStorage... parents) {
+	public UnsafeDirectBuffer(long capacity, FreeableStorage... parents) {
 		this(UNSAFE.allocateMemory(capacity), capacity, parents);
 	}
 	
-	public DirectBufferImpl(long address, long capacity, FreeableStorage... parents) {
+	public UnsafeDirectBuffer(long address, long capacity, FreeableStorage... parents) {
 		this.storage = new Storage(this, address, capacity, parents);
 	}
 	
@@ -58,6 +59,7 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 		@Override
 		protected synchronized void handleFree() {
 			UNSAFE.freeMemory(address);
+			address = 0;
 		}
 		
 		public long address() {
@@ -74,8 +76,10 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 		@Override
 		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-			tsh.add("isFreed", this.isFreed());
-			tsh.add("address", this.address);
+			boolean freed = this.isFreed();
+			tsh.add("isFreed", freed);
+			if (!freed)
+				tsh.add("address", this.address);
 			tsh.add("capacity", this.capacity);
 			return tsh.build();
 		}
@@ -109,8 +113,6 @@ public class DirectBufferImpl implements DirectBuffer, ToString {
 	public String2D dump() {
 		if (storage.capacity() > Dumpable.getMaxDump())
 			return Dumpable.DUMP_CAP_REACHED;
-		if (storage.capacity() > Integer.MAX_VALUE)
-			return new String2D("storage.capacity above Integer.MAX_VALUE!");
 		
 		CharBufferBuilder2D<?> b = new CharBufferBuilder2D<>(2, (int) storage.capacity() * 3);
 		for (int i = 0; i < storage.capacity(); i++) {

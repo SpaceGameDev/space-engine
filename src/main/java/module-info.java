@@ -5,11 +5,11 @@ module space.util {
 	exports space.util.baseobject;
 	exports space.util.baseobject.exceptions;
 	exports space.util.buffer;
-	exports space.util.buffer.alloc;
 	exports space.util.buffer.array;
 	exports space.util.buffer.direct;
+	exports space.util.buffer.direct.alloc;
+	exports space.util.buffer.direct.alloc.stack;
 	exports space.util.buffer.exception;
-	exports space.util.buffer.stack;
 	exports space.util.buffer.string;
 //	exports space.util.concurrent;
 	exports space.util.concurrent.awaitable;

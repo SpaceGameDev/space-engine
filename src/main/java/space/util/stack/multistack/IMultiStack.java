@@ -1,6 +1,6 @@
 package space.util.stack.multistack;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Works <b><i>exactly</i></b> like a stack, you can {@link IMultiStack#put(Object)} values on it
@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface IMultiStack<T> {
 	
-	@Nullable <X extends T> X put(@Nullable X t);
+	@Contract("null -> null; !null -> !null")
+	<X extends T> X put(X t);
 	
 	void push();
 	

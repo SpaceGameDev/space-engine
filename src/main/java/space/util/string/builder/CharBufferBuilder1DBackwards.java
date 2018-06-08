@@ -80,7 +80,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 	//append
 	@NotNull
 	@Override
-	public SELF append(String str) {
+	public SELF append(@NotNull String str) {
 		int l = str.length();
 		int start = ensureCapacityBackward(pos - l);
 		str.getChars(0, l, buffer, start);
@@ -91,7 +91,7 @@ public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D
 	
 	@NotNull
 	@Override
-	public SELF append(char[] str) {
+	public SELF append(@NotNull char[] str) {
 		int l = str.length;
 		int start = ensureCapacityBackward(pos - l);
 		System.arraycopy(str, 0, buffer, start, l);
