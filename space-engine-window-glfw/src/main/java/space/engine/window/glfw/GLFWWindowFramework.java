@@ -9,7 +9,7 @@ import space.engine.window.WindowFramework;
 import space.util.buffer.array.ArrayBufferLong;
 import space.util.buffer.array.ArrayBufferLong.ArrayBufferLongSingle;
 import space.util.buffer.array.ArrayBufferPointer;
-import space.util.buffer.stack.BufferAllocatorStack;
+import space.util.buffer.direct.alloc.stack.AllocatorStack;
 import space.util.key.attribute.AttributeListCreator.IAttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -39,7 +39,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	@NotNull
 	@Override
 	public Monitor[] getAllMonitors() {
-		BufferAllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
+		AllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
 		try {
 			alloc.push();
 			ArrayBufferLongSingle monitorCnt = ArrayBufferLong.mallocSingle(alloc::malloc);
