@@ -1,31 +1,25 @@
 package space.util.buffer.pointer;
 
+import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.FreeableStorage;
+import space.util.primitive.Primitive;
 
 import static space.util.primitive.Primitives.INT8;
 
 //single
-public class PointerBufferByte extends AbstractPointerBuffer {
+public class PointerBufferByte extends AbstractPointerBuffer<PointerBufferByte> {
 	
-	public static PointerBufferByte allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new PointerBufferByte(alloc.alloc(address, INT8.bytes, parents));
+	public static final Primitive<?> TYPE = INT8;
+	
+	public static PointerAllocator<PointerBufferByte> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new PointerAllocator<>(alloc, TYPE, PointerBufferByte::new);
 	}
 	
-	public static PointerBufferByte mallocSingle(Allocator alloc, FreeableStorage... parents) {
-		return new PointerBufferByte(alloc.malloc(INT8.bytes, parents));
+	public PointerBufferByte(DirectBuffer buffer) {
+		super(buffer, TYPE);
 	}
 	
-	protected PointerBufferByte(DirectBuffer buffer) {
-		super(check(buffer), INT8);
-	}
-	
-	public static DirectBuffer check(DirectBuffer buffer) {
-		if (buffer.capacity() < INT8.bytes)
-			throw new IllegalArgumentException("Buffer too tiny!");
-		return buffer;
-	}
-	
+	//get / put
 	public byte getByte() {
 		return buffer.getByte(0);
 	}

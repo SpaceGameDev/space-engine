@@ -1,64 +1,58 @@
 package space.util.buffer.array;
 
+import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.FreeableStorage;
+import space.util.primitive.Primitive;
 
 import static space.util.primitive.Primitives.POINTER;
 
 public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> {
 	
-	public static ArrayBufferPointer alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferPointer(alloc.alloc(address, length * POINTER.bytes, parents), length);
-	}
+	public static final Primitive<?> TYPE = POINTER;
 	
-	public static ArrayBufferPointer malloc(Allocator alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferPointer(alloc.malloc(length * POINTER.bytes, parents), length);
+	public static ArrayAllocator<ArrayBufferPointer> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new ArrayAllocator<>(alloc, TYPE, ArrayBufferPointer::new);
 	}
 	
 	public ArrayBufferPointer(DirectBuffer buffer) {
-		super(buffer, POINTER);
+		super(buffer, TYPE);
 	}
 	
 	protected ArrayBufferPointer(DirectBuffer buffer, long length) {
-		super(buffer, POINTER, length);
+		super(buffer, TYPE, length);
 	}
 	
 	//get / put
-	public long getPointer(long index) {
-		return buffer.getPointer(getOffset(index));
+	public byte getByte(long index) {
+		return buffer.getByte(getOffset(index));
 	}
 	
-	public void putPointer(long index, long b) {
-		buffer.putPointer(getOffset(index), b);
+	public void putByte(long index, byte b) {
+		buffer.putByte(getOffset(index), b);
 	}
 	
-	//single
-	public static ArrayBufferPointerSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferPointerSingle(alloc.alloc(address, POINTER.bytes, parents));
+	//array
+	public void copyInto(byte[] dest) {
+		buffer.copyInto(dest);
 	}
 	
-	public static ArrayBufferPointerSingle mallocSingle(Allocator alloc, FreeableStorage... parents) {
-		return new ArrayBufferPointerSingle(alloc.malloc(POINTER.bytes, parents));
+	public void copyInto(long index, byte[] dest) {
+		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public static class ArrayBufferPointerSingle extends AbstractArrayBuffer<ArrayBufferPointerSingle> {
-		
-		protected ArrayBufferPointerSingle(DirectBuffer buffer) {
-			super(check(buffer), POINTER, 1);
-		}
-		
-		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != POINTER.bytes)
-				throw new IllegalArgumentException("Buffer too big!");
-			return buffer;
-		}
-		
-		public long getPointer() {
-			return buffer.getPointer(0);
-		}
-		
-		public void putPointer(long b) {
-			buffer.putPointer(0, b);
-		}
+	public void copyInto(long index, byte[] dest, int destPos, int length) {
+		buffer.copyInto(getOffset(index), dest, destPos, length);
+	}
+	
+	public void copyFrom(byte[] src) {
+		buffer.copyFrom(src);
+	}
+	
+	public void copyFrom(byte[] src, long index) {
+		buffer.copyFrom(src, getOffset(index));
+	}
+	
+	public void copyFrom(byte[] src, int srcPos, int length, long index) {
+		buffer.copyFrom(src, srcPos, length, getOffset(index));
 	}
 }

@@ -2,89 +2,57 @@ package space.util.buffer.array;
 
 import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.FreeableStorage;
+import space.util.primitive.Primitive;
 
 import static space.util.primitive.Primitives.FP64;
 
 public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	
-	public static ArrayBufferDouble alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferDouble(alloc.alloc(address, length * FP64.bytes, parents), length);
-	}
+	public static final Primitive<?> TYPE = FP64;
 	
-	public static ArrayBufferDouble malloc(Allocator alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferDouble(alloc.malloc(length * FP64.bytes, parents), length);
+	public static ArrayAllocator<ArrayBufferDouble> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new ArrayAllocator<>(alloc, TYPE, ArrayBufferDouble::new);
 	}
 	
 	public ArrayBufferDouble(DirectBuffer buffer) {
-		super(buffer, FP64);
+		super(buffer, TYPE);
 	}
 	
 	protected ArrayBufferDouble(DirectBuffer buffer, long length) {
-		super(buffer, FP64, length);
+		super(buffer, TYPE, length);
 	}
 	
 	//get / put
-	public double getDouble(long index) {
-		return buffer.getDouble(getOffset(index));
+	public byte getByte(long index) {
+		return buffer.getByte(getOffset(index));
 	}
 	
-	public void putDouble(long index, double b) {
-		buffer.putDouble(getOffset(index), b);
+	public void putByte(long index, byte b) {
+		buffer.putByte(getOffset(index), b);
 	}
 	
 	//array
-	public void copyInto(double[] dest) {
+	public void copyInto(byte[] dest) {
 		buffer.copyInto(dest);
 	}
 	
-	public void copyInto(long index, double[] dest) {
+	public void copyInto(long index, byte[] dest) {
 		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public void copyInto(long index, double[] dest, int destPos, int length) {
+	public void copyInto(long index, byte[] dest, int destPos, int length) {
 		buffer.copyInto(getOffset(index), dest, destPos, length);
 	}
 	
-	public void copyFrom(double[] src) {
+	public void copyFrom(byte[] src) {
 		buffer.copyFrom(src);
 	}
 	
-	public void copyFrom(double[] src, long index) {
+	public void copyFrom(byte[] src, long index) {
 		buffer.copyFrom(src, getOffset(index));
 	}
 	
-	public void copyFrom(double[] src, int srcPos, int length, long index) {
+	public void copyFrom(byte[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
-	}
-	
-	//single
-	public static ArrayBufferDoubleSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferDoubleSingle(alloc.alloc(address, FP64.bytes, parents));
-	}
-	
-	public static ArrayBufferDoubleSingle mallocSingle(Allocator alloc, FreeableStorage... parents) {
-		return new ArrayBufferDoubleSingle(alloc.malloc(FP64.bytes, parents));
-	}
-	
-	public static class ArrayBufferDoubleSingle extends AbstractArrayBuffer<ArrayBufferDoubleSingle> {
-		
-		protected ArrayBufferDoubleSingle(DirectBuffer buffer) {
-			super(check(buffer), FP64, 1);
-		}
-		
-		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != FP64.bytes)
-				throw new IllegalArgumentException("Buffer too big!");
-			return buffer;
-		}
-		
-		public double getDouble() {
-			return buffer.getDouble(0);
-		}
-		
-		public void putDouble(double b) {
-			buffer.putDouble(0, b);
-		}
 	}
 }

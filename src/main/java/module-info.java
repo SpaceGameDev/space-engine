@@ -10,6 +10,7 @@ module space.util {
 	exports space.util.buffer.direct.alloc;
 	exports space.util.buffer.direct.alloc.stack;
 	exports space.util.buffer.exception;
+	exports space.util.buffer.pointer;
 	exports space.util.buffer.string;
 //	exports space.util.concurrent;
 	exports space.util.concurrent.awaitable;

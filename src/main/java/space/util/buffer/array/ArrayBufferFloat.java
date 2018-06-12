@@ -1,89 +1,58 @@
 package space.util.buffer.array;
 
+import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
-import space.util.freeableStorage.FreeableStorage;
+import space.util.primitive.Primitive;
 
 import static space.util.primitive.Primitives.FP32;
 
 public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	
-	public static ArrayBufferFloat alloc(AllocMethod alloc, long address, long length, FreeableStorage... parents) {
-		return new ArrayBufferFloat(alloc.alloc(address, length * FP32.bytes, parents), length);
-	}
+	public static final Primitive<?> TYPE = FP32;
 	
-	public static ArrayBufferFloat malloc(Allocator alloc, long length, FreeableStorage... parents) {
-		return new ArrayBufferFloat(alloc.malloc(length * FP32.bytes, parents), length);
+	public static ArrayAllocator<ArrayBufferFloat> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new ArrayAllocator<>(alloc, TYPE, ArrayBufferFloat::new);
 	}
 	
 	public ArrayBufferFloat(DirectBuffer buffer) {
-		super(buffer, FP32);
+		super(buffer, TYPE);
 	}
 	
 	protected ArrayBufferFloat(DirectBuffer buffer, long length) {
-		super(buffer, FP32, length);
+		super(buffer, TYPE, length);
 	}
 	
 	//get / put
-	public float getFloat(long index) {
-		return buffer.getFloat(getOffset(index));
+	public byte getByte(long index) {
+		return buffer.getByte(getOffset(index));
 	}
 	
-	public void putFloat(long index, float b) {
-		buffer.putFloat(getOffset(index), b);
+	public void putByte(long index, byte b) {
+		buffer.putByte(getOffset(index), b);
 	}
 	
 	//array
-	public void copyInto(float[] dest) {
+	public void copyInto(byte[] dest) {
 		buffer.copyInto(dest);
 	}
 	
-	public void copyInto(long index, float[] dest) {
+	public void copyInto(long index, byte[] dest) {
 		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public void copyInto(long index, float[] dest, int destPos, int length) {
+	public void copyInto(long index, byte[] dest, int destPos, int length) {
 		buffer.copyInto(getOffset(index), dest, destPos, length);
 	}
 	
-	public void copyFrom(float[] src) {
+	public void copyFrom(byte[] src) {
 		buffer.copyFrom(src);
 	}
 	
-	public void copyFrom(float[] src, long index) {
+	public void copyFrom(byte[] src, long index) {
 		buffer.copyFrom(src, getOffset(index));
 	}
 	
-	public void copyFrom(float[] src, int srcPos, int length, long index) {
+	public void copyFrom(byte[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
-	}
-	
-	//single
-	public static ArrayBufferFloatSingle allocSingle(AllocMethod alloc, long address, FreeableStorage... parents) {
-		return new ArrayBufferFloatSingle(alloc.alloc(address, FP32.bytes, parents));
-	}
-	
-	public static ArrayBufferFloatSingle mallocSingle(Allocator alloc, FreeableStorage... parents) {
-		return new ArrayBufferFloatSingle(alloc.malloc(FP32.bytes, parents));
-	}
-	
-	public static class ArrayBufferFloatSingle extends AbstractArrayBuffer<ArrayBufferFloatSingle> {
-		
-		protected ArrayBufferFloatSingle(DirectBuffer buffer) {
-			super(check(buffer), FP32, 1);
-		}
-		
-		public static DirectBuffer check(DirectBuffer buffer) {
-			if (buffer.capacity() != FP32.bytes)
-				throw new IllegalArgumentException("Buffer too big!");
-			return buffer;
-		}
-		
-		public float getFloat() {
-			return buffer.getFloat(0);
-		}
-		
-		public void putFloat(float b) {
-			buffer.putFloat(0, b);
-		}
 	}
 }

@@ -1,5 +1,6 @@
 package space.util.buffer.direct;
 
+import space.util.buffer.Buffer;
 import space.util.string.String2D;
 
 /**
@@ -17,7 +18,7 @@ import space.util.string.String2D;
  * </ul>
  * Everything is <b>calculated with OFFSET</b> - not index!
  */
-public interface DirectBuffer extends space.util.buffer.Buffer {
+public interface DirectBuffer extends Buffer {
 	
 	//clear
 	void clear();

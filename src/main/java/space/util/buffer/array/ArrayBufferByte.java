@@ -2,21 +2,24 @@ package space.util.buffer.array;
 
 import space.util.buffer.Allocator;
 import space.util.buffer.direct.DirectBuffer;
+import space.util.primitive.Primitive;
 
 import static space.util.primitive.Primitives.INT8;
 
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	
-	public static Allocator<ArrayBufferByte> createAlloc(Allocator<DirectBuffer> alloc) {
-		return new AbstractArrayBuffer.ArrayAllocator<>(alloc, INT8, ArrayBufferByte::new);
+	public static final Primitive<?> TYPE = INT8;
+	
+	public static ArrayAllocator<ArrayBufferByte> createAlloc(Allocator<DirectBuffer> alloc) {
+		return new AbstractArrayBuffer.ArrayAllocator<>(alloc, TYPE, ArrayBufferByte::new);
 	}
 	
 	public ArrayBufferByte(DirectBuffer buffer) {
-		super(buffer, INT8);
+		super(buffer, TYPE);
 	}
 	
 	protected ArrayBufferByte(DirectBuffer buffer, long length) {
-		super(buffer, INT8, length);
+		super(buffer, TYPE, length);
 	}
 	
 	//get / put

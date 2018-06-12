@@ -29,25 +29,25 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 		@NotNull
 		@Override
 		public T create(long address, long length, @NotNull FreeableStorage... parents) {
-			return creator.create(alloc.create(address, length, parents), length * primitive.bytes);
+			return creator.create(alloc.create(address, length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
 		public T createNoFree(long address, long length, @NotNull FreeableStorage... parents) {
-			return creator.create(alloc.createNoFree(address, length, parents), length * primitive.bytes);
+			return creator.create(alloc.createNoFree(address, length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
-		public T malloc(long capacity, @NotNull FreeableStorage... parents) {
-			return creator.create(alloc.malloc(capacity, parents), capacity * primitive.bytes);
+		public T malloc(long length, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.malloc(length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
-		public T calloc(long capacity, @NotNull FreeableStorage... parents) {
-			return creator.create(alloc.calloc(capacity, parents), capacity * primitive.bytes);
+		public T calloc(long length, @NotNull FreeableStorage... parents) {
+			return creator.create(alloc.calloc(length * primitive.bytes, parents), length);
 		}
 	}
 	

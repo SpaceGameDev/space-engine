@@ -1,5 +1,6 @@
 package space.util.buffer.string;
 
+import space.util.buffer.Allocator;
 import space.util.buffer.NioByteBufferWrapper;
 import space.util.buffer.direct.DirectBuffer;
 
@@ -26,9 +27,9 @@ public class DefaultStringConverter implements BufferStringConverter {
 	public static final CharsetEncoder ASCII_ENCODER = ASCII_CHARSET.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
 	public static final CharsetDecoder ASCII_DECODER = ASCII_CHARSET.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
 	
-	public BufferAllocator alloc;
+	public Allocator<DirectBuffer> alloc;
 	
-	public DefaultStringConverter(BufferAllocator alloc) {
+	public DefaultStringConverter(Allocator<DirectBuffer> alloc) {
 		this.alloc = alloc;
 	}
 	
