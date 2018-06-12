@@ -20,11 +20,11 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	}
 	
 	//get / put
-	public byte getByte() {
-		return buffer.getByte(0);
+	public float getFloat() {
+		return buffer.getFloat(0);
 	}
 	
-	public void putByte(byte b) {
-		buffer.putByte(0, b);
+	public void putFloat(float b) {
+		buffer.putFloat(0, b);
 	}
 }

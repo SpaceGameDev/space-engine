@@ -23,36 +23,36 @@ public class ArrayBufferShort extends AbstractArrayBuffer<ArrayBufferShort> {
 	}
 	
 	//get / put
-	public byte getByte(long index) {
-		return buffer.getByte(getOffset(index));
+	public short getShort(long index) {
+		return buffer.getShort(getOffset(index));
 	}
 	
-	public void putByte(long index, byte b) {
-		buffer.putByte(getOffset(index), b);
+	public void putShort(long index, short b) {
+		buffer.putShort(getOffset(index), b);
 	}
 	
 	//array
-	public void copyInto(byte[] dest) {
+	public void copyInto(short[] dest) {
 		buffer.copyInto(dest);
 	}
 	
-	public void copyInto(long index, byte[] dest) {
+	public void copyInto(long index, short[] dest) {
 		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public void copyInto(long index, byte[] dest, int destPos, int length) {
+	public void copyInto(long index, short[] dest, int destPos, int length) {
 		buffer.copyInto(getOffset(index), dest, destPos, length);
 	}
 	
-	public void copyFrom(byte[] src) {
+	public void copyFrom(short[] src) {
 		buffer.copyFrom(src);
 	}
 	
-	public void copyFrom(byte[] src, long index) {
+	public void copyFrom(short[] src, long index) {
 		buffer.copyFrom(src, getOffset(index));
 	}
 	
-	public void copyFrom(byte[] src, int srcPos, int length, long index) {
+	public void copyFrom(short[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
 	}
 }

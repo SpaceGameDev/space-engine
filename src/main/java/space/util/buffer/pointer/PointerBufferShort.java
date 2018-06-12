@@ -20,11 +20,11 @@ public class PointerBufferShort extends AbstractPointerBuffer<PointerBufferShort
 	}
 	
 	//get / put
-	public byte getByte() {
-		return buffer.getByte(0);
+	public short getShort() {
+		return buffer.getShort(0);
 	}
 	
-	public void putByte(byte b) {
-		buffer.putByte(0, b);
+	public void putShort(short b) {
+		buffer.putShort(0, b);
 	}
 }

@@ -20,11 +20,11 @@ public class PointerBufferInt extends AbstractPointerBuffer<PointerBufferInt> {
 	}
 	
 	//get / put
-	public byte getByte() {
-		return buffer.getByte(0);
+	public int getInt() {
+		return buffer.getInt(0);
 	}
 	
-	public void putByte(byte b) {
-		buffer.putByte(0, b);
+	public void putInt(int b) {
+		buffer.putInt(0, b);
 	}
 }

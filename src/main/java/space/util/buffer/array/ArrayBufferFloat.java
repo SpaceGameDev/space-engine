@@ -23,36 +23,36 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	}
 	
 	//get / put
-	public byte getByte(long index) {
-		return buffer.getByte(getOffset(index));
+	public float getFloat(long index) {
+		return buffer.getFloat(getOffset(index));
 	}
 	
-	public void putByte(long index, byte b) {
-		buffer.putByte(getOffset(index), b);
+	public void putFloat(long index, float b) {
+		buffer.putFloat(getOffset(index), b);
 	}
 	
 	//array
-	public void copyInto(byte[] dest) {
+	public void copyInto(float[] dest) {
 		buffer.copyInto(dest);
 	}
 	
-	public void copyInto(long index, byte[] dest) {
+	public void copyInto(long index, float[] dest) {
 		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public void copyInto(long index, byte[] dest, int destPos, int length) {
+	public void copyInto(long index, float[] dest, int destPos, int length) {
 		buffer.copyInto(getOffset(index), dest, destPos, length);
 	}
 	
-	public void copyFrom(byte[] src) {
+	public void copyFrom(float[] src) {
 		buffer.copyFrom(src);
 	}
 	
-	public void copyFrom(byte[] src, long index) {
+	public void copyFrom(float[] src, long index) {
 		buffer.copyFrom(src, getOffset(index));
 	}
 	
-	public void copyFrom(byte[] src, int srcPos, int length, long index) {
+	public void copyFrom(float[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
 	}
 }

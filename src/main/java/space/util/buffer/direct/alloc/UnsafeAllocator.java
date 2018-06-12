@@ -7,7 +7,7 @@ import space.util.buffer.direct.UnsafeDirectBuffer;
 import space.util.buffer.direct.UnsafeNonFreeDirectBuffer;
 import space.util.freeableStorage.FreeableStorage;
 
-public class UnsafeAllocator implements Allocator {
+public class UnsafeAllocator implements Allocator<DirectBuffer> {
 	
 	@NotNull
 	@Override

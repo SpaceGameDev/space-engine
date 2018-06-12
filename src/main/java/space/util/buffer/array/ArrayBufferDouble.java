@@ -23,36 +23,36 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	}
 	
 	//get / put
-	public byte getByte(long index) {
-		return buffer.getByte(getOffset(index));
+	public long getLong(long index) {
+		return buffer.getLong(getOffset(index));
 	}
 	
-	public void putByte(long index, byte b) {
-		buffer.putByte(getOffset(index), b);
+	public void putLong(long index, long b) {
+		buffer.putLong(getOffset(index), b);
 	}
 	
 	//array
-	public void copyInto(byte[] dest) {
+	public void copyInto(long[] dest) {
 		buffer.copyInto(dest);
 	}
 	
-	public void copyInto(long index, byte[] dest) {
+	public void copyInto(long index, long[] dest) {
 		buffer.copyInto(getOffset(index), dest);
 	}
 	
-	public void copyInto(long index, byte[] dest, int destPos, int length) {
+	public void copyInto(long index, long[] dest, int destPos, int length) {
 		buffer.copyInto(getOffset(index), dest, destPos, length);
 	}
 	
-	public void copyFrom(byte[] src) {
+	public void copyFrom(long[] src) {
 		buffer.copyFrom(src);
 	}
 	
-	public void copyFrom(byte[] src, long index) {
+	public void copyFrom(long[] src, long index) {
 		buffer.copyFrom(src, getOffset(index));
 	}
 	
-	public void copyFrom(byte[] src, int srcPos, int length, long index) {
+	public void copyFrom(long[] src, int srcPos, int length, long index) {
 		buffer.copyFrom(src, srcPos, length, getOffset(index));
 	}
 }

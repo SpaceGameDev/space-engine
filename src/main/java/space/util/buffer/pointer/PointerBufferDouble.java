@@ -20,11 +20,11 @@ public class PointerBufferDouble extends AbstractPointerBuffer<PointerBufferDoub
 	}
 	
 	//get / put
-	public byte getByte() {
-		return buffer.getByte(0);
+	public double getDouble() {
+		return buffer.getDouble(0);
 	}
 	
-	public void putByte(byte b) {
-		buffer.putByte(0, b);
+	public void putDouble(double b) {
+		buffer.putDouble(0, b);
 	}
 }
