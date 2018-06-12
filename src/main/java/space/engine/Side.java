@@ -24,26 +24,32 @@ public class Side {
 	public static final Key<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
+	//buffer alloc stack
 	public static final Key<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
+	//buffer string converter
 	public static final Key<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.generateKey();
 	
 	//initializer
 	//buffer alloc
-	public static void initBufferAlloc(IAttributeList<Side> side, Allocator<DirectBuffer> alloc) {
-		IAttributeListModification<Side> modify = ATTRIBUTE_LIST_CREATOR.createModify();
+	public static void initBufferAlloc(IAttributeListModification<Side> modify, Allocator<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC, alloc);
 		modify.put(BUFFER_ALLOC_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_POINTER, new PointerAllocatorCollection(alloc));
 	}
 	
-	public static void initBufferAllocStack(IAttributeList<Side> side, AllocatorStack<DirectBuffer> alloc) {
-		IAttributeListModification<Side> modify = ATTRIBUTE_LIST_CREATOR.createModify();
+	//buffer alloc stack
+	public static void initBufferAllocStack(IAttributeListModification<Side> modify, AllocatorStack<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC_STACK, alloc);
 		modify.put(BUFFER_ALLOC_STACK_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_STACK_POINTER, new PointerAllocatorCollection(alloc));
+	}
+	
+	//buffer string converter
+	public static void initBufferStringConverter(IAttributeListModification<Side> modify, BufferStringConverter converter) {
+		modify.put(BUFFER_STRING_CONVERTER, converter);
 	}
 	
 	//internal
