@@ -1,11 +1,12 @@
 package space.util.key.attribute;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
 import space.util.concurrent.event.Event;
 import space.util.concurrent.event.SimpleEvent;
 import space.util.delegate.collection.ConvertingCollection;
-import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArrayWithDefault;
 import space.util.key.IllegalKeyException;
 import space.util.key.Key;
@@ -20,6 +21,16 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE>, ToString {
+	
+	/**
+	 * <p><b>NO NULLABLE!</b></p>
+	 * It can be null if the Default Value is null, but it's not possible to define that.
+	 * We are expecting the Developer to know whether the default can be null or not.
+	 */
+	@SuppressWarnings("ConstantConditions")
+	protected static <V> V correctDefault(V v, Key<V> key) {
+		return v != DEFAULT ? v : key.getDefaultValue();
+	}
 	
 	public final KeyGenerator gen;
 	
@@ -36,6 +47,11 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			throw new IllegalKeyException(key);
 	}
 	
+	protected int getInitialIndexMapCapacity() {
+		int i = gen.estimateKeyPoolMax();
+		return i < 16 ? 16 : i;
+	}
+	
 	//delegate to gen
 	@NotNull
 	@Override
@@ -45,7 +61,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	
 	@NotNull
 	@Override
-	public <T> Key<T> generateKey(Supplier<T> def) {
+	public <T> Key<T> generateKey(@NotNull Supplier<T> def) {
 		return gen.generateKey(def);
 	}
 	
@@ -71,21 +87,22 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		return gen.getKeys();
 	}
 	
-	public static <V> V correctDefault(V v, Key<V> key) {
-		return v != DEFAULT ? v : key.getDefaultValue();
+	@Override
+	public int estimateKeyPoolMax() {
+		return gen.estimateKeyPoolMax();
 	}
 	
 	//create
 	@NotNull
 	@Override
-	public AttributeList create() {
-		return new AttributeList();
+	public AttributeListImpl create() {
+		return new AttributeListImpl();
 	}
 	
 	@NotNull
 	@Override
-	public AttributeListModification createModify() {
-		return new AttributeListModification();
+	public AttributeListModificationImpl createModify() {
+		return new AttributeListModificationImpl();
 	}
 	
 	//toString
@@ -102,16 +119,12 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		return toString0();
 	}
 	
-	public abstract class AbstractAttributeList implements IAbstractAttributeList<TYPE>, ToString {
+	public abstract class AbstractAttributeListImpl implements IAbstractAttributeList<TYPE>, ToString {
 		
 		public IndexMapArrayWithDefault<Object> indexMap;
 		
-		protected AbstractAttributeList(Object defaultObject) {
-			this(gen instanceof DisposableKeyGenerator ? new IndexMapArrayWithDefault<>(((DisposableKeyGenerator) gen).counter, defaultObject) : new IndexMapArrayWithDefault<>(defaultObject));
-		}
-		
-		private AbstractAttributeList(IndexMapArrayWithDefault<Object> indexMap) {
-			this.indexMap = indexMap;
+		protected AbstractAttributeListImpl(Object defaultObject) {
+			this.indexMap = new IndexMapArrayWithDefault<>(getInitialIndexMapCapacity(), defaultObject);
 		}
 		
 		//get
@@ -171,31 +184,33 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			
 			@Override
 			public Object getValueDirect() {
-				return AbstractAttributeList.this.getDirect(key);
+				return AbstractAttributeListImpl.this.getDirect(key);
 			}
 		}
 	}
 	
-	public class AttributeList extends AbstractAttributeList implements IAttributeList<TYPE> {
+	public class AttributeListImpl extends AbstractAttributeListImpl implements AttributeList<TYPE> {
 		
+		@NotNull
 		public SimpleEvent<Consumer<ChangeEvent<?>>> changeEvent = new SimpleEvent<>();
 		
-		public AttributeList() {
+		public AttributeListImpl() {
 			super(DEFAULT);
 		}
 		
 		//get
-		@NotNull
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> V get(Key<V> key) {
+		public <V> V get(@NotNull Key<V> key) {
 			check(key);
 			return correctDefault((V) indexMap.get(key.getID()), key);
 		}
 		
 		@Override
+		@Nullable
+		@Contract("_, !null -> !null")
 		@SuppressWarnings("unchecked")
-		public <V> V getOrDefault(Key<V> key, V def) {
+		public <V> V getOrDefault(@NotNull Key<V> key, @Nullable V def) {
 			check(key);
 			Object o = indexMap.get(key.getID());
 			return o == DEFAULT ? def : (V) o;
@@ -209,9 +224,9 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		}
 		
 		@Override
-		public synchronized void apply(@NotNull IAttributeListModification<TYPE> mod2) {
-			//same check
-			AttributeListModification mod = AttributeListCreatorImpl.this.createModify();
+		public synchronized void apply(@NotNull AttributeListCreator.AttributeListModification<TYPE> mod2) {
+			//unchanged check and replacement
+			AttributeListModificationImpl mod = AttributeListCreatorImpl.this.createModify();
 			mod2.table().forEach(entry -> {
 				Key<?> key = entry.getKey();
 				Object value = entry.getValueDirect();
@@ -238,7 +253,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			
 			@Override
 			public V getValue() {
-				return AttributeList.this.get(key);
+				return AttributeListImpl.this.get(key);
 			}
 		}
 		
@@ -249,26 +264,22 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		}
 	}
 	
-	public class AttributeListModification extends AbstractAttributeList implements IAttributeListModification<TYPE> {
+	public class AttributeListModificationImpl extends AbstractAttributeListImpl implements AttributeListModification<TYPE> {
 		
-		public AttributeListModification() {
+		public AttributeListModificationImpl() {
 			super(UNCHANGED);
-		}
-		
-		private AttributeListModification(IndexMap<Object> indexMap) {
-			super(indexMap);
 		}
 		
 		//put
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> void put(Key<V> key, V v) {
+		public <V> void put(@NotNull Key<V> key, @Nullable V v) {
 			check(key);
 			indexMap.put(key.getID(), v);
 		}
 		
 		@Override
-		public <V> void putDirect(Key<V> key, Object v) {
+		public <V> void putDirect(@NotNull Key<V> key, @Nullable Object v) {
 			check(key);
 			indexMap.put(key.getID(), v);
 		}
@@ -276,7 +287,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		//putAndGet
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> V putAndGet(Key<V> key, V v) {
+		public <V> V putAndGet(@NotNull Key<V> key, @Nullable V v) {
 			check(key);
 			return correctDefault((V) indexMap.put(key.getID(), v), key);
 		}
@@ -284,28 +295,28 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		//set to UNCHANGED
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> void reset(Key<V> key) {
+		public <V> void reset(@NotNull Key<V> key) {
 			check(key);
 			indexMap.put(key.getID(), UNCHANGED);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean reset(Key<V> key, V v) {
+		public <V> boolean reset(@NotNull Key<V> key, @Nullable V v) {
 			check(key);
 			return indexMap.replace(key.getID(), v, UNCHANGED);
 		}
 		
 		//set to DEFAULT
 		@Override
-		public <V> void setDefault(Key<V> key) {
+		public <V> void setDefault(@NotNull Key<V> key) {
 			check(key);
 			indexMap.put(key.getID(), DEFAULT);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean setDefault(Key<V> key, V v) {
+		public <V> boolean setDefault(@NotNull Key<V> key, @Nullable V v) {
 			check(key);
 			return indexMap.replace(key.getID(), v, DEFAULT);
 		}
@@ -313,14 +324,14 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		//replace
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean replace(Key<V> key, V oldValue, V newValue) {
+		public <V> boolean replace(@NotNull Key<V> key, @Nullable V oldValue, @Nullable V newValue) {
 			check(key);
 			return indexMap.replace(key.getID(), oldValue, newValue);
 		}
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> boolean replace(Key<V> key, V oldValue, @NotNull Supplier<? extends V> newValue) {
+		public <V> boolean replace(@NotNull Key<V> key, @Nullable V oldValue, @NotNull Supplier<? extends V> newValue) {
 			check(key);
 			return indexMap.replace(key.getID(), oldValue, newValue);
 		}
@@ -344,8 +355,8 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		
 		@NotNull
 		@Override
-		public IAttributeList<TYPE> createNewList() {
-			AttributeList list = new AttributeList();
+		public AttributeListCreator.AttributeList<TYPE> createNewList() {
+			AttributeListImpl list = new AttributeListImpl();
 			this.table().forEach(entry -> {
 				Object value = entry.getValueDirect();
 				if (value != UNCHANGED)
@@ -361,23 +372,23 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 			}
 			
 			@Override
-			public void put(V v) {
-				AttributeListModification.this.put(key, v);
+			public void put(@Nullable V v) {
+				AttributeListModificationImpl.this.put(key, v);
 			}
 			
 			@Override
-			public void putDirect(Object v) {
-				AttributeListModification.this.putDirect(key, v);
+			public void putDirect(@Nullable Object v) {
+				AttributeListModificationImpl.this.putDirect(key, v);
 			}
 			
 			@Override
 			public void setDefault() {
-				AttributeListModification.this.setDefault(key);
+				AttributeListModificationImpl.this.setDefault(key);
 			}
 			
 			@Override
 			public void reset() {
-				AttributeListModification.this.reset(key);
+				AttributeListModificationImpl.this.reset(key);
 			}
 		}
 		
@@ -390,23 +401,23 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	
 	class AttributeListChangeEvent implements ChangeEvent<TYPE> {
 		
-		public final IAttributeList<TYPE> oldList;
-		public final IAttributeListModification<TYPE> mod;
+		public final AttributeList<TYPE> oldList;
+		public final AttributeListModification<TYPE> mod;
 		
-		public AttributeListChangeEvent(IAttributeList<TYPE> oldList, IAttributeListModification<TYPE> mod) {
+		public AttributeListChangeEvent(AttributeList<TYPE> oldList, AttributeListModification<TYPE> mod) {
 			this.oldList = oldList;
 			this.mod = mod;
 		}
 		
 		@NotNull
 		@Override
-		public IAttributeList<TYPE> getOldList() {
+		public AttributeListCreator.AttributeList<TYPE> getOldList() {
 			return oldList;
 		}
 		
 		@NotNull
 		@Override
-		public IAttributeListModification<TYPE> getMod() {
+		public AttributeListCreator.AttributeListModification<TYPE> getMod() {
 			return mod;
 		}
 		
@@ -423,27 +434,32 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 				}
 				
 				@Override
+				@Nullable
 				public Object getOldDirect() {
 					return oldList.getDirect(key);
 				}
 				
 				@Override
+				@Nullable
 				public V getOld() {
 					return oldList.get(key);
 				}
 				
 				@Override
+				@Nullable
 				public Object getMod() {
 					return mod.getDirect(key);
 				}
 				
 				@Override
+				@Nullable
 				public Object getNewDirect() {
 					Object v = mod.getDirect(key);
 					return v == UNCHANGED ? oldList.getDirect(key) : v;
 				}
 				
 				@Override
+				@Nullable
 				public V getNew() {
 					Object v = mod.getDirect(key);
 					if (v == UNCHANGED)
@@ -456,7 +472,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 				
 				//set
 				@Override
-				public void setMod(Object newmod) {
+				public void setMod(@Nullable Object newmod) {
 					mod.putDirect(key, newmod);
 				}
 			};

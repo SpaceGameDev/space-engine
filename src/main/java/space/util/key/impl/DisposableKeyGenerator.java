@@ -1,6 +1,7 @@
 package space.util.key.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
 import space.util.delegate.indexmap.ReferenceIndexMap;
 import space.util.delegate.specific.IntList;
@@ -17,9 +18,15 @@ import java.util.function.Supplier;
 
 public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	
-	public int counter;
-	public IntList disposed;
-	public IndexMap<Key<?>> allKeys = new ReferenceIndexMap<>(new IndexMapArray<>(), WeakReference::new);
+	protected int counter;
+	
+	/**
+	 * null -> no reuse allowed
+	 */
+	@Nullable
+	protected IntList disposed;
+	@NotNull
+	protected IndexMap<Key<?>> allKeys = new ReferenceIndexMap<>(new IndexMapArray<>(), WeakReference::new);
 	
 	public DisposableKeyGenerator(boolean allowReuse) {
 		if (allowReuse)
@@ -35,7 +42,7 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	
 	@NotNull
 	@Override
-	public synchronized <T> DisposableKey<T> generateKey(Supplier<T> def) {
+	public synchronized <T> DisposableKey<T> generateKey(@NotNull Supplier<T> def) {
 		DisposableKey<T> key = new DisposableKey<>(disposed != null && !disposed.isEmpty() ? disposed.poll() : counter++, this, def);
 		allKeys.put(key.getID(), key);
 		return key;
@@ -56,6 +63,11 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	@Override
 	public Collection<Key<?>> getKeys() {
 		return allKeys.values();
+	}
+	
+	@Override
+	public int estimateKeyPoolMax() {
+		return counter;
 	}
 	
 	//dispose

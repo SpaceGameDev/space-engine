@@ -27,14 +27,14 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	};
 	
 	/**
-	 * creates a new {@link IAttributeList IAttributeList}
+	 * creates a new {@link AttributeList AttributeList}
 	 */
-	@NotNull IAttributeList<TYPE> create();
+	@NotNull AttributeListCreator.AttributeList<TYPE> create();
 	
 	/**
-	 * creates a new {@link IAttributeListModification IAttributeListModification}
+	 * creates a new {@link AttributeListModification AttributeListModification}
 	 */
-	@NotNull IAttributeListModification<TYPE> createModify();
+	@NotNull AttributeListCreator.AttributeListModification<TYPE> createModify();
 	
 	@NotNull
 	@Override
@@ -42,7 +42,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	
 	@NotNull
 	@Override
-	<T> Key<T> generateKey(Supplier<T> defaultValue);
+	<T> Key<T> generateKey(@NotNull Supplier<T> defaultValue);
 	
 	@Override
 	boolean isKeyOf(@NotNull Key<?> key);
@@ -56,8 +56,8 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * gets the value for a given {@link Key} <b>without</b> checking if it's the default value.<br>
 		 * Possible Values:
 		 * <ul>
-		 * <li>{@link IAttributeList#DEFAULT} the default object</li>
-		 * <li>{@link IAttributeList#UNCHANGED} the unchanged object</li>
+		 * <li>{@link AttributeList#DEFAULT} the default object</li>
+		 * <li>{@link AttributeList#UNCHANGED} the unchanged object</li>
 		 * <li>an actual value Object of type V</li>
 		 * </ul>
 		 */
@@ -84,11 +84,11 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		@NotNull AttributeListCreator<TYPE> getCreator();
 		
 		/**
-		 * creates a new {@link IAttributeListModification IAttributeListModification}.
+		 * creates a new {@link AttributeListModification AttributeListModification}.
 		 * Calls <code>this.{@link IAbstractAttributeList#getCreator()}.{@link AttributeListCreator#createModify()}</code> by default.
 		 */
 		@NotNull
-		default IAttributeListModification<TYPE> createModify() {
+		default AttributeListCreator.AttributeListModification<TYPE> createModify() {
 			return getCreator().createModify();
 		}
 		
@@ -114,33 +114,38 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	//list itself
 	
 	/**
-	 * An {@link IAttributeList IAttributeList} holds values to all keys generated.<br>
-	 * It can be modified by creating a {@link IAttributeListModification IAttributeListModification} with {@link AttributeListCreator#createModify()},
-	 * putting all the changing values there and than calling {@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)} to apply changes.
-	 * When applying changes the {@link Event} from {@link IAttributeList#getChangeEvent()} is triggered.
+	 * An {@link AttributeList AttributeList} holds values to all keys generated.<br>
+	 * It can be modified by creating a {@link AttributeListModification AttributeListModification} with {@link AttributeListCreator#createModify()},
+	 * putting all the changing values there and than calling {@link AttributeList#apply(AttributeListModification) apply(AttributeListModification)} to apply changes.
+	 * When applying changes the {@link Event} from {@link AttributeList#getChangeEvent()} is triggered.
 	 *
-	 * @see IAttributeListModification the modification AttributeList
+	 * @see AttributeListModification the modification AttributeList
 	 */
-	interface IAttributeList<TYPE> extends IAbstractAttributeList<TYPE> {
+	interface AttributeList<TYPE> extends IAbstractAttributeList<TYPE> {
 		
 		//get
 		
 		/**
-		 * Gets the value for a given {@link Key} or the default value if the value is equal to {@link IAttributeList#DEFAULT}
+		 * Gets the value for a given {@link Key} or the default value if the value is equal to {@link AttributeList#DEFAULT}.
+		 *
+		 * @implNote This Method is NOT {@link Nullable @Nullable} and also not definable as a {@link Contract @Contract}. <br>
+		 * <code>if(default != null) -> return notnull.</code><br>
+		 * <code>if(default == null) -> return nullable.</code>
 		 */
-		@NotNull <V> V get(Key<V> key);
+		<V> V get(@NotNull Key<V> key);
 		
 		/**
-		 * Gets the value for a given {@link Key} or <code>def</code> if the value is equal to {@link IAttributeList#DEFAULT}
+		 * Gets the value for a given {@link Key} or <code>def</code> if the value is equal to {@link AttributeList#DEFAULT}
 		 */
-		@Contract("_, null -> null;_, !null -> !null")
-		<V> V getOrDefault(Key<V> key, V def);
+		@Nullable
+		@Contract("_, !null -> !null")
+		<V> V getOrDefault(@NotNull Key<V> key, @Nullable V def);
 		
 		//other
 		
 		/**
 		 * Gets the {@link Event} to use {@link Event#addHook(Object)} to add Hooks.
-		 * Called then a mod is applied ({@link IAttributeList#apply(IAttributeListModification) apply(IAttributeListModification)}).
+		 * Called then a mod is applied ({@link AttributeList#apply(AttributeListModification) apply(AttributeListModification)}).
 		 */
 		@NotNull Event<Consumer<ChangeEvent<?>>> getChangeEvent();
 		
@@ -149,12 +154,12 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * It should be handled like this:
 		 * <ul>
 		 * <li>copy the mod</li>
-		 * <li>replace all "replacements" with the same entry with {@link IAttributeList#UNCHANGED}</li>
-		 * <li>trigger the {@link Event} gotten from {@link IAttributeList#getChangeEvent()}</li>
+		 * <li>replace all "replacements" with the same entry with {@link AttributeList#UNCHANGED}</li>
+		 * <li>trigger the {@link Event} gotten from {@link AttributeList#getChangeEvent()}</li>
 		 * <li>apply the changes to this object</li>
 		 * </ul>
 		 */
-		void apply(@NotNull IAttributeListModification<TYPE> mod);
+		void apply(@NotNull AttributeListCreator.AttributeListModification<TYPE> mod);
 		
 		@Override
 		@NotNull Collection<? extends ListEntry<?>> table();
@@ -167,14 +172,14 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	
 	//modification
 	
-	interface IAttributeListModification<TYPE> extends IAbstractAttributeList<TYPE> {
+	interface AttributeListModification<TYPE> extends IAbstractAttributeList<TYPE> {
 		
 		//get
-		default <V> boolean isUnchanged(Key<V> key) {
+		default <V> boolean isUnchanged(@NotNull Key<V> key) {
 			return getDirect(key) == UNCHANGED;
 		}
 		
-		default <V> boolean hasChanged(Key<V> key) {
+		default <V> boolean hasChanged(@NotNull Key<V> key) {
 			return getDirect(key) != UNCHANGED;
 		}
 		
@@ -183,61 +188,61 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		/**
 		 * sets the value to v for a given {@link Key}
 		 */
-		<V> void put(Key<V> key, @Nullable V v);
+		<V> void put(@NotNull Key<V> key, @Nullable V v);
 		
 		/**
-		 * sets the value to v for a given {@link Key}, directly so you can use {@link IAttributeList#UNCHANGED} or {@link IAttributeList#DEFAULT}
+		 * sets the value to v for a given {@link Key}, directly so you can use {@link AttributeList#UNCHANGED} or {@link AttributeList#DEFAULT}
 		 */
-		<V> void putDirect(Key<V> key, @Nullable Object v);
+		<V> void putDirect(@NotNull Key<V> key, @Nullable Object v);
 		
 		/**
 		 * sets the value for a given {@link Key} and returns the previous value
 		 */
-		<V> V putAndGet(Key<V> key, @Nullable V v);
+		@Nullable <V> V putAndGet(@NotNull Key<V> key, @Nullable V v);
 		
 		/**
-		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key}
+		 * sets the value to {@link AttributeList#UNCHANGED} for a given {@link Key}
 		 */
-		<V> void reset(Key<V> key);
+		<V> void reset(@NotNull Key<V> key);
 		
 		/**
-		 * sets the value to {@link IAttributeList#UNCHANGED} for a given {@link Key} if the current value is equal to v
+		 * sets the value to {@link AttributeList#UNCHANGED} for a given {@link Key} if the current value is equal to v
 		 */
-		<V> boolean reset(Key<V> key, @Nullable V v);
+		<V> boolean reset(@NotNull Key<V> key, @Nullable V v);
 		
 		/**
-		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key}
+		 * sets the value to {@link AttributeList#DEFAULT} for a given {@link Key}
 		 */
-		<V> void setDefault(Key<V> key);
+		<V> void setDefault(@NotNull Key<V> key);
 		
 		/**
-		 * sets the value to {@link IAttributeList#DEFAULT} for a given {@link Key} if the current value is equal to v
+		 * sets the value to {@link AttributeList#DEFAULT} for a given {@link Key} if the current value is equal to v
 		 */
-		<V> boolean setDefault(Key<V> key, @Nullable V v);
+		<V> boolean setDefault(@NotNull Key<V> key, @Nullable V v);
 		
 		/**
 		 * sets the value for a given {@link Key} if the current value is equal to the old value
 		 */
-		<V> boolean replace(Key<V> key, @Nullable V oldValue, @Nullable V newValue);
+		<V> boolean replace(@NotNull Key<V> key, @Nullable V oldValue, @Nullable V newValue);
 		
 		/**
 		 * sets the value for a given {@link Key} if the current value is equal to the old value
 		 */
-		<V> boolean replace(Key<V> key, @Nullable V oldValue, @NotNull Supplier<? extends V> newValue);
+		<V> boolean replace(@NotNull Key<V> key, @Nullable V oldValue, @NotNull Supplier<? extends V> newValue);
 		
 		/**
-		 * copies from either an {@link IAttributeList} or {@link IAttributeListModification} all the {@link Key IKeys} over
+		 * copies from either an {@link AttributeList} or {@link AttributeListModification} all the {@link Key IKeys} over
 		 */
 		void copyOver(@NotNull IAbstractAttributeList list, @NotNull Key<?>... keys);
 		
 		//other
 		
 		/**
-		 * resets all entries to {@link IAttributeList#UNCHANGED}
+		 * resets all entries to {@link AttributeList#UNCHANGED}
 		 */
 		void clear();
 		
-		@NotNull IAttributeList<TYPE> createNewList();
+		@NotNull AttributeListCreator.AttributeList<TYPE> createNewList();
 		
 		@NotNull
 		@Override
@@ -266,23 +271,23 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	//change event
 	
 	/**
-	 * Contains information about ANY change of an {@link IAttributeList IAttributeList}.
-	 * It is used in the {@link Event} gotten from {@link IAttributeList#getChangeEvent()}.
+	 * Contains information about ANY change of an {@link AttributeList AttributeList}.
+	 * It is used in the {@link Event} gotten from {@link AttributeList#getChangeEvent()}.
 	 * Use {@link ChangeEvent#getEntry(Key)} to get the Entry of one {@link Key}.
 	 */
 	interface ChangeEvent<TYPE> {
 		
-		@NotNull IAttributeList<TYPE> getOldList();
+		@NotNull AttributeListCreator.AttributeList<TYPE> getOldList();
 		
-		@NotNull IAttributeListModification<TYPE> getMod();
+		@NotNull AttributeListCreator.AttributeListModification<TYPE> getMod();
 		
 		@NotNull <V> ChangeEventEntry<V> getEntry(@NotNull Key<V> key);
 	}
 	
 	/**
-	 * Contains information about A SINGLE change of an {@link IAttributeList IAttributeList}.
+	 * Contains information about A SINGLE change of an {@link AttributeList AttributeList}.
 	 * You can get the old state, the mod and calculate the new state it will be in.
-	 * "Normal" Methods will calculate the default Value, "Direct" Methods will not and can return {@link IAttributeList#DEFAULT DEFAULT} or {@link IAttributeList#UNCHANGED UNCHANGED}.
+	 * "Normal" Methods will calculate the default Value, "Direct" Methods will not and can return {@link AttributeList#DEFAULT DEFAULT} or {@link AttributeList#UNCHANGED UNCHANGED}.
 	 * You can also set the mod to something else with {@link ChangeEventEntry#setMod(Object)}.
 	 */
 	interface ChangeEventEntry<V> {

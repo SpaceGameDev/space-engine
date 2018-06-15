@@ -1,6 +1,7 @@
 package space.util.key.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.Freeable.FreeableWithStorage;
 import space.util.baseobject.ToString;
 import space.util.freeableStorage.FreeableStorage;
@@ -14,18 +15,19 @@ import java.util.function.Supplier;
 
 public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 	
+	@NotNull
 	public final Storage storage;
 	public Supplier<T> def;
 	
-	public DisposableKey(int id, DisposableKeyGenerator gen) {
+	public DisposableKey(int id, @NotNull DisposableKeyGenerator gen) {
 		this(id, gen, () -> null);
 	}
 	
-	public DisposableKey(int id, DisposableKeyGenerator gen, T def) {
+	public DisposableKey(int id, @NotNull DisposableKeyGenerator gen, T def) {
 		this(id, gen, () -> def);
 	}
 	
-	public DisposableKey(int id, DisposableKeyGenerator gen, Supplier<T> def) {
+	public DisposableKey(int id, @NotNull DisposableKeyGenerator gen, Supplier<T> def) {
 		if (id < 0)
 			throw new IllegalArgumentException("id cannot be negative, possible overflow?");
 		
@@ -45,7 +47,7 @@ public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 		private final int id;
 		public DisposableKeyGenerator gen;
 		
-		public Storage(Object referent, int id, DisposableKeyGenerator gen, FreeableStorage... lists) {
+		public Storage(@NotNull Object referent, int id, @NotNull DisposableKeyGenerator gen, @NotNull FreeableStorage... lists) {
 			super(referent, lists);
 			this.id = id;
 			this.gen = gen;
@@ -70,6 +72,7 @@ public class DisposableKey<T> implements Key<T>, FreeableWithStorage, ToString {
 	}
 	
 	@Override
+	@Nullable
 	public T getDefaultValue() {
 		return def.get();
 	}

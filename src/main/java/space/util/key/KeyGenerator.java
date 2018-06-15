@@ -27,7 +27,7 @@ public interface KeyGenerator {
 	 * @return the new {@link Key}
 	 */
 	@NotNull
-	default <T> Key<T> generateKey(T def) {
+	default <T> Key<T> generateKey(@Nullable T def) {
 		return generateKey(() -> def);
 	}
 	
@@ -38,7 +38,7 @@ public interface KeyGenerator {
 	 * @param def the Supplier of the default value
 	 * @return the new {@link Key}
 	 */
-	@NotNull <T> Key<T> generateKey(Supplier<T> def);
+	@NotNull <T> Key<T> generateKey(@NotNull Supplier<T> def);
 	
 	//key
 	
@@ -48,7 +48,7 @@ public interface KeyGenerator {
 	 * @param id the id of the {@link Key}
 	 * @return the {@link Key} associated with the id
 	 */
-	@Nullable Key<?> getKey(int id);
+	Key<?> getKey(int id);
 	
 	/**
 	 * checks weather the key is from this generator
@@ -65,12 +65,20 @@ public interface KeyGenerator {
 	@NotNull Collection<Key<?>> getKeys();
 	
 	/**
+	 * Estimates the max ID of all Keys.
+	 * If no estimation can be done -1 is returned
+	 *
+	 * @return the estimated max ID of all Keys or -1 if not supported
+	 */
+	int estimateKeyPoolMax();
+	
+	/**
 	 * every key generated will be submitted to the Consumer
 	 *
 	 * @param onGen the Consumer accepting the {@link Key IKeys}
 	 * @return a new {@link KeyGenerator} with the described functionality
 	 */
-	default KeyGenerator whenGenerated(Consumer<Key<?>> onGen) {
+	default KeyGenerator whenGenerated(@NotNull Consumer<Key<?>> onGen) {
 		return new KeyGenerator() {
 			@NotNull
 			@Override
@@ -90,7 +98,7 @@ public interface KeyGenerator {
 			
 			@NotNull
 			@Override
-			public <T> Key<T> generateKey(Supplier<T> def) {
+			public <T> Key<T> generateKey(@NotNull Supplier<T> def) {
 				Key<T> key = KeyGenerator.this.generateKey(def);
 				onGen.accept(key);
 				return key;
@@ -110,6 +118,11 @@ public interface KeyGenerator {
 			@Override
 			public Collection<Key<?>> getKeys() {
 				return KeyGenerator.this.getKeys();
+			}
+			
+			@Override
+			public int estimateKeyPoolMax() {
+				return KeyGenerator.this.estimateKeyPoolMax();
 			}
 		};
 	}

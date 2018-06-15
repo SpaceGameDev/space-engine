@@ -1,5 +1,6 @@
 package space.util.key.attribute;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.delegate.specific.IntList;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
@@ -11,10 +12,18 @@ import space.util.key.map.KeyMapImpl;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+/**
+ * Allows for easy filtering of {@link ChangeEvent ChangeEvents}.<br>
+ * You can add Callbacks via {@link AttributeListChangeEventHelper#putEntry(Consumer, Key)} for single Keys
+ * and {@link AttributeListChangeEventHelper#put(Consumer, Key[])} for multiple Keys. Note that their Consumer changes.
+ */
 public class AttributeListChangeEventHelper implements Consumer<ChangeEvent<?>> {
 	
+	@NotNull
 	public final AtomicInteger callbackGen = new AtomicInteger();
+	@NotNull
 	public final IndexMap<Consumer<ChangeEvent<?>>> callbackList = new IndexMapArray<>();
+	@NotNull
 	public final KeyMapImpl<IntList> keysToCallback = new KeyMapImpl<>();
 	
 	//put

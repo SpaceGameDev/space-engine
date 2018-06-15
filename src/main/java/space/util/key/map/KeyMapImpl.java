@@ -44,60 +44,60 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	//methods
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE get(Key<?> key) {
+	public VALUE get(@NotNull Key<?> key) {
 		check(key);
 		return map.get(key.getID());
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE put(Key<?> key, VALUE v) {
+	public VALUE put(@NotNull Key<?> key, VALUE v) {
 		check(key);
 		return map.put(key.getID(), v);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE remove(Key<?> key) {
+	public VALUE remove(@NotNull Key<?> key) {
 		check(key);
 		return map.remove(key.getID());
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE getOrDefault(Key<?> key, VALUE def) {
+	public VALUE getOrDefault(@NotNull Key<?> key, VALUE def) {
 		check(key);
 		return map.getOrDefault(key.getID(), def);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE putIfAbsent(Key<?> key, VALUE v) {
+	public VALUE putIfAbsent(@NotNull Key<?> key, VALUE v) {
 		check(key);
 		return map.putIfAbsent(key.getID(), v);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public VALUE putIfAbsent(Key<?> key, @NotNull Supplier<? extends VALUE> v) {
+	public VALUE putIfAbsent(@NotNull Key<?> key, @NotNull Supplier<? extends VALUE> v) {
 		check(key);
 		return map.computeIfAbsent(key.getID(), v);
 	}
 	
 	@Override
-	public boolean replace(Key<?> key, VALUE oldValue, VALUE newValue) {
+	public boolean replace(@NotNull Key<?> key, VALUE oldValue, VALUE newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);
 	}
 	
 	@Override
-	public boolean replace(Key<?> key, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
+	public boolean replace(@NotNull Key<?> key, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		check(key);
 		return map.replace(key.getID(), oldValue, newValue);
 	}
 	
 	@Override
-	public boolean remove(Key<?> key, VALUE v) {
+	public boolean remove(@NotNull Key<?> key, VALUE v) {
 		check(key);
 		return map.remove(key.getID(), v);
 	}
@@ -166,7 +166,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 		}
 		
 		@NotNull
-		public <T> Key<T> generateKey(Supplier<T> def) {
+		public <T> Key<T> generateKey(@NotNull Supplier<T> def) {
 			return gen.generateKey(def);
 		}
 		
@@ -182,6 +182,10 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 		@NotNull
 		public Collection<Key<?>> getKeys() {
 			return gen.getKeys();
+		}
+		
+		public int estimateKeyPoolMax() {
+			return gen.estimateKeyPoolMax();
 		}
 	}
 }

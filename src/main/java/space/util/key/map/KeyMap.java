@@ -1,5 +1,6 @@
 package space.util.key.map;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.key.Key;
@@ -17,47 +18,49 @@ public interface KeyMap<VALUE> {
 	/**
 	 * gets the VALUE for a given {@link Key}
 	 */
-	@Nullable VALUE get(Key<?> key);
+	@Nullable VALUE get(@NotNull Key<?> key);
 	
 	/**
 	 * sets the VALUE for a given {@link Key} to v
 	 */
-	@Nullable VALUE put(Key<?> key, @Nullable VALUE v);
+	@Nullable VALUE put(@NotNull Key<?> key, @Nullable VALUE v);
 	
 	/**
 	 * removes (typically sets to null) the VALUE for a given {@link Key}
 	 */
-	@Nullable VALUE remove(Key<?> key);
+	@Nullable VALUE remove(@NotNull Key<?> key);
 	
 	/**
 	 * gets the key or if it is null returns <code>def</code>
 	 */
-	@Nullable VALUE getOrDefault(Key<?> key, @Nullable VALUE def);
+	@Contract("_,!null->!null")
+	VALUE getOrDefault(@NotNull Key<?> key, @Nullable VALUE def);
 	
 	/**
 	 * sets the VALUE for a given {@link Key} if the {@link Key} is not yet set (typically set to null)
 	 */
-	@Nullable VALUE putIfAbsent(Key<?> key, @Nullable VALUE v);
+	@Contract("_,!null->!null")
+	VALUE putIfAbsent(@NotNull Key<?> key, @Nullable VALUE v);
 	
 	/**
 	 * sets the VALUE for a given {@link Key} if the {@link Key} is not yet set (typically set to null)
 	 */
-	@Nullable VALUE putIfAbsent(Key<?> key, @NotNull Supplier<? extends VALUE> v);
+	VALUE putIfAbsent(@NotNull Key<?> key, @NotNull Supplier<? extends VALUE> v);
 	
 	/**
 	 * sets the VALUE for a given {@link Key} to <code>newValue</code>, if the current VALUE is equal to <code>oldValue</code>
 	 */
-	boolean replace(Key<?> key, @Nullable VALUE oldValue, @Nullable VALUE newValue);
+	boolean replace(@NotNull Key<?> key, @Nullable VALUE oldValue, @Nullable VALUE newValue);
 	
 	/**
 	 * sets the VALUE for a given {@link Key} to <code>newValue</code>, if the current VALUE is equal to <code>oldValue</code>
 	 */
-	boolean replace(Key<?> key, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue);
+	boolean replace(@NotNull Key<?> key, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue);
 	
 	/**
 	 * removes (typically sets to null) the VALUE for a given {@link Key}, if the current VALUE is equal to <code>v</code>
 	 */
-	boolean remove(Key<?> key, @Nullable VALUE v);
+	boolean remove(@NotNull Key<?> key, @Nullable VALUE v);
 	
 	//others
 	

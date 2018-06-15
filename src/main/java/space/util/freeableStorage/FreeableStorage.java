@@ -46,6 +46,13 @@ public interface FreeableStorage extends Freeable {
 	 */
 	@NotNull FreeableStorageList getSubList();
 	
+	/**
+	 * Creates a new {@link FreeableStorage} which won't free anything by itself, but still frees it's Children. <br>
+	 * It can be used as a Layer in between multiple {@link FreeableStorage FreeableStorages}.
+	 *
+	 * @param parents the parents it should have
+	 * @return a new dummy {@link FreeableStorage}
+	 */
 	static @NotNull FreeableStorageImpl createDummy(@NotNull FreeableStorage... parents) {
 		return new FreeableStorageImpl(null, parents) {
 			@Override

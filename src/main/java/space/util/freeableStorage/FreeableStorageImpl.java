@@ -1,6 +1,7 @@
 package space.util.freeableStorage;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorageList.Entry;
 
@@ -13,7 +14,7 @@ public abstract class FreeableStorageImpl extends PhantomReference<Object> imple
 	private final int freePriority;
 	private FreeableStorageList subList;
 	
-	public FreeableStorageImpl(Object referent, FreeableStorage... parents) {
+	public FreeableStorageImpl(@Nullable Object referent, @NotNull FreeableStorage... parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
 		
 		int freePriority = Integer.MIN_VALUE;

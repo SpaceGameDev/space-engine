@@ -1,6 +1,8 @@
 package space.util.indexmap;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.ArrayUtils;
 import space.util.baseobject.ToString;
 import space.util.delegate.iterator.Iteratorable;
@@ -15,7 +17,7 @@ import java.util.function.Supplier;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
-	public static int DEFAULT_CAPACITY = 4;
+	public static int DEFAULT_CAPACITY = 16;
 	public static int EXPAND_SHIFT = 1;
 	
 	public int length;
@@ -60,7 +62,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	//internal methods
-	protected VALUE putAndExpand(int index, VALUE v) {
+	protected VALUE putAndExpand(int index, @Nullable VALUE v) {
 		ensureCapacityAvailable(index);
 		if (index >= length)
 			length = index + 1;
@@ -70,6 +72,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		return ret;
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	protected VALUE getDefault() {
 		return null;
 	}
@@ -92,7 +95,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public VALUE put(int index, VALUE value) {
+	public VALUE put(int index, @Nullable VALUE value) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		return putAndExpand(index, value);
@@ -146,7 +149,9 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	//advanced access
 	@Override
-	public VALUE getOrDefault(int index, VALUE def) {
+	@Nullable
+	@Contract("_,!null->!null")
+	public VALUE getOrDefault(int index, @Nullable VALUE def) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
@@ -157,7 +162,9 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public VALUE putIfAbsent(int index, VALUE value) {
+	@Nullable
+	@Contract("_,!null->!null")
+	public VALUE putIfAbsent(int index, @Nullable VALUE value) {
 		VALUE curr = get(index);
 		if (curr != null)
 			return curr;
@@ -167,7 +174,8 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public VALUE putIfPresent(int index, VALUE value) {
+	@Nullable
+	public VALUE putIfPresent(int index, @Nullable VALUE value) {
 		if (get(index) == null)
 			return null;
 		
@@ -176,7 +184,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, VALUE newValue) {
+	public boolean replace(int index, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
@@ -187,7 +195,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean replace(int index, VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
+	public boolean replace(int index, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
@@ -198,7 +206,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean remove(int index, VALUE value) {
+	public boolean remove(int index, @Nullable VALUE value) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
@@ -228,6 +236,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
+	@Nullable
 	public VALUE computeIfPresent(int index, @NotNull Supplier<? extends VALUE> supplier) {
 		if (get(index) == null)
 			return null;
@@ -347,7 +356,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		}
 		
 		@Override
-		public void setValue(VALUE v) {
+		public void setValue(@Nullable VALUE v) {
 			put(index, v);
 		}
 	}
