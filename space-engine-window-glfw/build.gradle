@@ -3,6 +3,8 @@ version parent.version
 
 apply plugin: 'java'
 
+targetCompatibility = rootProject.targetCompatibility
+sourceCompatibility = rootProject.sourceCompatibility
 properties.putAll parent.properties
 
 configurations {
