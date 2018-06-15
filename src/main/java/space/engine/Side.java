@@ -9,8 +9,8 @@ import space.util.buffer.pointer.PointerAllocatorCollection;
 import space.util.buffer.string.BufferStringConverter;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreator;
-import space.util.key.attribute.AttributeListCreator.IAttributeList;
-import space.util.key.attribute.AttributeListCreator.IAttributeListModification;
+import space.util.key.attribute.AttributeListCreator.AttributeList;
+import space.util.key.attribute.AttributeListCreator.AttributeListModification;
 import space.util.key.attribute.AttributeListCreatorImpl;
 
 @SuppressWarnings("unused")
@@ -34,21 +34,21 @@ public class Side {
 	
 	//initializer
 	//buffer alloc
-	public static void initBufferAlloc(IAttributeListModification<Side> modify, Allocator<DirectBuffer> alloc) {
+	public static void initBufferAlloc(AttributeListModification<Side> modify, Allocator<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC, alloc);
 		modify.put(BUFFER_ALLOC_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_POINTER, new PointerAllocatorCollection(alloc));
 	}
 	
 	//buffer alloc stack
-	public static void initBufferAllocStack(IAttributeListModification<Side> modify, AllocatorStack<DirectBuffer> alloc) {
+	public static void initBufferAllocStack(AttributeListModification<Side> modify, AllocatorStack<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC_STACK, alloc);
 		modify.put(BUFFER_ALLOC_STACK_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_STACK_POINTER, new PointerAllocatorCollection(alloc));
 	}
 	
 	//buffer string converter
-	public static void initBufferStringConverter(IAttributeListModification<Side> modify, BufferStringConverter converter) {
+	public static void initBufferStringConverter(AttributeListModification<Side> modify, BufferStringConverter converter) {
 		modify.put(BUFFER_STRING_CONVERTER, converter);
 	}
 	
@@ -56,10 +56,10 @@ public class Side {
 	private Side() {
 	}
 	
-	private static final ThreadLocal<IAttributeList<Side>> THREAD_LOCAL = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
+	private static final ThreadLocal<AttributeList<Side>> THREAD_LOCAL = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
 	
 	@NotNull
-	public static IAttributeList<Side> getSide() {
+	public static AttributeListCreator.AttributeList<Side> getSide() {
 		return THREAD_LOCAL.get();
 	}
 }
