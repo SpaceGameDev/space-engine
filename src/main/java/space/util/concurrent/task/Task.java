@@ -1,6 +1,7 @@
 package space.util.concurrent.task;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.awaitable.Awaitable;
 import space.util.concurrent.event.Event;
 
@@ -72,10 +73,10 @@ public interface Task extends Event<Consumer<Task>>, Awaitable {
 	
 	/**
 	 * gets the {@link TaskResult} of this {@link Task}
+	 * <p>This Method is NOT marked with @Nullable, as it will ONLY return null when the Task is not finished. When it IS finished it will always be NotNull.</p>
 	 *
 	 * @return the {@link TaskResult} of the {@link Task} or null, if not already finished
 	 */
-	@NotNull
 	TaskResult getResult();
 	
 	/**
@@ -83,8 +84,7 @@ public interface Task extends Event<Consumer<Task>>, Awaitable {
 	 *
 	 * @return the {@link Exception} thrown or null
 	 */
-	@NotNull
-	Throwable getException();
+	@Nullable Throwable getException();
 	
 	//await
 	

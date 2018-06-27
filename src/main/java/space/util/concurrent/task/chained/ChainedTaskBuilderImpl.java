@@ -4,12 +4,12 @@ import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Cache;
 import space.util.baseobject.ToString;
 import space.util.concurrent.task.Task;
-import space.util.concurrent.task.TinyWorkload;
 import space.util.concurrent.task.chained.ChainedTaskBuilderImpl.ChainedTaskPart.Node;
 import space.util.concurrent.task.creator.TaskCreator;
 import space.util.concurrent.task.impl.AbstractRunnableTask;
 import space.util.concurrent.task.impl.MultiTask;
 import space.util.concurrent.task.impl.TypeHandlerTaskCreator;
+import space.util.concurrent.task.typehandler.AllowMultithreading;
 import space.util.concurrent.task.typehandler.TypeHandler;
 import space.util.delegate.list.ModificationAwareList;
 import space.util.dependency.Dependency;
@@ -40,11 +40,6 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	 */
 	public volatile boolean multithreadedOptimizeExecutionPriority;
 	
-	/**
-	 * if Multithreaded Tasks marked as {@link TinyWorkload} should be respected and executed directly instead of being submitted into a pool.
-	 */
-	public volatile boolean multithreadedAllowTinyWorkload;
-	
 	public List<ChainedTaskEntry<FUNCTION>> list = new ModificationAwareList<>(new ArrayList<>(), this::clearCache);
 	
 	//cache
@@ -54,21 +49,16 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	
 	//const
 	public ChainedTaskBuilderImpl() {
-		this(false, false, false);
+		this(false, true);
 	}
 	
 	public ChainedTaskBuilderImpl(boolean singlethreadedOnly) {
-		this(singlethreadedOnly, true, true);
+		this(singlethreadedOnly, true);
 	}
 	
-	public ChainedTaskBuilderImpl(boolean preferSinglethreaded, boolean preferMultithreaded) {
-		this(preferSinglethreaded && !preferMultithreaded, true, true);
-	}
-	
-	public ChainedTaskBuilderImpl(boolean singlethreadedOnly, boolean multithreadedOptimizeExecutionPriority, boolean multithreadedAllowTinyWorkload) {
+	public ChainedTaskBuilderImpl(boolean singlethreadedOnly, boolean multithreadedOptimizeExecutionPriority) {
 		this.singlethreadedOnly = singlethreadedOnly;
 		this.multithreadedOptimizeExecutionPriority = multithreadedOptimizeExecutionPriority;
-		this.multithreadedAllowTinyWorkload = multithreadedAllowTinyWorkload;
 	}
 	
 	public ChainedTaskBuilderImpl setSinglethreadedOnly(boolean singlethreadedOnly) {
@@ -91,7 +81,7 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	@NotNull
 	@Override
 	public Task create(@NotNull TypeHandler<FUNCTION> handler) {
-		return (singlethreadedOnly || !handler.allowMultithreading()) ? getSinglethread().create(handler) : getMultithread().create(handler);
+		return (singlethreadedOnly || !(handler instanceof AllowMultithreading)) ? getSinglethread().create(handler) : getMultithread().create(handler);
 	}
 	
 	//getter
@@ -111,7 +101,7 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		synchronized (cacheLock) {
 			if (multithread != null)
 				return multithread;
-			return multithread = new ChainedTaskMultithreaded<>(ChainedTaskBuilderImpl.this.list, multithreadedOptimizeExecutionPriority, multithreadedAllowTinyWorkload);
+			return multithread = new ChainedTaskMultithreaded<>(ChainedTaskBuilderImpl.this.list, multithreadedOptimizeExecutionPriority);
 		}
 	}
 	
@@ -130,7 +120,6 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("singlethreadedOnly", this.singlethreadedOnly);
 		tsh.add("optimizeExecutionPriority", this.multithreadedOptimizeExecutionPriority);
-		tsh.add("allowTinyWorkload", this.multithreadedAllowTinyWorkload);
 		tsh.add("list", this.list);
 		tsh.add("singlethread", TOSTRING_HIDE_CACHE_VALUES ? (this.singlethread != null ? "exists" : "null") : this.singlethread);
 		tsh.add("multithread", TOSTRING_HIDE_CACHE_VALUES ? (this.singlethread != null ? "exists" : "null") : this.multithread);
@@ -250,16 +239,10 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	}
 	
 	//ChainedTaskMultithreaded
-	private static class ChainedTaskMultithreaded<FUNCTION> extends ChainedTaskPart<FUNCTION> implements TaskCreator<FUNCTION> {
+	protected static class ChainedTaskMultithreaded<FUNCTION> extends ChainedTaskPart<FUNCTION> implements TaskCreator<FUNCTION> {
 		
-		/**
-		 * if Multithreaded Tasks marked as {@link TinyWorkload} should be respected and executed directly instead of being submitted into a pool.
-		 */
-		public boolean allowTinyWorkload;
-		
-		public ChainedTaskMultithreaded(List<ChainedTaskEntry<FUNCTION>> list, boolean optimizeExecutionPriority, boolean allowTinyWorkload) {
+		public ChainedTaskMultithreaded(List<ChainedTaskEntry<FUNCTION>> list, boolean optimizeExecutionPriority) {
 			super(list, optimizeExecutionPriority);
-			this.allowTinyWorkload = allowTinyWorkload;
 		}
 		
 		private class ChainedTaskMultithreadedTask extends MultiTask implements ToString {
@@ -296,12 +279,8 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 				}
 				
 				public void call() {
-					if (callCnt.decrementAndGet() == 0) {
-						if (allowTinyWorkload && node.func instanceof TinyWorkload)
-							this.run();
-						else
-							ChainedTaskMultithreadedTask.this.executor.execute(this);
-					}
+					if (callCnt.decrementAndGet() == 0)
+						ChainedTaskMultithreadedTask.this.executor.execute(this);
 				}
 				
 				@Override
@@ -362,7 +341,7 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 	}
 	
 	//ChainedTaskSinglethreaded
-	private static class ChainedTaskSinglethreaded<FUNCTION> implements TaskCreator<FUNCTION>, ToString {
+	protected static class ChainedTaskSinglethreaded<FUNCTION> implements TaskCreator<FUNCTION>, ToString {
 		
 		public List<TypeHandlerTaskCreator<FUNCTION>> task = new ArrayList<>();
 		

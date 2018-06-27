@@ -1,6 +1,7 @@
 package space.util.concurrent.task.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.task.CollectiveExecutionException;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
@@ -20,9 +21,13 @@ public class MultiTask extends AbstractTask {
 	public Iterable<? extends Task> subTasks;
 	
 	//state
+	//initialized with init()
+	@SuppressWarnings("NullableProblems")
+	@NotNull
 	protected AtomicInteger callCnt;
 	
 	//result
+	@Nullable
 	protected CollectiveExecutionException exception;
 	
 	public MultiTask() {
@@ -37,7 +42,7 @@ public class MultiTask extends AbstractTask {
 		
 		int size = 0;
 		for (Task task : subTasks) {
-			task.addHook(this::call);
+			task.addHook(this::callbackTaskDone);
 			size++;
 		}
 		callCnt = new AtomicInteger(size);
@@ -51,7 +56,7 @@ public class MultiTask extends AbstractTask {
 			task.submit(executor);
 	}
 	
-	public void call(Task task) {
+	protected void callbackTaskDone(Task task) {
 		TaskResult res = task.getResult();
 		switch (res) {
 			case DONE:
@@ -68,7 +73,7 @@ public class MultiTask extends AbstractTask {
 					if (result == DONE)
 						throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
 					
-					if (result.mask < EXCEPTION.mask)
+					if (result == null)
 						result = EXCEPTION;
 					addException(task.getException());
 				}
@@ -86,7 +91,9 @@ public class MultiTask extends AbstractTask {
 		}
 	}
 	
-	public void addException(Throwable throwable) {
+	protected void addException(@Nullable Throwable throwable) {
+		if (throwable == null)
+			return;
 		if (exception == null)
 			exception = new CollectiveExecutionException();
 		exception.addSuppressed(throwable);
@@ -100,7 +107,7 @@ public class MultiTask extends AbstractTask {
 	}
 	
 	//state
-	@NotNull
+	@Nullable
 	@Override
 	public Throwable getException() {
 		return exception;

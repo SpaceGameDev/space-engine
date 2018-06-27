@@ -16,9 +16,4 @@ public class TypeUnaryOperator<T> implements TypeHandler<UnaryOperator<T>> {
 	public void accept(@NotNull UnaryOperator<T> unary) {
 		obj = unary.apply(obj);
 	}
-	
-	@Override
-	public boolean allowMultithreading() {
-		return false;
-	}
 }

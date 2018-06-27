@@ -1,9 +1,16 @@
 package space.util.concurrent.task.typehandler;
 
-import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
-public class TypeRunnable {
+public class TypeRunnable implements TypeHandler<Runnable>, AllowMultithreading {
 	
-	public static final TypeHandler<Runnable> INSTANCE = Runnable::run;
-	public static final Supplier<TypeHandler<Runnable>> SUPPLIER = () -> INSTANCE;
+	public static final TypeRunnable INSTANCE = new TypeRunnable();
+	
+	private TypeRunnable() {
+	}
+	
+	@Override
+	public void accept(@NotNull Runnable runnable) {
+		runnable.run();
+	}
 }

@@ -14,8 +14,4 @@ public interface TypeHandler<FUNCTION> extends Consumer<FUNCTION> {
 	
 	@Override
 	void accept(@NotNull FUNCTION function);
-	
-	default boolean allowMultithreading() {
-		return true;
-	}
 }

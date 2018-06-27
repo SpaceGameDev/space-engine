@@ -3,7 +3,6 @@ package space.util.logger;
 import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.chained.ChainedTaskBuilderImpl;
 import space.util.concurrent.task.typehandler.TypeBiConsumer;
-import space.util.concurrent.task.typehandler.TypeHandler;
 import space.util.logger.prefix.LogLevelPrefix;
 import space.util.logger.prefix.Prefix;
 import space.util.logger.prefix.SubLoggerPrefix;
@@ -54,17 +53,7 @@ public class BaseLogger extends AbstractLogger {
 	@Override
 	public void logDirect0(LogMessage msg) {
 		try {
-			handler.execute(new TypeHandler<>() {
-				@Override
-				public void accept(@NotNull Prefix consumer) {
-					consumer.accept(msg);
-				}
-				
-				@Override
-				public boolean allowMultithreading() {
-					return false;
-				}
-			}).awaitAndRethrow();
+			handler.execute(consumer -> consumer.accept(msg)).awaitAndRethrow();
 			printer.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D())).awaitAndRethrow();
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);

@@ -1,6 +1,7 @@
 package space.util.concurrent.task.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
 
@@ -25,14 +26,16 @@ public abstract class AbstractTask implements Task {
 	 * will be created lazily when {@link AbstractTask#addHook(Consumer)} is called the first time
 	 * capacity of ArrayList: 1 - 3 - 9 - ...
 	 */
+	@Nullable
 	public List<Consumer<Task>> events;
 	
 	//these are volatile to allow getter of these two values to be non-synchronized
 	//state
 	protected volatile boolean executionStarted;
-	protected boolean hooksRan;
+	protected volatile boolean hooksRan;
 	
 	//result
+	@Nullable
 	protected volatile TaskResult result;
 	
 	//state changing methods
@@ -129,8 +132,8 @@ public abstract class AbstractTask implements Task {
 		return result != null;
 	}
 	
-	@NotNull
 	@Override
+	@SuppressWarnings({"NullableProblems", "ConstantConditions"})
 	public TaskResult getResult() {
 		return result;
 	}

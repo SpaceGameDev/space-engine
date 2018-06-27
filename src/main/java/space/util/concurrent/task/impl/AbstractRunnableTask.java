@@ -1,6 +1,7 @@
 package space.util.concurrent.task.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.task.Task;
 
 import java.util.concurrent.CancellationException;
@@ -17,7 +18,9 @@ import static space.util.concurrent.task.TaskResult.*;
  */
 public abstract class AbstractRunnableTask extends AbstractTask implements Runnable {
 	
+	@Nullable
 	protected Thread executor;
+	@Nullable
 	protected Throwable exception;
 	
 	//run
@@ -41,7 +44,8 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 				if (result == null)
 					result = e != null ? EXCEPTION : DONE;
 				else if (result == CANCELED)
-					//swallow the interrupt if Task was canceled, as it came from the cancellation and not anything other
+					//swallow the interrupt if Task was canceled, as it came from the cancellation
+					//noinspection ResultOfMethodCallIgnored
 					Thread.currentThread().isInterrupted();
 				else
 					//noinspection ThrowFromFinallyBlock
@@ -68,7 +72,7 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 		executor.execute(this);
 	}
 	
-	@NotNull
+	@Nullable
 	@Override
 	public Throwable getException() {
 		return exception;

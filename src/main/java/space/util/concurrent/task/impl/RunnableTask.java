@@ -1,5 +1,6 @@
 package space.util.concurrent.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.concurrent.task.Task;
 
 /**
@@ -7,9 +8,10 @@ import space.util.concurrent.task.Task;
  */
 public class RunnableTask extends AbstractRunnableTask {
 	
+	@NotNull
 	public Runnable run;
 	
-	public RunnableTask(Runnable run) {
+	public RunnableTask(@NotNull Runnable run) {
 		this.run = run;
 	}
 	
