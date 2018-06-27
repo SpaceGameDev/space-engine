@@ -1,5 +1,6 @@
 package space.util.freeableStorage;
 
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.Freeable;
 import space.util.logger.Logger;
 import space.util.logger.NullLogger;
@@ -19,11 +20,12 @@ public final class FreeableStorageCleaner {
 		initialize();
 	}
 	
+	//instance management
 	private static boolean initWasCalled = false;
-	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
+	@Nullable
+	private static ThreadInfo cleanupThreadInfo;
 	
-	//instance
-	public static ThreadInfo cleanupThreadInfo;
+	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
 	public static volatile Logger cleanupLogger = NullLogger.NULL_LOGGER;
 	public static volatile boolean cleanupLoggerDebug = false;
 	public static volatile Consumer<Reference<?>> cleanupThreadIllegalReference = ref -> {
