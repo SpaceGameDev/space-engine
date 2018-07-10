@@ -61,6 +61,10 @@ public interface VideoMode {
 		return createVideoModeDesktop(width, height, 0, 0, false);
 	}
 	
+	static VideoMode createVideoModeDesktop(int width, int height, int posX, int posY) {
+		return createVideoModeDesktop(width, height, posX, posY, false);
+	}
+	
 	static VideoMode createVideoModeDesktop(int width, int height, int posX, int posY, boolean hasTransparency) {
 		return new VideoModeDesktop() {
 			@Override

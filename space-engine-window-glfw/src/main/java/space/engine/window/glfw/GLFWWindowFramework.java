@@ -2,15 +2,15 @@ package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
+import space.engine.Side;
 import space.engine.window.Monitor;
-import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowFramework;
-import space.util.buffer.array.ArrayBufferLong;
-import space.util.buffer.array.ArrayBufferLong.ArrayBufferLongSingle;
 import space.util.buffer.array.ArrayBufferPointer;
 import space.util.buffer.direct.alloc.stack.AllocatorStack;
-import space.util.key.attribute.AttributeListCreator.IAttributeList;
+import space.util.buffer.pointer.PointerBufferLong;
+import space.util.key.attribute.AttributeListCreator;
+import space.util.key.attribute.AttributeListCreator.AttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.Side.*;
@@ -26,24 +26,25 @@ public class GLFWWindowFramework implements WindowFramework {
 	//window
 	@NotNull
 	@Override
-	public WindowContext createContext(IAttributeList<WindowContext> format) {
-		return null;
+	public WindowContext createContext(@NotNull AttributeListCreator.AttributeList<WindowContext> format) {
+		return new GLFWContext(format, GLFWInstance.instanceRef);
 	}
-	
-	@Override
-	public Window createWindow(IAttributeList<Window> format) {
-		return new GLFWWindow(this, GLFWInstance.instanceRef, format);
-	}
+
+//	@Override
+//	public Window createWindow(AttributeList<Window> format) {
+//		return new GLFWWindow(this, GLFWInstance.instanceRef, format);
+//	}
 	
 	//monitor
 	@NotNull
 	@Override
 	public Monitor[] getAllMonitors() {
-		AllocatorStack alloc = getSide().get(BUFFER_STACK_ALLOC);
+		AttributeList<Side> side = getSide();
+		AllocatorStack allocStack = side.get(BUFFER_ALLOC_STACK);
 		try {
-			alloc.push();
-			ArrayBufferLongSingle monitorCnt = ArrayBufferLong.mallocSingle(alloc::malloc);
-			ArrayBufferPointer monitorList = ArrayBufferPointer.alloc(alloc::allocNoFree, nglfwGetMonitors(monitorCnt.address()), monitorCnt.getLong());
+			allocStack.push();
+			PointerBufferLong monitorCnt = side.get(BUFFER_ALLOC_STACK_POINTER).allocLong.malloc();
+			ArrayBufferPointer monitorList = side.get(BUFFER_ALLOC_STACK_ARRAY).allocPointer.createNoFree(nglfwGetMonitors(monitorCnt.address()), monitorCnt.getLong());
 			
 			int length = (int) monitorList.length();
 			Monitor[] ret = new Monitor[length];
@@ -51,7 +52,7 @@ public class GLFWWindowFramework implements WindowFramework {
 				ret[i] = new GLFWMonitor(monitorList.getPointer(i));
 			return ret;
 		} finally {
-			alloc.pop();
+			allocStack.pop();
 		}
 	}
 	

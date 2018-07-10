@@ -2,7 +2,7 @@ package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.Side;
-import space.engine.window.exception.WindowException;
+import space.engine.window.exception.WindowErrorIdException;
 import space.util.buffer.direct.UnsafeDirectBuffer;
 import space.util.indexmap.IndexMap;
 import space.util.indexmap.IndexMapArray;
@@ -35,6 +35,6 @@ public class GLFWErrorCallback implements GLFWErrorCallbackI {
 	public void invoke(int error, long description) {
 		String errorName = ERROR_MAP.get(error - ERROR_OFFSET);
 		String desc = Side.getSide().get(Side.BUFFER_STRING_CONVERTER).memUTF8String(new UnsafeDirectBuffer(description, Integer.MAX_VALUE));
-		throw new WindowException(error, errorName, desc);
+		throw new WindowErrorIdException(error, errorName, desc);
 	}
 }

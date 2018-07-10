@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
 import space.engine.window.Monitor;
 import space.engine.window.VideoMode;
+import space.engine.window.VideoMode.VideoModeMonitor;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -38,11 +39,11 @@ public class GLFWMonitor implements Monitor {
 		posY = y[0];
 		
 		//videoMode
-		currentVideoMode = new GLFWVideoMode(glfwGetVideoMode(pointer));
+		currentVideoMode = new GLFWVideoModeMonitor(glfwGetVideoMode(pointer));
 		Buffer modes = glfwGetVideoModes(pointer);
 		VideoMode[] array = new VideoMode[modes.remaining()];
 		for (GLFWVidMode mode : modes)
-			array[modes.position()] = new GLFWVideoMode(mode);
+			array[modes.position()] = new GLFWVideoModeMonitor(mode);
 		availableVideoModes = array;
 	}
 	
@@ -84,15 +85,16 @@ public class GLFWMonitor implements Monitor {
 		return availableVideoModes;
 	}
 	
-	public class GLFWVideoMode implements VideoMode {
+	public class GLFWVideoModeMonitor implements VideoModeMonitor {
 		
 		public GLFWVidMode mode;
 		
-		public GLFWVideoMode(GLFWVidMode mode) {
+		public GLFWVideoModeMonitor(GLFWVidMode mode) {
 			this.mode = mode;
 		}
 		
 		@Override
+		@NotNull
 		public GLFWMonitor getMonitor() {
 			return GLFWMonitor.this;
 		}

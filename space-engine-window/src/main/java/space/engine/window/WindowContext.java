@@ -20,10 +20,10 @@ public interface WindowContext extends Freeable {
 	@NotNull Window createWindow(@NotNull AttributeList<Window> format);
 	
 	//attributes
-	AttributeListCreatorImpl<WindowContext> CREATOR = new AttributeListCreatorImpl<>();
+	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreatorImpl<>();
 	
 	//api
-	Key<Object> API_TYPE = CREATOR.generateKey(ApiType.NONE);
+	Key<Object> API_TYPE = CREATOR.generateKey();
 	
 	//OpenGL / OpenGL ES
 	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
@@ -32,9 +32,8 @@ public interface WindowContext extends Freeable {
 	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(Boolean.TRUE);
 	
 	//enums
-	enum ApiType {
+	enum OpenGLApiType {
 		
-		NONE,
 		GL,
 		GL_ES
 		
