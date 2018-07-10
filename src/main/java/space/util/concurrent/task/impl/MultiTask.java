@@ -1,13 +1,9 @@
 package space.util.concurrent.task.impl;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import space.util.concurrent.task.CollectiveExecutionException;
 import space.util.concurrent.task.Task;
 import space.util.concurrent.task.TaskResult;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,28 +17,15 @@ public class MultiTask extends AbstractTask {
 	public Iterable<? extends Task> subTasks;
 	
 	//state
-	//initialized with init()
-	@SuppressWarnings("NullableProblems")
 	@NotNull
 	protected AtomicInteger callCnt;
 	
-	//result
-	@Nullable
-	protected CollectiveExecutionException exception;
-	
-	public MultiTask() {
-	}
-	
 	public MultiTask(Iterable<Task> subTasks) {
-		init(subTasks);
-	}
-	
-	public void init(Iterable<? extends Task> subTasks) {
 		this.subTasks = subTasks;
 		
 		int size = 0;
 		for (Task task : subTasks) {
-			task.addHook(this::callbackTaskDone);
+			task.addHook(this::callbackSubtaskDone);
 			size++;
 		}
 		callCnt = new AtomicInteger(size);
@@ -56,7 +39,7 @@ public class MultiTask extends AbstractTask {
 			task.submit(executor);
 	}
 	
-	protected void callbackTaskDone(Task task) {
+	protected void callbackSubtaskDone(Task task) {
 		TaskResult res = task.getResult();
 		switch (res) {
 			case DONE:
@@ -65,6 +48,7 @@ public class MultiTask extends AbstractTask {
 				synchronized (this) {
 					if (result == DONE)
 						throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
+					//result == null, CANCELED, EXCEPTION
 					result = CANCELED;
 				}
 				break;
@@ -72,10 +56,10 @@ public class MultiTask extends AbstractTask {
 				synchronized (this) {
 					if (result == DONE)
 						throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
-					
-					if (result == null)
+					if (result == null /* || result == EXCEPTION*/)
 						result = EXCEPTION;
-					addException(task.getException());
+					//if(result == CANCELED)
+					//	do nothing
 				}
 				break;
 			default:
@@ -84,19 +68,15 @@ public class MultiTask extends AbstractTask {
 		
 		if (callCnt.decrementAndGet() == 0) {
 			synchronized (this) {
+				if (result == DONE)
+					throw new IllegalStateException("MultiTask has result DONE, while a Task is still executing");
 				if (result == null)
 					result = DONE;
+				//if(result == CANCELED || result == EXCEPTION)
+				//	do nothing
 				runHooks();
 			}
 		}
-	}
-	
-	protected void addException(@Nullable Throwable throwable) {
-		if (throwable == null)
-			return;
-		if (exception == null)
-			exception = new CollectiveExecutionException();
-		exception.addSuppressed(throwable);
 	}
 	
 	//cancel
@@ -104,18 +84,5 @@ public class MultiTask extends AbstractTask {
 	public void cancel0(boolean mayInterrupt) {
 		for (Task event : subTasks)
 			event.cancel(mayInterrupt);
-	}
-	
-	//state
-	@Nullable
-	@Override
-	public Throwable getException() {
-		return exception;
-	}
-	
-	@Override
-	public void rethrowException() throws ExecutionException, CancellationException {
-		if (exception != null)
-			throw new ExecutionException(exception);
 	}
 }

@@ -247,10 +247,13 @@ public class ChainedTaskBuilderImpl<FUNCTION> implements ChainedTaskBuilder<FUNC
 		
 		private class ChainedTaskMultithreadedTask extends MultiTask implements ToString {
 			
+			@NotNull
 			public TypeHandler<FUNCTION> handler;
 			public Executor executor;
+			@NotNull
 			public Map<Node, NodeTaskMultithreaded> map = new HashMap<>();
 			
+			//NOTE: want to break up ChainedTaskBuilder anyway, won't bother for now
 			public ChainedTaskMultithreadedTask(TypeHandler<FUNCTION> handler) {
 				this.handler = handler;
 				

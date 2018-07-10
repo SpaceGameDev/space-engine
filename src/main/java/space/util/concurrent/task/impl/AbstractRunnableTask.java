@@ -3,9 +3,8 @@ package space.util.concurrent.task.impl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.concurrent.task.Task;
+import space.util.concurrent.task.TaskExceptionHandler;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 import static space.util.concurrent.task.TaskResult.*;
@@ -19,9 +18,17 @@ import static space.util.concurrent.task.TaskResult.*;
 public abstract class AbstractRunnableTask extends AbstractTask implements Runnable {
 	
 	@Nullable
-	protected Thread executor;
+	protected TaskExceptionHandler exceptionHandler;
 	@Nullable
-	protected Throwable exception;
+	protected Thread executor;
+	
+	public AbstractRunnableTask() {
+		this(null);
+	}
+	
+	public AbstractRunnableTask(@Nullable TaskExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
+	}
 	
 	//run
 	@Override
@@ -32,33 +39,43 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 			executor = Thread.currentThread();
 		}
 		
-		Throwable e = null;
+		boolean hasException = false;
 		try {
 			run0();
-		} catch (Throwable e2) {
-			e = e2;
+		} catch (Throwable e) {
+			hasException = true;
+			handleException(e);
 		} finally {
 			synchronized (this) {
 				executor = null;
-				exception = e;
 				if (result == null)
-					result = e != null ? EXCEPTION : DONE;
+					result = hasException ? EXCEPTION : DONE;
 				else if (result == CANCELED)
 					//swallow the interrupt if Task was canceled, as it came from the cancellation
 					//noinspection ResultOfMethodCallIgnored
 					Thread.currentThread().isInterrupted();
 				else
 					//noinspection ThrowFromFinallyBlock
-					throw new IllegalStateException("The Result was in an invalid state ( valid states: null, CANCELED): " + this, e);
+					throw new IllegalStateException("The Result was in an invalid state at end of execution ( valid states: null, CANCELED): " + this);
 			}
 			runHooks();
 		}
 	}
 	
 	/**
-	 * implementation method of any potentially unsafe code
+	 * Implementation method of any potentially unsafe code
 	 */
 	protected abstract void run0();
+	
+	/**
+	 * Handles any thrown exception via the {@link #exceptionHandler}. May be overridden.
+	 * Called by the Thread executing the {@link Task} and throwing the {@link Throwable}.
+	 *
+	 * @param e any {@link Throwable} occurred uncaught during execution
+	 */
+	protected void handleException(Throwable e) {
+		(exceptionHandler != null ? exceptionHandler : Task.getDefaultExceptionHandler().apply(this)).uncaughtException(this, Thread.currentThread(), e);
+	}
 	
 	//cancel
 	@Override
@@ -70,17 +87,5 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 	@Override
 	public void submit(@NotNull Executor executor) {
 		executor.execute(this);
-	}
-	
-	@Nullable
-	@Override
-	public Throwable getException() {
-		return exception;
-	}
-	
-	@Override
-	public void rethrowException() throws ExecutionException, CancellationException {
-		if (result == EXCEPTION)
-			throw new ExecutionException(exception);
 	}
 }
