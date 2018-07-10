@@ -37,6 +37,10 @@ public class ThreadPoolTaskExecutorManager {
 		this.workerCheckTimeoutMillis = workerCheckTimeoutMillis;
 	}
 	
+	public State getState() {
+		return state;
+	}
+	
 	//shutdown
 	public synchronized void shutdownAll() {
 		if (state != RUNNING)
