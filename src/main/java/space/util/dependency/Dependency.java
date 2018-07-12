@@ -44,15 +44,15 @@ public interface Dependency extends Comparable<Dependency> {
 	 * comp < 1  ->  o1 before o2<br>
 	 * comp > 1  ->  o2 before o1
 	 */
-	Comparator<Dependency> COMPARATOR = (o1, o2) -> {
-		boolean o1Beforeo2 = find(o1, o2.requires()) || find(o2, o1.requiredBy());
-		boolean o2Beforeo1 = find(o2, o1.requires()) || find(o1, o2.requiredBy());
+	Comparator<@NotNull Dependency> COMPARATOR = (o1, o2) -> {
+		boolean o1_before_o2 = find(o1, o2.requires()) || find(o2, o1.requiredBy());
+		boolean o2_before_o1 = find(o2, o1.requires()) || find(o1, o2.requiredBy());
 		
-		if (o1Beforeo2 && o2Beforeo1)
+		if (o1_before_o2 && o2_before_o1)
 			throw new CircleDependencyException(o1, o2);
-		if (o1Beforeo2)
+		if (o1_before_o2)
 			return -1;
-		if (o2Beforeo1)
+		if (o2_before_o1)
 			return 1;
 		
 		return o1.defaultPriority() - o2.defaultPriority();
@@ -97,6 +97,7 @@ public interface Dependency extends Comparable<Dependency> {
 		return COMPARATOR.compare(this, o);
 	}
 	
+	//static
 	static boolean find(@NotNull Dependency func, @Nullable String[] array) {
 		if (array == null)
 			return false;

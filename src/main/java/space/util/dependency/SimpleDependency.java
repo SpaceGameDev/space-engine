@@ -2,28 +2,19 @@ package space.util.dependency;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.exceptions.InvalidSetException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class SimpleDependency implements Setable, ToString, Dependency {
+public class SimpleDependency implements ToString, Dependency {
 	
 	@Nullable
-	public String uuid;
+	public final String uuid;
 	@Nullable
-	public String[] requires;
+	public final String[] requires;
 	@Nullable
-	public String[] requiredBy;
-	public int defaultPriority;
-	
-	public SimpleDependency() {
-	}
-	
-	public SimpleDependency(@Nullable String uuid) {
-		this(uuid, null, null, 0);
-	}
+	public final String[] requiredBy;
+	public final int defaultPriority;
 	
 	public SimpleDependency(@Nullable String uuid, int defaultPriority) {
 		this(uuid, null, null, defaultPriority);
@@ -48,16 +39,19 @@ public class SimpleDependency implements Setable, ToString, Dependency {
 		this.defaultPriority = defaultPriority;
 	}
 	
+	@Nullable
 	@Override
 	public String uuid() {
 		return uuid;
 	}
 	
+	@Nullable
 	@Override
 	public String[] requires() {
 		return requires;
 	}
 	
+	@Nullable
 	@Override
 	public String[] requiredBy() {
 		return requiredBy;
@@ -76,18 +70,6 @@ public class SimpleDependency implements Setable, ToString, Dependency {
 	@Override
 	public String toString() {
 		return toString0();
-	}
-	
-	@Override
-	public void set(@NotNull Object obj) throws InvalidSetException {
-		if (!(obj instanceof Dependency))
-			throw new InvalidSetException(obj.getClass());
-		
-		Dependency dep = (Dependency) obj;
-		uuid = dep.uuid();
-		requires = dep.requires();
-		requiredBy = dep.requiredBy();
-		defaultPriority = dep.defaultPriority();
 	}
 	
 	@NotNull

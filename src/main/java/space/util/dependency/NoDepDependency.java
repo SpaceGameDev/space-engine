@@ -2,19 +2,16 @@ package space.util.dependency;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.baseobject.Setable;
 import space.util.baseobject.ToString;
-import space.util.baseobject.exceptions.InvalidSetException;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-public class NoDepDependency implements Setable, ToString, Dependency {
+import java.util.Objects;
+
+public class NoDepDependency implements ToString, Dependency {
 	
 	@Nullable
-	public String uuid;
-	
-	public NoDepDependency() {
-	}
+	public final String uuid;
 	
 	public NoDepDependency(@Nullable String uuid) {
 		this.uuid = uuid;
@@ -49,17 +46,8 @@ public class NoDepDependency implements Setable, ToString, Dependency {
 	}
 	
 	@Override
-	public void set(@NotNull Object obj) throws InvalidSetException {
-		if (!(obj instanceof Dependency))
-			throw new InvalidSetException(obj.getClass());
-		
-		Dependency dep = (Dependency) obj;
-		uuid = dep.uuid();
-	}
-	
-	@Override
 	public int hashCode() {
-		return uuid != null ? uuid.hashCode() : 0;
+		return Objects.hashCode(uuid);
 	}
 	
 	@NotNull
