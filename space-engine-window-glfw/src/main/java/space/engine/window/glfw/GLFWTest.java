@@ -10,12 +10,12 @@ import space.engine.window.WindowContext.OpenGLApiType;
 import space.engine.window.WindowFramework;
 import space.util.buffer.direct.alloc.UnsafeAllocator;
 import space.util.buffer.string.DefaultStringConverter;
-import space.util.concurrent.task.impl.RunnableTask;
 import space.util.freeableStorage.FreeableStorageCleaner;
 import space.util.key.attribute.AttributeListCreator.AttributeList;
 import space.util.key.attribute.AttributeListCreator.AttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
+import space.util.task.impl.RunnableTask;
 
 import java.util.Arrays;
 
@@ -84,7 +84,7 @@ public class GLFWTest {
 			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
 		});
 		setup.submit(window);
-		setup.awaitAndRethrow();
+		setup.await();
 		
 		int[] w = new int[1];
 		int[] h = new int[1];
@@ -106,7 +106,7 @@ public class GLFWTest {
 				window.swapBuffers();
 			});
 			loopCmd.submit(window);
-			loopCmd.awaitAndRethrow();
+			loopCmd.await();
 			Thread.sleep(1000 / 60);
 		}
 		

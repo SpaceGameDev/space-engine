@@ -3,9 +3,9 @@ package space.engine.window;
 import org.jetbrains.annotations.NotNull;
 import space.engine.window.VideoMode.VideoModeDesktop;
 import space.util.baseobject.Freeable;
-import space.util.concurrent.task.Task;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreatorImpl;
+import space.util.task.Task;
 
 import java.util.concurrent.Executor;
 
