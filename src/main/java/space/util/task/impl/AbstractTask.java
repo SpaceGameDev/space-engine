@@ -2,6 +2,9 @@ package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.util.baseobject.ToString;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.Task;
 import space.util.task.TaskResult;
 
@@ -16,7 +19,7 @@ import java.util.function.Consumer;
  * and should instead synchronize the start and the end of the execution with result evaluation, NOT the execution itself.
  * If you want that already implemented, refer to {@link AbstractRunnableTask}.
  */
-public abstract class AbstractTask implements Task {
+public abstract class AbstractTask implements Task, ToString {
 	
 	public static final int INITIAL_EVENT_ARRAYLIST_CAPACITY = 1;
 	
@@ -134,5 +137,20 @@ public abstract class AbstractTask implements Task {
 	@SuppressWarnings({"NullableProblems", "ConstantConditions"})
 	public TaskResult getResult() {
 		return result;
+	}
+	
+	//toString
+	@Override
+	@NotNull
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("executionStarted", this.executionStarted);
+		tsh.add("result", this.result);
+		return tsh.build();
+	}
+	
+	@Override
+	public String toString() {
+		return toString0();
 	}
 }

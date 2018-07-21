@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class DependencyEventBuilder<FUNCTION> implements DependencyEvent<FUNCTION>, Cache {
+public abstract class DependencyEventBuilder<FUNCTION> implements DependencyEventCreator<FUNCTION>, Cache {
 	
 	public static boolean TOSTRING_HIDE_CACHE_VALUES = true;
 	

@@ -1,4 +1,4 @@
-package space.util.task.executor.pool;
+package space.util.task.executor.pooled;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static space.util.task.executor.pool.AbstractThreadPoolTaskExecutor.State.*;
+import static space.util.task.executor.pooled.AbstractThreadPoolTaskExecutor.State.*;
 
 public class SimpleThreadPoolTaskExecutor extends AbstractThreadPoolTaskExecutor {
 	

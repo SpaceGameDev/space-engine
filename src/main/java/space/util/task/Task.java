@@ -7,7 +7,6 @@ import space.util.event.basic.BasicEvent;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A {@link Task} is something which is created to be executed by some thread in a protected environment,
@@ -87,15 +86,6 @@ public interface Task extends BasicEvent<Consumer<Task>>, Awaitable {
 	 * @param handler the new {@link TaskExceptionHandler}.
 	 */
 	static void setDefaultExceptionHandler(TaskExceptionHandler handler) {
-		setDefaultExceptionHandler(task -> handler);
-	}
-	
-	/**
-	 * Sets the default {@link TaskExceptionHandler}.
-	 *
-	 * @param handler the new default {@link TaskExceptionHandler}.
-	 */
-	static void setDefaultExceptionHandler(Function<Task, TaskExceptionHandler> handler) {
 		DefaultTaskExceptionHandlerStorage.defaultHandler = handler;
 	}
 	
@@ -104,13 +94,13 @@ public interface Task extends BasicEvent<Consumer<Task>>, Awaitable {
 	 *
 	 * @return the default {@link TaskExceptionHandler}
 	 */
-	static Function<Task, TaskExceptionHandler> getDefaultExceptionHandler() {
+	static TaskExceptionHandler getDefaultExceptionHandler() {
 		return DefaultTaskExceptionHandlerStorage.defaultHandler;
 	}
 	
 	class DefaultTaskExceptionHandlerStorage {
 		
-		private static Function<Task, TaskExceptionHandler> defaultHandler;
+		private static TaskExceptionHandler defaultHandler;
 		
 		static {
 			setDefaultExceptionHandler((task, thread, e) -> Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(thread, e));

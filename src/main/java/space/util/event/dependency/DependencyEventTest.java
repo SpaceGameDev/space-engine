@@ -18,9 +18,10 @@ public class DependencyEventTest {
 	public static final boolean prestart = false;
 	public static ThreadPoolExecutor pool = new ThreadPoolExecutor(thCnt, thCnt, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 	
-	public static final boolean singlethread = true;
+	public static final boolean singlethread = false;
 	public static final boolean doCancel = false;
 	public static final boolean workCheckInterrupt = true;
+	public static final boolean exitOnError = false;
 	
 	public static void main(String[] args) throws Exception {
 		ToStringHelper.setDefault(MonofontGuiApi.TSH);
@@ -28,7 +29,7 @@ public class DependencyEventTest {
 			if (prestart)
 				pool.prestartAllCoreThreads();
 			
-			DependencyEvent<Consumer<Integer>> builder = singlethread ? new DependencyEventBuilderSinglethread<>() : new DependencyEventBuilderMultithread<>();
+			DependencyEventCreator<Consumer<Integer>> builder = singlethread ? new DependencyEventBuilderSinglethread<>() : new DependencyEventBuilderMultithread<>();
 			builder.addHook(DependencyEventEntry.fromFunction(integer -> doWork("last", integer, DependencyEventTest::actualWork), "last", 5));
 			builder.addHook(DependencyEventEntry.fromFunction(integer -> doWork("require", integer, DependencyEventTest::actualWork), "require", new String[] {"no"}));
 			builder.addHook(DependencyEventEntry.fromFunction(integer -> doWork("no", integer, DependencyEventTest::actualWork), "no"));
@@ -46,7 +47,13 @@ public class DependencyEventTest {
 			
 			System.out.println(builder);
 			
-			Task task = builder.execute(new TypeConsumer<>(42), pool);
+			Task task = builder.execute(new TypeConsumer<>(42), (task1, thread, e) -> {
+				System.err.println("Error on Thread " + thread + " with Task: ");
+				System.err.println(task1);
+				e.printStackTrace(System.err);
+				if (exitOnError)
+					System.exit(1);
+			}, pool);
 			
 			if (doCancel) {
 				Thread.sleep(1000);

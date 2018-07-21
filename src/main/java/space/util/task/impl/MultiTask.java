@@ -1,9 +1,12 @@
 package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.Task;
 import space.util.task.TaskResult;
 
+import java.util.Collection;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,22 +21,25 @@ public class MultiTask extends AbstractTask {
 	//suppressing, as fields are initialized in init()
 	@SuppressWarnings("NullableProblems")
 	@NotNull
-	public Iterable<? extends Task> subTasks;
+	public Collection<? extends Task> subTasks;
 	@SuppressWarnings("NullableProblems")
 	@NotNull
 	protected AtomicInteger callCnt;
 	
 	/**
-	 * this split into constructor and {@link #init(Iterable)} is required by {@link space.util.event.dependency.DependencyEventBuilderMultithread}
+	 * this split into constructor and {@link #init(Collection)} is required by {@link space.util.event.dependency.DependencyEventBuilderMultithread}
 	 */
 	protected MultiTask() {
 	}
 	
-	public MultiTask(@NotNull Iterable<Task> subTasks) {
+	public MultiTask(@NotNull Collection<? extends Task> subTasks) {
 		init(subTasks);
 	}
 	
-	protected void init(@NotNull Iterable<Task> subTasks) {
+	/**
+	 * Method is required for ease of use in eg. {@link space.util.event.dependency.DependencyEventBuilderMultithread}
+	 */
+	protected void init(@NotNull Collection<? extends Task> subTasks) {
 		this.subTasks = subTasks;
 		int size = 0;
 		for (Task task : subTasks) {
@@ -96,5 +102,16 @@ public class MultiTask extends AbstractTask {
 	public void cancel0(boolean mayInterrupt) {
 		for (Task event : subTasks)
 			event.cancel(mayInterrupt);
+	}
+	
+	@Override
+	@NotNull
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("executionStarted", this.executionStarted);
+		tsh.add("result", this.result);
+		tsh.add("subTasks", this.subTasks);
+		tsh.add("callCnt", this.callCnt);
+		return tsh.build();
 	}
 }

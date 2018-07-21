@@ -1,8 +1,8 @@
 package space.util.logger;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.event.dependency.DependencyEvent;
 import space.util.event.dependency.DependencyEventBuilderSinglethread;
+import space.util.event.dependency.DependencyEventCreator;
 import space.util.event.dependency.DependencyEventEntry;
 import space.util.event.typehandler.TypeBiConsumer;
 import space.util.logger.prefix.LogLevelPrefix;
@@ -20,8 +20,8 @@ import java.util.function.BiConsumer;
 
 public class BaseLogger extends AbstractLogger {
 	
-	DependencyEvent<Prefix> handler = new DependencyEventBuilderSinglethread<>();
-	DependencyEvent<BiConsumer<LogMessage, CharSequence2D>> printer = new DependencyEventBuilderSinglethread<>();
+	DependencyEventCreator<Prefix> handler = new DependencyEventBuilderSinglethread<>();
+	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new DependencyEventBuilderSinglethread<>();
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {

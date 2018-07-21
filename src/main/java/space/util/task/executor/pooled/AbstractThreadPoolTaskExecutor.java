@@ -1,4 +1,4 @@
-package space.util.task.executor.pool;
+package space.util.task.executor.pooled;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 
-import static space.util.task.executor.pool.AbstractThreadPoolTaskExecutor.State.OFF;
+import static space.util.task.executor.pooled.AbstractThreadPoolTaskExecutor.State.OFF;
 
 public abstract class AbstractThreadPoolTaskExecutor implements TaskExecutor {
 	

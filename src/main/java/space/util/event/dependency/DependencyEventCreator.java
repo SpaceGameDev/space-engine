@@ -1,10 +1,10 @@
 package space.util.event.dependency;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.event.TaskEvent;
+import space.util.event.EventCreator;
 import space.util.event.basic.BasicEvent;
 
-public interface DependencyEvent<FUNCTION> extends TaskEvent<FUNCTION>, BasicEvent<DependencyEventEntry<FUNCTION>> {
+public interface DependencyEventCreator<FUNCTION> extends EventCreator<FUNCTION>, BasicEvent<DependencyEventEntry<FUNCTION>> {
 	
 	//addHook
 	@Override

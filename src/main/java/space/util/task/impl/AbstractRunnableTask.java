@@ -2,6 +2,8 @@ package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.util.string.toStringHelper.ToStringHelper;
+import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.Task;
 import space.util.task.TaskExceptionHandler;
 
@@ -74,7 +76,7 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 	 * @param e any {@link Throwable} occurred uncaught during execution
 	 */
 	protected void handleException(Throwable e) {
-		(exceptionHandler != null ? exceptionHandler : Task.getDefaultExceptionHandler().apply(this)).uncaughtException(this, Thread.currentThread(), e);
+		(exceptionHandler != null ? exceptionHandler : Task.getDefaultExceptionHandler()).uncaughtException(this, Thread.currentThread(), e);
 	}
 	
 	//cancel
@@ -87,5 +89,16 @@ public abstract class AbstractRunnableTask extends AbstractTask implements Runna
 	@Override
 	public void submit(@NotNull Executor executor) {
 		executor.execute(this);
+	}
+	
+	//toString
+	@Override
+	@NotNull
+	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
+		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+		tsh.add("executionStarted", this.executionStarted);
+		tsh.add("result", this.result);
+		tsh.add("exceptionHandler", this.exceptionHandler);
+		return tsh.build();
 	}
 }

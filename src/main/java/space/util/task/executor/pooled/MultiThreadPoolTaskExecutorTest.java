@@ -1,14 +1,13 @@
-package space.util.task.executor;
+package space.util.task.executor.pooled;
 
-import space.util.task.executor.pool.AbstractThreadPoolTaskExecutor;
-import space.util.task.executor.pool.ThreadPoolTaskExecutorManager;
+import space.util.task.executor.TaskExecutor;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ExecutorManagerTest {
+public class MultiThreadPoolTaskExecutorTest {
 	
 	public static void main(String[] args) throws InterruptedException {
-		ThreadPoolTaskExecutorManager manager = new ThreadPoolTaskExecutorManager();
+		MultiThreadPoolTaskExecutor manager = new MultiThreadPoolTaskExecutor();
 		AbstractThreadPoolTaskExecutor pool = manager.createPool(new LinkedBlockingQueue<>(), 8);
 		AbstractThreadPoolTaskExecutor printPool = manager.createPool(new LinkedBlockingQueue<>(), 1);
 		for (int i = 0; i < 1024; i++)

@@ -5,7 +5,7 @@ import space.util.baseobject.ToString;
 import space.util.dependency.Dependency;
 import space.util.dependency.NoDepDependency;
 import space.util.dependency.SimpleDependency;
-import space.util.event.TaskEvent;
+import space.util.event.EventCreator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.impl.RunnableTask;
@@ -16,14 +16,14 @@ public class DependencyEventEntry<FUNCTION> implements ToString, Comparable<Depe
 	
 	public static final Comparator<@NotNull DependencyEventEntry<?>> COMPARATOR = (o1, o2) -> o1 == o2 ? 0 : Dependency.COMPARATOR.compare(o1.dependency, o2.dependency);
 	
-	public @NotNull TaskEvent<FUNCTION> function;
+	public @NotNull EventCreator<FUNCTION> function;
 	public @NotNull Dependency dependency;
 	
 	public DependencyEventEntry(@NotNull FUNCTION function, @NotNull Dependency dependency) {
-		this(handler -> new RunnableTask(() -> handler.accept(function)), dependency);
+		this((handler, exceptionHandler) -> new RunnableTask(() -> handler.accept(function), exceptionHandler), dependency);
 	}
 	
-	public DependencyEventEntry(@NotNull TaskEvent<FUNCTION> function, @NotNull Dependency dependency) {
+	public DependencyEventEntry(@NotNull EventCreator<FUNCTION> function, @NotNull Dependency dependency) {
 		this.function = function;
 		this.dependency = dependency;
 	}
@@ -60,32 +60,32 @@ public class DependencyEventEntry<FUNCTION> implements ToString, Comparable<Depe
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid) {
 		return new DependencyEventEntry<>(function, new NoDepDependency(uuid));
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid, int defaultPriority) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid, int defaultPriority) {
 		return new DependencyEventEntry<>(function, new SimpleDependency(uuid, defaultPriority));
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid, String[] requires) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid, String[] requires) {
 		return new DependencyEventEntry<>(function, new SimpleDependency(uuid, requires));
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid, String[] requires, int defaultPriority) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid, String[] requires, int defaultPriority) {
 		return new DependencyEventEntry<>(function, new SimpleDependency(uuid, requires, defaultPriority));
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid, String[] requires, String[] requiredBy) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid, String[] requires, String[] requiredBy) {
 		return new DependencyEventEntry<>(function, new SimpleDependency(uuid, requires, requiredBy));
 	}
 	
 	@SuppressWarnings("unused")
-	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull TaskEvent<FUNCTION> function, @NotNull String uuid, String[] requires, String[] requiredBy, int defaultPriority) {
+	public static <FUNCTION> DependencyEventEntry<FUNCTION> fromEventCreator(@NotNull EventCreator<FUNCTION> function, @NotNull String uuid, String[] requires, String[] requiredBy, int defaultPriority) {
 		return new DependencyEventEntry<>(function, new SimpleDependency(uuid, requires, requiredBy, defaultPriority));
 	}
 	

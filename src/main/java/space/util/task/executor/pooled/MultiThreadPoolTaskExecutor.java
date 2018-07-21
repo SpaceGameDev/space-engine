@@ -1,7 +1,7 @@
-package space.util.task.executor.pool;
+package space.util.task.executor.pooled;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.task.executor.pool.AbstractThreadPoolTaskExecutor.State;
+import space.util.task.executor.pooled.AbstractThreadPoolTaskExecutor.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ThreadPoolTaskExecutorManager {
+public class MultiThreadPoolTaskExecutor {
 	
 	protected volatile State state = State.RUNNING;
 	protected volatile long workerCheckTimeoutMillis = 100L;

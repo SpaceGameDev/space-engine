@@ -1,12 +1,14 @@
 package space.util.event.dependency;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
-import space.util.event.TaskEvent;
+import space.util.event.EventCreator;
 import space.util.event.typehandler.TypeHandler;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.Task;
+import space.util.task.TaskExceptionHandler;
 import space.util.task.impl.MultiTask;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class DependencyEventBuilderSinglethread<FUNCTION> extends DependencyEven
 	//create
 	private volatile Build build;
 	
-	protected synchronized Build getBuild() {
+	public synchronized Build getBuild() {
 		if (build != null)
 			return build;
 		synchronized (this) {
@@ -32,10 +34,9 @@ public class DependencyEventBuilderSinglethread<FUNCTION> extends DependencyEven
 		}
 	}
 	
-	@NotNull
 	@Override
-	public Task create(@NotNull TypeHandler<FUNCTION> handler) {
-		return getBuild().create(handler);
+	public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
+		return getBuild().create(handler, exceptionHandler);
 	}
 	
 	@Override
@@ -58,14 +59,13 @@ public class DependencyEventBuilderSinglethread<FUNCTION> extends DependencyEven
 	}
 	
 	//build
-	protected class Build implements TaskEvent<FUNCTION>, ToString {
+	public class Build implements EventCreator<FUNCTION>, ToString {
 		
-		public List<DependencyEventEntry<FUNCTION>> sortedList = computeList(list);
+		public List<DependencyEventEntry<FUNCTION>> preparedList = computeList(list);
 		
-		@NotNull
 		@Override
-		public Task create(@NotNull TypeHandler<FUNCTION> handler) {
-			return new MultiTask(sortedList.stream().map(entry -> entry.function.create(handler)).collect(Collectors.toList())) {
+		public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
+			return new MultiTask(preparedList.stream().map(entry -> entry.function.create(handler, exceptionHandler)).collect(Collectors.toList())) {
 				@Override
 				public synchronized void submit(@NotNull Executor executor) {
 					if (startExecution())
@@ -75,14 +75,26 @@ public class DependencyEventBuilderSinglethread<FUNCTION> extends DependencyEven
 							task.submit(Runnable::run);
 					});
 				}
+				
+				@Override
+				@NotNull
+				public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
+					ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
+					tsh.add("executionStarted", this.executionStarted);
+					tsh.add("result", this.result);
+					tsh.add("subTasks", this.subTasks);
+					tsh.add("callCnt", this.callCnt);
+					tsh.add("build", Build.this);
+					return tsh.build();
+				}
 			};
 		}
 		
-		@NotNull
 		@Override
+		@NotNull
 		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
-			tsh.add("task", this.sortedList);
+			tsh.add("preparedList", this.preparedList);
 			return tsh.build();
 		}
 		

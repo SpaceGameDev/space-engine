@@ -1,13 +1,15 @@
 package space.util.event.dependency;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
-import space.util.event.TaskEvent;
+import space.util.event.EventCreator;
 import space.util.event.typehandler.AllowMultithreading;
 import space.util.event.typehandler.TypeHandler;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.util.task.Task;
+import space.util.task.TaskExceptionHandler;
 import space.util.task.impl.MultiTask;
 
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 	//create
 	private volatile Build build;
 	
-	protected synchronized Build getBuild() {
+	public synchronized Build getBuild() {
 		if (build != null)
 			return build;
 		synchronized (this) {
@@ -58,12 +60,11 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 		}
 	}
 	
-	@NotNull
 	@Override
-	public Task create(@NotNull TypeHandler<FUNCTION> handler) {
+	public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
 		if (!(handler instanceof AllowMultithreading))
 			throw new IllegalArgumentException("TypeHandler does NOT allow multithreading!");
-		return getBuild().create(handler);
+		return getBuild().create(handler, exceptionHandler);
 	}
 	
 	@Override
@@ -89,28 +90,31 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 	}
 	
 	//build
-	protected class Build extends DependencyEventBuilder.Build<FUNCTION> implements TaskEvent<FUNCTION> {
+	public class Build extends DependencyEventBuilder.Build<FUNCTION> implements EventCreator<FUNCTION> {
 		
 		public Build() {
 			super(list, optimizeExecutionPriority);
 		}
 		
-		@NotNull
 		@Override
-		public Task create(@NotNull TypeHandler<FUNCTION> handler) {
-			return new Execution(handler);
+		public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
+			return new Execution(handler, exceptionHandler);
 		}
 		
-		private class Execution extends MultiTask implements ToString {
+		private class Execution extends MultiTask {
 			
-			@NotNull
-			public TypeHandler<FUNCTION> handler;
+			public final @NotNull TypeHandler<FUNCTION> handler;
+			public final @Nullable TaskExceptionHandler exceptionHandler;
+			/**
+			 * null before submit call / notNull after
+			 */
 			public Executor executor;
-			@NotNull
-			public Map<Node<FUNCTION>, NodeExecution> map = new HashMap<>();
+			public final @NotNull Map<Node<FUNCTION>, NodeExecution> map = new HashMap<>();
 			
-			public Execution(@NotNull TypeHandler<FUNCTION> handler) {
+			public Execution(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
 				this.handler = handler;
+				this.exceptionHandler = exceptionHandler;
+				
 				for (Node<FUNCTION> node : allNodes)
 					map.put(node, new NodeExecution(node));
 				init(map.values().stream().map(exec -> exec.task).collect(Collectors.toCollection(ArrayList::new)));
@@ -133,7 +137,7 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 				
 				public NodeExecution(Node<FUNCTION> node) {
 					this.node = node;
-					this.task = node.entry.function.create(handler);
+					this.task = node.entry.function.create(handler, exceptionHandler);
 					this.callCnt = new AtomicInteger(node.depCnt);
 					
 					task.addHook(taskIgnore -> this.node.next.forEach(next -> map.get(next).call()));
@@ -166,15 +170,11 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 				ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 				tsh.add("executionStarted", this.executionStarted);
 				tsh.add("result", this.result);
+				tsh.add("map", this.map);
 				tsh.add("callCnt", this.callCnt);
 				tsh.add("handler", this.handler);
-				tsh.add("executor", this.executor);
+				tsh.add("exceptionHandler", this.exceptionHandler);
 				return tsh.build();
-			}
-			
-			@Override
-			public String toString() {
-				return toString0();
 			}
 		}
 	}
