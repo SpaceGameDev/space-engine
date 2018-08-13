@@ -124,9 +124,17 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 			public synchronized void submit(@NotNull Executor executor) {
 				if (startExecution())
 					return;
-				this.executor = forceSinglethread ? Runnable::run : executor;
-				for (Node node : firstNodes)
-					map.get(node).call();
+				if (!forceSinglethread) {
+					this.executor = executor;
+					callFirstNode();
+				} else {
+					this.executor = Runnable::run;
+					executor.execute(this::callFirstNode);
+				}
+			}
+			
+			private void callFirstNode() {
+				firstNodes.forEach(node -> map.get(node).call());
 			}
 			
 			public class NodeExecution implements ToString {
