@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
 import space.util.delegate.collection.ConvertingCollection;
-import space.util.event.basic.BasicEvent;
-import space.util.event.basic.BasicRepeatableEvent;
+import space.util.event.Event;
+import space.util.event.EventImpl;
 import space.util.indexmap.IndexMapArrayWithDefault;
 import space.util.key.IllegalKeyException;
 import space.util.key.Key;
@@ -192,7 +192,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 	public class AttributeListImpl extends AbstractAttributeListImpl implements AttributeList<TYPE> {
 		
 		@NotNull
-		public BasicRepeatableEvent<Consumer<ChangeEvent<?>>> changeEvent = new BasicRepeatableEvent<>();
+		public EventImpl<Consumer<ChangeEvent<?>>> changeEvent = new EventImpl<>();
 		
 		public AttributeListImpl() {
 			super(DEFAULT);
@@ -219,7 +219,7 @@ public class AttributeListCreatorImpl<TYPE> implements AttributeListCreator<TYPE
 		//other
 		@NotNull
 		@Override
-		public BasicEvent<Consumer<ChangeEvent<?>>> getChangeEvent() {
+		public Event<Consumer<ChangeEvent<?>>> getChangeEvent() {
 			return changeEvent;
 		}
 		

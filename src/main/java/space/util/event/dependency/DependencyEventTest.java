@@ -1,11 +1,11 @@
 package space.util.event.dependency;
 
 import space.util.delegate.specific.IntList;
-import space.util.event.typehandler.TypeConsumer;
 import space.util.gui.monofont.MonofontGuiApi;
 import space.util.string.builder.CharBufferBuilder2D;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.task.Task;
+import space.util.task.typehandler.TypeConsumer;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -53,7 +53,7 @@ public class DependencyEventTest {
 				e.printStackTrace(System.err);
 				if (exitOnError)
 					System.exit(1);
-			}, pool);
+			});
 			
 			if (doCancel) {
 				Thread.sleep(1000);

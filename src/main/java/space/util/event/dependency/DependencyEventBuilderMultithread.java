@@ -3,14 +3,13 @@ package space.util.event.dependency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
-import space.util.event.EventCreator;
-import space.util.event.typehandler.AllowMultithreading;
-import space.util.event.typehandler.TypeHandler;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.task.EventCreator;
 import space.util.task.Task;
-import space.util.task.TaskExceptionHandler;
 import space.util.task.impl.MultiTask;
+import space.util.task.typehandler.AllowMultithreading;
+import space.util.task.typehandler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,21 +96,21 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 		}
 		
 		@Override
-		public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
+		public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @NotNull TaskExceptionHandler exceptionHandler) {
 			return new Execution(handler, exceptionHandler);
 		}
 		
 		private class Execution extends MultiTask {
 			
 			public final @NotNull TypeHandler<FUNCTION> handler;
-			public final @Nullable TaskExceptionHandler exceptionHandler;
+			public final @NotNull TaskExceptionHandler exceptionHandler;
 			/**
 			 * null before submit call / notNull after
 			 */
 			public Executor executor;
 			public final @NotNull Map<Node<FUNCTION>, NodeExecution> map = new HashMap<>();
 			
-			public Execution(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
+			public Execution(@NotNull TypeHandler<FUNCTION> handler, @NotNull TaskExceptionHandler exceptionHandler) {
 				this.handler = handler;
 				this.exceptionHandler = exceptionHandler;
 				
@@ -121,7 +120,7 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 			}
 			
 			@Override
-			public synchronized void submit(@NotNull Executor executor) {
+			public synchronized void submit() {
 				if (startExecution())
 					return;
 				if (!forceSinglethread) {
@@ -148,12 +147,12 @@ public class DependencyEventBuilderMultithread<FUNCTION> extends DependencyEvent
 					this.task = node.entry.function.create(handler, exceptionHandler);
 					this.callCnt = new AtomicInteger(node.depCnt);
 					
-					task.addHook(taskIgnore -> this.node.next.forEach(next -> map.get(next).call()));
+					task.addHook(() -> this.node.next.forEach(next -> map.get(next).call()));
 				}
 				
 				public void call() {
 					if (callCnt.decrementAndGet() == 0)
-						task.submit(executor);
+						task.submit(exceptionHandler);
 				}
 				
 				@Override

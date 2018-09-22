@@ -3,19 +3,17 @@ package space.util.event.dependency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.baseobject.ToString;
-import space.util.event.EventCreator;
-import space.util.event.typehandler.TypeHandler;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.task.EventCreator;
 import space.util.task.Task;
-import space.util.task.TaskExceptionHandler;
 import space.util.task.impl.MultiTask;
+import space.util.task.typehandler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -66,8 +64,9 @@ public class DependencyEventBuilderSinglethread<FUNCTION> extends DependencyEven
 		@Override
 		public @NotNull Task create(@NotNull TypeHandler<FUNCTION> handler, @Nullable TaskExceptionHandler exceptionHandler) {
 			return new MultiTask(preparedList.stream().map(entry -> entry.function.create(handler, exceptionHandler)).collect(Collectors.toList())) {
+				@NotNull
 				@Override
-				public synchronized void submit(@NotNull Executor executor) {
+				public synchronized void submit() {
 					if (startExecution())
 						return;
 					executor.execute(() -> {

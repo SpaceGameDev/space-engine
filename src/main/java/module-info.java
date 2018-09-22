@@ -2,6 +2,7 @@ module space.util {
 	
 	exports space.util;
 	exports space.util.annotation;
+	exports space.util.barrier;
 	exports space.util.baseobject;
 	exports space.util.baseobject.exceptions;
 	exports space.util.buffer;
@@ -12,17 +13,6 @@ module space.util {
 	exports space.util.buffer.exception;
 	exports space.util.buffer.pointer;
 	exports space.util.buffer.string;
-	exports space.util.awaitable;
-	exports space.util.event;
-	exports space.util.event.basic;
-	exports space.util.event.dependency;
-	exports space.util.event.typehandler;
-//	exports space.util.lock;
-	exports space.util.lock.keylock;
-	exports space.util.lock.rwlock;
-	exports space.util.lock.simplelock;
-	exports space.util.task;
-	exports space.util.task.impl;
 //	exports space.util.delegate;
 	exports space.util.delegate.collection;
 	exports space.util.delegate.indexmap;
@@ -38,6 +28,8 @@ module space.util {
 	exports space.util.delegate.util;
 	exports space.util.dependency;
 	exports space.util.dependency.exception;
+	exports space.util.event;
+	exports space.util.event.dependency;
 	exports space.util.freeableStorage;
 	exports space.util.gui;
 //	exports space.util.gui.elements;
@@ -62,6 +54,10 @@ module space.util {
 	exports space.util.key.attribute;
 	exports space.util.key.impl;
 	exports space.util.key.map;
+//	exports space.util.lock;
+	exports space.util.lock.keylock;
+	exports space.util.lock.rwlock;
+	exports space.util.lock.simplelock;
 	exports space.util.logger;
 	exports space.util.logger.prefix;
 	exports space.util.logger.printer;
@@ -74,6 +70,9 @@ module space.util {
 	exports space.util.string;
 	exports space.util.string.builder;
 	exports space.util.string.toStringHelper;
+	exports space.util.task;
+	exports space.util.task.impl;
+	exports space.util.task.typehandler;
 //	exports space.util.unsafe; //do NOT export
 	
 	requires jdk.unsupported;

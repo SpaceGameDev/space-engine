@@ -1,29 +1,27 @@
 package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.awaitable.Awaitable;
-import space.util.event.basic.BasicEvent;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import org.jetbrains.annotations.Nullable;
+import space.util.barrier.Barrier;
 
 /**
  * A {@link Task} is something which is created to be executed by some thread in a protected environment,
  * signaling back it's execution, completion and error states. It also allows for Hooks to be added and to be awaited on.
  */
-public interface Task extends BasicEvent<Consumer<Task>>, Awaitable {
+public interface Task extends Barrier {
 	
-	//run
+	//change state
 	
 	/**
 	 * Submits the tasks work to the executor.
 	 * Should only be called once. Calling it multiple times may lead to undefined behavior.
 	 * An implementation can choose to submit multiple {@link Runnable}s.
 	 *
-	 * @param executor to submit any tasks to
+	 * @return this
 	 */
-	void submit(@NotNull Executor executor);
+	@NotNull Task submit();
+	
+	@NotNull Task submit(Barrier... barriers);
 	
 	/**
 	 * Cancels the execution of the task.
@@ -33,28 +31,14 @@ public interface Task extends BasicEvent<Consumer<Task>>, Awaitable {
 	 */
 	boolean cancel(boolean mayInterrupt);
 	
-	//state
+	//getter state
 	
-	/**
-	 * Check whether the execution of this Task has started.
-	 *
-	 * @return true if it has started
-	 */
-	boolean executionStarted();
-	
-	/**
-	 * Check whether the execution of this thread is done.
-	 *
-	 * @return true if execution is done
-	 */
-	boolean isDone();
+	@NotNull TaskState getState();
 	
 	@Override
-	default boolean isSignaled() {
-		return isDone();
+	default boolean isTriggered() {
+		return getState() == TaskState.FINISHED;
 	}
-	
-	//result
 	
 	/**
 	 * Gets the {@link TaskResult} of this {@link Task}.
@@ -62,48 +46,6 @@ public interface Task extends BasicEvent<Consumer<Task>>, Awaitable {
 	 *
 	 * @return the {@link TaskResult} of the {@link Task} or null, if not already finished
 	 */
-	TaskResult getResult();
+	@Nullable TaskResult getResult();
 	
-	//await
-	
-	/**
-	 * Waits until the {@link Task} is complete.
-	 */
-	@Override
-	void await() throws InterruptedException;
-	
-	/**
-	 * Waits until the {@link Task} is complete with a timeout.
-	 */
-	@Override
-	void await(long time, TimeUnit unit) throws InterruptedException;
-	
-	//exception handler default
-	
-	/**
-	 * Sets the default {@link TaskExceptionHandler}.
-	 *
-	 * @param handler the new {@link TaskExceptionHandler}.
-	 */
-	static void setDefaultExceptionHandler(TaskExceptionHandler handler) {
-		DefaultTaskExceptionHandlerStorage.defaultHandler = handler;
-	}
-	
-	/**
-	 * Gets the default {@link TaskExceptionHandler}
-	 *
-	 * @return the default {@link TaskExceptionHandler}
-	 */
-	static TaskExceptionHandler getDefaultExceptionHandler() {
-		return DefaultTaskExceptionHandlerStorage.defaultHandler;
-	}
-	
-	class DefaultTaskExceptionHandlerStorage {
-		
-		private static TaskExceptionHandler defaultHandler;
-		
-		static {
-			setDefaultExceptionHandler((task, thread, e) -> Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(thread, e));
-		}
-	}
 }

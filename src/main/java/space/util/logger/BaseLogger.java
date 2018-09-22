@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import space.util.event.dependency.DependencyEventBuilderSinglethread;
 import space.util.event.dependency.DependencyEventCreator;
 import space.util.event.dependency.DependencyEventEntry;
-import space.util.event.typehandler.TypeBiConsumer;
 import space.util.logger.prefix.LogLevelPrefix;
 import space.util.logger.prefix.Prefix;
 import space.util.logger.prefix.SubLoggerPrefix;
@@ -14,6 +13,7 @@ import space.util.logger.printer.SeparatedPrinter;
 import space.util.logger.printer.SimpleStringPrinter;
 import space.util.string.CharSequence2D;
 import space.util.string.builder.CharBufferBuilder2D;
+import space.util.task.typehandler.TypeBiConsumer;
 
 import java.text.SimpleDateFormat;
 import java.util.function.BiConsumer;

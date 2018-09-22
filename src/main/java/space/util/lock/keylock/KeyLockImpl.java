@@ -1,11 +1,10 @@
 package space.util.lock.keylock;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.awaitable.OneToOneSignalable;
 
 import java.util.concurrent.TimeUnit;
 
-public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY> {
+public class KeyLockImpl<KEY> implements KeyLock<KEY> {
 	
 	public KEY currentKey;
 	public int stackLevel;
@@ -15,7 +14,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	public synchronized void lock(@NotNull KEY key) {
 		while (!tryLock(key))
 			try {
-				await();
+				wait();
 			} catch (InterruptedException ignore) {
 				
 			}
@@ -25,7 +24,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	public synchronized void lock(@NotNull KEY key, long time, @NotNull TimeUnit unit) {
 		while (!tryLock(key))
 			try {
-				await(time, unit);
+				wait(unit.toMillis(time));
 			} catch (InterruptedException ignore) {
 				
 			}
@@ -34,13 +33,13 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 	@Override
 	public synchronized void lockInterruptibly(@NotNull KEY key) throws InterruptedException {
 		while (!tryLock(key))
-			await();
+			wait();
 	}
 	
 	@Override
 	public synchronized void lockInterruptibly(@NotNull KEY key, long time, TimeUnit unit) throws InterruptedException {
 		while (!tryLock(key))
-			await(time, unit);
+			wait(unit.toMillis(time));
 	}
 	
 	@Override
@@ -83,7 +82,7 @@ public class KeyLockImpl<KEY> extends OneToOneSignalable implements KeyLock<KEY>
 		stackLevel--;
 		if (stackLevel == 0) {
 			currentKey = null;
-			signal();
+			notify();
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package space.util.event.typehandler;
+package space.util.task.typehandler;
 
 public interface AllowMultithreading {
 }

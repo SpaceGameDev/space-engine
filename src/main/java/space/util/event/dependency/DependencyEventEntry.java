@@ -5,9 +5,9 @@ import space.util.baseobject.ToString;
 import space.util.dependency.Dependency;
 import space.util.dependency.NoDepDependency;
 import space.util.dependency.SimpleDependency;
-import space.util.event.EventCreator;
 import space.util.string.toStringHelper.ToStringHelper;
 import space.util.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.util.task.EventCreator;
 import space.util.task.impl.RunnableTask;
 
 import java.util.Comparator;

@@ -3,7 +3,7 @@ package space.util.key.attribute;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.event.basic.BasicEvent;
+import space.util.event.Event;
 import space.util.key.Key;
 import space.util.key.KeyGenerator;
 
@@ -117,7 +117,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	 * An {@link AttributeList AttributeList} holds values to all keys generated.<br>
 	 * It can be modified by creating a {@link AttributeListModification AttributeListModification} with {@link AttributeListCreator#createModify()},
 	 * putting all the changing values there and than calling {@link AttributeList#apply(AttributeListModification) apply(AttributeListModification)} to apply changes.
-	 * When applying changes the {@link BasicEvent} from {@link AttributeList#getChangeEvent()} is triggered.
+	 * When applying changes the {@link Event} from {@link AttributeList#getChangeEvent()} is triggered.
 	 *
 	 * @see AttributeListModification the modification AttributeList
 	 */
@@ -144,10 +144,10 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		//other
 		
 		/**
-		 * Gets the {@link BasicEvent} to use {@link BasicEvent#addHook(Object)} to add Hooks.
+		 * Gets the {@link Event} to use {@link Event#addHook(Object)} to add Hooks.
 		 * Called then a mod is applied ({@link AttributeList#apply(AttributeListModification) apply(AttributeListModification)}).
 		 */
-		@NotNull BasicEvent<Consumer<ChangeEvent<?>>> getChangeEvent();
+		@NotNull Event<Consumer<ChangeEvent<?>>> getChangeEvent();
 		
 		/**
 		 * Applies a certain modification.<br>
@@ -155,7 +155,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 		 * <ul>
 		 * <li>copy the mod</li>
 		 * <li>replace all "replacements" with the same entry with {@link AttributeList#UNCHANGED}</li>
-		 * <li>trigger the {@link BasicEvent} gotten from {@link AttributeList#getChangeEvent()}</li>
+		 * <li>trigger the {@link Event} gotten from {@link AttributeList#getChangeEvent()}</li>
 		 * <li>apply the changes to this object</li>
 		 * </ul>
 		 */
@@ -272,7 +272,7 @@ public interface AttributeListCreator<TYPE> extends KeyGenerator {
 	
 	/**
 	 * Contains information about ANY change of an {@link AttributeList AttributeList}.
-	 * It is used in the {@link BasicEvent} gotten from {@link AttributeList#getChangeEvent()}.
+	 * It is used in the {@link Event} gotten from {@link AttributeList#getChangeEvent()}.
 	 * Use {@link ChangeEvent#getEntry(Key)} to get the Entry of one {@link Key}.
 	 */
 	interface ChangeEvent<TYPE> {
