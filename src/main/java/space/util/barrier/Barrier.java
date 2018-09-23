@@ -2,7 +2,6 @@ package space.util.barrier;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <b>It cannot be triggered more than once or reset</b>.
  */
 public interface Barrier {
-	
-	Barrier[] EMPTY_BARRIER_ARRAY = new Barrier[0];
 	
 	//getter
 	
@@ -70,15 +67,5 @@ public interface Barrier {
 					toRun.run();
 			});
 		}
-	}
-	
-	/**
-	 * Awaits for all {@link Barrier Barriers} to be triggered, then executes toRun. This Operation is non-blocking.
-	 *
-	 * @param toRun    something to be executed when all {@link Barrier Barriers} are triggered
-	 * @param barriers the {@link Barrier Barriers} to await upon
-	 */
-	static void awaitAll(@NotNull Runnable toRun, @NotNull Collection<@NotNull Barrier> barriers) {
-		awaitAll(toRun, barriers.toArray(EMPTY_BARRIER_ARRAY));
 	}
 }

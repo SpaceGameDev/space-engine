@@ -11,12 +11,12 @@ import static space.util.task.TaskState.*;
 public abstract class AbstractTask extends BarrierImpl implements Task {
 	
 	@SuppressWarnings("NullableProblems") //value is assigned when state is > CREATED / after submit() call
-	protected @NotNull TaskState state = CREATED;
+	protected volatile @NotNull TaskState state = CREATED;
 	
 	//change state
 	@NotNull
 	@Override
-	public Task submit() {
+	public synchronized Task submit() {
 		if (state != CREATED)
 			throw new IllegalStateException("Can only submit() in State " + CREATED + ", was in State " + state);
 		state = SUBMITTED;
@@ -47,7 +47,7 @@ public abstract class AbstractTask extends BarrierImpl implements Task {
 	
 	@NotNull
 	@Override
-	public synchronized TaskState getState() {
+	public TaskState getState() {
 		return state;
 	}
 }

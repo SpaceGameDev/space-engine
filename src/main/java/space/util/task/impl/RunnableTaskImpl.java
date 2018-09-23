@@ -26,7 +26,7 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	}
 	
 	protected @Nullable Thread executor;
-	protected @Nullable TaskResult result;
+	protected volatile @Nullable TaskResult result;
 	
 	//change state
 	@Override
