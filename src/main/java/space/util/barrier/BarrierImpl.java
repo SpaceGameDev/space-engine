@@ -32,7 +32,7 @@ public class BarrierImpl implements Barrier {
 	
 	//impl
 	@Override
-	public boolean isTriggered() {
+	public synchronized boolean isTriggered() {
 		return hookList == null;
 	}
 	
@@ -58,7 +58,14 @@ public class BarrierImpl implements Barrier {
 	
 	@Override
 	public synchronized void await(long time, TimeUnit unit) throws InterruptedException {
-		while (hookList != null)
-			this.wait(unit.toMillis(time));
+		long sleepTime = unit.toNanos(time);
+		long deadline = System.nanoTime() + sleepTime;
+		
+		while (hookList != null) {
+			this.wait(sleepTime / 1000000, (int) (sleepTime % 1000000));
+			sleepTime = deadline - System.nanoTime();
+			if (sleepTime <= 0)
+				return;
+		}
 	}
 }
