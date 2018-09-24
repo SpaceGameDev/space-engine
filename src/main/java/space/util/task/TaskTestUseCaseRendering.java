@@ -6,20 +6,28 @@ import space.util.task.impl.RunnableTaskImpl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class TaskTestUseCaseRendering {
 	
-	public static final Executor WINDOW_POOL = Runnable::run;
-	public static final Executor COMPUTE_POOL = Runnable::run;
-	public static final boolean VERTEX_DATA_FORCE_IO_EXCEPTION = false;
+	public static final Executor GLOBAL_POOL = new ThreadPoolExecutor(4, 4, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+	public static final Executor WINDOW_POOL = GLOBAL_POOL;
+	public static final Executor COMPUTE_POOL = GLOBAL_POOL;
+	public static final boolean VERTEX_DATA_FORCE_IO_EXCEPTION = true;
 	public static final boolean DO_SLEEP_BETWEEN_FRAMES = false;
+	
+	public static void println(String str) {
+		System.out.println(System.nanoTime() + ": " + str);
+	}
 	
 	//setup
 	public static Task createWindow(String name) {
 		return new RunnableTaskImpl() {
 			@Override
 			protected void execute() {
-				System.out.println("create Window: '" + name + "'");
+				println("create Window: '" + name + "'");
 			}
 			
 			@Override
@@ -33,7 +41,7 @@ public class TaskTestUseCaseRendering {
 		return new RunnableTaskImpl() {
 			@Override
 			protected void execute() {
-				System.out.println("close Window");
+				println("close Window");
 			}
 			
 			@Override
@@ -65,7 +73,7 @@ public class TaskTestUseCaseRendering {
 //				new RunnableTaskImpl() {
 //					@Override
 //					protected void execute() {
-//						System.out.println("clear buffer");
+//						println("clear buffer");
 //					}
 //
 //					@Override
@@ -76,7 +84,7 @@ public class TaskTestUseCaseRendering {
 //				new RunnableTaskImpl() {
 //					@Override
 //					protected void execute() {
-//						System.out.println("render triangles: " + Arrays.toString(triangles));
+//						println("render triangles: " + Arrays.toString(triangles));
 //					}
 //
 //					@Override
@@ -89,8 +97,8 @@ public class TaskTestUseCaseRendering {
 		return new RunnableTaskImpl() {
 			@Override
 			protected void execute() {
-				System.out.println("clear buffer");
-				System.out.println("render triangles: " + Arrays.toString(triangles));
+				println("clear buffer");
+				println("render triangles: " + Arrays.toString(triangles));
 			}
 			
 			@Override
@@ -104,7 +112,7 @@ public class TaskTestUseCaseRendering {
 		return new RunnableTaskImpl() {
 			@Override
 			protected void execute() {
-				System.out.println("swap buffer");
+				println("swap buffer");
 			}
 			
 			@Override
@@ -114,27 +122,35 @@ public class TaskTestUseCaseRendering {
 		};
 	}
 	
-	public static void main(String[] args) throws InterruptedException {
-		CallableTaskWithException<float[], IOException> taskLoadVertexData = loadVertexData().submit();
-		float[] vertexData = new float[0];
+	public static void main(String[] args) throws Exception {
 		try {
-			vertexData = taskLoadVertexData.get();
-		} catch (IOException e) {
-			System.out.println("Can't load vertecies: IOException");
-			e.printStackTrace();
-			return;
+			System.out.print(""); //initialization
+			test();
+		} finally {
+			if (GLOBAL_POOL instanceof ThreadPoolExecutor)
+				((ThreadPoolExecutor) GLOBAL_POOL).shutdown();
 		}
+	}
+	
+	public static void test() throws InterruptedException, IOException {
+		Task create_window = createWindow("My Window").submit();
 		
-		createWindow("My Window").submit();
-		
-		for (int i = 0; i < 5 * 60; i++) {
-			Task taskRenderFrame = renderFrame(vertexData).submit();
-			swapBuffers().submit(taskRenderFrame).await();
+		try {
+			//loading and rendering
+			CallableTaskWithException<float[], IOException> taskLoadVertexData = loadVertexData().submit();
+			float[] vertexData = taskLoadVertexData.get();
 			
-			if (DO_SLEEP_BETWEEN_FRAMES)
-				Thread.sleep(1000L / 60);
+			create_window.await();
+			for (int i = 0; i < 10; i++) {
+				Task taskRenderFrame = renderFrame(vertexData).submit();
+				swapBuffers().submit(taskRenderFrame).await();
+				
+				if (DO_SLEEP_BETWEEN_FRAMES)
+					Thread.sleep(1000L / 60);
+			}
+		} finally {
+			if (!create_window.cancel(false))
+				closeWindow().submit(create_window).await();
 		}
-		
-		closeWindow().submit().await();
 	}
 }

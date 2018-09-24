@@ -2,7 +2,9 @@ package space.util.task.impl;
 
 import org.jetbrains.annotations.Nullable;
 import space.util.task.TaskResult;
+import space.util.task.TaskState;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import static space.util.task.TaskResult.*;
@@ -25,7 +27,14 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 		};
 	}
 	
+	/**
+	 * NotNull if state == {@link TaskState#RUNNING}
+	 */
 	protected @Nullable Thread executor;
+	
+	/**
+	 * NotNull if state == {@link TaskState#FINISHED}
+	 */
 	protected volatile @Nullable TaskResult result;
 	
 	//change state
@@ -39,6 +48,8 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	//run
 	public void run() {
 		synchronized (this) {
+			if (state == FINISHED && (result == CANCELED || result == CRASH))
+				return;
 			if (state != SUBMITTED)
 				throw new IllegalStateException("Can only start running in State " + SUBMITTED + ", was in State " + state);
 			state = RUNNING;
@@ -53,21 +64,23 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 			throw e;
 		} finally {
 			synchronized (this) {
-				if (state != RUNNING)
-					//noinspection ThrowFromFinallyBlock
-					throw new IllegalStateException("Can only end running in State " + RUNNING + ", was in State " + state);
-				state = FINISHED;
 				executor = null;
 				
-				if (result == null)
-					result = hasException ? EXCEPTION : SUCCESSFUL;
-				else if (result == CANCELED)
+				if (state == RUNNING) {
+					state = FINISHED;
+					result = hasException ? CRASH : SUCCESSFUL;
+				} else if (state == FINISHED) {
+					if (result != CANCELED && result != CRASH) {
+						//noinspection ThrowFromFinallyBlock
+						throw new IllegalStateException("Can only end running in State " + RUNNING + " when Result is " + CANCELED + " or " + CRASH + ", Result was " + result);
+					}
 					//swallow the interrupt if Task was canceled, as it came from the cancellation
 					//noinspection ResultOfMethodCallIgnored
-					Thread.currentThread().isInterrupted();
-				else
+					Thread.interrupted();
+				} else {
 					//noinspection ThrowFromFinallyBlock
-					throw new IllegalStateException("The Result was in an invalid state at end of execution ( valid states: null, CANCELED): " + this);
+					throw new IllegalStateException("Can only end running in State " + RUNNING + " or " + FINISHED + ", was in State " + state);
+				}
 				triggerNow();
 			}
 		}
@@ -77,17 +90,22 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	
 	@Override
 	public synchronized boolean cancel(boolean mayInterrupt) {
-		if (result == TaskResult.CANCELED)
+		if (state == FINISHED)
+			return result == CANCELED;
+		
+		boolean duringStateRunning = (state == RUNNING);
+		state = FINISHED;
+		result = CANCELED;
+		
+		if (duringStateRunning) {
+			if (mayInterrupt)
+				Objects.requireNonNull(executor).interrupt();
+			//triggerNow() is called by executing Thread
 			return false;
-		
-		boolean allowSet = result == null;
-		
-		if (allowSet)
-			result = TaskResult.CANCELED;
-		if (mayInterrupt && executor != null)
-			executor.interrupt();
-		triggerNow();
-		return allowSet;
+		} else {
+			triggerNow();
+			return true;
+		}
 	}
 	
 	@Override
