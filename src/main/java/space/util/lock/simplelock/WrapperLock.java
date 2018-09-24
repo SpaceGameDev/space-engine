@@ -34,12 +34,12 @@ public class WrapperLock<KEY> implements SimpleLock {
 	}
 	
 	@Override
-	public void lockInterruptibly() {
+	public void lockInterruptibly() throws InterruptedException {
 		lock.lockInterruptibly(key.get());
 	}
 	
 	@Override
-	public void lockInterruptibly(long time, @NotNull TimeUnit unit) {
+	public void lockInterruptibly(long time, @NotNull TimeUnit unit) throws InterruptedException {
 		lock.lockInterruptibly(key.get(), time, unit);
 	}
 	
