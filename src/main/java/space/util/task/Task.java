@@ -36,7 +36,7 @@ public interface Task extends Barrier {
 	@NotNull TaskState getState();
 	
 	@Override
-	default boolean isTriggered() {
+	default boolean isFinished() {
 		return getState() == TaskState.FINISHED;
 	}
 	

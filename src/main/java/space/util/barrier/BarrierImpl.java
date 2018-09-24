@@ -32,7 +32,7 @@ public class BarrierImpl implements Barrier {
 	
 	//impl
 	@Override
-	public synchronized boolean isTriggered() {
+	public synchronized boolean isFinished() {
 		return hookList == null;
 	}
 	

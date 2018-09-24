@@ -31,6 +31,7 @@ module space.util {
 	exports space.util.event;
 	exports space.util.event.dependency;
 	exports space.util.freeableStorage;
+	exports space.util.future;
 	exports space.util.gui;
 //	exports space.util.gui.elements;
 	exports space.util.gui.elements.direction;

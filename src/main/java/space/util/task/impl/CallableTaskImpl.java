@@ -3,6 +3,7 @@ package space.util.task.impl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.barrier.Barrier;
+import space.util.future.FutureNotFinishedException;
 import space.util.task.CallableTask;
 import space.util.task.TaskState;
 
@@ -12,7 +13,7 @@ import java.util.function.Supplier;
 public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements CallableTask<R> {
 	
 	public static <R> CallableTaskImpl<R> create(Executor exec, Supplier<R> function) {
-		return new CallableTaskImpl<R>() {
+		return new CallableTaskImpl<>() {
 			@Override
 			protected R execute0() {
 				return function.get();
@@ -54,9 +55,9 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	
 	@Nullable
 	@Override
-	public synchronized R tryGet() {
+	public synchronized R tryGet() throws FutureNotFinishedException {
 		if (getState() != TaskState.FINISHED)
-			return null;
+			throw new FutureNotFinishedException();
 		return ret;
 	}
 }

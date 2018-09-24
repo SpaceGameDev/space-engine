@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An Object which can be {@link #await() awaited} upon. You can also {@link #addHook(Runnable) add a Hook} to be called when the Barrier is triggered. <br>
+ * An Object which can be {@link #await() awaited} upon. You can also {@link #addHook(Runnable) add a Hook} to be called when the Barrier {@link #isFinished() is finished}. <br>
  * <b>It cannot be triggered more than once or reset</b>.
  */
 public interface Barrier {
@@ -14,12 +14,12 @@ public interface Barrier {
 	//getter
 	
 	/**
-	 * Gets the state if this {@link Barrier}, whether it is triggered or not.<br>
+	 * Gets the state if this {@link Barrier}, whether it is finished or not.<br>
 	 * NOTE: The triggered state should be considered immediately stale, as it can change any Moment without notice.
 	 *
 	 * @return whether the {@link Barrier} is triggered or not
 	 */
-	boolean isTriggered();
+	boolean isFinished();
 	
 	//hooks
 	

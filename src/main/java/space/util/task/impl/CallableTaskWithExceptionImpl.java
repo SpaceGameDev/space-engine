@@ -3,6 +3,7 @@ package space.util.task.impl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.util.barrier.Barrier;
+import space.util.future.FutureNotFinishedException;
 import space.util.task.CallableTaskWithException;
 import space.util.task.TaskState;
 
@@ -58,9 +59,9 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 	
 	@Nullable
 	@Override
-	public synchronized R tryGet() throws EX {
+	public synchronized R tryGet() throws FutureNotFinishedException, EX {
 		if (getState() != TaskState.FINISHED)
-			return null;
+			throw new FutureNotFinishedException();
 		return getInternal();
 	}
 	
@@ -131,9 +132,9 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Nullable
 		@Override
-		public synchronized R tryGet() throws EX1, EX2 {
+		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2 {
 			if (getState() != TaskState.FINISHED)
-				return null;
+				throw new FutureNotFinishedException();
 			return getInternal();
 		}
 		
@@ -216,9 +217,9 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Nullable
 		@Override
-		public synchronized R tryGet() throws EX1, EX2, EX3 {
+		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3 {
 			if (getState() != TaskState.FINISHED)
-				return null;
+				throw new FutureNotFinishedException();
 			return getInternal();
 		}
 		
@@ -312,9 +313,9 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Nullable
 		@Override
-		public synchronized R tryGet() throws EX1, EX2, EX3, EX4 {
+		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4 {
 			if (getState() != TaskState.FINISHED)
-				return null;
+				throw new FutureNotFinishedException();
 			return getInternal();
 		}
 		
@@ -419,9 +420,9 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Nullable
 		@Override
-		public synchronized R tryGet() throws EX1, EX2, EX3, EX4, EX5 {
+		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4, EX5 {
 			if (getState() != TaskState.FINISHED)
-				return null;
+				throw new FutureNotFinishedException();
 			return getInternal();
 		}
 		
