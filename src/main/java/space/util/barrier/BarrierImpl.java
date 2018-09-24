@@ -27,7 +27,7 @@ public class BarrierImpl implements Barrier {
 		this.hookList = null;
 		
 		this.notifyAll();
-		this.hookList.forEach(Runnable::run);
+		hookList.forEach(Runnable::run);
 	}
 	
 	//impl
