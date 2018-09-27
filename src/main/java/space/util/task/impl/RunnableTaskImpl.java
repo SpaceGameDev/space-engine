@@ -37,6 +37,8 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	 */
 	protected volatile @Nullable TaskResult result;
 	
+	protected boolean canceledEarly = false;
+	
 	//change state
 	@Override
 	protected void submit0() {
@@ -91,20 +93,20 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	@Override
 	public synchronized boolean cancel(boolean mayInterrupt) {
 		if (state == FINISHED)
-			return result == CANCELED;
+			return canceledEarly;
 		
-		boolean duringStateRunning = (state == RUNNING);
+		canceledEarly = (state != RUNNING);
 		state = FINISHED;
 		result = CANCELED;
 		
-		if (duringStateRunning) {
+		if (canceledEarly) {
+			triggerNow();
+			return canceledEarly;
+		} else {
 			if (mayInterrupt)
 				Objects.requireNonNull(executor).interrupt();
 			//triggerNow() is called by executing Thread
-			return false;
-		} else {
-			triggerNow();
-			return true;
+			return canceledEarly;
 		}
 	}
 	
