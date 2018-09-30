@@ -40,7 +40,7 @@ public enum TaskState {
 	SUBMITTED,
 	
 	/**
-	 * The Task is currently getting executed by a {@link Thread}. <b>May be unsupported, ausing the Task to skip this phase and go to {@link #FINISHED}</b>
+	 * The Task is currently getting executed by a {@link Thread}. <b>May be unsupported, causing the Task to skip this phase and go to {@link #FINISHED}</b>
 	 * <p>
 	 * Next States:
 	 * <ul>

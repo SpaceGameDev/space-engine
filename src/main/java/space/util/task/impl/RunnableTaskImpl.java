@@ -28,15 +28,23 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	}
 	
 	/**
-	 * NotNull if state == {@link TaskState#RUNNING}
+	 * <ul>
+	 * <li>NotNull if state == {@link TaskState#RUNNING}</li>
+	 * </ul>
 	 */
 	protected @Nullable Thread executor;
 	
 	/**
-	 * NotNull if state == {@link TaskState#FINISHED}
+	 * <ul>
+	 * <li>NotNull if state == {@link TaskState#FINISHED}</li>
+	 * <li>Null or {@link TaskResult#CANCELED} (after {@link #cancel(boolean)}) otherwise</li>
+	 * </ul>
 	 */
 	protected volatile @Nullable TaskResult result;
 	
+	/**
+	 * true if {@link #cancel(boolean)} was called before this got executed ({@link #state} == {@link TaskState#RUNNING} | {@link TaskState#FINISHED})
+	 */
 	protected boolean canceledEarly = false;
 	
 	//change state
@@ -69,8 +77,10 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 				executor = null;
 				
 				if (state == RUNNING) {
-					state = FINISHED;
+					//finish this Task normally
 					result = hasException ? CRASH : SUCCESSFUL;
+					state = FINISHED;
+					triggerNow();
 				} else if (state == FINISHED) {
 					if (result != CANCELED && result != CRASH) {
 						//noinspection ThrowFromFinallyBlock
@@ -79,11 +89,14 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 					//swallow the interrupt if Task was canceled, as it came from the cancellation
 					//noinspection ResultOfMethodCallIgnored
 					Thread.interrupted();
+					
+					//finish this Task after a cancel while still being executed / entering state == RUNNING
+					state = FINISHED;
+					triggerNow();
 				} else {
 					//noinspection ThrowFromFinallyBlock
 					throw new IllegalStateException("Can only end running in State " + RUNNING + " or " + FINISHED + ", was in State " + state);
 				}
-				triggerNow();
 			}
 		}
 	}
@@ -92,26 +105,27 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 	
 	@Override
 	public synchronized boolean cancel(boolean mayInterrupt) {
-		if (state == FINISHED)
+		if (result == CANCELED)
 			return canceledEarly;
 		
 		canceledEarly = (state != RUNNING);
-		state = FINISHED;
 		result = CANCELED;
 		
 		if (canceledEarly) {
+			//we finish this Task
+			state = FINISHED;
 			triggerNow();
 			return canceledEarly;
 		} else {
+			//the Thread currently executing finishes this Task
 			if (mayInterrupt)
 				Objects.requireNonNull(executor).interrupt();
-			//triggerNow() is called by executing Thread
 			return canceledEarly;
 		}
 	}
 	
 	@Override
 	public @Nullable TaskResult getResult() {
-		return result;
+		return state == TaskState.FINISHED ? result : null;
 	}
 }
