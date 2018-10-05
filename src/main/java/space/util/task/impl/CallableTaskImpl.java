@@ -28,6 +28,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	
 	protected R ret;
 	
+	//delegate
 	@Override
 	public @NotNull CallableTask<R> submit() {
 		super.submit();
@@ -40,6 +41,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 		return this;
 	}
 	
+	//execute
 	@Override
 	protected void execute() {
 		ret = execute0();
@@ -47,6 +49,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	
 	protected abstract R execute0();
 	
+	//get
 	@Override
 	public synchronized R get() throws InterruptedException {
 		await();

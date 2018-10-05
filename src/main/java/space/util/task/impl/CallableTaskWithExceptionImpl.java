@@ -18,6 +18,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		this.exceptionClass = exceptionClass;
 	}
 	
+	//delegate
 	@Override
 	public @NotNull CallableTaskWithException<R, EX> submit() {
 		super.submit();
@@ -30,6 +31,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		return this;
 	}
 	
+	//execute
 	@Override
 	protected void execute() {
 		try {
@@ -51,6 +53,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 	
 	protected abstract R execute0() throws EX;
 	
+	//get
 	@Override
 	public synchronized R get() throws InterruptedException, EX {
 		await();
@@ -85,6 +88,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			this.exceptionClass2 = exceptionClass2;
 		}
 		
+		//delegate
 		@Override
 		public @NotNull CallableTaskWith2Exception<R, EX1, EX2> submit() {
 			super.submit();
@@ -97,6 +101,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			return this;
 		}
 		
+		//execute
 		@Override
 		protected void execute() {
 			try {
@@ -124,6 +129,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		protected abstract R execute0() throws EX1, EX2;
 		
+		//get
 		@Override
 		public synchronized R get() throws InterruptedException, EX1, EX2 {
 			await();
@@ -164,6 +170,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			this.exceptionClass3 = exceptionClass3;
 		}
 		
+		//delegate
 		@Override
 		public @NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit() {
 			super.submit();
@@ -176,6 +183,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			return this;
 		}
 		
+		//execute
 		@Override
 		protected void execute() {
 			try {
@@ -209,6 +217,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		protected abstract R execute0() throws EX1, EX2, EX3;
 		
+		//get
 		@Override
 		public synchronized R get() throws InterruptedException, EX1, EX2, EX3 {
 			await();
@@ -254,6 +263,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			this.exceptionClass4 = exceptionClass4;
 		}
 		
+		//delegate
 		@Override
 		public @NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit() {
 			super.submit();
@@ -266,6 +276,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			return this;
 		}
 		
+		//execute
 		@Override
 		protected void execute() {
 			try {
@@ -305,6 +316,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		protected abstract R execute0() throws EX1, EX2, EX3, EX4;
 		
+		//get
 		@Override
 		public synchronized R get() throws InterruptedException, EX1, EX2, EX3, EX4 {
 			await();
@@ -355,6 +367,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			this.exceptionClass5 = exceptionClass5;
 		}
 		
+		//delegate
 		@Override
 		public @NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit() {
 			super.submit();
@@ -367,6 +380,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			return this;
 		}
 		
+		//execute
 		@Override
 		protected void execute() {
 			try {
@@ -412,6 +426,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		protected abstract R execute0() throws EX1, EX2, EX3, EX4, EX5;
 		
+		//get
 		@Override
 		public synchronized R get() throws InterruptedException, EX1, EX2, EX3, EX4, EX5 {
 			await();

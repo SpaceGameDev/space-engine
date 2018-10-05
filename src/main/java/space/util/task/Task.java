@@ -1,7 +1,6 @@
 package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.util.barrier.Barrier;
 
 /**
@@ -13,23 +12,22 @@ public interface Task extends Barrier {
 	//change state
 	
 	/**
-	 * Submits the tasks work to the executor.
-	 * Should only be called once. Calling it multiple times may lead to undefined behavior.
-	 * An implementation can choose to submit multiple {@link Runnable}s.
+	 * Starts the Execution of this Task.
+	 * Eg. on Java-based Tasks, it will submit all Entry points as {@link Runnable Runnables} to a ThreadPool.<br>
+	 * <b>Should only be called once. </b>Calling it more than once should throw an {@link IllegalStateException}.
 	 *
 	 * @return this
 	 */
 	@NotNull Task submit();
 	
-	@NotNull Task submit(Barrier... barriers);
-	
 	/**
-	 * Cancels the execution of the task.
+	 * Starts the Execution of this Task.
+	 * Eg. on Java-based Tasks, it will submit all Entry points as {@link Runnable Runnables} to a ThreadPool.<br>
+	 * <b>Should only be called once. </b>Calling it more than once should throw an {@link IllegalStateException}.
 	 *
-	 * @param mayInterrupt if it should set the interrupt flags on all threads executing any work for this task
-	 * @return true if the task was canceled early enough to not have finished, meant for informational purpose
+	 * @return this
 	 */
-	boolean cancel(boolean mayInterrupt);
+	@NotNull Task submit(Barrier... barriers);
 	
 	//getter state
 	
@@ -39,13 +37,4 @@ public interface Task extends Barrier {
 	default boolean isFinished() {
 		return getState() == TaskState.FINISHED;
 	}
-	
-	/**
-	 * Gets the {@link TaskResult} of this {@link Task}.
-	 * <p>This Method is NOT marked with @Nullable, as it will ONLY return null when the Task is not finished. When it IS finished it will always be NotNull.</p>
-	 *
-	 * @return the {@link TaskResult} of the {@link Task} or null, if not already finished
-	 */
-	@Nullable TaskResult getResult();
-	
 }

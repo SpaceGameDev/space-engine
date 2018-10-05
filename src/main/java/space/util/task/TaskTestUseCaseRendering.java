@@ -149,8 +149,7 @@ public class TaskTestUseCaseRendering {
 					Thread.sleep(1000L / 60);
 			}
 		} finally {
-			if (!create_window.cancel(false))
-				closeWindow().submit(create_window).await();
+			closeWindow().submit(create_window).await();
 		}
 	}
 }
