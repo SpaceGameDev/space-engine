@@ -30,6 +30,7 @@ module space.util {
 	exports space.util.dependency.exception;
 	exports space.util.event;
 	exports space.util.event.dependency;
+	exports space.util.event.typehandler;
 	exports space.util.freeableStorage;
 	exports space.util.future;
 	exports space.util.gui;
@@ -73,7 +74,6 @@ module space.util {
 	exports space.util.string.toStringHelper;
 	exports space.util.task;
 	exports space.util.task.impl;
-	exports space.util.task.typehandler;
 //	exports space.util.unsafe; //do NOT export
 	
 	requires jdk.unsupported;

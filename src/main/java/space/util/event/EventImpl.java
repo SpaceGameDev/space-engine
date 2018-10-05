@@ -1,7 +1,7 @@
 package space.util.event;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.task.typehandler.TypeHandler;
+import space.util.event.typehandler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,6 @@ public class EventImpl<FUNCTION> implements Event<FUNCTION> {
 	
 	//run
 	public synchronized void run(@NotNull TypeHandler<FUNCTION> type) {
-		notifyAll();
 		after.forEach(type);
 	}
 }

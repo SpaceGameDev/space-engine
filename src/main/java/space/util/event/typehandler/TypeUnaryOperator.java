@@ -1,4 +1,4 @@
-package space.util.task.typehandler;
+package space.util.event.typehandler;
 
 import org.jetbrains.annotations.NotNull;
 
