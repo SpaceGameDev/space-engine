@@ -2,6 +2,7 @@ package space.util.barrier;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -10,6 +11,33 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <b>It cannot be triggered more than once or reset</b>.
  */
 public interface Barrier {
+	
+	Barrier ALWAYS_TRIGGERED_BARRIER = new Barrier() {
+		@Override
+		public boolean isFinished() {
+			return true;
+		}
+		
+		@Override
+		public void addHook(@NotNull Runnable run) {
+			run.run();
+		}
+		
+		@Override
+		public void removeHook(@NotNull Runnable run) {
+		
+		}
+		
+		@Override
+		public void await() {
+		
+		}
+		
+		@Override
+		public void await(long time, TimeUnit unit) {
+		
+		}
+	};
 	
 	//getter
 	
@@ -50,16 +78,59 @@ public interface Barrier {
 	 */
 	void await(long time, TimeUnit unit) throws InterruptedException;
 	
-	
 	//static
 	
 	/**
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then triggeres the returned {@link Barrier}. This Operation is non-blocking.
+	 * If no Barriers are given, the Barrier is returned triggered.
+	 *
+	 * @param barriers the {@link Barrier Barriers} to await upon
+	 * @return A {@link Barrier} which is triggered when all supplied {@link Barrier Barriers} have.
+	 */
+	static Barrier awaitAll(@NotNull Collection<? extends Barrier> barriers) {
+		return awaitAll(barriers.toArray(new Barrier[0]));
+	}
+	
+	/**
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then triggeres the returned {@link Barrier}. This Operation is non-blocking.
+	 * If no Barriers are given, the Barrier is returned triggered.
+	 *
+	 * @param barriers the {@link Barrier Barriers} to await upon
+	 * @return A {@link Barrier} which is triggered when all supplied {@link Barrier Barriers} have.
+	 */
+	static Barrier awaitAll(@NotNull Barrier... barriers) {
+		if (barriers.length == 0)
+			return ALWAYS_TRIGGERED_BARRIER;
+		
+		BarrierImpl ret = new BarrierImpl();
+		awaitAll(ret::triggerNow, barriers);
+		return ret;
+	}
+	
+	/**
 	 * Awaits for all {@link Barrier Barriers} to be triggered, then executes toRun. This Operation is non-blocking.
+	 * If no Barriers are given, the Runnable is executed immediately.
+	 *
+	 * @param toRun    something to be executed when all {@link Barrier Barriers} are triggered
+	 * @param barriers the {@link Barrier Barriers} to await upon
+	 */
+	static void awaitAll(@NotNull Runnable toRun, @NotNull Collection<@NotNull ? extends Barrier> barriers) {
+		awaitAll(toRun, barriers.toArray(new Barrier[0]));
+	}
+	
+	/**
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then executes toRun. This Operation is non-blocking.
+	 * If no Barriers are given, the Runnable is executed immediately.
 	 *
 	 * @param toRun    something to be executed when all {@link Barrier Barriers} are triggered
 	 * @param barriers the {@link Barrier Barriers} to await upon
 	 */
 	static void awaitAll(@NotNull Runnable toRun, @NotNull Barrier... barriers) {
+		if (barriers.length == 0) {
+			toRun.run();
+			return;
+		}
+		
 		final AtomicInteger cnt = new AtomicInteger(barriers.length);
 		for (Barrier barrier : barriers) {
 			barrier.addHook(() -> {
