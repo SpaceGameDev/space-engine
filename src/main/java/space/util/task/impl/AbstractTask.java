@@ -10,7 +10,6 @@ import static space.util.task.TaskState.*;
 
 public abstract class AbstractTask extends BarrierImpl implements Task {
 	
-	@SuppressWarnings("NullableProblems") //value is assigned when state is > CREATED / after submit() call
 	protected volatile @NotNull TaskState state = CREATED;
 	
 	//change state
