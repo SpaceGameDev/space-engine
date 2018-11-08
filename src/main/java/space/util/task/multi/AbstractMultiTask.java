@@ -7,11 +7,12 @@ import space.util.task.Task;
 import space.util.task.TaskState;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import static space.util.task.TaskState.*;
 
-public abstract class AbstractMultiTask implements Task {
+public class AbstractMultiTask implements Task {
 	
 	protected final BarrierImpl submitBarrier;
 	protected final Barrier endBarrier;
@@ -80,7 +81,7 @@ public abstract class AbstractMultiTask implements Task {
 	}
 	
 	@Override
-	public void await(long time, TimeUnit unit) throws InterruptedException {
+	public void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException {
 		endBarrier.await(time, unit);
 	}
 }

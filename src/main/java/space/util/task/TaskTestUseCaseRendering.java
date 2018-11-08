@@ -138,7 +138,7 @@ public class TaskTestUseCaseRendering {
 		try {
 			//loading and rendering
 			CallableTaskWithException<float[], IOException> taskLoadVertexData = loadVertexData().submit();
-			float[] vertexData = taskLoadVertexData.get();
+			float[] vertexData = taskLoadVertexData.awaitGet();
 			
 			create_window.await();
 			for (int i = 0; i < 10; i++) {

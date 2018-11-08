@@ -8,6 +8,8 @@ import space.util.task.CallableTask;
 import space.util.task.TaskState;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements CallableTask<R> {
@@ -37,7 +39,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	
 	@Override
 	public synchronized @NotNull CallableTask<R> submit(Barrier... barriers) {
-		super.submit();
+		super.submit(barriers);
 		return this;
 	}
 	
@@ -51,16 +53,22 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	
 	//get
 	@Override
-	public synchronized R get() throws InterruptedException {
+	public synchronized R awaitGet() throws InterruptedException {
 		await();
+		return ret;
+	}
+	
+	@Override
+	public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException {
+		await(time, unit);
 		return ret;
 	}
 	
 	@Nullable
 	@Override
-	public synchronized R tryGet() throws FutureNotFinishedException {
+	public synchronized R assertGet() throws FutureNotFinishedException {
 		if (getState() != TaskState.FINISHED)
-			throw new FutureNotFinishedException();
+			throw new FutureNotFinishedException(this);
 		return ret;
 	}
 }

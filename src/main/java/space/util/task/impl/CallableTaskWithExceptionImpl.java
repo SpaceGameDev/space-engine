@@ -1,11 +1,13 @@
 package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.util.barrier.Barrier;
 import space.util.future.FutureNotFinishedException;
 import space.util.task.CallableTaskWithException;
 import space.util.task.TaskState;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> extends RunnableTaskImpl implements CallableTaskWithException<R, EX> {
 	
@@ -55,16 +57,21 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 	
 	//get
 	@Override
-	public synchronized R get() throws InterruptedException, EX {
+	public R awaitGet() throws InterruptedException, EX {
 		await();
 		return getInternal();
 	}
 	
-	@Nullable
 	@Override
-	public synchronized R tryGet() throws FutureNotFinishedException, EX {
+	public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX {
+		await(time, unit);
+		return getInternal();
+	}
+	
+	@Override
+	public R assertGet() throws FutureNotFinishedException, EX {
 		if (getState() != TaskState.FINISHED)
-			throw new FutureNotFinishedException();
+			throw new FutureNotFinishedException(this);
 		return getInternal();
 	}
 	
@@ -131,16 +138,21 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		//get
 		@Override
-		public synchronized R get() throws InterruptedException, EX1, EX2 {
+		public R awaitGet() throws InterruptedException, EX1, EX2 {
 			await();
 			return getInternal();
 		}
 		
-		@Nullable
 		@Override
-		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2 {
+		public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2 {
+			await(time, unit);
+			return getInternal();
+		}
+		
+		@Override
+		public R assertGet() throws FutureNotFinishedException, EX1, EX2 {
 			if (getState() != TaskState.FINISHED)
-				throw new FutureNotFinishedException();
+				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
 		
@@ -219,16 +231,21 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		//get
 		@Override
-		public synchronized R get() throws InterruptedException, EX1, EX2, EX3 {
+		public R awaitGet() throws InterruptedException, EX1, EX2, EX3 {
 			await();
 			return getInternal();
 		}
 		
-		@Nullable
 		@Override
-		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3 {
+		public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3 {
+			await(time, unit);
+			return getInternal();
+		}
+		
+		@Override
+		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3 {
 			if (getState() != TaskState.FINISHED)
-				throw new FutureNotFinishedException();
+				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
 		
@@ -318,16 +335,21 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		//get
 		@Override
-		public synchronized R get() throws InterruptedException, EX1, EX2, EX3, EX4 {
+		public R awaitGet() throws InterruptedException, EX1, EX2, EX3, EX4 {
 			await();
 			return getInternal();
 		}
 		
-		@Nullable
 		@Override
-		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4 {
+		public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3, EX4 {
+			await(time, unit);
+			return getInternal();
+		}
+		
+		@Override
+		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4 {
 			if (getState() != TaskState.FINISHED)
-				throw new FutureNotFinishedException();
+				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
 		
@@ -428,16 +450,21 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		//get
 		@Override
-		public synchronized R get() throws InterruptedException, EX1, EX2, EX3, EX4, EX5 {
+		public R awaitGet() throws InterruptedException, EX1, EX2, EX3, EX4, EX5 {
 			await();
 			return getInternal();
 		}
 		
-		@Nullable
 		@Override
-		public synchronized R tryGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4, EX5 {
+		public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3, EX4, EX5 {
+			await(time, unit);
+			return getInternal();
+		}
+		
+		@Override
+		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4, EX5 {
 			if (getState() != TaskState.FINISHED)
-				throw new FutureNotFinishedException();
+				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
 		

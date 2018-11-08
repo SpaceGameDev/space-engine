@@ -1,19 +1,11 @@
 package space.util.future;
 
-public class FutureNotFinishedException extends Exception {
+public class FutureNotFinishedException extends RuntimeException {
 	
-	public FutureNotFinishedException() {
-	}
+	public final Object future;
 	
-	public FutureNotFinishedException(String message) {
-		super(message);
-	}
-	
-	public FutureNotFinishedException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public FutureNotFinishedException(Throwable cause) {
-		super(cause);
+	public FutureNotFinishedException(Object future) {
+		super("Future: " + future);
+		this.future = future;
 	}
 }

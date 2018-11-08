@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -70,18 +71,23 @@ public interface Barrier {
 	
 	/**
 	 * waits until event is triggered
+	 *
+	 * @throws InterruptedException if an interrupt occurs
 	 */
 	void await() throws InterruptedException;
 	
 	/**
 	 * waits until event is triggered with a timeout
+	 *
+	 * @throws InterruptedException if an interrupt occurs
+	 * @throws TimeoutException     thrown if waiting takes longer than the specified timeout
 	 */
-	void await(long time, TimeUnit unit) throws InterruptedException;
+	void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException;
 	
 	//static
 	
 	/**
-	 * Awaits for all {@link Barrier Barriers} to be triggered, then triggeres the returned {@link Barrier}. This Operation is non-blocking.
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then triggers the returned {@link Barrier}. This Operation is non-blocking.
 	 * If no Barriers are given, the Barrier is returned triggered.
 	 *
 	 * @param barriers the {@link Barrier Barriers} to await upon

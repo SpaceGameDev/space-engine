@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * A basic Implementation of {@link Barrier}. The {@link Barrier} is triggered by calling {@link #triggerNow()}.
@@ -57,7 +58,7 @@ public class BarrierImpl implements Barrier {
 	}
 	
 	@Override
-	public synchronized void await(long time, TimeUnit unit) throws InterruptedException {
+	public synchronized void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException {
 		long sleepTime = unit.toNanos(time);
 		long deadline = System.nanoTime() + sleepTime;
 		
@@ -65,7 +66,7 @@ public class BarrierImpl implements Barrier {
 			this.wait(sleepTime / 1000000, (int) (sleepTime % 1000000));
 			sleepTime = deadline - System.nanoTime();
 			if (sleepTime <= 0)
-				return;
+				throw new TimeoutException();
 		}
 	}
 }
