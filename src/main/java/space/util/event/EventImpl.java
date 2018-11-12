@@ -1,14 +1,16 @@
 package space.util.event;
 
 import org.jetbrains.annotations.NotNull;
+import space.util.Global;
 import space.util.event.typehandler.TypeHandler;
+import space.util.task.Task;
+import space.util.task.impl.RunnableTaskImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A simple Event Implementation.
- * It will run the hooks every time {@link EventImpl#run(TypeHandler)} is called.
  */
 public class EventImpl<FUNCTION> implements Event<FUNCTION> {
 	
@@ -26,7 +28,12 @@ public class EventImpl<FUNCTION> implements Event<FUNCTION> {
 	}
 	
 	//run
-	public synchronized void run(@NotNull TypeHandler<FUNCTION> type) {
-		after.forEach(type);
+	@Override
+	public Task execute(@NotNull TypeHandler<FUNCTION> type) {
+		return RunnableTaskImpl.create(Global.GLOBAL_EXECUTOR, () -> {
+			synchronized (this) {
+				after.forEach(type);
+			}
+		});
 	}
 }

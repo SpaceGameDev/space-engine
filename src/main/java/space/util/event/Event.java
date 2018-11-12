@@ -1,6 +1,8 @@
 package space.util.event;
 
 import org.jetbrains.annotations.NotNull;
+import space.util.event.typehandler.TypeHandler;
+import space.util.task.Task;
 
 /**
  * The {@link Event} Object is used to {@link Event#addHook(Object)} and {@link Event#removeHook(Object)} Hooks,
@@ -24,4 +26,6 @@ public interface Event<FUNCTION> {
 	 * @param hook the Hook to be removed
 	 */
 	boolean removeHook(@NotNull FUNCTION hook);
+	
+	Task execute(@NotNull TypeHandler<FUNCTION> type);
 }
