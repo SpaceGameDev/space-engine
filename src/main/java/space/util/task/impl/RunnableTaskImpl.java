@@ -1,26 +1,10 @@
 package space.util.task.impl;
 
-import java.util.concurrent.Executor;
+import space.util.Global;
 
 import static space.util.task.TaskState.*;
 
 public abstract class RunnableTaskImpl extends AbstractTask implements Runnable {
-	
-	//static
-	public static RunnableTaskImpl create(Executor exec, Runnable run) {
-		return new RunnableTaskImpl() {
-			
-			@Override
-			public void execute() {
-				run.run();
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				exec.execute(toRun);
-			}
-		};
-	}
 	
 	//submit
 	@Override
@@ -28,7 +12,9 @@ public abstract class RunnableTaskImpl extends AbstractTask implements Runnable 
 		submit1(this);
 	}
 	
-	protected abstract void submit1(Runnable toRun);
+	protected void submit1(Runnable toRun) {
+		Global.GLOBAL_EXECUTOR.execute(toRun);
+	}
 	
 	/**
 	 * <p>Whether the Task wants to be executed. Defaults to true.</p>

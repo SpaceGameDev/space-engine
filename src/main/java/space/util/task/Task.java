@@ -2,12 +2,23 @@ package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
 import space.util.barrier.Barrier;
+import space.util.task.impl.RunnableTaskImpl;
 
 /**
  * A {@link Task} is something which is created to be executed by some thread in a protected environment,
  * signaling back it's execution, completion and error states. It also allows for Hooks to be added and to be awaited on.
  */
 public interface Task extends Barrier {
+	
+	static RunnableTaskImpl create(Runnable run) {
+		return new RunnableTaskImpl() {
+			
+			@Override
+			public void execute() {
+				run.run();
+			}
+		};
+	}
 	
 	//change state
 	
