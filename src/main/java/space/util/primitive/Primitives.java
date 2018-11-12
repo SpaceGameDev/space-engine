@@ -1,13 +1,13 @@
 package space.util.primitive;
 
-import space.util.SystemInfo;
+import space.util.Global;
 
 @SuppressWarnings("unused")
 public class Primitives {
 	
 	public static final PrimitiveUnsignedInteger<Byte> BYTE = new PrimitiveUnsignedInteger<>(1, (byte) 0xFF);
 	public static final Primitive<Boolean> BOOLEAN = new Primitive<>(1);
-	public static final PrimitiveUnsignedInteger<Long> POINTER = new PrimitiveUnsignedInteger<>(SystemInfo.archBits / 8, (1L << SystemInfo.archBits) - 1);
+	public static final PrimitiveUnsignedInteger<Long> POINTER = new PrimitiveUnsignedInteger<>(Global.ARCH_BITS / 8, (1L << Global.ARCH_BITS) - 1);
 	
 	public static final PrimitiveUnsignedInteger<Byte> UINT8 = BYTE;
 	public static final PrimitiveUnsignedInteger<Short> UINT16 = new PrimitiveUnsignedInteger<>(2, (short) 0xFFFF);
