@@ -1,8 +1,8 @@
 package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.barrier.Barrier;
 import space.util.future.Future;
+import space.util.sync.barrier.Barrier;
 import space.util.task.impl.CallableTaskImpl;
 
 import java.util.function.Supplier;

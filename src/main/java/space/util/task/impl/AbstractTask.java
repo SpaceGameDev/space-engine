@@ -1,8 +1,8 @@
 package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.barrier.Barrier;
-import space.util.barrier.BarrierImpl;
+import space.util.sync.barrier.Barrier;
+import space.util.sync.barrier.BarrierImpl;
 import space.util.task.Task;
 import space.util.task.TaskState;
 

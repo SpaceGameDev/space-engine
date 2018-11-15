@@ -1,7 +1,7 @@
 package space.util.future;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.barrier.Barrier;
+import space.util.sync.barrier.Barrier;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

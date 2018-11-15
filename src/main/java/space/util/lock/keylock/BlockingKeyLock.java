@@ -18,13 +18,16 @@ public interface BlockingKeyLock<KEY> {
 	
 	void lockInterruptibly(@NotNull KEY key, long time, TimeUnit unit) throws InterruptedException;
 	
+	/**
+	 * call is non-blocking
+	 */
 	boolean tryLock(@NotNull KEY key);
 	
 	//unlock
 	void unlock(@NotNull KEY key);
 	
 	/**
-	 * may be an {@link UnsupportedOperationException}
+	 * call is non-blocking
 	 */
 	boolean tryUnlock(@NotNull KEY key);
 	

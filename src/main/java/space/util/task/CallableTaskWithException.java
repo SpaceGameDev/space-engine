@@ -1,8 +1,8 @@
 package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.barrier.Barrier;
 import space.util.future.FutureWithException;
+import space.util.sync.barrier.Barrier;
 
 public interface CallableTaskWithException<R, EX extends Throwable> extends Task, FutureWithException<R, EX> {
 	

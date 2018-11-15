@@ -2,8 +2,8 @@ package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.barrier.Barrier;
 import space.util.future.FutureNotFinishedException;
+import space.util.sync.barrier.Barrier;
 import space.util.task.CallableTask;
 import space.util.task.TaskState;
 

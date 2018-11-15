@@ -2,7 +2,7 @@ module space.util {
 	
 	exports space.util;
 	exports space.util.annotation;
-	exports space.util.barrier;
+	exports space.util.sync.barrier;
 	exports space.util.baseobject;
 	exports space.util.baseobject.exceptions;
 	exports space.util.buffer;
@@ -29,7 +29,8 @@ module space.util {
 	exports space.util.dependency;
 	exports space.util.dependency.exception;
 	exports space.util.event;
-	exports space.util.event.dependency;
+	//NOCOMMIT: comment out
+//	exports space.util.event.dependency;
 	exports space.util.event.typehandler;
 	exports space.util.freeableStorage;
 	exports space.util.future;

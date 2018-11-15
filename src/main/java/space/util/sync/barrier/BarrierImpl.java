@@ -1,4 +1,4 @@
-package space.util.barrier;
+package space.util.sync.barrier;
 
 import org.jetbrains.annotations.NotNull;
 

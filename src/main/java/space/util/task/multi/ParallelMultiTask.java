@@ -1,6 +1,6 @@
 package space.util.task.multi;
 
-import space.util.barrier.Barrier;
+import space.util.sync.barrier.Barrier;
 import space.util.task.Task;
 
 import java.util.Collection;
