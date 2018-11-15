@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class KeyLockImpl<KEY> implements KeyLock<KEY> {
+public class BlockingKeyLockImpl<KEY> implements BlockingKeyLock<KEY> {
 	
 	public KEY currentKey;
 	public int stackLevel;

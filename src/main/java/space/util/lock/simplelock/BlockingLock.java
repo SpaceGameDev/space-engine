@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A Lock which is locked by your Thread
  */
-public interface SimpleLock {
+public interface BlockingLock {
 	
 	//lock
 	void lock();

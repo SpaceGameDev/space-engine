@@ -1,24 +1,24 @@
 package space.util.lock.simplelock;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.lock.keylock.KeyLockImpl;
+import space.util.lock.keylock.BlockingKeyLockImpl;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * a simple wrapper class from {@link SimpleLock} to {@link KeyLockImpl}, which calls the supplier for the key
+ * a simple wrapper class from {@link BlockingLock} to {@link BlockingKeyLockImpl}, which calls the supplier for the key
  */
-public class WrapperLock<KEY> implements SimpleLock {
+public class AbstractBlockingLock<KEY> implements BlockingLock {
 	
 	public Supplier<KEY> key;
-	public KeyLockImpl<? super KEY> lock;
+	public BlockingKeyLockImpl<? super KEY> lock;
 	
-	public WrapperLock(Supplier<KEY> key) {
-		this(key, new KeyLockImpl<>());
+	public AbstractBlockingLock(Supplier<KEY> key) {
+		this(key, new BlockingKeyLockImpl<>());
 	}
 	
-	public WrapperLock(Supplier<KEY> key, KeyLockImpl<? super KEY> lock) {
+	public AbstractBlockingLock(Supplier<KEY> key, BlockingKeyLockImpl<? super KEY> lock) {
 		this.key = key;
 		this.lock = lock;
 	}

@@ -58,7 +58,6 @@ module space.util {
 	exports space.util.key.map;
 //	exports space.util.lock;
 	exports space.util.lock.keylock;
-	exports space.util.lock.rwlock;
 	exports space.util.lock.simplelock;
 	exports space.util.logger;
 	exports space.util.logger.prefix;

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A simple Lock which can be locked with a KEY instead of the current Thread
  */
-public interface KeyLock<KEY> {
+public interface BlockingKeyLock<KEY> {
 	
 	//lock
 	void lock(@NotNull KEY key);
