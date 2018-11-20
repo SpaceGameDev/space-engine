@@ -1,9 +1,6 @@
 package space.util.sync.barrier;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import space.util.sync.InvalidTicketException;
-import space.util.sync.SyncObject;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * An Object which can be {@link #await() awaited} upon. You can also {@link #addHook(Runnable) add a Hook} to be called when the Barrier {@link #isFinished() is finished}. <br>
  * <b>It cannot be triggered more than once or reset</b>.
  */
-public interface Barrier extends SyncObject {
+public interface Barrier {
 	
 	Barrier ALWAYS_TRIGGERED_BARRIER = new Barrier() {
 		@Override
@@ -69,40 +66,6 @@ public interface Barrier extends SyncObject {
 	 * @implNote The removal algorithm can be slow, as it is not expected to be called very often.
 	 */
 	void removeHook(@NotNull Runnable run);
-	
-	//ticket
-	@NotNull
-	@Override
-	default Object createTicket(@Nullable Runnable notify) {
-		if (notify != null)
-			addHook(notify);
-		return DONT_CARE_TICKET;
-	}
-	
-	@Override
-	default void removeTicket(@NotNull Object ticket) {
-		if (ticket instanceof Runnable)
-			removeHook((Runnable) ticket);
-		else if (ticket != DONT_CARE_TICKET)
-			throw new InvalidTicketException(ticket);
-	}
-	
-	//sync start / end (unused)
-	
-	@Override
-	default boolean syncStart(@NotNull Object ticket) {
-		return isFinished();
-	}
-	
-	@Override
-	default void syncEnd(@NotNull Object ticket) {
-	
-	}
-	
-	@Override
-	default void syncEndAndRemove(@NotNull Object ticket) {
-		removeTicket(ticket);
-	}
 	
 	//await
 	
