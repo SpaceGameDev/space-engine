@@ -1,7 +1,6 @@
 package space.util.sync.lock;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A Lock based upon {@link SyncLock}.
@@ -9,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 public interface SyncLock {
 	
 	/**
-	 * Creates a Ticket for this SyncObject. Supply an optional Runnable to be called when is {@link SyncLock} becomes available.
+	 * Creates a Ticket for this SyncObject. Supply a Runnable to be called when is {@link SyncLock} becomes available.
 	 * It is expected that the notify {@link Runnable} is only used once on each {@link SyncLock}. This allows the Runnable to be reused as the Ticket.
 	 *
 	 * @param notify the notify hook as a {@link Runnable}
 	 * @return A Ticket for sync use
 	 */
-	@NotNull Object createTicket(@Nullable Runnable notify);
+	@NotNull Object createTicket(@NotNull Runnable notify);
 	
 	/**
 	 * Removes a previously added notify hook.
