@@ -92,7 +92,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	@Override
-	public VALUE put(int pos[], VALUE v) {
+	public VALUE put(int[] pos, VALUE v) {
 		checkModificationAllowed();
 		int i = getListIndex(pos);
 		if (i == -1)

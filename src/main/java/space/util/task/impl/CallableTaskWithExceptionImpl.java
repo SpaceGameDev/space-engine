@@ -40,7 +40,6 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 			ret = execute0();
 		} catch (RuntimeException | Error e) {
 			if (exceptionClass.isInstance(e))
-				//noinspection unchecked
 				exception = (EX) e;
 			else
 				throw e;
@@ -115,10 +114,8 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 				ret = execute0();
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
-					//noinspection unchecked
 					exception1 = (EX1) e;
 				else if (exceptionClass2.isInstance(e))
-					//noinspection unchecked
 					exception2 = (EX2) e;
 				else
 					throw e;
@@ -202,13 +199,10 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 				ret = execute0();
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
-					//noinspection unchecked
 					exception1 = (EX1) e;
 				else if (exceptionClass2.isInstance(e))
-					//noinspection unchecked
 					exception2 = (EX2) e;
 				else if (exceptionClass3.isInstance(e))
-					//noinspection unchecked
 					exception3 = (EX3) e;
 				else
 					throw e;
@@ -300,16 +294,12 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 				ret = execute0();
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
-					//noinspection unchecked
 					exception1 = (EX1) e;
 				else if (exceptionClass2.isInstance(e))
-					//noinspection unchecked
 					exception2 = (EX2) e;
 				else if (exceptionClass3.isInstance(e))
-					//noinspection unchecked
 					exception3 = (EX3) e;
 				else if (exceptionClass4.isInstance(e))
-					//noinspection unchecked
 					exception4 = (EX4) e;
 				else
 					throw e;
@@ -409,19 +399,14 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 				ret = execute0();
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
-					//noinspection unchecked
 					exception1 = (EX1) e;
 				else if (exceptionClass2.isInstance(e))
-					//noinspection unchecked
 					exception2 = (EX2) e;
 				else if (exceptionClass3.isInstance(e))
-					//noinspection unchecked
 					exception3 = (EX3) e;
 				else if (exceptionClass4.isInstance(e))
-					//noinspection unchecked
 					exception4 = (EX4) e;
 				else if (exceptionClass5.isInstance(e))
-					//noinspection unchecked
 					exception5 = (EX5) e;
 				else
 					throw e;

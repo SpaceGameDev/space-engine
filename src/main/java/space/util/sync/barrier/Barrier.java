@@ -39,6 +39,7 @@ public interface Barrier {
 		
 		}
 	};
+	Barrier[] EMPTY_BARRIER_ARRAY = new Barrier[0];
 	
 	//getter
 	

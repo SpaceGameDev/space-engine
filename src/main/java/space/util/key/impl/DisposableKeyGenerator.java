@@ -83,7 +83,7 @@ public class DisposableKeyGenerator implements KeyGenerator, ToString {
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("counter", this.counter);
-		tsh.add("disposed", this.disposed == null ? "disabled" : Integer.toString(this.disposed.size()) + " Entries");
+		tsh.add("disposed", this.disposed == null ? "disabled" : this.disposed.size() + " Entries");
 		return tsh.build();
 	}
 	
