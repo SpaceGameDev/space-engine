@@ -22,5 +22,5 @@ public interface CallableTask<R> extends Task, Future<R> {
 	@NotNull CallableTask<R> submit();
 	
 	@Override
-	@NotNull CallableTask<R> submit(Barrier... barriers);
+	@NotNull CallableTask<R> submit(@NotNull Barrier... barriers);
 }

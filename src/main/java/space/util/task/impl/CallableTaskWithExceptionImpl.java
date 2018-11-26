@@ -9,7 +9,7 @@ import space.util.task.TaskState;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> extends RunnableTaskImpl implements CallableTaskWithException<R, EX> {
+public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> extends RunnableTask implements CallableTaskWithException<R, EX> {
 	
 	protected final Class<EX> exceptionClass;
 	
@@ -28,7 +28,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 	}
 	
 	@Override
-	public synchronized @NotNull CallableTaskWithException<R, EX> submit(Barrier... barriers) {
+	public synchronized @NotNull CallableTaskWithException<R, EX> submit(@NotNull Barrier... barriers) {
 		super.submit(barriers);
 		return this;
 	}
@@ -81,7 +81,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		return ret;
 	}
 	
-	public static abstract class BaseCallableTaskWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends RunnableTaskImpl implements CallableTaskWith2Exception<R, EX1, EX2> {
+	public static abstract class BaseCallableTaskWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends RunnableTask implements CallableTaskWith2Exception<R, EX1, EX2> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -103,7 +103,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 		
 		@Override
-		public synchronized @NotNull CallableTaskWith2Exception<R, EX1, EX2> submit(Barrier... barriers) {
+		public synchronized @NotNull CallableTaskWith2Exception<R, EX1, EX2> submit(@NotNull Barrier... barriers) {
 			super.submit(barriers);
 			return this;
 		}
@@ -165,7 +165,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends RunnableTaskImpl implements CallableTaskWith3Exception<R, EX1, EX2, EX3> {
+	public static abstract class BaseCallableTaskWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends RunnableTask implements CallableTaskWith3Exception<R, EX1, EX2, EX3> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -190,7 +190,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 		
 		@Override
-		public synchronized @NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit(Barrier... barriers) {
+		public synchronized @NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit(@NotNull Barrier... barriers) {
 			super.submit(barriers);
 			return this;
 		}
@@ -260,7 +260,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends RunnableTaskImpl implements CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> {
+	public static abstract class BaseCallableTaskWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends RunnableTask implements CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -288,7 +288,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 		
 		@Override
-		public synchronized @NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit(Barrier... barriers) {
+		public synchronized @NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit(@NotNull Barrier... barriers) {
 			super.submit(barriers);
 			return this;
 		}
@@ -366,7 +366,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends RunnableTaskImpl implements CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> {
+	public static abstract class BaseCallableTaskWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends RunnableTask implements CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -397,7 +397,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 		
 		@Override
-		public synchronized @NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit(Barrier... barriers) {
+		public synchronized @NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit(@NotNull Barrier... barriers) {
 			super.submit(barriers);
 			return this;
 		}

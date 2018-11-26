@@ -1,7 +1,7 @@
 package space.util.task;
 
 import space.util.task.impl.CallableTaskWithExceptionImpl;
-import space.util.task.impl.RunnableTaskImpl;
+import space.util.task.impl.RunnableTask;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class TaskTestUseCaseRendering {
 	
 	//setup
 	public static Task createWindow(String name) {
-		return new RunnableTaskImpl() {
+		return new RunnableTask() {
 			@Override
 			protected void execute() {
 				println("create Window: '" + name + "'");
@@ -38,7 +38,7 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	public static Task closeWindow() {
-		return new RunnableTaskImpl() {
+		return new RunnableTask() {
 			@Override
 			protected void execute() {
 				println("close Window");
@@ -70,7 +70,7 @@ public class TaskTestUseCaseRendering {
 	//render loop
 	public static Task renderFrame(float[] triangles) {
 //		return new SequentialMultiTask(new Task[] {
-//				new RunnableTaskImpl() {
+//				new RunnableTask() {
 //					@Override
 //					protected void execute() {
 //						println("clear buffer");
@@ -81,7 +81,7 @@ public class TaskTestUseCaseRendering {
 //						WINDOW_POOL.execute(toRun);
 //					}
 //				},
-//				new RunnableTaskImpl() {
+//				new RunnableTask() {
 //					@Override
 //					protected void execute() {
 //						println("render triangles: " + Arrays.toString(triangles));
@@ -94,7 +94,7 @@ public class TaskTestUseCaseRendering {
 //				}
 //		});
 		
-		return new RunnableTaskImpl() {
+		return new RunnableTask() {
 			@Override
 			protected void execute() {
 				println("clear buffer");
@@ -109,7 +109,7 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	public static Task swapBuffers() {
-		return new RunnableTaskImpl() {
+		return new RunnableTask() {
 			@Override
 			protected void execute() {
 				println("swap buffer");

@@ -10,7 +10,7 @@ import space.util.task.TaskState;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements CallableTask<R> {
+public abstract class CallableTaskImpl<R> extends RunnableTask implements CallableTask<R> {
 	
 	protected R ret;
 	
@@ -22,7 +22,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTaskImpl implements Ca
 	}
 	
 	@Override
-	public synchronized @NotNull CallableTask<R> submit(Barrier... barriers) {
+	public synchronized @NotNull CallableTask<R> submit(@NotNull Barrier... barriers) {
 		super.submit(barriers);
 		return this;
 	}

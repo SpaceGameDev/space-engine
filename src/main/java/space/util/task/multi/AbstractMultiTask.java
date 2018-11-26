@@ -30,7 +30,7 @@ public class AbstractMultiTask implements Task {
 		});
 	}
 	
-	//modified version from AbstractTask
+	//modified version from RunnableTask
 	@NotNull
 	@Override
 	public synchronized Task submit() {
@@ -44,7 +44,7 @@ public class AbstractMultiTask implements Task {
 	
 	@NotNull
 	@Override
-	public synchronized Task submit(Barrier... barriers) {
+	public synchronized Task submit(@NotNull Barrier... barriers) {
 		if (state != CREATED)
 			throw new IllegalStateException("Can only submit() in State " + CREATED + ", was in State " + state);
 		state = AWAITING_EVENTS;

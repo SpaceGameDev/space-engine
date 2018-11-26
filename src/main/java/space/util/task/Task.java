@@ -2,7 +2,7 @@ package space.util.task;
 
 import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;
-import space.util.task.impl.RunnableTaskImpl;
+import space.util.task.impl.RunnableTask;
 
 /**
  * A {@link Task} is something which is created to be executed by some thread in a protected environment,
@@ -10,8 +10,8 @@ import space.util.task.impl.RunnableTaskImpl;
  */
 public interface Task extends Barrier {
 	
-	static RunnableTaskImpl create(Runnable run) {
-		return new RunnableTaskImpl() {
+	static RunnableTask create(Runnable run) {
+		return new RunnableTask() {
 			
 			@Override
 			public void execute() {
@@ -38,7 +38,7 @@ public interface Task extends Barrier {
 	 *
 	 * @return this
 	 */
-	@NotNull Task submit(Barrier... barriers);
+	@NotNull Task submit(@NotNull Barrier... barriers);
 	
 	//getter state
 	

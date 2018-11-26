@@ -10,7 +10,7 @@ public interface CallableTaskWithException<R, EX extends Throwable> extends Task
 	@NotNull CallableTaskWithException<R, EX> submit();
 	
 	@Override
-	@NotNull CallableTaskWithException<R, EX> submit(Barrier... barriers);
+	@NotNull CallableTaskWithException<R, EX> submit(@NotNull Barrier... barriers);
 	
 	interface CallableTaskWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends Task, FutureWith2Exception<R, EX1, EX2> {
 		
@@ -18,7 +18,7 @@ public interface CallableTaskWithException<R, EX extends Throwable> extends Task
 		@NotNull CallableTaskWith2Exception<R, EX1, EX2> submit();
 		
 		@Override
-		@NotNull CallableTaskWith2Exception<R, EX1, EX2> submit(Barrier... barriers);
+		@NotNull CallableTaskWith2Exception<R, EX1, EX2> submit(@NotNull Barrier... barriers);
 	}
 	
 	interface CallableTaskWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends Task, FutureWith3Exception<R, EX1, EX2, EX3> {
@@ -27,7 +27,7 @@ public interface CallableTaskWithException<R, EX extends Throwable> extends Task
 		@NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit();
 		
 		@Override
-		@NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit(Barrier... barriers);
+		@NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit(@NotNull Barrier... barriers);
 	}
 	
 	interface CallableTaskWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends Task, FutureWith4Exception<R, EX1, EX2, EX3, EX4> {
@@ -36,7 +36,7 @@ public interface CallableTaskWithException<R, EX extends Throwable> extends Task
 		@NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit();
 		
 		@Override
-		@NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit(Barrier... barriers);
+		@NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit(@NotNull Barrier... barriers);
 	}
 	
 	interface CallableTaskWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends Task, FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5> {
@@ -45,6 +45,6 @@ public interface CallableTaskWithException<R, EX extends Throwable> extends Task
 		@NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit();
 		
 		@Override
-		@NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit(Barrier... barriers);
+		@NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit(@NotNull Barrier... barriers);
 	}
 }

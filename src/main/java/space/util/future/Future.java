@@ -8,6 +8,8 @@ import java.util.concurrent.TimeoutException;
 
 public interface Future<R> extends Barrier {
 	
+	Future<Void> FINISHED_VOID = finished(null);
+	
 	R awaitGet() throws InterruptedException;
 	
 	R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException;
