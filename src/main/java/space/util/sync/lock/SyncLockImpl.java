@@ -1,45 +1,36 @@
 package space.util.sync.lock;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.util.lock.keylock.BlockingKeyLock;
 import space.util.lock.keylock.BlockingKeyLockImpl;
-import space.util.sync.InvalidTicketException;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SyncLockImpl implements SyncLock {
+	
+	private static final Object LOCK_OBJECT = new Object();
 	
 	/**
 	 * only non-blocking methods are used
 	 */
-	private BlockingKeyLock<Object> lock = new BlockingKeyLockImpl<>();
-	private Set<Runnable> tickets = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final @NotNull BlockingKeyLock<Object> lock = new BlockingKeyLockImpl<>();
+	private @NotNull List<Runnable> notifyUnlock = new ArrayList<>();
 	
-	@NotNull
 	@Override
-	public Object createTicket(@NotNull Runnable ticket) {
-		if (!tickets.add(ticket))
-			throw new InvalidTicketException(ticket);
-		return ticket;
+	public synchronized boolean tryLock() {
+		return lock.tryLock(LOCK_OBJECT);
 	}
 	
 	@Override
-	public void removeTicket(@Nullable Object ticket) {
-		if (!(ticket instanceof Runnable && tickets.remove(ticket)))
-			throw new InvalidTicketException(ticket);
+	public synchronized void unlock() {
+		lock.unlock(LOCK_OBJECT);
+		notifyUnlock.forEach(Runnable::run);
+		notifyUnlock.clear();
 	}
 	
 	@Override
-	public boolean syncStart(@NotNull Object ticket) {
-		return lock.tryLock(ticket);
-	}
-	
-	@Override
-	public void syncEnd(@NotNull Object ticket) {
-		lock.unlock(ticket);
-		tickets.forEach(Runnable::run);
+	public synchronized void notifyUnlock(Runnable run) {
+		notifyUnlock.add(run);
 	}
 }
