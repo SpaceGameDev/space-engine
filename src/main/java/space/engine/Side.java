@@ -8,15 +8,14 @@ import space.util.buffer.direct.alloc.stack.AllocatorStack;
 import space.util.buffer.pointer.PointerAllocatorCollection;
 import space.util.buffer.string.BufferStringConverter;
 import space.util.key.Key;
+import space.util.key.attribute.AttributeList;
 import space.util.key.attribute.AttributeListCreator;
-import space.util.key.attribute.AttributeListCreator.AttributeList;
-import space.util.key.attribute.AttributeListCreator.AttributeListModification;
-import space.util.key.attribute.AttributeListCreatorImpl;
+import space.util.key.attribute.AttributeListModification;
 
 @SuppressWarnings("unused")
 public class Side {
 	
-	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreatorImpl<>();
+	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	
 	//attributes
 	//buffer alloc
@@ -58,8 +57,7 @@ public class Side {
 	
 	private static final ThreadLocal<AttributeList<Side>> THREAD_LOCAL = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
 	
-	@NotNull
-	public static AttributeListCreator.AttributeList<Side> getSide() {
+	public static @NotNull AttributeList<Side> getSide() {
 		return THREAD_LOCAL.get();
 	}
 }

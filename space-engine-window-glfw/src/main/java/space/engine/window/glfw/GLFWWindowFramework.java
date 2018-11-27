@@ -9,8 +9,7 @@ import space.engine.window.WindowFramework;
 import space.util.buffer.array.ArrayBufferPointer;
 import space.util.buffer.direct.alloc.stack.AllocatorStack;
 import space.util.buffer.pointer.PointerBufferLong;
-import space.util.key.attribute.AttributeListCreator;
-import space.util.key.attribute.AttributeListCreator.AttributeList;
+import space.util.key.attribute.AttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.Side.*;
@@ -26,7 +25,7 @@ public class GLFWWindowFramework implements WindowFramework {
 	//window
 	@NotNull
 	@Override
-	public WindowContext createContext(@NotNull AttributeListCreator.AttributeList<WindowContext> format) {
+	public WindowContext createContext(@NotNull AttributeList<WindowContext> format) {
 		return new GLFWContext(format, GLFWInstance.instanceRef);
 	}
 

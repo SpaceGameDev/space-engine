@@ -7,7 +7,7 @@ import space.engine.window.exception.WindowUnsupportedApiTypeException;
 import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.FreeableStorageImpl;
-import space.util.key.attribute.AttributeListCreator.AttributeList;
+import space.util.key.attribute.AttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.window.WindowContext.FreeableWithStorage;
@@ -26,7 +26,7 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 			
 			//gl api settings
 			@NotNull Object apiType = format.get(API_TYPE);
-			//noinspection ConstantConditions,StatementWithEmptyBody
+			// noinspection StatementWithEmptyBody
 			if (apiType == null) {
 				//no context via window api
 			} else if (apiType instanceof OpenGLApiType) {

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.window.VideoMode.VideoModeDesktop;
 import space.util.baseobject.Freeable;
 import space.util.key.Key;
-import space.util.key.attribute.AttributeListCreatorImpl;
+import space.util.key.attribute.AttributeListCreator;
 import space.util.task.Task;
 
 import java.util.concurrent.Executor;
@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
  */
 public interface Window extends Freeable, Executor {
 	
-	AttributeListCreatorImpl<Window> CREATOR = new AttributeListCreatorImpl<>();
+	AttributeListCreator<Window> CREATOR = new AttributeListCreator<>();
 	
 	Key<@NotNull VideoMode> VIDEO_MODE = CREATOR.generateKey(VideoMode.createVideoModeDesktop(800, 600));
 	/**

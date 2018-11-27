@@ -3,9 +3,8 @@ package space.engine.window;
 import org.jetbrains.annotations.NotNull;
 import space.util.baseobject.Freeable;
 import space.util.key.Key;
+import space.util.key.attribute.AttributeList;
 import space.util.key.attribute.AttributeListCreator;
-import space.util.key.attribute.AttributeListCreator.AttributeList;
-import space.util.key.attribute.AttributeListCreatorImpl;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
@@ -20,7 +19,7 @@ public interface WindowContext extends Freeable {
 	@NotNull Window createWindow(@NotNull AttributeList<Window> format);
 	
 	//attributes
-	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreatorImpl<>();
+	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();
 	
 	//api
 	Key<Object> API_TYPE = CREATOR.generateKey();

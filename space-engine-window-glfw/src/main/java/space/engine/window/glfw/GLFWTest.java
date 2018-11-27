@@ -11,11 +11,11 @@ import space.engine.window.WindowFramework;
 import space.util.buffer.direct.alloc.UnsafeAllocator;
 import space.util.buffer.string.DefaultStringConverter;
 import space.util.freeableStorage.FreeableStorageCleaner;
-import space.util.key.attribute.AttributeListCreator.AttributeList;
-import space.util.key.attribute.AttributeListCreator.AttributeListModification;
+import space.util.key.attribute.AttributeList;
+import space.util.key.attribute.AttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
-import space.util.task.impl.RunnableTask;
+import space.util.task.Task;
 
 import java.util.Arrays;
 
@@ -75,7 +75,7 @@ public class GLFWTest {
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
-		RunnableTask setup = new RunnableTask(() -> {
+		Task setup = Task.create(() -> {
 			GL.createCapabilities();
 			
 			int[] viewport = new int[4];
@@ -93,7 +93,7 @@ public class GLFWTest {
 		
 		for (int i = 0; i < SECONDS * 60; i++) {
 			int i2 = i;
-			RunnableTask loopCmd = new RunnableTask(() -> {
+			Task loopCmd = Task.create(() -> {
 				glClear(GL_COLOR_BUFFER_BIT);
 				
 				glColor3f((float) sin(i2 * MULTIPLIER + OFFSET0), (float) sin(i2 * MULTIPLIER + OFFSET1), (float) sin(i2 * MULTIPLIER + OFFSET2));
