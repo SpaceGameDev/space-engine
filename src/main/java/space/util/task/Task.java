@@ -5,6 +5,8 @@ import space.util.sync.barrier.Barrier;
 import space.util.sync.lock.SyncLock;
 import space.util.task.impl.RunnableTask;
 
+import java.util.concurrent.Executor;
+
 import static space.util.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
 
 /**
@@ -18,6 +20,20 @@ public interface Task extends Barrier {
 			
 			@Override
 			public void execute() {
+				run.run();
+			}
+		};
+	}
+	
+	static RunnableTask create(Executor exec, Runnable run) {
+		return new RunnableTask() {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected void execute() {
 				run.run();
 			}
 		};
