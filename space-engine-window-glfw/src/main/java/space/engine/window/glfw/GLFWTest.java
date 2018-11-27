@@ -64,6 +64,7 @@ public class GLFWTest {
 		AttributeListModification<WindowContext> windowContextAtt = WindowContext.CREATOR.createModify();
 		windowContextAtt.put(API_TYPE, OpenGLApiType.GL);
 		WindowContext windowContext = windowfw.createContext(windowContextAtt.createNewList());
+		GLFW.glfwMakeContextCurrent(0);
 		
 		//window
 		AttributeListModification<Window> windowAtt = Window.CREATOR.createModify();
@@ -75,7 +76,8 @@ public class GLFWTest {
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
-		Task setup = Task.create(() -> {
+		Task setup = Task.create(window, () -> {
+			GLFW.glfwMakeContextCurrent(((GLFWWindow) window).storage.getWindowPointer());
 			GL.createCapabilities();
 			
 			int[] viewport = new int[4];
@@ -83,7 +85,7 @@ public class GLFWTest {
 			System.out.println(Arrays.toString(viewport));
 			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
 		});
-		setup.submit(window);
+		setup.submit();
 		setup.await();
 		
 		int[] w = new int[1];
@@ -93,7 +95,7 @@ public class GLFWTest {
 		
 		for (int i = 0; i < SECONDS * 60; i++) {
 			int i2 = i;
-			Task loopCmd = Task.create(() -> {
+			Task loopCmd = Task.create(window, () -> {
 				glClear(GL_COLOR_BUFFER_BIT);
 				
 				glColor3f((float) sin(i2 * MULTIPLIER + OFFSET0), (float) sin(i2 * MULTIPLIER + OFFSET1), (float) sin(i2 * MULTIPLIER + OFFSET2));
@@ -105,7 +107,7 @@ public class GLFWTest {
 				
 				window.swapBuffers();
 			});
-			loopCmd.submit(window);
+			loopCmd.submit();
 			loopCmd.await();
 			Thread.sleep(1000 / 60);
 		}

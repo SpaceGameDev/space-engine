@@ -12,9 +12,6 @@ import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.key.attribute.AttributeList;
 import space.util.task.Task;
 
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.window.glfw.GLFWUtil.toGLFWBoolean;
 
@@ -29,12 +26,12 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	public final FreeableStorage dummy;
 	
 	public Storage storage;
-	public Queue<Runnable> queue = new LinkedBlockingQueue<>();
 	
 	public GLFWWindow(GLFWContext context, AttributeList<Window> format, FreeableStorage... parents) {
 		this.context = context;
 		this.format = format;
 		this.dummy = FreeableStorage.createDummy(parents);
+		setup();
 	}
 	
 	//FIXME never called
@@ -60,7 +57,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				boolean hasTransparency = videoMode.hasTransparency();
 				
 				//window
-				glfwWindowHint(GLFW_DECORATED, toGLFWBoolean(format.get(BORDERLESS)));
+				glfwWindowHint(GLFW_DECORATED, toGLFWBoolean(!format.get(BORDERLESS)));
 				glfwWindowHint(GLFW_RESIZABLE, toGLFWBoolean(format.get(RESIZEABLE)));
 				glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, toGLFWBoolean(hasTransparency));
 				
@@ -94,7 +91,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	
 	@Override
 	public void execute(@NotNull Runnable command) {
-		queue.add(command);
+		command.run();
 	}
 	
 	@Override

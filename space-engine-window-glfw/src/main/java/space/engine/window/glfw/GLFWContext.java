@@ -36,8 +36,6 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 					case GL:
 						glfwWindowHint(GLFW_OPENGL_PROFILE, covertGLProfileToGLFWProfile(format.get(GL_PROFILE)));
 						glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, toGLFWBoolean(format.get(GL_FORWARD_COMPATIBLE)));
-						glfwWindowHint(GLFW_OPENGL_PROFILE, 0);
-						glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 0);
 					case GL_ES:
 						glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, format.get(GL_VERSION_MAJOR));
 						glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, format.get(GL_VERSION_MINOR));

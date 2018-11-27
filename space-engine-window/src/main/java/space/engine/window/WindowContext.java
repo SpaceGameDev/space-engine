@@ -28,7 +28,7 @@ public interface WindowContext extends Freeable {
 	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
 	Key<Integer> GL_VERSION_MAJOR = CREATOR.generateKey(2);
 	Key<Integer> GL_VERSION_MINOR = CREATOR.generateKey(1);
-	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(Boolean.TRUE);
+	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(Boolean.FALSE);
 	
 	//enums
 	enum OpenGLApiType {
