@@ -1,10 +1,8 @@
 package space.util.event;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.Global;
 import space.util.event.typehandler.TypeHandler;
 import space.util.task.Task;
-import space.util.task.impl.RunnableTaskImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class EventImpl<FUNCTION> implements Event<FUNCTION> {
 	//run
 	@Override
 	public Task execute(@NotNull TypeHandler<FUNCTION> type) {
-		return RunnableTaskImpl.create(Global.GLOBAL_EXECUTOR, () -> {
+		return Task.create(() -> {
 			synchronized (this) {
 				after.forEach(type);
 			}
