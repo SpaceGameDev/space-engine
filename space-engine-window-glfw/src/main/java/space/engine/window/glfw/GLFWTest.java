@@ -18,6 +18,7 @@ import space.util.logger.LogLevel;
 import space.util.task.Task;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -27,10 +28,11 @@ import static space.engine.window.WindowContext.API_TYPE;
 public class GLFWTest {
 	
 	public static boolean CRASH = false;
-	public static int SECONDS = 5;
+	public static int SECONDS = 30;
 	public static boolean FREE_WINDOW = false;
+	public static ExampleDraw exampleDraw = ExampleDraw.ROTATING_CUBE;
 	
-	public static final double MULTIPLIER = (2 * PI) / (3 * 60);
+	public static final double MULTIPLIER = (2 * PI) / 3;
 	public static final double OFFSET0 = 0;
 	public static final double OFFSET1 = (2 * PI) / 3;
 	public static final double OFFSET2 = OFFSET1 * 2;
@@ -38,14 +40,11 @@ public class GLFWTest {
 	public static void main(String[] args) throws Exception {
 		System.setProperty("org.lwjgl.util.NoChecks", "true");
 		
-		//attributes
+		//side
 		AttributeListModification<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
-		
-		//side alloc buffer
 		UnsafeAllocator alloc = new UnsafeAllocator();
 		Side.initBufferAlloc(mod, alloc);
 		Side.initBufferStringConverter(mod, new DefaultStringConverter(alloc));
-		
 		Side.getSide().apply(mod);
 		
 		//logger
@@ -68,7 +67,8 @@ public class GLFWTest {
 		
 		//window
 		AttributeListModification<Window> windowAtt = Window.CREATOR.createModify();
-		windowAtt.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1920, 1080));
+		windowAtt.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
+		windowAtt.put(BORDERLESS, Boolean.TRUE);
 		windowAtt.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> attList = windowAtt.createNewList();
 		Window window = windowContext.createWindow(attList);
@@ -83,7 +83,7 @@ public class GLFWTest {
 			int[] viewport = new int[4];
 			glGetIntegerv(GL_VIEWPORT, viewport);
 			System.out.println(Arrays.toString(viewport));
-			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
+			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_ALPHA_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
 		});
 		setup.submit();
 		setup.await();
@@ -96,14 +96,9 @@ public class GLFWTest {
 		for (int i = 0; i < SECONDS * 60; i++) {
 			int i2 = i;
 			Task loopCmd = Task.create(window, () -> {
-				glClear(GL_COLOR_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
-				glColor3f((float) sin(i2 * MULTIPLIER + OFFSET0), (float) sin(i2 * MULTIPLIER + OFFSET1), (float) sin(i2 * MULTIPLIER + OFFSET2));
-				glBegin(GL_TRIANGLES);
-				glVertex2f(0.0f, 0.5f);
-				glVertex2f(0.5f, -0.5f);
-				glVertex2f(-0.5f, -0.5f);
-				glEnd();
+				exampleDraw.run.accept(i2 / 60f);
 				
 				window.swapBuffers();
 			});
@@ -117,5 +112,86 @@ public class GLFWTest {
 			windowfw.free();
 		}
 		logger.log(LogLevel.INFO, "Exit!");
+	}
+	
+	public enum ExampleDraw {
+		
+		COLORED_TRIANGLE(f -> {
+			glColor3f((float) sin(f * MULTIPLIER + OFFSET0), (float) sin(f * MULTIPLIER + OFFSET1), (float) sin(f * MULTIPLIER + OFFSET2));
+			glBegin(GL_TRIANGLES);
+			glVertex2f(0.0f, 0.5f);
+			glVertex2f(0.5f, -0.5f);
+			glVertex2f(-0.5f, -0.5f);
+			glEnd();
+		}),
+		
+		ROTATING_CUBE(f -> {
+			glPushMatrix();
+			glScalef(0.5f, 0.5f, 0.5f);
+			glRotatef(f * 90f, 0, 1, 0);
+			glRotatef(30, 1, 0, 0);
+			
+			float[] floats = {
+					//@formatter:off
+					//1
+					-1, -1, 1,
+					-1, 1, 1,
+					-1, 1, -1,
+					-1, -1, -1,
+					
+					//2
+					1, -1, 1,
+					1, 1, 1,
+					1, 1, -1,
+					1, -1, -1,
+					
+					//3
+					1, -1, -1,
+					1, -1, 1,
+					-1, -1, 1,
+					-1, -1, -1,
+					
+					//4
+					1, 1, -1,
+					1, 1, 1,
+					-1, 1, 1,
+					-1, 1, -1,
+					
+					//5
+					-1, -1, -1,
+					-1, 1, -1,
+					1, 1, -1,
+					1, -1, -1,
+					
+					//6
+					-1, -1, 1,
+					-1, 1, 1,
+					1, 1, 1,
+					1, -1, 1,
+					//@formatter:on
+			};
+			
+			glColor3f((float) sin(f * MULTIPLIER + OFFSET0), (float) sin(f * MULTIPLIER + OFFSET1), (float) sin(f * MULTIPLIER + OFFSET2));
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glBegin(GL_QUADS);
+			for (int i = 0; i < floats.length; i += 3)
+				glVertex3f(floats[i], floats[i + 1], floats[i + 2]);
+			glEnd();
+			
+			glColor3f(1, 1, 1);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glBegin(GL_QUADS);
+			for (int i = 0; i < floats.length; i += 3)
+				glVertex3f(floats[i], floats[i + 1], floats[i + 2]);
+			glEnd();
+			
+			glPopMatrix();
+		});
+		
+		public final Consumer<Float> run;
+		
+		ExampleDraw(Consumer<Float> run) {
+			this.run = run;
+		}
 	}
 }
