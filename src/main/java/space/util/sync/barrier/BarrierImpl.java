@@ -1,6 +1,7 @@
 package space.util.sync.barrier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class BarrierImpl implements Barrier {
 	
-	public List<Runnable> hookList;
+	public @Nullable List<Runnable> hookList;
 	
 	public BarrierImpl() {
 		this(false);
@@ -24,6 +25,9 @@ public class BarrierImpl implements Barrier {
 	
 	//trigger
 	public synchronized void triggerNow() {
+		if (hookList == null)
+			throw new IllegalStateException("Barrier already triggered!");
+		
 		List<Runnable> hookList = this.hookList;
 		this.hookList = null;
 		
