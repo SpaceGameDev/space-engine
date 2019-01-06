@@ -1,4 +1,4 @@
-package space.util.future;
+package space.util.sync.future;
 
 import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;

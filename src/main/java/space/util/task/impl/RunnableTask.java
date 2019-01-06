@@ -1,10 +1,21 @@
 package space.util.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import space.util.Global;
+import space.util.sync.barrier.Barrier;
+import space.util.sync.lock.SyncLock;
 
-import static space.util.task.TaskState.*;
+import static space.util.task.impl.AbstractTask.TaskState.*;
 
 public abstract class RunnableTask extends AbstractTask implements Runnable {
+	
+	public RunnableTask(@NotNull Barrier... barriers) {
+		super(barriers);
+	}
+	
+	public RunnableTask(@NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+		super(locks, barriers);
+	}
 	
 	protected synchronized void submit0() {
 		submit1(this);

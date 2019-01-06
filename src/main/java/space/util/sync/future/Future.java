@@ -1,4 +1,4 @@
-package space.util.future;
+package space.util.sync.future;
 
 import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;
@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 public interface Future<R> extends Barrier {
 	
+	@SuppressWarnings({"ConstantConditions", "unused"})
 	Future<Void> FINISHED_VOID = finished(null);
 	
 	R awaitGet() throws InterruptedException;

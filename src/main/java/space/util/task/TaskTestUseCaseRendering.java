@@ -1,7 +1,7 @@
 package space.util.task;
 
-import space.util.task.impl.CallableTaskWithExceptionImpl;
-import space.util.task.impl.RunnableTask;
+import space.util.sync.barrier.Barrier;
+import space.util.task.impl.FutureTaskWithException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,36 +23,16 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	//setup
-	public static Task createWindow(String name) {
-		return new RunnableTask() {
-			@Override
-			protected void execute() {
-				println("create Window: '" + name + "'");
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				WINDOW_POOL.execute(toRun);
-			}
-		};
+	public static TaskCreator<?> createWindow(String name) {
+		return Tasks.create(WINDOW_POOL, () -> println("create Window: '" + name + "'"));
 	}
 	
-	public static Task closeWindow() {
-		return new RunnableTask() {
-			@Override
-			protected void execute() {
-				println("close Window");
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				WINDOW_POOL.execute(toRun);
-			}
-		};
+	public static TaskCreator<?> closeWindow() {
+		return Tasks.create(WINDOW_POOL, () -> println("close Window"));
 	}
 	
-	public static CallableTaskWithException<float[], IOException> loadVertexData() {
-		return new CallableTaskWithExceptionImpl<>(IOException.class) {
+	public static TaskCreator<? extends FutureTaskWithException<float[], IOException>> loadVertexData() {
+		return (locks, barriers) -> new FutureTaskWithException<>(IOException.class, locks, barriers) {
 			@Override
 			protected float[] execute0() throws IOException {
 				if (VERTEX_DATA_FORCE_IO_EXCEPTION)
@@ -68,58 +48,16 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	//render loop
-	public static Task renderFrame(float[] triangles) {
-//		return new SequentialMultiTask(new Task[] {
-//				new RunnableTask() {
-//					@Override
-//					protected void execute() {
-//						println("clear buffer");
-//					}
-//
-//					@Override
-//					protected void submit1(Runnable toRun) {
-//						WINDOW_POOL.execute(toRun);
-//					}
-//				},
-//				new RunnableTask() {
-//					@Override
-//					protected void execute() {
-//						println("render triangles: " + Arrays.toString(triangles));
-//					}
-//
-//					@Override
-//					protected void submit1(Runnable toRun) {
-//						WINDOW_POOL.execute(toRun);
-//					}
-//				}
-//		});
-		
-		return new RunnableTask() {
-			@Override
-			protected void execute() {
-				println("clear buffer");
-				println("render triangles: " + Arrays.toString(triangles));
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				WINDOW_POOL.execute(toRun);
-			}
-		};
+	public static TaskCreator renderFrame(float[] triangles) {
+		//FIXME: static barriers added to dynamic ones (usually args of the method creating the TaskCreator
+		return Tasks.create(WINDOW_POOL, () -> {
+			println("clear buffer");
+			println("render triangles: " + Arrays.toString(triangles));
+		});
 	}
 	
-	public static Task swapBuffers() {
-		return new RunnableTask() {
-			@Override
-			protected void execute() {
-				println("swap buffer");
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				WINDOW_POOL.execute(toRun);
-			}
-		};
+	public static TaskCreator swapBuffers() {
+		return Tasks.create(WINDOW_POOL, () -> println("swap buffer"));
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -133,18 +71,21 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	public static void test() throws InterruptedException, IOException {
-		Task create_window = createWindow("My Window").submit();
+		Barrier create_window = createWindow("My Window").submit();
 		
 		try {
 			//loading and rendering
-			CallableTaskWithException<float[], IOException> taskLoadVertexData = loadVertexData().submit();
-			float[] vertexData = taskLoadVertexData.awaitGet();
-			
+			float[] vertexData = loadVertexData().submit().awaitGet();
 			create_window.await();
+			
+			TaskCreator creatorRenderFrame = renderFrame(vertexData);
+			TaskCreator taskCreatorSwapBuffers = swapBuffers();
+			
 			for (int i = 0; i < 10; i++) {
-				Task taskRenderFrame = renderFrame(vertexData).submit();
-				swapBuffers().submit(taskRenderFrame).await();
+				Barrier taskRenderFrame = creatorRenderFrame.submit();
+				Barrier taskSwapBuffers = taskCreatorSwapBuffers.submit(taskRenderFrame);
 				
+				taskSwapBuffers.await();
 				if (DO_SLEEP_BETWEEN_FRAMES)
 					Thread.sleep(1000L / 60);
 			}

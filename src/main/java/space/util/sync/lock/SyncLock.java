@@ -1,5 +1,7 @@
 package space.util.sync.lock;
 
+import space.util.task.TaskCreator;
+
 /**
  * A Lock based upon {@link SyncLock}.
  */
@@ -8,7 +10,7 @@ public interface SyncLock {
 	SyncLock[] EMPTY_SYNCLOCK_ARRAY = new SyncLock[0];
 	
 	/**
-	 * Called before a {@link space.util.task.Task} will execute with this {@link SyncLock}.
+	 * Called before a {@link TaskCreator} will execute with this {@link SyncLock}.
 	 * A Call to this Method AND it returning true will always result in a later call to {@link #unlock()}.
 	 * <p>
 	 * Return value:

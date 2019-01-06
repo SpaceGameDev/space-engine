@@ -4,26 +4,24 @@ import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;
 import space.util.sync.barrier.BarrierImpl;
 import space.util.sync.lock.SyncLock;
-import space.util.task.Task;
-import space.util.task.TaskState;
 
-import static space.util.task.TaskState.*;
+import static space.util.task.impl.AbstractTask.TaskState.*;
 
-public abstract class AbstractTask extends BarrierImpl implements Task {
+public abstract class AbstractTask extends BarrierImpl {
 	
-	protected volatile @NotNull TaskState state = CREATED;
+	protected volatile @NotNull TaskState state;
 	protected SyncLock[] locks;
 	
-	//submit
-	@Override
-	public synchronized @NotNull Task submit(@NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-		if (state != CREATED)
-			throw new IllegalStateException("Can only submit() in State " + CREATED + ", was in State " + state);
+	public AbstractTask(@NotNull Barrier... barriers) {
+		this(SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+	}
+	
+	public AbstractTask(@NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
 		this.locks = locks;
 		
 		if (barriers.length == 0) {
 			state = SUBMITTED;
-			locksAcquire();
+			locksTryAcquire();
 		} else {
 			state = AWAITING_EVENTS;
 			
@@ -32,20 +30,19 @@ public abstract class AbstractTask extends BarrierImpl implements Task {
 					if (state != AWAITING_EVENTS)
 						throw new IllegalStateException("Can only have Barrier callback in State " + AWAITING_EVENTS + ", was in State " + state);
 					state = SUBMITTED;
-					locksAcquire();
+					locksTryAcquire();
 				}
 			}, barriers);
 		}
-		return this;
 	}
 	
 	//locks
-	protected synchronized void locksAcquire() {
+	protected synchronized void locksTryAcquire() {
 		int i = 0;
 		for (; i < locks.length; i++) {
 			if (!locks[i].tryLock()) {
 				locksUnlock(i - 1);
-				locks[i].notifyUnlock(this::locksAcquire);
+				locks[i].notifyUnlock(this::locksTryAcquire);
 			}
 		}
 		submit0();
@@ -63,7 +60,7 @@ public abstract class AbstractTask extends BarrierImpl implements Task {
 	//execution
 	
 	/**
-	 * submit your tasks here. Must call {@link #executionFinished()} after it is done executing
+	 * Submit your tasks here. Must call {@link #executionFinished()} after it is done executing
 	 */
 	protected abstract void submit0();
 	
@@ -77,10 +74,13 @@ public abstract class AbstractTask extends BarrierImpl implements Task {
 		triggerNow();
 	}
 	
-	//getter
-	@NotNull
-	@Override
-	public TaskState getState() {
-		return state;
+	public enum TaskState {
+		
+		CREATED,
+		AWAITING_EVENTS,
+		SUBMITTED,
+		RUNNING,
+		FINISHED
+		
 	}
 }

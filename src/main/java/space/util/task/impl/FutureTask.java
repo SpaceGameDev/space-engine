@@ -1,31 +1,15 @@
 package space.util.task.impl;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.future.FutureNotFinishedException;
-import space.util.sync.barrier.Barrier;
-import space.util.task.CallableTask;
-import space.util.task.TaskState;
+import space.util.sync.future.Future;
+import space.util.sync.future.FutureNotFinishedException;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CallableTaskImpl<R> extends RunnableTask implements CallableTask<R> {
+public abstract class FutureTask<R> extends RunnableTask implements Future<R> {
 	
 	protected R ret;
-	
-	//delegate
-	@Override
-	public @NotNull CallableTask<R> submit() {
-		super.submit();
-		return this;
-	}
-	
-	@Override
-	public synchronized @NotNull CallableTask<R> submit(@NotNull Barrier... barriers) {
-		super.submit(barriers);
-		return this;
-	}
 	
 	//execute
 	@Override
@@ -51,7 +35,7 @@ public abstract class CallableTaskImpl<R> extends RunnableTask implements Callab
 	@Nullable
 	@Override
 	public synchronized R assertGet() throws FutureNotFinishedException {
-		if (getState() != TaskState.FINISHED)
+		if (state != TaskState.FINISHED)
 			throw new FutureNotFinishedException(this);
 		return ret;
 	}

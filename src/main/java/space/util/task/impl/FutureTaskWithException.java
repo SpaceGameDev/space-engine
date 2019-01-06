@@ -1,36 +1,28 @@
 package space.util.task.impl;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.future.FutureNotFinishedException;
 import space.util.sync.barrier.Barrier;
-import space.util.task.CallableTaskWithException;
-import space.util.task.TaskState;
+import space.util.sync.future.FutureNotFinishedException;
+import space.util.sync.future.FutureWithException;
+import space.util.sync.lock.SyncLock;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> extends RunnableTask implements CallableTaskWithException<R, EX> {
+public abstract class FutureTaskWithException<R, EX extends Throwable> extends RunnableTask implements FutureWithException<R, EX> {
 	
 	protected final Class<EX> exceptionClass;
 	
 	protected R ret;
 	protected EX exception;
 	
-	public CallableTaskWithExceptionImpl(Class<EX> exceptionClass) {
+	public FutureTaskWithException(Class<EX> exceptionClass, @NotNull Barrier... barriers) {
+		this(exceptionClass, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+	}
+	
+	public FutureTaskWithException(Class<EX> exceptionClass, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+		super(locks, barriers);
 		this.exceptionClass = exceptionClass;
-	}
-	
-	//delegate
-	@Override
-	public @NotNull CallableTaskWithException<R, EX> submit() {
-		super.submit();
-		return this;
-	}
-	
-	@Override
-	public synchronized @NotNull CallableTaskWithException<R, EX> submit(@NotNull Barrier... barriers) {
-		super.submit(barriers);
-		return this;
 	}
 	
 	//execute
@@ -69,7 +61,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 	
 	@Override
 	public R assertGet() throws FutureNotFinishedException, EX {
-		if (getState() != TaskState.FINISHED)
+		if (state != TaskState.FINISHED)
 			throw new FutureNotFinishedException(this);
 		return getInternal();
 	}
@@ -80,7 +72,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		return ret;
 	}
 	
-	public static abstract class BaseCallableTaskWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends RunnableTask implements CallableTaskWith2Exception<R, EX1, EX2> {
+	public static abstract class FutureTaskWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends RunnableTask implements FutureWith2Exception<R, EX1, EX2> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -89,22 +81,14 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		protected EX1 exception1;
 		protected EX2 exception2;
 		
-		public BaseCallableTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2) {
+		public FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull Barrier... barriers) {
+			this(exceptionClass1, exceptionClass2, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		}
+		
+		public FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+			super(locks, barriers);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
-		}
-		
-		//delegate
-		@Override
-		public @NotNull CallableTaskWith2Exception<R, EX1, EX2> submit() {
-			super.submit();
-			return this;
-		}
-		
-		@Override
-		public synchronized @NotNull CallableTaskWith2Exception<R, EX1, EX2> submit(@NotNull Barrier... barriers) {
-			super.submit(barriers);
-			return this;
 		}
 		
 		//execute
@@ -148,7 +132,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Override
 		public R assertGet() throws FutureNotFinishedException, EX1, EX2 {
-			if (getState() != TaskState.FINISHED)
+			if (state != TaskState.FINISHED)
 				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
@@ -162,7 +146,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends RunnableTask implements CallableTaskWith3Exception<R, EX1, EX2, EX3> {
+	public static abstract class FutureTaskWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends RunnableTask implements FutureWith3Exception<R, EX1, EX2, EX3> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -173,23 +157,15 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		protected EX2 exception2;
 		protected EX3 exception3;
 		
-		public BaseCallableTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3) {
+		public FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull Barrier... barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		}
+		
+		public FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+			super(locks, barriers);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;
-		}
-		
-		//delegate
-		@Override
-		public @NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit() {
-			super.submit();
-			return this;
-		}
-		
-		@Override
-		public synchronized @NotNull CallableTaskWith3Exception<R, EX1, EX2, EX3> submit(@NotNull Barrier... barriers) {
-			super.submit(barriers);
-			return this;
 		}
 		
 		//execute
@@ -238,7 +214,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Override
 		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3 {
-			if (getState() != TaskState.FINISHED)
+			if (state != TaskState.FINISHED)
 				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
@@ -254,7 +230,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends RunnableTask implements CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> {
+	public static abstract class FutureTaskWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends RunnableTask implements FutureWith4Exception<R, EX1, EX2, EX3, EX4> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -267,24 +243,16 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		protected EX3 exception3;
 		protected EX4 exception4;
 		
-		public BaseCallableTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4) {
+		public FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull Barrier... barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		}
+		
+		public FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+			super(locks, barriers);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;
 			this.exceptionClass4 = exceptionClass4;
-		}
-		
-		//delegate
-		@Override
-		public @NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit() {
-			super.submit();
-			return this;
-		}
-		
-		@Override
-		public synchronized @NotNull CallableTaskWith4Exception<R, EX1, EX2, EX3, EX4> submit(@NotNull Barrier... barriers) {
-			super.submit(barriers);
-			return this;
 		}
 		
 		//execute
@@ -338,7 +306,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Override
 		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4 {
-			if (getState() != TaskState.FINISHED)
+			if (state != TaskState.FINISHED)
 				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}
@@ -356,7 +324,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		}
 	}
 	
-	public static abstract class BaseCallableTaskWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends RunnableTask implements CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> {
+	public static abstract class FutureTaskWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends RunnableTask implements FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5> {
 		
 		protected final Class<EX1> exceptionClass1;
 		protected final Class<EX2> exceptionClass2;
@@ -371,25 +339,17 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		protected EX4 exception4;
 		protected EX5 exception5;
 		
-		public BaseCallableTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5) {
+		public FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull Barrier... barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		}
+		
+		public FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+			super(locks, barriers);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;
 			this.exceptionClass4 = exceptionClass4;
 			this.exceptionClass5 = exceptionClass5;
-		}
-		
-		//delegate
-		@Override
-		public @NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit() {
-			super.submit();
-			return this;
-		}
-		
-		@Override
-		public synchronized @NotNull CallableTaskWith5Exception<R, EX1, EX2, EX3, EX4, EX5> submit(@NotNull Barrier... barriers) {
-			super.submit(barriers);
-			return this;
 		}
 		
 		//execute
@@ -448,7 +408,7 @@ public abstract class CallableTaskWithExceptionImpl<R, EX extends Throwable> ext
 		
 		@Override
 		public R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4, EX5 {
-			if (getState() != TaskState.FINISHED)
+			if (state != TaskState.FINISHED)
 				throw new FutureNotFinishedException(this);
 			return getInternal();
 		}

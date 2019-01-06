@@ -1,4 +1,4 @@
-package space.util.future;
+package space.util.sync.future;
 
 public class FutureNotFinishedException extends RuntimeException {
 	
