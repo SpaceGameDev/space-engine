@@ -28,7 +28,7 @@ module space.util {
 	exports space.util.dependency;
 	exports space.util.dependency.exception;
 	exports space.util.event;
-	exports space.util.event.dependency;
+//	exports space.util.event.dependency;
 	exports space.util.event.typehandler;
 	exports space.util.freeableStorage;
 	exports space.util.future;

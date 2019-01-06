@@ -1,27 +1,11 @@
 package space.util.logger;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.event.dependency.DependencyEventBuilderSinglethread;
-import space.util.event.dependency.DependencyEventCreator;
-import space.util.event.dependency.DependencyEventEntry;
-import space.util.logger.prefix.LogLevelPrefix;
-import space.util.logger.prefix.Prefix;
-import space.util.logger.prefix.SubLoggerPrefix;
-import space.util.logger.prefix.ThreadPrefix;
-import space.util.logger.prefix.TimePrefix;
-import space.util.logger.printer.SeparatedPrinter;
-import space.util.logger.printer.SimpleStringPrinter;
-import space.util.string.CharSequence2D;
-import space.util.string.builder.CharBufferBuilder2D;
-import space.util.task.typehandler.TypeBiConsumer;
-
-import java.text.SimpleDateFormat;
-import java.util.function.BiConsumer;
 
 public class BaseLogger extends AbstractLogger {
 	
-	DependencyEventCreator<Prefix> handler = new DependencyEventBuilderSinglethread<>();
-	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new DependencyEventBuilderSinglethread<>();
+	//	DependencyEventCreator<Prefix> handler = new DependencyEventBuilderSinglethread<>();
+//	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new DependencyEventBuilderSinglethread<>();
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {
@@ -53,12 +37,12 @@ public class BaseLogger extends AbstractLogger {
 	//log
 	@Override
 	public void logDirect0(LogMessage msg) {
-		try {
-			handler.execute(consumer -> consumer.accept(msg)).await();
-			printer.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D())).await();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
+//		try {
+//			handler.execute(consumer -> consumer.accept(msg)).await();
+//			printer.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D())).await();
+//		} catch (InterruptedException e) {
+//			Thread.currentThread().interrupt();
+//		}
 	}
 	
 	//utility
@@ -67,10 +51,10 @@ public class BaseLogger extends AbstractLogger {
 	 * adds a {@link java.util.Date} (formatted with HH:mm:ss), {@link Thread}, {@link LogLevel} and {@link SubLogger} prefix to the {@link BaseLogger}
 	 */
 	public static BaseLogger defaultHandler(BaseLogger logger) {
-		logger.handler.addHook(DependencyEventEntry.fromFunction(new TimePrefix(new SimpleDateFormat("HH:mm:ss")), "time", 0));
-		logger.handler.addHook(DependencyEventEntry.fromFunction(new ThreadPrefix(), "thread", 1));
-		logger.handler.addHook(DependencyEventEntry.fromFunction(new LogLevelPrefix(), "loglevel", 2));
-		logger.handler.addHook(DependencyEventEntry.fromFunction(new SubLoggerPrefix(), "sublogger", 3));
+//		logger.handler.addHook(DependencyEventEntry.fromFunction(new TimePrefix(new SimpleDateFormat("HH:mm:ss")), "time", 0));
+//		logger.handler.addHook(DependencyEventEntry.fromFunction(new ThreadPrefix(), "thread", 1));
+//		logger.handler.addHook(DependencyEventEntry.fromFunction(new LogLevelPrefix(), "loglevel", 2));
+//		logger.handler.addHook(DependencyEventEntry.fromFunction(new SubLoggerPrefix(), "sublogger", 3));
 		return logger;
 	}
 	
@@ -78,7 +62,7 @@ public class BaseLogger extends AbstractLogger {
 	 * adds the default System.out and System.err {@link java.io.PrintStream}s as Printer to the BaseLogger
 	 */
 	public static BaseLogger defaultPrinter(BaseLogger logger) {
-		logger.printer.addHook(DependencyEventEntry.fromFunction(new SeparatedPrinter(new SimpleStringPrinter(System.out), new SimpleStringPrinter(System.err)), "system"));
+//		logger.printer.addHook(DependencyEventEntry.fromFunction(new SeparatedPrinter(new SimpleStringPrinter(System.out), new SimpleStringPrinter(System.err)), "system"));
 		return logger;
 	}
 }
