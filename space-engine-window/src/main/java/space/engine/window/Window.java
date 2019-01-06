@@ -5,7 +5,7 @@ import space.engine.window.VideoMode.VideoModeDesktop;
 import space.util.baseobject.Freeable;
 import space.util.key.Key;
 import space.util.key.attribute.AttributeListCreator;
-import space.util.task.Task;
+import space.util.task.TaskCreator;
 
 import java.util.concurrent.Executor;
 
@@ -44,7 +44,7 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_texture_id the FBO id from OpenGL
 	 * @return a Task it tell you when swapping is finished
 	 */
-	Task openGL_SwapBuffer(int opengl_texture_id);
+	TaskCreator openGL_SwapBuffer(int opengl_texture_id);
 	
 	/**
 	 * Swap the Framebuffer of a FBO from OpenGL ES.
@@ -52,5 +52,5 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_es_texture_id the FBO id from OpenGL ES
 	 * @return a Task it tell you when swapping is finished
 	 */
-	Task openGL_ES_SwapBuffer(int opengl_es_texture_id);
+	TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
 }

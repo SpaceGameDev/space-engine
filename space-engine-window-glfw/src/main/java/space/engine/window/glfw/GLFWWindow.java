@@ -10,7 +10,7 @@ import space.util.baseobject.exceptions.FreedException;
 import space.util.freeableStorage.FreeableStorage;
 import space.util.freeableStorage.FreeableStorageImpl;
 import space.util.key.attribute.AttributeList;
-import space.util.task.Task;
+import space.util.task.TaskCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.window.glfw.GLFWUtil.toGLFWBoolean;
@@ -95,12 +95,12 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	}
 	
 	@Override
-	public Task openGL_SwapBuffer(int opengl_texture_id) {
+	public TaskCreator openGL_SwapBuffer(int opengl_texture_id) {
 		throw new UnsupportedOperationException("Not implemented!");
 	}
 	
 	@Override
-	public Task openGL_ES_SwapBuffer(int opengl_es_texture_id) {
+	public TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id) {
 		throw new UnsupportedOperationException("Not implemented!");
 	}
 	

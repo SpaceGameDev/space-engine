@@ -15,7 +15,7 @@ import space.util.key.attribute.AttributeList;
 import space.util.key.attribute.AttributeListModification;
 import space.util.logger.BaseLogger;
 import space.util.logger.LogLevel;
-import space.util.task.Task;
+import space.util.task.Tasks;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -76,7 +76,7 @@ public class GLFWTest {
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
-		Task setup = Task.create(window, () -> {
+		Tasks.create(window, () -> {
 			GLFW.glfwMakeContextCurrent(((GLFWWindow) window).storage.getWindowPointer());
 			GL.createCapabilities();
 			
@@ -84,9 +84,7 @@ public class GLFWTest {
 			glGetIntegerv(GL_VIEWPORT, viewport);
 			System.out.println(Arrays.toString(viewport));
 			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_ALPHA_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
-		});
-		setup.submit();
-		setup.await();
+		}).submit().await();
 		
 		int[] w = new int[1];
 		int[] h = new int[1];
@@ -95,15 +93,13 @@ public class GLFWTest {
 		
 		for (int i = 0; i < SECONDS * 60; i++) {
 			int i2 = i;
-			Task loopCmd = Task.create(window, () -> {
+			Tasks.create(window, () -> {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
 				exampleDraw.run.accept(i2 / 60f);
 				
 				window.swapBuffers();
-			});
-			loopCmd.submit();
-			loopCmd.await();
+			}).submit().await();
 			Thread.sleep(1000 / 60);
 		}
 		
