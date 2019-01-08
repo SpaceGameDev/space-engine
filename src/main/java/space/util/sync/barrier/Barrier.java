@@ -1,11 +1,14 @@
 package space.util.sync.barrier;
 
 import org.jetbrains.annotations.NotNull;
+import space.util.sync.future.Future;
+import space.util.sync.future.FutureNotFinishedException;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * An Object which can be {@link #await() awaited} upon. You can also {@link #addHook(Runnable) add a Hook} to be called when the Barrier {@link #isFinished() is finished}. <br>
@@ -84,6 +87,59 @@ public interface Barrier {
 	 * @throws TimeoutException     thrown if waiting takes longer than the specified timeout
 	 */
 	void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException;
+	
+	//default methods
+	default <R> Future<R> toFuture(Future<R> supplier) {
+		return toFuture(supplier::assertGet);
+	}
+	
+	default <R> Future<R> toFuture(Supplier<R> supplier) {
+		return new Future<>() {
+			@Override
+			public R awaitGet() throws InterruptedException {
+				Barrier.this.await();
+				return supplier.get();
+			}
+			
+			@Override
+			public R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException {
+				Barrier.this.await(time, unit);
+				return supplier.get();
+			}
+			
+			@Override
+			public R assertGet() throws FutureNotFinishedException {
+				if (!Barrier.this.isFinished())
+					throw new FutureNotFinishedException(this);
+				return supplier.get();
+			}
+			
+			@Override
+			public boolean isFinished() {
+				return Barrier.this.isFinished();
+			}
+			
+			@Override
+			public void addHook(@NotNull Runnable run) {
+				Barrier.this.addHook(run);
+			}
+			
+			@Override
+			public void removeHook(@NotNull Runnable run) {
+				Barrier.this.removeHook(run);
+			}
+			
+			@Override
+			public void await() throws InterruptedException {
+				Barrier.this.await();
+			}
+			
+			@Override
+			public void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException {
+				Barrier.this.await(time, unit);
+			}
+		};
+	}
 	
 	//static
 	
