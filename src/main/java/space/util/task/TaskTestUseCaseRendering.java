@@ -2,7 +2,7 @@ package space.util.task;
 
 import space.util.sync.barrier.Barrier;
 import space.util.sync.future.Future;
-import space.util.task.impl.FutureTask;
+import space.util.sync.future.FutureWithException;
 import space.util.task.impl.FutureTaskWithException;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class TaskTestUseCaseRendering {
 		return Tasks.runnable(WINDOW_POOL, () -> println("close Window"));
 	}
 	
-	public static TaskCreator<? extends FutureTaskWithException<float[], IOException>> loadVertexData() {
+	public static TaskCreator<? extends FutureWithException<float[], IOException>> loadVertexData() {
 		return (locks, barriers) -> new FutureTaskWithException<>(IOException.class, locks, barriers) {
 			@Override
 			protected float[] execute0() throws IOException {
@@ -81,14 +81,7 @@ public class TaskTestUseCaseRendering {
 		
 		try {
 			//loading and rendering
-			FutureTaskWithException<float[], IOException> vertexDataException = loadVertexData().submit();
-			FutureTask<float[]> vertexData = Tasks.future(new Barrier[] {vertexDataException}, () -> {
-				try {
-					return vertexDataException.assertGet();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}).submit();
+			Future<float[]> vertexData = loadVertexData().submit().rethrowAsRuntimeException();
 			
 			TaskCreator creatorRenderFrame = renderFrame(create_window, vertexData);
 			TaskCreator taskCreatorSwapBuffers = swapBuffers(create_window);
