@@ -16,12 +16,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 	protected R ret;
 	protected EX exception;
 	
-	public FutureTaskWithException(Class<EX> exceptionClass, @NotNull Barrier... barriers) {
-		this(exceptionClass, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+	public FutureTaskWithException(Class<EX> exceptionClass, @NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+		this(exceptionClass, locks);
+		init(barriers);
 	}
 	
-	public FutureTaskWithException(Class<EX> exceptionClass, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-		super(locks, barriers);
+	/**
+	 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+	 */
+	protected FutureTaskWithException(Class<EX> exceptionClass, @NotNull SyncLock[] locks) {
+		super(locks);
 		this.exceptionClass = exceptionClass;
 	}
 	
@@ -81,12 +85,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		protected EX1 exception1;
 		protected EX2 exception2;
 		
-		public FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull Barrier... barriers) {
-			this(exceptionClass1, exceptionClass2, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		public FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+			this(exceptionClass1, exceptionClass2, locks);
+			init(barriers);
 		}
 		
-		public FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-			super(locks, barriers);
+		/**
+		 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+		 */
+		protected FutureTaskWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, @NotNull SyncLock[] locks) {
+			super(locks);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 		}
@@ -157,12 +165,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		protected EX2 exception2;
 		protected EX3 exception3;
 		
-		public FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull Barrier... barriers) {
-			this(exceptionClass1, exceptionClass2, exceptionClass3, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		public FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, locks);
+			init(barriers);
 		}
 		
-		public FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-			super(locks, barriers);
+		/**
+		 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+		 */
+		protected FutureTaskWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, @NotNull SyncLock[] locks) {
+			super(locks);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;
@@ -243,12 +255,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		protected EX3 exception3;
 		protected EX4 exception4;
 		
-		public FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull Barrier... barriers) {
-			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		public FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, locks);
+			init(barriers);
 		}
 		
-		public FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-			super(locks, barriers);
+		/**
+		 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+		 */
+		protected FutureTaskWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, @NotNull SyncLock[] locks) {
+			super(locks);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;
@@ -339,12 +355,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		protected EX4 exception4;
 		protected EX5 exception5;
 		
-		public FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull Barrier... barriers) {
-			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, SyncLock.EMPTY_SYNCLOCK_ARRAY, barriers);
+		public FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+			this(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, locks);
+			init(barriers);
 		}
 		
-		public FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-			super(locks, barriers);
+		/**
+		 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+		 */
+		protected FutureTaskWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, @NotNull SyncLock[] locks) {
+			super(locks);
 			this.exceptionClass1 = exceptionClass1;
 			this.exceptionClass2 = exceptionClass2;
 			this.exceptionClass3 = exceptionClass3;

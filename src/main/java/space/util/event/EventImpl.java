@@ -29,7 +29,7 @@ public class EventImpl<FUNCTION> implements Event<FUNCTION> {
 	//run
 	@Override
 	public TaskCreator execute(@NotNull TypeHandler<FUNCTION> type) {
-		return Tasks.create(() -> {
+		return Tasks.runnable(() -> {
 			synchronized (this) {
 				after.forEach(type);
 			}

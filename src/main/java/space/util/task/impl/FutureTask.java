@@ -1,8 +1,11 @@
 package space.util.task.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.util.sync.barrier.Barrier;
 import space.util.sync.future.Future;
 import space.util.sync.future.FutureNotFinishedException;
+import space.util.sync.lock.SyncLock;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -10,6 +13,17 @@ import java.util.concurrent.TimeoutException;
 public abstract class FutureTask<R> extends RunnableTask implements Future<R> {
 	
 	protected R ret;
+	
+	public FutureTask(@NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
+		super(locks, barriers);
+	}
+	
+	/**
+	 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+	 */
+	protected FutureTask(SyncLock[] locks) {
+		super(locks);
+	}
 	
 	//execute
 	@Override

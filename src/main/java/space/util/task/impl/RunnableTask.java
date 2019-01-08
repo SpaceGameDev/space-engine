@@ -9,15 +9,18 @@ import static space.util.task.impl.AbstractTask.TaskState.*;
 
 public abstract class RunnableTask extends AbstractTask implements Runnable {
 	
-	public RunnableTask(@NotNull Barrier... barriers) {
-		super(barriers);
-	}
-	
-	public RunnableTask(@NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+	public RunnableTask(@NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
 		super(locks, barriers);
 	}
 	
-	protected synchronized void submit0() {
+	/**
+	 * REQUIRES calling {@link #init(Barrier[])} later to start execution
+	 */
+	protected RunnableTask(SyncLock[] locks) {
+		super(locks);
+	}
+	
+	protected synchronized void submit() {
 		submit1(this);
 	}
 	
