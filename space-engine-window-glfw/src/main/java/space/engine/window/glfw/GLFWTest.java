@@ -76,7 +76,7 @@ public class GLFWTest {
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
-		Tasks.create(window, () -> {
+		Tasks.runnable(window, () -> {
 			GLFW.glfwMakeContextCurrent(((GLFWWindow) window).storage.getWindowPointer());
 			GL.createCapabilities();
 			
@@ -93,7 +93,7 @@ public class GLFWTest {
 		
 		for (int i = 0; i < SECONDS * 60; i++) {
 			int i2 = i;
-			Tasks.create(window, () -> {
+			Tasks.runnable(window, () -> {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
 				exampleDraw.run.accept(i2 / 60f);
