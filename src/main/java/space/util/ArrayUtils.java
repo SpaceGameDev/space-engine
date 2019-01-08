@@ -2,6 +2,7 @@ package space.util;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.IntFunction;
 import java.util.function.ToIntBiFunction;
 
 public class ArrayUtils {
@@ -226,5 +227,94 @@ public class ArrayUtils {
 				return i;
 		}
 		return -1;
+	}
+	
+	//merge
+	@SuppressWarnings("unchecked")
+	public static <T> T[] merge(T[] array1, T[] array2) {
+		return merge(length -> (T[]) new Object[length], array1, array2);
+	}
+	
+	public static <T> T[] merge(IntFunction<T[]> arrayCreator, T[] array1, T[] array2) {
+		T[] ret = arrayCreator.apply(array1.length + array2.length);
+		System.arraycopy(array1, 0, ret, 0, array1.length);
+		System.arraycopy(array2, 0, ret, array1.length, array2.length);
+		return ret;
+	}
+	
+	@SafeVarargs
+	@SuppressWarnings("unchecked")
+	public static <T> T[] merge(T[]... arrays) {
+		return merge(length -> (T[]) new Object[length], arrays);
+	}
+	
+	@SafeVarargs
+	public static <T> T[] merge(IntFunction<T[]> arrayCreator, T[]... arrays) {
+		int length = 0;
+		for (T[] a : arrays)
+			length += a.length;
+		
+		T[] ret = arrayCreator.apply(length);
+		int index = 0;
+		for (T[] a : arrays) {
+			System.arraycopy(a, 0, ret, index, a.length);
+			index += a.length;
+		}
+		
+		return ret;
+	}
+	
+	//mergeIfNeeded
+	public static <T> T[] mergeIfNeeded(T[] array1, T[] array2) {
+		if (array2.length == 0)
+			return array1;
+		if (array1.length == 0)
+			return array2;
+		//noinspection unchecked
+		return merge(length -> (T[]) new Object[length], array1, array2);
+	}
+	
+	public static <T> T[] mergeIfNeeded(IntFunction<T[]> arrayCreator, T[] array1, T[] array2) {
+		if (array2.length == 0)
+			return array1;
+		if (array1.length == 0)
+			return array2;
+		return merge(arrayCreator, array1, array2);
+	}
+	
+	@SafeVarargs
+	public static <T> T[] mergeIfNeeded(T[]... arrays) {
+		switch (arrays.length) {
+			case 0:
+				//noinspection unchecked
+				return (T[]) new Object[0];
+			case 1:
+				return arrays[0];
+			case 2:
+				if (arrays[0].length == 0)
+					return arrays[1];
+				if (arrays[0].length == 1)
+					return arrays[0];
+				break;
+		}
+		//noinspection unchecked
+		return mergeIfNeeded(length -> (T[]) new Object[length], arrays);
+	}
+	
+	@SafeVarargs
+	public static <T> T[] mergeIfNeeded(IntFunction<T[]> arrayCreator, T[]... arrays) {
+		switch (arrays.length) {
+			case 0:
+				return arrayCreator.apply(0);
+			case 1:
+				return arrays[0];
+			case 2:
+				if (arrays[0].length == 0)
+					return arrays[1];
+				if (arrays[0].length == 1)
+					return arrays[0];
+				break;
+		}
+		return merge(arrayCreator, arrays);
 	}
 }
