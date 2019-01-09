@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static space.util.task.Tasks.*;
 
 public class TaskTestUseCaseRendering {
 	
@@ -31,11 +32,11 @@ public class TaskTestUseCaseRendering {
 	
 	//setup
 	public static TaskCreator<?> createWindow(String name) {
-		return Tasks.runnable(WINDOW_POOL, () -> println("create Window: '" + name + "'"));
+		return runnable(WINDOW_POOL, () -> println("create Window: '" + name + "'"));
 	}
 	
 	public static TaskCreator<?> closeWindow() {
-		return Tasks.runnable(WINDOW_POOL, () -> println("close Window"));
+		return runnable(WINDOW_POOL, () -> println("close Window"));
 	}
 	
 	public static TaskCreator<? extends FutureWithException<float[], IOException>> loadVertexData() {
@@ -55,15 +56,15 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	//render loop
-	public static TaskCreator renderFrame(Barrier windowCreation, Future<float[]> triangles) {
-		return Tasks.sequential(new Barrier[] {windowCreation}, List.of(
-				Tasks.runnable(WINDOW_POOL, () -> println("clear buffer")),
-				Tasks.runnable(WINDOW_POOL, new Barrier[] {triangles}, () -> println("render triangles: " + Arrays.toString(triangles.assertGet())))
+	public static TaskCreator renderFrame(Barrier contextCreation, Future<float[]> triangles) {
+		return sequential(new Barrier[] {contextCreation}, List.of(
+				runnable(WINDOW_POOL, () -> println("clear buffer")),
+				runnable(WINDOW_POOL, new Barrier[] {triangles}, () -> println("render triangles: " + Arrays.toString(triangles.assertGet())))
 		));
 	}
 	
-	public static TaskCreator swapBuffers(Barrier windowCreation) {
-		return Tasks.runnable(WINDOW_POOL, new Barrier[] {windowCreation}, () -> println("swap buffer"));
+	public static TaskCreator swapBuffers(Barrier contextCreation) {
+		return runnable(WINDOW_POOL, new Barrier[] {contextCreation}, () -> println("swap buffer"));
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -77,14 +78,14 @@ public class TaskTestUseCaseRendering {
 	}
 	
 	public static void test() throws InterruptedException {
-		Barrier create_window = createWindow("My Window").submit();
+		Barrier windowCreation = createWindow("My Window").submit();
 		
 		try {
 			//loading and rendering
 			Future<float[]> vertexData = loadVertexData().submit().rethrowAsRuntimeException();
 			
-			TaskCreator creatorRenderFrame = renderFrame(create_window, vertexData);
-			TaskCreator taskCreatorSwapBuffers = swapBuffers(create_window);
+			TaskCreator creatorRenderFrame = renderFrame(windowCreation, vertexData);
+			TaskCreator taskCreatorSwapBuffers = swapBuffers(windowCreation);
 			
 			Barrier taskSwapBuffers = null;
 			for (int i = 0; i < 10; i++) {
@@ -98,7 +99,7 @@ public class TaskTestUseCaseRendering {
 			}
 			taskSwapBuffers.await();
 		} finally {
-			closeWindow().submit(create_window).await();
+			closeWindow().submit(windowCreation).await();
 		}
 	}
 }
