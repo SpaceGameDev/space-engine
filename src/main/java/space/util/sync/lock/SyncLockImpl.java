@@ -21,22 +21,32 @@ public class SyncLockImpl implements SyncLock {
 	}
 	
 	@Override
-	public synchronized void unlock() {
-		if (!locked)
-			throw new IllegalStateException();
+	public void unlock() {
+		Runnable[] oldNotifyUnlock;
+		synchronized (this) {
+			if (!locked)
+				throw new IllegalStateException();
+			
+			//success
+			locked = false;
+			oldNotifyUnlock = notifyUnlock.toArray(new Runnable[0]);
+			notifyUnlock.clear();
+		}
 		
-		//success
-		locked = false;
-		List<Runnable> oldNotifyUnlock = this.notifyUnlock;
-		this.notifyUnlock = new ArrayList<>();
-		oldNotifyUnlock.forEach(Runnable::run);
+		for (Runnable run : oldNotifyUnlock) {
+			run.run();
+		}
 	}
 	
 	@Override
-	public synchronized void notifyUnlock(Runnable run) {
-		if (locked)
-			notifyUnlock.add(run);
-		else
-			run.run();
+	public void notifyUnlock(Runnable run) {
+		synchronized (this) {
+			if (locked) {
+				notifyUnlock.add(run);
+				return;
+			}
+		}
+		
+		run.run();
 	}
 }

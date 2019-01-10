@@ -42,16 +42,16 @@ public abstract class AbstractTask extends BarrierImpl {
 			throw new IllegalStateException("Can only init() in State " + CREATED + ", was in State " + state);
 		
 		if (barriers.length == 0) {
-			state = SUBMITTED;
+			state = ACQUIRING_LOCKS;
 			locksTryAcquire();
 		} else {
-			state = AWAITING_EVENTS;
+			state = AWAITING_BARRIERS;
 			
 			Barrier.awaitAll(() -> {
 				synchronized (AbstractTask.this) {
-					if (state != AWAITING_EVENTS)
-						throw new IllegalStateException("Can only have Barrier callback in State " + AWAITING_EVENTS + ", was in State " + state);
-					state = SUBMITTED;
+					if (state != AWAITING_BARRIERS)
+						throw new IllegalStateException("Can only have Barrier callback in State " + AWAITING_BARRIERS + ", was in State " + state);
+					state = ACQUIRING_LOCKS;
 					locksTryAcquire();
 				}
 			}, barriers);
@@ -59,24 +59,44 @@ public abstract class AbstractTask extends BarrierImpl {
 	}
 	
 	//locks
-	protected synchronized void locksTryAcquire() {
-		int i = 0;
-		for (; i < locks.length; i++) {
-			if (!locks[i].tryLock()) {
-				locksUnlock(i);
-				locks[i].notifyUnlock(this::locksTryAcquire);
+	protected void locksTryAcquire() {
+		int i;
+		synchronized (this) {
+			if (state != ACQUIRING_LOCKS)
+				throw new IllegalStateException("Can only try to acquire locks in State " + ACQUIRING_LOCKS + ", was in State " + state);
+			
+			boolean success = true;
+			for (i = 0; i < locks.length; i++) {
+				if (!locks[i].tryLock()) {
+					success = false;
+					break;
+				}
+			}
+			
+			if (success) {
+				state = EXECUTING;
+				submit();
 				return;
 			}
 		}
-		submit();
+		
+		//failure
+		locksUnlock(i);
+		locks[i].notifyUnlock(this::locksTryAcquire);
 	}
 	
-	protected synchronized void locksUnlock() {
+	/**
+	 * DON'T synchronize when calling this method!
+	 */
+	protected void locksUnlock() {
 		locksUnlock(locks.length);
 	}
 	
-	protected synchronized void locksUnlock(int from) {
-		for (int i = from - 1; i >= 0; i--)
+	/**
+	 * DON'T synchronize when calling this method!
+	 */
+	protected void locksUnlock(int maxExclusive) {
+		for (int i = maxExclusive - 1; i >= 0; i--)
 			locks[i].unlock();
 	}
 	
@@ -88,10 +108,12 @@ public abstract class AbstractTask extends BarrierImpl {
 	protected abstract void submit();
 	
 	//end
-	protected synchronized void executionFinished() {
-		if (!(state == SUBMITTED || state == RUNNING))
-			throw new IllegalStateException("Can only finish execution in State " + SUBMITTED + " or " + RUNNING + ", was in State " + state);
-		state = TaskState.FINISHED;
+	protected void executionFinished() {
+		synchronized (this) {
+			if (state != EXECUTING)
+				throw new IllegalStateException("Can only finish execution in State " + EXECUTING + ", was in State " + state);
+			state = TaskState.FINISHED;
+		}
 		
 		locksUnlock();
 		triggerNow();
@@ -100,9 +122,9 @@ public abstract class AbstractTask extends BarrierImpl {
 	public enum TaskState {
 		
 		CREATED,
-		AWAITING_EVENTS,
-		SUBMITTED,
-		RUNNING,
+		AWAITING_BARRIERS,
+		ACQUIRING_LOCKS,
+		EXECUTING,
 		FINISHED
 		
 	}

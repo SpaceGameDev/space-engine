@@ -15,7 +15,7 @@ import static space.util.task.Tasks.*;
 
 public class TransactionTest {
 	
-	public static int TRANSACTION_COUNT = 1000;
+	public static int TRANSACTION_COUNT = 10000;
 	
 	public static class Entity {
 		
@@ -38,21 +38,29 @@ public class TransactionTest {
 	}
 	
 	public static void test() throws InterruptedException {
-		TaskCreator<? extends Barrier> task = parallel(
+		TaskCreator<? extends Barrier> taskCreator = parallel(
 				IntStream.range(0, TRANSACTION_COUNT)
 						 .mapToObj(i -> i % 2 == 0 ? createTransaction(entity1, entity2) : createTransaction(entity2, entity1))
 						 .collect(Collectors.toList())
 		);
 
-//		TaskCreator<? extends Barrier> task = parallel(List.of(
+//		TaskCreator<? extends Barrier> taskCreator = parallel(List.of(
 //				createTransaction(entity1, entity2),
 //				createTransaction(entity2, entity1)
 //		));
 
-//		TaskCreator<? extends Barrier> task = createTransaction(entity1, entity2);
+//		TaskCreator<? extends Barrier> taskCreator = createTransaction(entity1, entity2);
 		
 		printState();
-		task.submit().await();
+		
+		System.out.println("Submitting...");
+		Barrier task = taskCreator.submit();
+		System.out.println("Submitted!");
+		
+		System.out.println("Awaiting...");
+		task.await();
+		System.out.println("Awaited!");
+		
 		printState();
 	}
 	

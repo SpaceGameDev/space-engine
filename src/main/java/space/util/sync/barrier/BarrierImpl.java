@@ -24,14 +24,17 @@ public class BarrierImpl implements Barrier {
 	}
 	
 	//trigger
-	public synchronized void triggerNow() {
-		if (hookList == null)
-			throw new IllegalStateException("Barrier already triggered!");
+	public void triggerNow() {
+		List<Runnable> hookList;
+		synchronized (this) {
+			if (this.hookList == null)
+				throw new IllegalStateException("Barrier already triggered!");
+			
+			hookList = this.hookList;
+			this.hookList = null;
+			this.notifyAll();
+		}
 		
-		List<Runnable> hookList = this.hookList;
-		this.hookList = null;
-		
-		this.notifyAll();
 		hookList.forEach(Runnable::run);
 	}
 	
