@@ -18,7 +18,7 @@ import static space.util.task.impl.AbstractTask.TaskState.*;
 public abstract class AbstractTask extends BarrierImpl {
 	
 	protected volatile @NotNull TaskState state = CREATED;
-	protected SyncLock[] locks;
+	protected final SyncLock[] locks;
 	
 	public AbstractTask(@NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
 		this(locks);
@@ -63,8 +63,9 @@ public abstract class AbstractTask extends BarrierImpl {
 		int i = 0;
 		for (; i < locks.length; i++) {
 			if (!locks[i].tryLock()) {
-				locksUnlock(i - 1);
+				locksUnlock(i);
 				locks[i].notifyUnlock(this::locksTryAcquire);
+				return;
 			}
 		}
 		submit();
