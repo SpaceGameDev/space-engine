@@ -2,6 +2,8 @@ package space.util.sync.lock;
 
 import space.util.task.TaskCreator;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * A Lock based upon {@link SyncLock}.
  */
@@ -22,12 +24,12 @@ public interface SyncLock {
 	 *
 	 * @return true if the Task is allowed to execute. See Description.
 	 */
-	boolean tryLock();
+	boolean tryLockNow();
+	
+	void tryLockLater(BooleanSupplier callback);
 	
 	/**
-	 * Called when the synchronization should end. Will always be called after {@link #tryLock()} and it returning true.
+	 * Called when the synchronization should end. Will always be called after {@link #tryLockNow()} and it returning true.
 	 */
 	void unlock();
-	
-	void notifyUnlock(Runnable run);
 }

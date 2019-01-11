@@ -4,14 +4,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class SyncLockImpl implements SyncLock {
 	
 	private boolean locked;
-	private @NotNull List<Runnable> notifyUnlock = new ArrayList<>();
+	private @NotNull List<BooleanSupplier> notifyUnlock = new ArrayList<>();
 	
 	@Override
-	public synchronized boolean tryLock() {
+	public synchronized boolean tryLockNow() {
 		if (locked)
 			return false;
 		
@@ -22,31 +23,40 @@ public class SyncLockImpl implements SyncLock {
 	
 	@Override
 	public void unlock() {
-		Runnable[] oldNotifyUnlock;
-		synchronized (this) {
-			if (!locked)
-				throw new IllegalStateException();
+		BooleanSupplier callback;
+		while (true) {
+			synchronized (this) {
+				if (notifyUnlock.isEmpty()) {
+					//no callback found to accept lock
+					locked = false;
+					return;
+				}
+				callback = notifyUnlock.remove(0);
+			}
 			
-			//success
-			locked = false;
-			oldNotifyUnlock = notifyUnlock.toArray(new Runnable[0]);
-			notifyUnlock.clear();
-		}
-		
-		for (Runnable run : oldNotifyUnlock) {
-			run.run();
+			if (callback.getAsBoolean()) {
+				//accepted lock
+				return;
+			}
 		}
 	}
 	
 	@Override
-	public void notifyUnlock(Runnable run) {
+	public void tryLockLater(BooleanSupplier callback) {
 		synchronized (this) {
 			if (locked) {
-				notifyUnlock.add(run);
+				//locked -> add callback
+				notifyUnlock.add(callback);
 				return;
 			}
+			
+			//not locked -> lock and call callback
+			locked = true;
 		}
 		
-		run.run();
+		if (!callback.getAsBoolean()) {
+			//not accepted lock
+			unlock();
+		}
 	}
 }

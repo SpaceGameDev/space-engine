@@ -59,8 +59,12 @@ public abstract class AbstractTask extends BarrierImpl {
 		}
 	}
 	
-	//locks
 	protected void locksTryAcquire() {
+		locksTryAcquire(-1);
+	}
+	
+	//locks
+	protected boolean locksTryAcquire(int exceptLock) {
 		if (TransactionTest.COUNTER != null && locks.length != 0)
 			TransactionTest.COUNTER.incrementAndGet();
 		
@@ -71,7 +75,7 @@ public abstract class AbstractTask extends BarrierImpl {
 			
 			boolean success = true;
 			for (i = 0; i < locks.length; i++) {
-				if (!locks[i].tryLock()) {
+				if (i != exceptLock && !locks[i].tryLockNow()) {
 					success = false;
 					break;
 				}
@@ -80,28 +84,38 @@ public abstract class AbstractTask extends BarrierImpl {
 			if (success) {
 				state = EXECUTING;
 				submit();
-				return;
+				return true;
 			}
 		}
 		
 		//failure
-		locksUnlock(i);
-		locks[i].notifyUnlock(this::locksTryAcquire);
+		final int fi = i;
+		locksUnlock(fi, exceptLock);
+		locks[fi].tryLockLater(() -> locksTryAcquire(fi));
+		return false;
 	}
 	
 	/**
 	 * DON'T synchronize when calling this method!
 	 */
 	protected void locksUnlock() {
-		locksUnlock(locks.length);
+		locksUnlock(locks.length, -1);
 	}
 	
 	/**
 	 * DON'T synchronize when calling this method!
 	 */
 	protected void locksUnlock(int maxExclusive) {
+		locksUnlock(maxExclusive, -1);
+	}
+	
+	/**
+	 * DON'T synchronize when calling this method!
+	 */
+	protected void locksUnlock(int maxExclusive, int exceptLock) {
 		for (int i = maxExclusive - 1; i >= 0; i--)
-			locks[i].unlock();
+			if (i != exceptLock)
+				locks[i].unlock();
 	}
 	
 	//execution
