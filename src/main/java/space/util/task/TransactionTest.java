@@ -7,6 +7,7 @@ import space.util.sync.lock.SyncLockImpl;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,7 +16,10 @@ import static space.util.task.Tasks.*;
 
 public class TransactionTest {
 	
-	public static int TRANSACTION_COUNT = 10000;
+	public static int[] TRANSACTION_COUNT = new int[] {2, 4, 6, 8, 10, 15, 20, 50, 100, 500, 1000, 5000, 10000};
+	public static boolean FANCY_PRINTOUT = false;
+	
+	public static AtomicInteger COUNTER;
 	
 	public static class Entity {
 		
@@ -23,49 +27,47 @@ public class TransactionTest {
 		public int count = 0;
 	}
 	
-	public static final Entity entity1 = new Entity();
-	public static final Entity entity2 = new Entity();
-	
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			GLOBAL_EXECUTOR = Executors.newFixedThreadPool(8);
 			System.out.print(""); //initialization
-			test();
+			
+			//run
+			for (int i : TRANSACTION_COUNT) {
+				run(i);
+			}
 		} finally {
 			if (GLOBAL_EXECUTOR instanceof ThreadPoolExecutor)
 				((ThreadPoolExecutor) GLOBAL_EXECUTOR).shutdown();
 		}
 	}
 	
-	public static void test() throws InterruptedException {
+	public static void run(int transactionCount) throws InterruptedException {
+		COUNTER = new AtomicInteger();
+		Entity entity1 = new Entity();
+		Entity entity2 = new Entity();
+		
 		TaskCreator<? extends Barrier> taskCreator = parallel(
-				IntStream.range(0, TRANSACTION_COUNT)
+				IntStream.range(0, transactionCount)
 						 .mapToObj(i -> i % 2 == 0 ? createTransaction(entity1, entity2) : createTransaction(entity2, entity1))
 						 .collect(Collectors.toList())
 		);
-
-//		TaskCreator<? extends Barrier> taskCreator = parallel(List.of(
-//				createTransaction(entity1, entity2),
-//				createTransaction(entity2, entity1)
-//		));
-
-//		TaskCreator<? extends Barrier> taskCreator = createTransaction(entity1, entity2);
 		
-		printState();
+		taskCreator.submit().await();
 		
-		System.out.println("Submitting...");
-		Barrier task = taskCreator.submit();
-		System.out.println("Submitted!");
+		if (transactionCount % 2 == 0) {
+			if (!(entity1.count == 0 && entity2.count == 0))
+				throw new RuntimeException("Transaction result invalid: " + entity1.count + " - " + entity2.count + " have to be 0 - 0");
+		} else {
+			if (!(entity1.count == -1 && entity2.count == 1))
+				throw new RuntimeException("Transaction result invalid: " + entity1.count + " - " + entity2.count + " have to be -1 - 1");
+		}
 		
-		System.out.println("Awaiting...");
-		task.await();
-		System.out.println("Awaited!");
-		
-		printState();
-	}
-	
-	public static void printState() {
-		System.out.println("ent1: " + entity1.count + " - ent2: " + entity2.count + "\n Counts should be " + (TRANSACTION_COUNT % 2 == 0 ? "0 and 0" : "-1 and 1"));
+		int count = COUNTER.get();
+		if (FANCY_PRINTOUT)
+			System.out.println(transactionCount + " Transactions: " + count + " calls to locksTryAcquire(). That's " + ((double) count / transactionCount) + " times!");
+		else
+			System.out.println(count + "\t" + Double.toString((double) count / transactionCount).replace('.', ','));
 	}
 	
 	public static TaskCreator<? extends Barrier> createTransaction(Entity from, Entity to) {

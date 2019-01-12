@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;
 import space.util.sync.barrier.BarrierImpl;
 import space.util.sync.lock.SyncLock;
+import space.util.task.TransactionTest;
 
 import static space.util.task.impl.AbstractTask.TaskState.*;
 
@@ -60,6 +61,9 @@ public abstract class AbstractTask extends BarrierImpl {
 	
 	//locks
 	protected void locksTryAcquire() {
+		if (TransactionTest.COUNTER != null && locks.length != 0)
+			TransactionTest.COUNTER.incrementAndGet();
+		
 		int i;
 		synchronized (this) {
 			if (state != ACQUIRING_LOCKS)
