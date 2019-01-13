@@ -32,27 +32,33 @@ public class SyncLockImpl implements SyncLock {
 		}
 		
 		return () -> {
-			synchronized (this) {
-				if (locked || modId != this.modId)
-					return;
-				locked = true;
-			}
-			
 			BooleanSupplier callback;
 			while (true) {
+				//lock and get callback
 				synchronized (this) {
+					if (locked || modId != this.modId)
+						return;
 					if (notifyUnlock.isEmpty()) {
 						//no callback found to accept lock
-						locked = false;
 						return;
 					}
 					callback = notifyUnlock.remove(0);
+					locked = true;
 				}
 				
+				//call callback
 				if (callback.getAsBoolean()) {
 					//accepted lock
 					return;
 				}
+				
+				//unlock
+				synchronized (this) {
+					locked = false;
+				}
+				
+				//possible to better prevent lifelocks though performance advantage negligible; only at extreme transaction counts (> 100,000)
+//				Thread.yield();
 			}
 		};
 	}
