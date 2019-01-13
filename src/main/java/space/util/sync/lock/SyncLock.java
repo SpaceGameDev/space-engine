@@ -31,5 +31,5 @@ public interface SyncLock {
 	/**
 	 * Called when the synchronization should end. Will always be called after {@link #tryLockNow()} and it returning true.
 	 */
-	void unlock();
+	Runnable unlock();
 }

@@ -113,9 +113,16 @@ public abstract class AbstractTask extends BarrierImpl {
 	 * DON'T synchronize when calling this method!
 	 */
 	protected void locksUnlock(int maxExclusive, int exceptLock) {
+		if (maxExclusive == 0)
+			return;
+		
+		Runnable[] notifyCallback = new Runnable[maxExclusive];
 		for (int i = maxExclusive - 1; i >= 0; i--)
 			if (i != exceptLock)
-				locks[i].unlock();
+				notifyCallback[i] = locks[i].unlock();
+		for (int i = maxExclusive - 1; i >= 0; i--)
+			if (notifyCallback[i] != null)
+				notifyCallback[i].run();
 	}
 	
 	//execution

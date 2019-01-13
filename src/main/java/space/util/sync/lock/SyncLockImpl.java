@@ -22,23 +22,32 @@ public class SyncLockImpl implements SyncLock {
 	}
 	
 	@Override
-	public void unlock() {
-		BooleanSupplier callback;
-		while (true) {
-			synchronized (this) {
-				if (notifyUnlock.isEmpty()) {
-					//no callback found to accept lock
-					locked = false;
+	public Runnable unlock() {
+		synchronized (this) {
+			locked = false;
+		}
+		
+		return () -> {
+			if (!tryLockNow())
+				return;
+			
+			BooleanSupplier callback;
+			while (true) {
+				synchronized (this) {
+					if (notifyUnlock.isEmpty()) {
+						//no callback found to accept lock
+						locked = false;
+						return;
+					}
+					callback = notifyUnlock.remove(0);
+				}
+				
+				if (callback.getAsBoolean()) {
+					//accepted lock
 					return;
 				}
-				callback = notifyUnlock.remove(0);
 			}
-			
-			if (callback.getAsBoolean()) {
-				//accepted lock
-				return;
-			}
-		}
+		};
 	}
 	
 	@Override
