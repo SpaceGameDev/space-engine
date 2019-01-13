@@ -9,6 +9,7 @@ import java.util.function.BooleanSupplier;
 public class SyncLockImpl implements SyncLock {
 	
 	private boolean locked;
+	private int modId;
 	private @NotNull List<BooleanSupplier> notifyUnlock = new ArrayList<>();
 	
 	@Override
@@ -18,18 +19,24 @@ public class SyncLockImpl implements SyncLock {
 		
 		//success
 		locked = true;
+		modId++;
 		return true;
 	}
 	
 	@Override
 	public Runnable unlock() {
+		final int modId;
 		synchronized (this) {
 			locked = false;
+			modId = this.modId;
 		}
 		
 		return () -> {
-			if (!tryLockNow())
-				return;
+			synchronized (this) {
+				if (locked || modId != this.modId)
+					return;
+				locked = true;
+			}
 			
 			BooleanSupplier callback;
 			while (true) {
@@ -65,7 +72,7 @@ public class SyncLockImpl implements SyncLock {
 		
 		if (!callback.getAsBoolean()) {
 			//not accepted lock
-			unlock();
+			unlock().run();
 		}
 	}
 }
