@@ -6,6 +6,9 @@ import space.util.sync.barrier.BarrierImpl;
 import space.util.sync.lock.SyncLock;
 import space.util.task.TransactionTest;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import static space.util.task.impl.AbstractTask.TaskState.*;
 
 /**
@@ -29,7 +32,9 @@ public abstract class AbstractTask extends BarrierImpl {
 	/**
 	 * REQUIRES calling {@link #init(Barrier[])} later to start execution
 	 */
-	protected AbstractTask(SyncLock[] locks) {
+	protected AbstractTask(SyncLock[] originalLocks) {
+		SyncLock[] locks = originalLocks.clone();
+		Arrays.sort(locks, Comparator.comparingInt(Object::hashCode));
 		this.locks = locks;
 	}
 	

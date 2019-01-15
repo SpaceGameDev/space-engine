@@ -12,6 +12,13 @@ public class SyncLockImpl implements SyncLock {
 	private int modId;
 	private @NotNull List<BooleanSupplier> notifyUnlock = new ArrayList<>();
 	
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+	public SyncLockImpl() {
+		//calls hashCode() to generate identity hashcode and disable 'Biased locking' on Hotspot.
+		//https://srvaroa.github.io/jvm/java/openjdk/biased-locking/2017/01/30/hashCode.html
+		hashCode();
+	}
+	
 	@Override
 	public synchronized boolean tryLockNow() {
 		if (locked)
