@@ -1,8 +1,10 @@
-package space.util.task;
+package space.util.task.test;
 
 import space.util.sync.barrier.Barrier;
+import space.util.sync.barrier.BarrierImpl;
 import space.util.sync.lock.SyncLock;
 import space.util.sync.lock.SyncLockImpl;
+import space.util.task.TaskCreator;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -53,7 +55,18 @@ public class TransactionTest {
 						 .collect(Collectors.toList())
 		);
 		
-		taskCreator.submit().await();
+		BarrierImpl barrier = new BarrierImpl();
+		if (FANCY_PRINTOUT)
+			System.out.println(transactionCount + " Transactions: submitting");
+		Barrier task = taskCreator.submit(barrier);
+		if (FANCY_PRINTOUT)
+			System.out.println(transactionCount + " Transactions: launching");
+		barrier.triggerNow();
+		if (FANCY_PRINTOUT)
+			System.out.println(transactionCount + " Transactions: awaiting");
+		task.await();
+		if (FANCY_PRINTOUT)
+			System.out.println(transactionCount + " Transactions: done!");
 		
 		if (transactionCount % 2 == 0) {
 			if (!(entity1.count == 0 && entity2.count == 0))

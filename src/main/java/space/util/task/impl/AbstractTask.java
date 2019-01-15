@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import space.util.sync.barrier.Barrier;
 import space.util.sync.barrier.BarrierImpl;
 import space.util.sync.lock.SyncLock;
-import space.util.task.TransactionTest;
+import space.util.task.test.TransactionTest;
 
 import java.util.Arrays;
 import java.util.Comparator;

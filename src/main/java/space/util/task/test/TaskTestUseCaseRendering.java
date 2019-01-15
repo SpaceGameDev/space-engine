@@ -1,8 +1,9 @@
-package space.util.task;
+package space.util.task.test;
 
 import space.util.sync.barrier.Barrier;
 import space.util.sync.future.Future;
 import space.util.sync.future.FutureWithException;
+import space.util.task.TaskCreator;
 import space.util.task.impl.FutureTaskWithException;
 
 import java.io.IOException;
