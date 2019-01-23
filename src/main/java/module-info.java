@@ -1,5 +1,7 @@
 module space.engine {
-
+	
+	exports space.engine;
+	
 	exports space.util;
 	exports space.util.annotation;
 	exports space.util.baseobject;
@@ -78,5 +80,5 @@ module space.engine {
 //	exports space.util.unsafe; //do NOT export
 
 	requires jdk.unsupported;
-	requires annotations;
+	requires org.jetbrains.annotations;
 }

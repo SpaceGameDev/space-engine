@@ -1,27 +1,6 @@
-group parent.group
-version parent.version
-
-apply plugin: 'java'
-
-targetCompatibility = rootProject.targetCompatibility
-sourceCompatibility = rootProject.sourceCompatibility
-properties.putAll parent.properties
-
-configurations {
-    implementation.dependencies.addAll rootProject.configurations.implementation.dependencies
-    testImplementation.dependencies.addAll rootProject.configurations.testImplementation.dependencies
-}
-
-repositories {
-    addAll parent.repositories.asCollection()
-}
-
 dependencies {
-    implementation project(':space-util')
-    implementation project(':space-engine')
-    implementation project(':space-engine:space-engine-window')
-    implementation 'org.jetbrains:annotations:16.0.1'
-
+    api project(':space-engine:space-engine-window')
+    
     implementation "org.lwjgl:lwjgl:$parent.lwjglVersion"
     implementation "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
     implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"

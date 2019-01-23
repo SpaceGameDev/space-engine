@@ -1,21 +1,42 @@
-group parent.group
-version parent.version
-
-apply plugin: 'java'
-
-targetCompatibility = rootProject.targetCompatibility
-sourceCompatibility = rootProject.sourceCompatibility
-properties.putAll parent.properties
-
-configurations {
-    implementation.dependencies.addAll rootProject.configurations.implementation.dependencies
-    testImplementation.dependencies.addAll rootProject.configurations.testImplementation.dependencies
+plugins {
+	id 'java-library'
 }
 
-repositories {
-    addAll parent.repositories.asCollection()
+import org.gradle.internal.os.OperatingSystem
+
+ext {
+	lwjglVersion = '3.1.4'
+
+	switch (OperatingSystem.current()) {
+		case OperatingSystem.WINDOWS:
+			lwjglNatives = "natives-windows"
+			break
+		case OperatingSystem.LINUX:
+			lwjglNatives = "natives-linux"
+			break
+		case OperatingSystem.MAC_OS:
+			lwjglNatives = "natives-macos"
+			break
+	}
+}
+
+allprojects {
+	group 'SpaceGameDev'
+	version '1.0'
+	
+	apply plugin: 'java-library'
+
+	targetCompatibility = 1.9
+	sourceCompatibility = 1.9
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
 }
 
 dependencies {
-    
+	api 'org.jetbrains:annotations:16.0.3'
+
+	testImplementation group: 'junit', name: 'junit', version: '4.12'
 }

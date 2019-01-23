@@ -2,7 +2,6 @@ module space.engine.window.glfw {
 	
 	exports space.engine.window.glfw;
 	
-	requires space.util;
 	requires space.engine;
 	requires space.engine.window;
 	
@@ -10,6 +9,6 @@ module space.engine.window.glfw {
 	requires org.lwjgl.glfw;
 	requires org.lwjgl.opengl;
 	
-	requires annotations;
+	requires org.jetbrains.annotations;
 	
 }

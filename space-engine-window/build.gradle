@@ -1,24 +1,3 @@
-group parent.group
-version parent.version
-
-apply plugin: 'java'
-
-targetCompatibility = rootProject.targetCompatibility
-sourceCompatibility = rootProject.sourceCompatibility
-properties.putAll parent.properties
-
-properties.putAll parent.properties
-
-configurations {
-    implementation.dependencies.addAll rootProject.configurations.implementation.dependencies
-    testImplementation.dependencies.addAll rootProject.configurations.testImplementation.dependencies
-}
-
-repositories {
-    addAll parent.repositories.asCollection()
-}
-
 dependencies {
-    implementation project(':space-util')
-    implementation project(':space-engine')
+    api project(':space-engine')
 }
