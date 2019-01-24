@@ -1,19 +1,24 @@
 package space.engine;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.buffer.Allocator;
-import space.util.buffer.array.ArrayAllocatorCollection;
-import space.util.buffer.direct.DirectBuffer;
-import space.util.buffer.direct.alloc.stack.AllocatorStack;
-import space.util.buffer.pointer.PointerAllocatorCollection;
-import space.util.buffer.string.BufferStringConverter;
-import space.util.key.Key;
-import space.util.key.attribute.AttributeList;
-import space.util.key.attribute.AttributeListCreator;
-import space.util.key.attribute.AttributeListModification;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.array.ArrayAllocatorCollection;
+import space.engine.buffer.direct.DirectBuffer;
+import space.engine.buffer.direct.alloc.stack.AllocatorStack;
+import space.engine.buffer.pointer.PointerAllocatorCollection;
+import space.engine.buffer.string.BufferStringConverter;
+import space.engine.key.Key;
+import space.engine.key.attribute.AttributeList;
+import space.engine.key.attribute.AttributeListCreator;
+import space.engine.key.attribute.AttributeListModification;
+
+import java.util.concurrent.Executor;
 
 @SuppressWarnings("unused")
 public class Side {
+	
+	@Deprecated
+	public static Executor GLOBAL_EXECUTOR = Runnable::run;
 	
 	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	

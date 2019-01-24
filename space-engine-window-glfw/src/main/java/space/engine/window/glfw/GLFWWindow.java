@@ -1,16 +1,16 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.baseobject.Freeable.FreeableWithStorage;
+import space.engine.baseobject.exceptions.FreedException;
+import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.FreeableStorageImpl;
+import space.engine.key.attribute.AttributeList;
+import space.engine.task.TaskCreator;
 import space.engine.window.VideoMode;
 import space.engine.window.VideoMode.VideoModeDesktop;
 import space.engine.window.Window;
 import space.engine.window.glfw.GLFWMonitor.GLFWVideoModeMonitor;
-import space.util.baseobject.Freeable.FreeableWithStorage;
-import space.util.baseobject.exceptions.FreedException;
-import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.FreeableStorageImpl;
-import space.util.key.attribute.AttributeList;
-import space.util.task.TaskCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.window.glfw.GLFWUtil.toGLFWBoolean;

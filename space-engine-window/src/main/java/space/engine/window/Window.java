@@ -1,16 +1,16 @@
 package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.baseobject.Freeable;
+import space.engine.key.Key;
+import space.engine.key.attribute.AttributeListCreator;
+import space.engine.task.TaskCreator;
 import space.engine.window.VideoMode.VideoModeDesktop;
-import space.util.baseobject.Freeable;
-import space.util.key.Key;
-import space.util.key.attribute.AttributeListCreator;
-import space.util.task.TaskCreator;
 
 import java.util.concurrent.Executor;
 
 /**
- * A {@link Window} is a {@link Window} on the Desktop ({@link WindowMode#WINDOWED} or {@link WindowMode#BORDERLESS}) or Monitor ({@link WindowMode#FULLSCREEN}).
+ * A {@link Window} is a {@link Window} on the Desktop.
  * Use {@link Window#free()} to free and close the {@link Window}.
  * <b>Opened {@link Window Windows} cannot be altered. {@link Window#free()} the opened one and create a new {@link Window} with your {@link WindowContext}</b>
  */

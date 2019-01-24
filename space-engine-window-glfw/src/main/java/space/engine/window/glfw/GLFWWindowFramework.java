@@ -3,13 +3,13 @@ package space.engine.window.glfw;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import space.engine.Side;
+import space.engine.buffer.array.ArrayBufferPointer;
+import space.engine.buffer.direct.alloc.stack.AllocatorStack;
+import space.engine.buffer.pointer.PointerBufferLong;
+import space.engine.key.attribute.AttributeList;
 import space.engine.window.Monitor;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowFramework;
-import space.util.buffer.array.ArrayBufferPointer;
-import space.util.buffer.direct.alloc.stack.AllocatorStack;
-import space.util.buffer.pointer.PointerBufferLong;
-import space.util.key.attribute.AttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.Side.*;

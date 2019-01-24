@@ -2,10 +2,10 @@ package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import space.engine.Side;
+import space.engine.buffer.direct.UnsafeDirectBuffer;
+import space.engine.indexmap.IndexMap;
+import space.engine.indexmap.IndexMapArray;
 import space.engine.window.exception.WindowErrorIdException;
-import space.util.buffer.direct.UnsafeDirectBuffer;
-import space.util.indexmap.IndexMap;
-import space.util.indexmap.IndexMapArray;
 
 import static org.lwjgl.glfw.GLFW.*;
 

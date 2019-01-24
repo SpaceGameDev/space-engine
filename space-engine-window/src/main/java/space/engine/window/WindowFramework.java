@@ -1,8 +1,8 @@
 package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.baseobject.Freeable;
-import space.util.key.attribute.AttributeList;
+import space.engine.baseobject.Freeable;
+import space.engine.key.attribute.AttributeList;
 
 /**
  * The {@link WindowFramework} is the first Interface you interact with when opening any {@link Window Windows}.

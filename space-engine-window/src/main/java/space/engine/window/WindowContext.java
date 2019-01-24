@@ -1,10 +1,10 @@
 package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
-import space.util.baseobject.Freeable;
-import space.util.key.Key;
-import space.util.key.attribute.AttributeList;
-import space.util.key.attribute.AttributeListCreator;
+import space.engine.baseobject.Freeable;
+import space.engine.key.Key;
+import space.engine.key.attribute.AttributeList;
+import space.engine.key.attribute.AttributeListCreator;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.

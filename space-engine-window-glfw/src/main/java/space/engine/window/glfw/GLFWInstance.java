@@ -3,9 +3,9 @@ package space.engine.window.glfw;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
+import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.FreeableStorageWeak;
 import space.engine.window.exception.WindowFrameworkInitializationException;
-import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.FreeableStorageWeak;
 
 import static org.lwjgl.glfw.GLFW.*;
 

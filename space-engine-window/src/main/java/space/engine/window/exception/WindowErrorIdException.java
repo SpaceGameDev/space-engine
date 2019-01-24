@@ -2,7 +2,7 @@ package space.engine.window.exception;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.util.string.builder.CharBufferBuilder1D;
+import space.engine.string.builder.CharBufferBuilder1D;
 
 public class WindowErrorIdException extends WindowException {
 	

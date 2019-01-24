@@ -1,13 +1,13 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.baseobject.exceptions.FreedException;
+import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.FreeableStorageImpl;
+import space.engine.key.attribute.AttributeList;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.exception.WindowUnsupportedApiTypeException;
-import space.util.baseobject.exceptions.FreedException;
-import space.util.freeableStorage.FreeableStorage;
-import space.util.freeableStorage.FreeableStorageImpl;
-import space.util.key.attribute.AttributeList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.window.WindowContext.FreeableWithStorage;
