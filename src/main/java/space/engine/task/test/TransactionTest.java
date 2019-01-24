@@ -78,7 +78,7 @@ public class TransactionTest {
 		
 		int count = COUNTER.get();
 		if (FANCY_PRINTOUT)
-			System.out.println(transactionCount + " Transactions: " + count + " calls to locksTryAcquire(). That's " + ((double) count / transactionCount) + " times!");
+			System.out.println(transactionCount + " Transactions: " + count + " calls to acquireLocks(). That's " + ((double) count / transactionCount) + " times!");
 		else
 			System.out.println(count + "\t" + Double.toString((double) count / transactionCount).replace('.', ','));
 	}

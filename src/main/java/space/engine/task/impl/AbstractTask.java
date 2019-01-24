@@ -63,67 +63,16 @@ public abstract class AbstractTask extends BarrierImpl {
 		}
 	}
 	
-	protected void locksTryAcquire() {
-		locksTryAcquire(-1);
-	}
-	
 	//locks
-	protected boolean locksTryAcquire(int exceptLock) {
-		int i;
-		synchronized (this) {
-			if (state != ACQUIRING_LOCKS)
-				throw new IllegalStateException("Can only try to acquire locks in State " + ACQUIRING_LOCKS + ", was in State " + state);
-			
-			boolean success = true;
-			for (i = 0; i < locks.length; i++) {
-				if (i != exceptLock && !locks[i].tryLockNow()) {
-					success = false;
-					break;
-				}
-			}
-			
-			if (success) {
+	protected void locksTryAcquire() {
+		SyncLock.acquireLocks(locks, () -> {
+			synchronized (this) {
+				if (state != ACQUIRING_LOCKS)
+					throw new IllegalStateException("Can only try to acquire locks in State " + ACQUIRING_LOCKS + ", was in State " + state);
 				state = EXECUTING;
 				submit();
-				return true;
 			}
-		}
-		
-		//failure
-		final int fi = i;
-		locksUnlock(fi, exceptLock);
-		locks[fi].tryLockLater(() -> locksTryAcquire(fi));
-		return false;
-	}
-	
-	/**
-	 * DON'T synchronize when calling this method!
-	 */
-	protected void locksUnlock() {
-		locksUnlock(locks.length, -1);
-	}
-	
-	/**
-	 * DON'T synchronize when calling this method!
-	 */
-	protected void locksUnlock(int maxExclusive) {
-		locksUnlock(maxExclusive, -1);
-	}
-	
-	/**
-	 * DON'T synchronize when calling this method!
-	 */
-	protected void locksUnlock(int maxExclusive, int exceptLock) {
-		if (maxExclusive == 0)
-			return;
-		
-		Runnable[] notifyCallback = new Runnable[maxExclusive];
-		for (int i = maxExclusive - 1; i >= 0; i--)
-			if (i != exceptLock)
-				notifyCallback[i] = locks[i].unlock();
-		for (int i = maxExclusive - 1; i >= 0; i--)
-			if (notifyCallback[i] != null)
-				notifyCallback[i].run();
+		});
 	}
 	
 	//execution
@@ -141,7 +90,7 @@ public abstract class AbstractTask extends BarrierImpl {
 			state = TaskState.FINISHED;
 		}
 		
-		locksUnlock();
+		SyncLock.unlockLocks(locks);
 		triggerNow();
 	}
 	
