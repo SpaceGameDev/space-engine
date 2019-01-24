@@ -15,6 +15,20 @@ import java.util.stream.IntStream;
 
 import static space.engine.task.Tasks.*;
 
+/**
+ * To make this work: add the following lines to the top of
+ * acquireLocks(SyncLock[] locks, int exceptLock, Runnable callback):
+ */
+//		if(locks.length == 0) {
+//			callback.run();
+//			return true;
+//		}
+//
+//	+	if(TransactionTest.COUNTER != null)
+//	+		TransactionTest.COUNTER.incrementAndGet();
+//
+//		int i;
+//		boolean success = true;
 public class TransactionTest {
 	
 	public static int[] TRANSACTION_COUNT = new int[] {2, 4, 6, 8, 10, 15, 20, 50, 100, 500, 1000, 5000, 10000};
@@ -31,7 +45,7 @@ public class TransactionTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			EXECUTOR = Executors.newFixedThreadPool(8);
+			EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			System.out.print(""); //initialization
 			
 			//run

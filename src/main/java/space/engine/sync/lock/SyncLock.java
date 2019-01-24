@@ -49,6 +49,11 @@ public interface SyncLock {
 	}
 	
 	private static boolean acquireLocks(SyncLock[] locks, int exceptLock, Runnable callback) {
+		if (locks.length == 0) {
+			callback.run();
+			return true;
+		}
+			
 		int i;
 		boolean success = true;
 		for (i = 0; i < locks.length; i++) {

@@ -23,7 +23,7 @@ public class LotsOfObjectsTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			EXECUTOR = Executors.newFixedThreadPool(8);
+			EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			System.out.print(""); //initialization
 			
 			//run
