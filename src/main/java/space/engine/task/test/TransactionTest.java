@@ -7,13 +7,12 @@ import space.engine.sync.lock.SyncLockImpl;
 import space.engine.task.TaskCreator;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static space.engine.Side.GLOBAL_EXECUTOR;
 import static space.engine.task.Tasks.*;
 
 public class TransactionTest {
@@ -22,6 +21,7 @@ public class TransactionTest {
 	public static boolean FANCY_PRINTOUT = false;
 	
 	public static AtomicInteger COUNTER;
+	public static ExecutorService EXECUTOR;
 	
 	public static class Entity {
 		
@@ -31,7 +31,7 @@ public class TransactionTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			GLOBAL_EXECUTOR = Executors.newFixedThreadPool(8);
+			EXECUTOR = Executors.newFixedThreadPool(8);
 			System.out.print(""); //initialization
 			
 			//run
@@ -39,8 +39,7 @@ public class TransactionTest {
 				run(i);
 			}
 		} finally {
-			if (GLOBAL_EXECUTOR instanceof ThreadPoolExecutor)
-				((ThreadPoolExecutor) GLOBAL_EXECUTOR).shutdown();
+			EXECUTOR.shutdown();
 		}
 	}
 	
@@ -85,8 +84,8 @@ public class TransactionTest {
 	
 	public static TaskCreator<? extends Barrier> createTransaction(Entity from, Entity to) {
 		return sequential(new SyncLock[] {from.lock, to.lock}, Barrier.EMPTY_BARRIER_ARRAY, List.of(
-				runnable(() -> from.count--),
-				runnable(() -> to.count++)
+				runnable(EXECUTOR, () -> from.count--),
+				runnable(EXECUTOR, () -> to.count++)
 		));
 	}
 }

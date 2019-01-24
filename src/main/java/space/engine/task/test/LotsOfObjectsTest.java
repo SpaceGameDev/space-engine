@@ -8,13 +8,12 @@ import space.engine.task.impl.MultiTask;
 import space.engine.task.test.TransactionTest.Entity;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static space.engine.Side.GLOBAL_EXECUTOR;
 import static space.engine.task.Tasks.parallel;
+import static space.engine.task.test.TransactionTest.EXECUTOR;
 
 public class LotsOfObjectsTest {
 	
@@ -24,7 +23,7 @@ public class LotsOfObjectsTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			GLOBAL_EXECUTOR = Executors.newFixedThreadPool(8);
+			EXECUTOR = Executors.newFixedThreadPool(8);
 			System.out.print(""); //initialization
 			
 			//run
@@ -32,8 +31,7 @@ public class LotsOfObjectsTest {
 				System.out.println(String.format("%1$3s", count) + ": " + formatTimeMs(run(count)));
 			}
 		} finally {
-			if (GLOBAL_EXECUTOR instanceof ThreadPoolExecutor)
-				((ThreadPoolExecutor) GLOBAL_EXECUTOR).shutdown();
+			EXECUTOR.shutdown();
 		}
 	}
 	

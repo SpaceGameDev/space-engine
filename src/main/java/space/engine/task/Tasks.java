@@ -10,10 +10,10 @@ import space.engine.task.impl.RunnableTask;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static space.engine.ArrayUtils.mergeIfNeeded;
-import static space.engine.Side.GLOBAL_EXECUTOR;
 import static space.engine.sync.barrier.Barrier.EMPTY_BARRIER_ARRAY;
 import static space.engine.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
 
@@ -23,24 +23,24 @@ public class Tasks {
 	}
 	
 	//Runnable
-	public static TaskCreator<? extends RunnableTask> runnable(Runnable run) {
-		return runnable(GLOBAL_EXECUTOR, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	public static TaskCreator<? extends RunnableTask> runnableMinimal(Runnable run) {
+		return runnable(Runnable::run, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
 	}
 	
-	public static TaskCreator<? extends RunnableTask> runnable(Executor exec, Runnable run) {
-		return runnable(exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	public static TaskCreator<? extends RunnableTask> runnableMinimal(Barrier[] staticBarriers, Runnable run) {
+		return runnable(Runnable::run, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
 	}
 	
-	public static TaskCreator<? extends RunnableTask> runnable(Barrier[] staticBarriers, Runnable run) {
-		return runnable(GLOBAL_EXECUTOR, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	public static TaskCreator<? extends RunnableTask> runnableMinimal(SyncLock[] staticLocks, Barrier[] staticBarriers, Runnable run) {
+		return runnable(Runnable::run, staticLocks, staticBarriers, run);
 	}
 	
 	public static TaskCreator<? extends RunnableTask> runnable(Executor exec, Barrier[] staticBarriers, Runnable run) {
 		return runnable(exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
 	}
 	
-	public static TaskCreator<? extends RunnableTask> runnable(SyncLock[] staticLocks, Barrier[] staticBarriers, Runnable run) {
-		return runnable(GLOBAL_EXECUTOR, staticLocks, staticBarriers, run);
+	public static TaskCreator<? extends RunnableTask> runnable(Executor exec, Runnable run) {
+		return runnable(exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
 	}
 	
 	public static TaskCreator<? extends RunnableTask> runnable(Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, Runnable run) {
@@ -58,24 +58,24 @@ public class Tasks {
 	}
 	
 	//Future
-	public static <R> TaskCreator<? extends FutureTask<R>> future(Supplier<R> run) {
-		return future(GLOBAL_EXECUTOR, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	public static <R> TaskCreator<? extends FutureTask<R>> futureMinimal(Supplier<R> run) {
+		return future(Runnable::run, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R> TaskCreator<? extends FutureTask<R>> futureMinimal(Barrier[] staticBarriers, Supplier<R> run) {
+		return future(Runnable::run, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R> TaskCreator<? extends FutureTask<R>> futureMinimal(SyncLock[] staticLocks, Barrier[] staticBarriers, Supplier<R> run) {
+		return future(Runnable::run, staticLocks, staticBarriers, run);
 	}
 	
 	public static <R> TaskCreator<? extends FutureTask<R>> future(Executor exec, Supplier<R> run) {
 		return future(exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
 	}
 	
-	public static <R> TaskCreator<? extends FutureTask<R>> future(Barrier[] staticBarriers, Supplier<R> run) {
-		return future(GLOBAL_EXECUTOR, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
-	}
-	
 	public static <R> TaskCreator<? extends FutureTask<R>> future(Executor exec, Barrier[] staticBarriers, Supplier<R> run) {
 		return future(exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
-	}
-	
-	public static <R> TaskCreator<? extends FutureTask<R>> future(SyncLock[] staticLocks, Barrier[] staticBarriers, Supplier<R> run) {
-		return future(GLOBAL_EXECUTOR, staticLocks, staticBarriers, run);
 	}
 	
 	public static <R> TaskCreator<? extends FutureTask<R>> future(Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, Supplier<R> run) {
@@ -88,6 +88,24 @@ public class Tasks {
 			@Override
 			protected R execute0() {
 				return run.get();
+			}
+		};
+	}
+	
+	//MultiTask custom
+	public static TaskCreator<? extends MultiTask> multiCustom(Function<Barrier, Barrier> setup) {
+		return multiCustom(EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, setup);
+	}
+	
+	public static TaskCreator<? extends MultiTask> multiCustom(Barrier[] staticBarriers, Function<Barrier, Barrier> setup) {
+		return multiCustom(EMPTY_SYNCLOCK_ARRAY, staticBarriers, setup);
+	}
+	
+	public static TaskCreator<? extends MultiTask> multiCustom(SyncLock[] staticLocks, Barrier[] staticBarriers, Function<Barrier, Barrier> setup) {
+		return (locks, barriers) -> new MultiTask(mergeIfNeeded(SyncLock[]::new, staticLocks, locks), mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected Barrier setup(Barrier start) {
+				return setup.apply(start);
 			}
 		};
 	}
