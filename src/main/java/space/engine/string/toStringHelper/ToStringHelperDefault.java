@@ -283,7 +283,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 				
 				b.append(name).append("{ ");
 				for (IndexMultiMapEntry<String> entry : coll)
-					b.append(Arrays.toString(entry.getIndex())).append(": ").append(entry.getValue()).append(", ");
+					b.append(Arrays.toString(entry.getIndex())).append(": ").append((Object) entry.getValue()).append(", ");
 				b.reduceLength(2).append('}');
 				return b.toString();
 			}
@@ -302,7 +302,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 				b.append(name).append("{ ");
 				int size = map.size();
 				for (int i = 0; i < size; i++) {
-					b.append(map.get(new int[] {i, 0})).append(separator).append(new int[] {i, 1});
+					b.append((Object) map.get(new int[] {i, 0})).append(separator).append(new int[] {i, 1});
 					if (i + 1 < size)
 						b.append(", ");
 				}

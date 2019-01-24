@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 /**
  * The {@link UnmodifiableCollection} will throw {@link UnsupportedOperationException} when trying to change the {@link Collection}
  */
-@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class UnmodifiableCollection<E> extends DelegatingCollection<E> {
 	
 	public UnmodifiableCollection(Collection<E> coll) {

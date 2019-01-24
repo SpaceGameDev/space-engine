@@ -53,7 +53,6 @@ public class MonofontGuiApi extends AbstractGuiApi {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public Class<MonofontGuiElement> getBaseElementClass() {
 		return MonofontGuiElement.class;
 	}

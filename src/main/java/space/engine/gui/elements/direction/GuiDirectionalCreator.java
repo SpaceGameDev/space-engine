@@ -1,5 +1,6 @@
 package space.engine.gui.elements.direction;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.gui.GuiCreator;
 import space.engine.gui.GuiElement;
 
@@ -22,8 +23,8 @@ public interface GuiDirectionalCreator extends GuiCreator {
 		
 		void add(GuiElement v);
 		
-		GuiElement put(int index, GuiElement v);
+		@Nullable GuiElement put(int index, @Nullable GuiElement v);
 		
-		GuiElement remove(int index);
+		@Nullable GuiElement remove(int index);
 	}
 }

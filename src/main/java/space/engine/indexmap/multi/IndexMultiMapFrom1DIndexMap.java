@@ -1,9 +1,11 @@
 package space.engine.indexmap.multi;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.delegate.collection.ConvertingCollection;
 import space.engine.delegate.collection.UnmodifiableCollection;
 import space.engine.indexmap.IndexMap;
+import space.engine.indexmap.IndexMapArray;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,7 +20,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	public int[] relativePos;
 	
 	public IndexMultiMapFrom1DIndexMap() {
-		this(null);
+		this(new IndexMapArray<>());
 	}
 	
 	public IndexMultiMapFrom1DIndexMap(IndexMap<VALUE> indexMap) {
@@ -74,6 +76,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	//access
+	@Nullable
 	@Override
 	public VALUE get(int[] pos) {
 		int i = getListIndex(pos);
@@ -87,8 +90,8 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	public IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos) {
 		int i = getListIndex(pos);
 		if (i == -1)
-			return null;
-		return new Entry(indexMap.getEntry(i));
+			throw new IllegalArgumentException();
+		return new Entry<>(indexMap.getEntry(i));
 	}
 	
 	@Override
@@ -144,12 +147,14 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 			for (int i = 0; i < pos.length; i++)
 				if (pos[i] != getSafeO(relativePos, i, 0))
 					return Collections.emptyList();
-			return Collections.singleton(new Entry(indexMap.getEntry(pos[relativePos.length])));
+			return Collections.singleton(new Entry<>(indexMap.getEntry(pos[relativePos.length])));
 		}
 	}
 	
 	public Collection<IndexMultiMapEntry<VALUE>> tableComplete() {
-		return new ConvertingCollection.BiDirectional<>(indexMap.table(), IndexMultiMapFrom1DIndexMap.Entry::new, entry -> entry instanceof IndexMultiMapFrom1DIndexMap.Entry ? ((Entry) entry).entry : null);
+		return new ConvertingCollection.BiDirectional<>(indexMap.table(),
+														IndexMultiMapFrom1DIndexMap.Entry::new,
+														entry -> entry instanceof IndexMultiMapFrom1DIndexMap.Entry ? ((Entry<VALUE>) entry).entry : null);
 	}
 	
 	protected class Entry<V> implements IndexMultiMapEntry<V> {

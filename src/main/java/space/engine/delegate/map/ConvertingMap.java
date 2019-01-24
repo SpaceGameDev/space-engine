@@ -405,7 +405,9 @@ public abstract class ConvertingMap<K, F, T> implements Map<K, T>, ToString {
 		@NotNull
 		@Override
 		public Set<Map.Entry<K, T>> entrySet() {
-			return new ConvertingSet.BiDirectional<Map.Entry<K, F>, Map.Entry<K, T>>(map.entrySet(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((BiDirectionalSparse.Entry) entry).entry : null);
+			return new ConvertingSet.BiDirectional<>(map.entrySet(),
+													 entry -> entry == null ? null : new Entry(entry),
+													 entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
 		}
 		
 		@Override

@@ -338,7 +338,7 @@ public interface ToStringHelper<T> {
 	
 	interface ToStringHelperTable<T> {
 		
-		Object put(int[] pos, @Nullable Object object);
+		@Nullable Object put(int[] pos, @Nullable Object object);
 		
 		T build();
 	}

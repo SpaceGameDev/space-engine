@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 /**
  * The {@link ModificationAwareCollection} will call the {@link ModificationAwareCollection#onModification} {@link Runnable} when the {@link Collection} is modified.
  */
-@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareCollection<E> implements Collection<E>, ToString {
 	
 	public Collection<E> coll;

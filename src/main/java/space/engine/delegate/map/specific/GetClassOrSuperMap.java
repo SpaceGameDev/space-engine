@@ -1,5 +1,6 @@
 package space.engine.delegate.map.specific;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.delegate.map.DelegatingMap;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ public class GetClassOrSuperMap<K extends Class<?>, V> extends DelegatingMap<K, 
 		return false;
 	}
 	
+	@Nullable
 	@Override
 	public V get(Object key) {
 		if (!(key instanceof Class<?>))

@@ -44,7 +44,7 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 		this(alloc, initCapacity, new PointerList(), parents);
 	}
 	
-	protected AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, @NotNull PointerList pointerList, FreeableStorage... parents) {
+	protected AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, @SuppressWarnings("NullableProblems") @NotNull PointerList pointerList, FreeableStorage... parents) {
 		this.alloc = alloc;
 		this.storage = FreeableStorage.createDummy(parents);
 		makeInternalBuffer(initCapacity);

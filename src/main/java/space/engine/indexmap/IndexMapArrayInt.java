@@ -16,7 +16,6 @@ public class IndexMapArrayInt {
 	}
 	
 	public IndexMapArrayInt(int initCapacity) {
-		//noinspection unchecked
 		array = new int[initCapacity];
 	}
 	
@@ -29,16 +28,11 @@ public class IndexMapArrayInt {
 		if (oldl < capa) {
 			
 			int[] oldArray = array;
-			//noinspection unchecked
 			array = new int[ArrayUtils.getOptimalArraySizeExpansion(oldl, capa, expandShift)];
 			System.arraycopy(oldArray, 0, array, 0, oldl);
 			return true;
 		}
 		return false;
-	}
-	
-	public boolean isExpandable() {
-		return true;
 	}
 	
 	public int size() {

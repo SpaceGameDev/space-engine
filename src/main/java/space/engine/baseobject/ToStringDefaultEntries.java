@@ -15,9 +15,7 @@ import java.util.function.BiFunction;
 class ToStringDefaultEntries {
 	
 	//constant
-	private static final BiFunction<ToStringHelper<?>, Collection, Object> ENTRY_LIST = (api, list) -> {
-		return api.toString(list.toArray());
-	};
+	private static final BiFunction<ToStringHelper<?>, Collection, Object> ENTRY_LIST = (api, list) -> api.toString(list.toArray());
 	private static final BiFunction<ToStringHelper<?>, Map, Object> ENTRY_MAP = (api, map) -> {
 		ToStringHelperTable<?> mapper = api.createMapper(map.getClass().getName(), "->", true);
 		int index = 0;
@@ -35,7 +33,7 @@ class ToStringDefaultEntries {
 		return null;
 	}
 	
-	@SuppressWarnings({"RedundantCast", "unchecked", "MismatchedQueryAndUpdateOfCollection"})
+	@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
 	private static void init() {
 		//List
 		ToString.manualEntry(ArrayList.class, ENTRY_LIST);

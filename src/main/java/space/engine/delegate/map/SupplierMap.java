@@ -1,6 +1,7 @@
 package space.engine.delegate.map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -125,6 +126,7 @@ public class SupplierMap<K, V> implements Map<K, V> {
 		return map.get().computeIfAbsent(key, mappingFunction);
 	}
 	
+	@Nullable
 	@Override
 	public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return map.get().computeIfPresent(key, remappingFunction);

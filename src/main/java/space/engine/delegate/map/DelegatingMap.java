@@ -1,6 +1,7 @@
 package space.engine.delegate.map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
 import space.engine.string.toStringHelper.ToStringHelper;
 
@@ -16,9 +17,9 @@ import java.util.function.Function;
  */
 public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 	
-	public Map<K, V> map;
+	public @NotNull Map<K, V> map;
 	
-	public DelegatingMap(Map<K, V> map) {
+	public DelegatingMap(@NotNull Map<K, V> map) {
 		this.map = map;
 	}
 	
@@ -125,6 +126,7 @@ public class DelegatingMap<K, V> implements ToString, Map<K, V> {
 		return map.computeIfAbsent(key, mappingFunction);
 	}
 	
+	@Nullable
 	@Override
 	public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return map.computeIfPresent(key, remappingFunction);

@@ -1,5 +1,6 @@
 package space.engine.indexmap.axis;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.indexmap.multi.IndexMultiMap;
 import space.engine.indexmap.multi.IndexMultiMap2D;
 
@@ -35,6 +36,7 @@ public class IndexAxisMap<VALUE> {
 		}
 	}
 	
+	@Nullable
 	public List<VALUE> get(int dim, int pos) {
 		return table.get(new int[] {dim, pos});
 	}

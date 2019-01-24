@@ -1,5 +1,6 @@
 package space.engine.gui.monofont.elements.direction;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.gui.GuiCreator;
 import space.engine.gui.GuiElement;
 import space.engine.gui.elements.direction.GuiTableCreator;
@@ -56,6 +57,7 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 		table.add(pos, v);
 	}
 	
+	@Nullable
 	public GuiElement put(int[] pos, GuiElement gui) {
 		if (!(gui instanceof MonofontGuiElement))
 			throw new IllegalGuiElementException(gui);
@@ -67,6 +69,7 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 		return old;
 	}
 	
+	@Nullable
 	public GuiElement remove(int[] pos) {
 		MonofontGuiElement old = table.remove(pos);
 		if (old != null)
@@ -77,7 +80,7 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 	//rebuild
 	@Override
 	public CharSequence2D rebuild0() {
-		IndexMultiMap<CharSequence2D> charTable = new IndexMultiMap2D<>();
+		IndexMultiMap<@Nullable CharSequence2D> charTable = new IndexMultiMap2D<>();
 		for (IndexMultiMapEntry<MonofontGuiElement> entry : table.table()) {
 			MonofontGuiElement value = entry.getValue();
 			charTable.put(entry.getIndex(), value != null ? value.buildSequence2D() : null);

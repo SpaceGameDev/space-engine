@@ -1,5 +1,7 @@
 package space.engine.delegate.util;
 
+import org.jetbrains.annotations.Nullable;
+
 public class CacheUtil {
 	
 	public static final Object nullObject = new Object();
@@ -9,7 +11,7 @@ public class CacheUtil {
 		return (T) nullObject;
 	}
 	
-	public static <T> T fromCache(T t) {
+	public static @Nullable <T> T fromCache(T t) {
 		return t == nullObject ? null : t;
 	}
 	

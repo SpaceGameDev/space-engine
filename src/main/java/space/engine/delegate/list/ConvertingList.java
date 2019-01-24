@@ -207,7 +207,6 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 			//use existing
 			for (int i = 0; i < org.length; i++)
 				a[i] = (T1) remap.apply(org[i]);
-			a[org.length] = null;
 			return a;
 		}
 		
@@ -223,7 +222,6 @@ public abstract class ConvertingList<F, T> implements List<T>, ToString {
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
 		public boolean containsAll(@NotNull Collection<?> c) {
 			for (F f : list)
 				if (!c.contains(remap.apply(f)))

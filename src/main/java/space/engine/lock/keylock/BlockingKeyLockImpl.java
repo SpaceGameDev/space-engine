@@ -1,11 +1,13 @@
 package space.engine.lock.keylock;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
 public class BlockingKeyLockImpl<KEY> implements BlockingKeyLock<KEY> {
 	
+	@Nullable
 	public KEY currentKey;
 	public int stackLevel;
 	
@@ -92,7 +94,7 @@ public class BlockingKeyLockImpl<KEY> implements BlockingKeyLock<KEY> {
 		return currentKey != null;
 	}
 	
-	@NotNull
+	@Nullable
 	@Override
 	public synchronized KEY getHolder() {
 		return currentKey;

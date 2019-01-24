@@ -26,56 +26,48 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 	//native
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(byte b) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Byte.toString(b));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(short s) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Short.toString(s));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(int i) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Integer.toString(i));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(long l) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Long.toString(l));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(float f) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Float.toString(f));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(double d) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Double.toString(d));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(boolean b) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Boolean.toString(b));
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(char c) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(Character.toString(c));
 	}
@@ -89,7 +81,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(byte.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -101,7 +92,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(short.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -113,7 +103,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(int.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -125,7 +114,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(long.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -137,7 +125,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(float.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -149,7 +136,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(double.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -161,7 +147,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(boolean.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -173,7 +158,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(char.class);
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
@@ -186,35 +170,30 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 		ToStringHelperArray array = api.get(GuiToStringHelperArrayCreator.class).create(obj.getClass().getComponentType());
 		for (int i = from; i < to; i++)
 			array.put(i, toString(obj[i]));
-		//noinspection unchecked
 		return (MonofontGuiElement) array;
 	}
 	
 	//string
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(CharSequence str) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(str.toString());
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(String str) {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create(str);
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(CharSequence2D str) {
 		return (MonofontGuiElement) api.get(GuiText2DCreator.class).create(str);
 	}
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toString(String2D str) {
 		return (MonofontGuiElement) api.get(GuiText2DCreator.class).create(str);
 	}
@@ -222,7 +201,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 	//null
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement toStringNull() {
 		return (MonofontGuiElement) api.get(GuiText1DCreator.class).create("null");
 	}
@@ -230,7 +208,6 @@ public class MonofontToStringHelper implements ToStringHelper<MonofontGuiElement
 	//modifier
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public MonofontGuiElement createModifier(@NotNull String modifier, Object value) {
 		return (MonofontGuiElement) api.get(GuiToStringHelperModifierCreator.class).create(modifier, toString(value));
 	}

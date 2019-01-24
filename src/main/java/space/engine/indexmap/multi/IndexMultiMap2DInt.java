@@ -20,7 +20,6 @@ public class IndexMultiMap2DInt {
 	}
 	
 	public IndexMultiMap2DInt(int sizeHeight, int sizeCapacity) {
-		//noinspection unchecked
 		this(new int[sizeHeight][sizeCapacity], false);
 	}
 	
@@ -56,7 +55,6 @@ public class IndexMultiMap2DInt {
 			int newsize = ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShiftHeight);
 			
 			int[][] old = buffer;
-			//noinspection unchecked
 			buffer = new int[newsize][];
 			System.arraycopy(old, 0, buffer, 0, l);
 			
@@ -81,14 +79,12 @@ public class IndexMultiMap2DInt {
 		int[] buf = buffer[height];
 		
 		if (buf == null) {
-			//noinspection unchecked
 			buffer[height] = new int[ArrayUtils.getOptimalArraySizeStart(defaultCapacity, capa)];
 			return true;
 		}
 		
 		int l = buf.length;
 		if (l < capa) {
-			//noinspection unchecked
 			int[] n = new int[ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShift)];
 			System.arraycopy(buf, 0, n, 0, l);
 			buffer[height] = n;
@@ -96,14 +92,6 @@ public class IndexMultiMap2DInt {
 		}
 		
 		return false;
-	}
-	
-	public boolean isExpandable() {
-		return true;
-	}
-	
-	public boolean isExpandable(int[] pos) {
-		return true;
 	}
 	
 	public int size() {
@@ -204,7 +192,6 @@ public class IndexMultiMap2DInt {
 			return;
 		
 		int[][] old = buffer;
-		//noinspection unchecked
 		buffer = new int[height][];
 		System.arraycopy(old, 0, buffer, 0, height);
 	}
@@ -217,7 +204,6 @@ public class IndexMultiMap2DInt {
 		if (old.length == l)
 			return;
 		
-		//noinspection unchecked
 		int[] n = new int[l];
 		System.arraycopy(old, 0, n, 0, l);
 		buffer[h] = n;

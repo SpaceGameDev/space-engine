@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 /**
  * The {@link ModificationAwareList} will call the {@link ModificationAwareList#onModification} {@link Runnable} when the {@link List} is modified.
  */
-@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class ModificationAwareList<E> extends DelegatingList<E> {
 	
 	public Runnable onModification;
@@ -37,10 +36,9 @@ public class ModificationAwareList<E> extends DelegatingList<E> {
 	
 	@Override
 	public boolean add(E e) {
-		boolean ret = list.add(e);
-		if (ret)
-			onModification.run();
-		return ret;
+		list.add(e);
+		onModification.run();
+		return true;
 	}
 	
 	@Override

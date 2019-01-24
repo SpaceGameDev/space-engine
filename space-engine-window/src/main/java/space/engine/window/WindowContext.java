@@ -11,7 +11,7 @@ import space.engine.key.attribute.AttributeListCreator;
  *
  * <b>If you are using OpenGL or OpenGL ES:</b><br>
  * The Thread you create the Context with is the Thread you render everything with.
- * If you have a finished FrameBuffer, call {@link Window#openGL_SwapFramebuffer(int)} or {@link Window#openGL_ES_SwapFramebuffer(int)} respectively.
+ * If you have a finished FrameBuffer, call {\@link Window#openGL_SwapFramebuffer(int)} or {\@link Window#openGL_ES_SwapFramebuffer(int)} respectively.
  */
 @SuppressWarnings("unused")
 public interface WindowContext extends Freeable {

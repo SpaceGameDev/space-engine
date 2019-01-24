@@ -1,5 +1,6 @@
 package space.engine.string.toStringHelper;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.indexmap.multi.IndexMultiMap;
 import space.engine.indexmap.multi.IndexMultiMap2D;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperTable;
@@ -10,6 +11,7 @@ public abstract class AbstractToStringHelperMapper<T> implements ToStringHelperT
 	
 	public IndexMultiMap<T> map = new IndexMultiMap2D<>(IndexMultiMap2D.DEFAULT_HEIGHT, 2);
 	
+	@Nullable
 	@Override
 	@SuppressWarnings("unchecked")
 	public T put(int[] pos, Object object) {

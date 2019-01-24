@@ -1,12 +1,14 @@
 package space.engine.delegate.iterator;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Merges multiple {@link Iterator} to one {@link Iterator}.
@@ -30,8 +32,8 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	}
 	
 	//methods
-	public Iterator<T> getNextIterator() {
-		for (; next >= iterators.length; next++) {
+	public @Nullable Iterator<T> getNextIterator() {
+		for (; next < iterators.length; next++) {
 			Iterator<T> iter = iterators[next];
 			if (iter.hasNext())
 				return lastIterator = iter;
@@ -47,7 +49,9 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	@Override
 	public T next() {
 		Iterator<T> iter = getNextIterator();
-		return iter != null ? iter.next() : null;
+		if (iter == null)
+			throw new NoSuchElementException();
+		return iter.next();
 	}
 	
 	@Override
@@ -83,6 +87,6 @@ public class MergingIterator<T> implements ToString, Iteratorable<T> {
 	
 	public static <T> MergingIterator<T> fromIterable(Collection<? extends Iterable<T>> iterables) {
 		//noinspection unchecked
-		return fromIterable(iterables.toArray(new Iterable[iterables.size()]));
+		return fromIterable(iterables.toArray(new Iterable[0]));
 	}
 }

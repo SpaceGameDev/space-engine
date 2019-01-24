@@ -1,5 +1,6 @@
 package space.engine.gui.exception;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.gui.GuiElement;
 
 /**
@@ -26,11 +27,7 @@ public class IllegalGuiElementException extends RuntimeException {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 	
-	public IllegalGuiElementException(GuiElement value) {
-		this(value.getClass());
-	}
-	
-	public IllegalGuiElementException(Class<?> clazz) {
-		this("Illegal GuiElement type " + clazz.getName());
+	public IllegalGuiElementException(@Nullable GuiElement value) {
+		this("Illegal GuiElement type " + (value == null ? "null" : value.getClass().getName()));
 	}
 }

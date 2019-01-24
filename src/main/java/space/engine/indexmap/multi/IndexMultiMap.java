@@ -64,11 +64,11 @@ public interface IndexMultiMap<VALUE> {
 		return get(pos) != null;
 	}
 	
-	default void add(@Nullable VALUE v) {
+	default void add(VALUE v) {
 		put(new int[] {size()}, v);
 	}
 	
-	default void add(int[] pos, @Nullable VALUE v) {
+	default void add(int[] pos, VALUE v) {
 		int[] p = new int[pos.length + 1];
 		System.arraycopy(pos, 0, p, 0, pos.length);
 		p[pos.length] = size(pos);
@@ -79,19 +79,18 @@ public interface IndexMultiMap<VALUE> {
 	
 	@NotNull IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos);
 	
-	@Nullable VALUE put(int[] pos, @Nullable VALUE v);
+	@Nullable VALUE put(int[] pos, VALUE v);
 	
 	@Nullable VALUE remove(int[] pos);
 	
 	//advanced access
-	@Nullable
-	default VALUE getOrDefault(int[] pos, @Nullable VALUE def) {
+	default VALUE getOrDefault(int[] pos, VALUE def) {
 		VALUE v = get(pos);
 		return v == null ? def : v;
 	}
 	
 	@Nullable
-	default VALUE putIfAbsent(int[] pos, @Nullable VALUE v) {
+	default VALUE putIfAbsent(int[] pos, VALUE v) {
 		VALUE c = get(pos);
 		if (c != null)
 			return c;
@@ -100,7 +99,6 @@ public interface IndexMultiMap<VALUE> {
 		return c;
 	}
 	
-	@Nullable
 	default VALUE putIfAbsent(int[] pos, @NotNull Supplier<VALUE> v) {
 		VALUE c = get(pos);
 		if (c != null)
@@ -111,13 +109,13 @@ public interface IndexMultiMap<VALUE> {
 	}
 	
 	@Nullable
-	default VALUE replace(int[] pos, @Nullable VALUE newValue) {
+	default VALUE replace(int[] pos, VALUE newValue) {
 		if (contains(pos))
 			return put(pos, newValue);
 		return null;
 	}
 	
-	default boolean replace(int[] pos, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
+	default boolean replace(int[] pos, @Nullable VALUE oldValue, VALUE newValue) {
 		if (Objects.equals(get(pos), oldValue)) {
 			put(pos, newValue);
 			return true;
@@ -133,7 +131,7 @@ public interface IndexMultiMap<VALUE> {
 		return false;
 	}
 	
-	default boolean remove(int[] pos, @Nullable VALUE v) {
+	default boolean remove(int[] pos, @NotNull VALUE v) {
 		VALUE c = get(pos);
 		if (c == v) {
 			remove(pos);

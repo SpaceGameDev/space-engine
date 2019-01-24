@@ -20,7 +20,6 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	/**
 	 * @implNote prevents gc / freeing of WindowFramework and with that destruction of the window
 	 */
-	@SuppressWarnings("FieldCanBeLocal")
 	public final GLFWContext context;
 	public final AttributeList<Window> format;
 	public final FreeableStorage dummy;

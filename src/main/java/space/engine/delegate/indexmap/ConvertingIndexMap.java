@@ -213,7 +213,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			//use existing
 			for (int i = 0; i < org.length; i++)
 				a[i] = remap.apply((org[i]));
-			a[org.length] = null;
 			return a;
 		}
 		
@@ -343,7 +342,7 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 				if (!(obj instanceof IndexMap.Entry))
 					return false;
 				IndexMap.Entry other = (IndexMap.Entry) obj;
-				return (this == obj) || (this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue()));
+				return this.getIndex() == other.getIndex() && Objects.equals(this.getValue(), other.getValue());
 			}
 			
 			@Override

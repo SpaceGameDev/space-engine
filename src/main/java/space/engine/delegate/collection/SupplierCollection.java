@@ -52,7 +52,6 @@ public class SupplierCollection<E> implements ToString, Collection<E> {
 	
 	@NotNull
 	@Override
-	@SuppressWarnings("SuspiciousToArrayCall")
 	public <T> T[] toArray(@NotNull T[] a) {
 		return coll.get().toArray(a);
 	}

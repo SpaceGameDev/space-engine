@@ -160,6 +160,7 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	 */
 	@NotNull
 	@Override
+	@SuppressWarnings("EmptyMethod")
 	public Collection<VALUE> values() {
 		return super.values();
 	}
@@ -171,6 +172,7 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	 */
 	@NotNull
 	@Override
+	@SuppressWarnings("EmptyMethod")
 	public Collection<Entry<VALUE>> table() {
 		return super.table();
 	}

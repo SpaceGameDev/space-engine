@@ -1,6 +1,7 @@
 package space.engine.lock.keylock;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +42,7 @@ public interface BlockingKeyLock<KEY> {
 	/**
 	 * may be an {@link UnsupportedOperationException}
 	 */
-	@NotNull KEY getHolder();
+	@Nullable KEY getHolder();
 	
 	default void execute(@NotNull KEY key, Runnable command) {
 		lock(key);

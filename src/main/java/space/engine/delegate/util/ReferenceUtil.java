@@ -1,5 +1,7 @@
 package space.engine.delegate.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.ref.Reference;
 import java.util.function.Function;
 
@@ -14,6 +16,7 @@ public class ReferenceUtil {
 		return (Function<E, Reference<? extends E>>) (Object) defRefCreator;
 	}
 	
+	@Nullable
 	public static <E> E getSafe(Reference<E> ref) {
 		return ref == null ? null : ref.get();
 	}

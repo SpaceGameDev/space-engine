@@ -24,7 +24,7 @@ public class MonofontTSHModifier extends MonofontGuiElement implements GuiToStri
 	
 	public MonofontTSHModifier(String modifier, GuiElement value) {
 		if (!(value instanceof MonofontGuiElement))
-			throw new IllegalGuiElementException(value.getClass());
+			throw new IllegalGuiElementException(value);
 		
 		this.modifier = modifier;
 		this.value = (MonofontGuiElement) value;

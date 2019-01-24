@@ -96,7 +96,6 @@ public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean remove(Object key, Object value) {
 		if (get(key) != value)
 			return false;
@@ -147,13 +146,8 @@ public class ModificationAwareMap<K, V> extends DelegatingMap<K, V> {
 	
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		boolean[] mod = new boolean[1];
-		V ret = map.compute(key, (k, v) -> {
-			mod[0] = true;
-			return remappingFunction.apply(k, v);
-		});
-		if (mod[0])
-			onModification.run();
+		V ret = map.compute(key, remappingFunction);
+		onModification.run();
 		return ret;
 	}
 	

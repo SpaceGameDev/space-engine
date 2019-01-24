@@ -49,7 +49,7 @@ public interface Iteratorable<T> extends Iterator<T>, Iterable<T> {
 			@Override
 			public E next() {
 				if (gotten)
-					return null;
+					throw new NoSuchElementException();
 				gotten = true;
 				return elem;
 			}

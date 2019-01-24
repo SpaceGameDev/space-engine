@@ -94,7 +94,6 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 			int newsize = ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShiftHeight);
 			
 			char[][] old = buffer;
-			//noinspection unchecked
 			buffer = new char[newsize][];
 			System.arraycopy(old, 0, buffer, 0, l);
 			
@@ -123,7 +122,6 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		
 		if (buf == null) {
 			startEdit();
-			//noinspection unchecked
 			buffer[height] = new char[ArrayUtils.getOptimalArraySizeStart(defaultCapacity, capa)];
 			endEdit();
 			return true;
@@ -132,7 +130,6 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		int l = buf.length;
 		if (l < capa) {
 			startEdit();
-			//noinspection unchecked
 			char[] n = new char[ArrayUtils.getOptimalArraySizeExpansion(l, capa, expandShift)];
 			System.arraycopy(buf, 0, n, 0, l);
 			buffer[height] = n;
@@ -392,7 +389,6 @@ public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> i
 		if (old.length == l)
 			return;
 		
-		//noinspection unchecked
 		char[] n = new char[l];
 		System.arraycopy(old, 0, n, 0, l);
 		buffer[h] = n;

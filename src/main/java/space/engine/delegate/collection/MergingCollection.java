@@ -1,6 +1,7 @@
 package space.engine.delegate.collection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
 import space.engine.delegate.iterator.MergingIterator;
 import space.engine.string.toStringHelper.ToStringHelper;
@@ -18,25 +19,25 @@ import java.util.List;
  */
 public class MergingCollection<E> implements ToString, Collection<E> {
 	
-	public AddCollection<E> addColl;
-	public Collection<Collection<E>> collections;
+	public @Nullable AddCollection<E> addColl;
+	public @NotNull Collection<Collection<E>> collections;
 	
 	@SafeVarargs
 	public MergingCollection(Collection<E>... collections) {
 		this(List.of(collections));
 	}
 	
-	public MergingCollection(Collection<Collection<E>> collections) {
+	public MergingCollection(@NotNull Collection<Collection<E>> collections) {
 		this.collections = collections;
 	}
 	
 	//setAddColl
-	public void setAddColl(AddCollection<E> addColl) {
+	public void setAddColl(@Nullable AddCollection<E> addColl) {
 		this.addColl = addColl;
 	}
 	
-	public void setAddColl(Collection<E> addColl) {
-		setAddColl(addCollectionFromCollection(addColl));
+	public void setAddColl(@Nullable Collection<E> addColl) {
+		this.addColl = addColl == null ? null : addCollectionFromCollection(addColl);
 	}
 	
 	public void removeAddColl() {

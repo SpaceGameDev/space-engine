@@ -101,6 +101,8 @@ public class UnmodifiableMap<K, V> extends DelegatingMap<K, V> {
 	@NotNull
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		return new ConvertingSet.BiDirectionalUnmodifiable<Entry<K, V>, Entry<K, V>>(map.entrySet(), UnmodifiableEntry::new, entry -> entry instanceof UnmodifiableEntry ? ((UnmodifiableEntry) entry).entry : null);
+		return new ConvertingSet.BiDirectionalUnmodifiable<>(map.entrySet(),
+															 UnmodifiableEntry::new,
+															 entry -> entry instanceof UnmodifiableEntry ? ((UnmodifiableEntry<K, V>) entry).entry : null);
 	}
 }

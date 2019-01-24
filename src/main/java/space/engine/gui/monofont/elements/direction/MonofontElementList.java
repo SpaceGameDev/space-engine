@@ -1,5 +1,6 @@
 package space.engine.gui.monofont.elements.direction;
 
+import org.jetbrains.annotations.Nullable;
 import space.engine.delegate.indexmap.ModificationAwareIndexMap;
 import space.engine.gui.GuiElement;
 import space.engine.gui.elements.direction.GuiDirectionalCreator.GuiDirectional;
@@ -28,7 +29,8 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	}
 	
 	@Override
-	public GuiElement put(int index, GuiElement gui) {
+	@Nullable
+	public GuiElement put(int index, @Nullable GuiElement gui) {
 		if (!(gui instanceof MonofontGuiElement))
 			throw new IllegalGuiElementException(gui);
 		MonofontGuiElement v = (MonofontGuiElement) gui;
@@ -40,6 +42,7 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	}
 	
 	@Override
+	@Nullable
 	public GuiElement remove(int index) {
 		MonofontGuiElement old = list.remove(index);
 		if (old != null)
@@ -48,10 +51,10 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	}
 	
 	public IndexMap<CharSequence2D> buildList() {
-		IndexMap<CharSequence2D> charTable = new IndexMapArray<>();
+		IndexMap<@Nullable CharSequence2D> charTable = new IndexMapArray<>();
 		for (Entry<MonofontGuiElement> entry : list.table()) {
-			GuiElement value = entry.getValue();
-			charTable.put(entry.getIndex(), value != null ? ((MonofontGuiElement) value).buildSequence2D() : null);
+			MonofontGuiElement value = entry.getValue();
+			charTable.put(entry.getIndex(), value != null ? value.buildSequence2D() : null);
 		}
 		return charTable;
 	}

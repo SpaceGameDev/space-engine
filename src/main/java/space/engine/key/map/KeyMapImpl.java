@@ -43,42 +43,36 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 	
 	//methods
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE get(@NotNull Key<?> key) {
 		check(key);
 		return map.get(key.getID());
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE put(@NotNull Key<?> key, VALUE v) {
 		check(key);
 		return map.put(key.getID(), v);
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE remove(@NotNull Key<?> key) {
 		check(key);
 		return map.remove(key.getID());
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE getOrDefault(@NotNull Key<?> key, VALUE def) {
 		check(key);
 		return map.getOrDefault(key.getID(), def);
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE putIfAbsent(@NotNull Key<?> key, VALUE v) {
 		check(key);
 		return map.putIfAbsent(key.getID(), v);
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VALUE putIfAbsent(@NotNull Key<?> key, @NotNull Supplier<? extends VALUE> v) {
 		check(key);
 		return map.computeIfAbsent(key.getID(), v);

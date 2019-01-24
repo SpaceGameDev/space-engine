@@ -1,6 +1,7 @@
 package space.engine.gui.monofont;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
 import space.engine.gui.GuiElement;
 import space.engine.string.CharSequence2D;
@@ -9,10 +10,10 @@ import space.engine.string.toStringHelper.ToStringHelper;
 
 public abstract class MonofontGuiElement implements ToString, GuiElement, ToString2D {
 	
-	public MonofontGuiElement parent;
+	public @Nullable MonofontGuiElement parent;
 	
 	//parent
-	public void setParent(MonofontGuiElement parent) {
+	public void setParent(@Nullable MonofontGuiElement parent) {
 		this.parent = parent;
 	}
 	

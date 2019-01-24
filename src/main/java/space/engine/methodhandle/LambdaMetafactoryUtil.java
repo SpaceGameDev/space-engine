@@ -66,38 +66,31 @@ public class LambdaMetafactoryUtil {
 	}
 	
 	//methods
-	@SuppressWarnings("unchecked")
 	public static Runnable metafactoryRunnableStatic(Lookup caller, Class<?> clazz, String methodName) throws Throwable {
 		return metafactoryRunnable(caller, caller.findStatic(clazz, methodName, MTVoid));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static Runnable metafactoryRunnableVirtual(Lookup caller, Class<?> clazz, String methodName) throws Throwable {
 		return metafactoryRunnable(caller, caller.findVirtual(clazz, methodName, MTVoid));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> Supplier<T> metafactorySupplierStatic(Lookup caller, Class<?> clazz, String methodName, Class<T> returnType) throws Throwable {
 		return metafactorySupplier(caller, caller.findStatic(clazz, methodName, MethodType.methodType(returnType)), returnType);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> Supplier<T> metafactorySupplierVirtual(Lookup caller, Class<?> clazz, String methodName, Class<T> returnType) throws Throwable {
 		return metafactorySupplier(caller, caller.findVirtual(clazz, methodName, MethodType.methodType(returnType)), returnType);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> Predicate<T> metafactoryPredicateStatic(Lookup caller, Class<?> clazz, String methodName) throws Throwable {
 		return metafactoryPredicate(caller, caller.findStatic(clazz, methodName, MTBoolean));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> Predicate<T> metafactoryPredicateVirtual(Lookup caller, Class<?> clazz, String methodName) throws Throwable {
 		return metafactoryPredicate(caller, caller.findVirtual(clazz, methodName, MTBoolean));
 	}
 	
 	//lambda wrappers
-	@SuppressWarnings("unchecked")
 	public static Runnable metafactoryRunnable(Lookup caller, MethodHandle invokedMethod) throws Throwable {
 		return (Runnable) metafactory(caller, MTRunnable, "run", MTVoid, invokedMethod, MTVoid);
 	}

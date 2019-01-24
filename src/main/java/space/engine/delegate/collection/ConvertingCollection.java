@@ -202,7 +202,6 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 			//use existing
 			for (int i = 0; i < org.length; i++)
 				a[i] = (T1) remap.apply(org[i]);
-			a[org.length] = null;
 			return a;
 		}
 		
@@ -360,11 +359,6 @@ public abstract class ConvertingCollection<F, T> implements Collection<T>, ToStr
 				}
 			}
 			return mod;
-		}
-		
-		@Override
-		public void clear() {
-			super.clear();
 		}
 		
 		@Override
