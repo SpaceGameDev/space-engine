@@ -1,7 +1,6 @@
 package space.engine.task.impl;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.Side;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.lock.SyncLock;
 
@@ -22,9 +21,7 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 		submit1(this);
 	}
 	
-	protected synchronized void submit1(Runnable toRun) {
-		Side.GLOBAL_EXECUTOR.execute(toRun);
-	}
+	protected abstract void submit1(Runnable toRun);
 	
 	//execution
 	public void run() {
