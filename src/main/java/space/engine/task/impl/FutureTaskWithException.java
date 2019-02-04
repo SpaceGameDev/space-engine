@@ -2,6 +2,7 @@ package space.engine.task.impl;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;
+import space.engine.sync.future.BaseFuture;
 import space.engine.sync.future.FutureNotFinishedException;
 import space.engine.sync.future.FutureWithException;
 import space.engine.sync.lock.SyncLock;
@@ -10,6 +11,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class FutureTaskWithException<R, EX extends Throwable> extends RunnableTask implements FutureWithException<R, EX> {
+	
+	public interface Callable<V> {
+		
+		V call() throws Throwable;
+	}
 	
 	protected final Class<EX> exceptionClass;
 	
@@ -31,9 +37,33 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 	
 	//execute
 	@Override
-	protected void execute() {
+	protected void execute() throws DelayTaskException {
+		callAndStoreResult(this::execute0);
+	}
+	
+	protected abstract R execute0() throws EX, DelayTaskException;
+	
+	@Override
+	protected void executionFinished(Barrier awaitTask) {
 		try {
-			ret = execute0();
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
+		} catch (DelayTaskException e) {
+			throw new RuntimeException(e);
+		}
+		
+		super.executionFinished(awaitTask);
+	}
+	
+	protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+		try {
+			callable.call();
+		} catch (DelayTaskException e) {
+			throw e;
 		} catch (RuntimeException | Error e) {
 			if (exceptionClass.isInstance(e))
 				exception = (EX) e;
@@ -44,11 +74,9 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 				//noinspection unchecked
 				exception = (EX) e;
 			else
-				throw new IllegalStateException("Exception caught that cannot have been thrown", e);
+				throw new RuntimeException("Exception caught that cannot have been thrown", e);
 		}
 	}
-	
-	protected abstract R execute0() throws EX;
 	
 	//get
 	@Override
@@ -101,9 +129,33 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() {
+		protected void execute() throws DelayTaskException {
+			callAndStoreResult(this::execute0);
+		}
+		
+		protected abstract R execute0() throws EX1, EX2, DelayTaskException;
+		
+		@Override
+		protected void executionFinished(Barrier awaitTask) {
 			try {
-				ret = execute0();
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTaskException e) {
+				throw new RuntimeException(e);
+			}
+			
+			super.executionFinished(awaitTask);
+		}
+		
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+			try {
+				callable.call();
+			} catch (DelayTaskException e) {
+				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
 					exception1 = (EX1) e;
@@ -122,8 +174,6 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 					throw new IllegalStateException("Exception caught that cannot have been thrown", e);
 			}
 		}
-		
-		protected abstract R execute0() throws EX1, EX2;
 		
 		//get
 		@Override
@@ -182,9 +232,33 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() {
+		protected void execute() throws DelayTaskException {
+			callAndStoreResult(this::execute0);
+		}
+		
+		protected abstract R execute0() throws EX1, EX2, EX3, DelayTaskException;
+		
+		@Override
+		protected void executionFinished(Barrier awaitTask) {
 			try {
-				ret = execute0();
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTaskException e) {
+				throw new RuntimeException(e);
+			}
+			
+			super.executionFinished(awaitTask);
+		}
+		
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+			try {
+				callable.call();
+			} catch (DelayTaskException e) {
+				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
 					exception1 = (EX1) e;
@@ -208,8 +282,6 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 					throw new IllegalStateException("Exception caught that cannot have been thrown", e);
 			}
 		}
-		
-		protected abstract R execute0() throws EX1, EX2, EX3;
 		
 		//get
 		@Override
@@ -273,9 +345,33 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() {
+		protected void execute() throws DelayTaskException {
+			callAndStoreResult(this::execute0);
+		}
+		
+		protected abstract R execute0() throws EX1, EX2, EX3, EX4, DelayTaskException;
+		
+		@Override
+		protected void executionFinished(Barrier awaitTask) {
 			try {
-				ret = execute0();
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTaskException e) {
+				throw new RuntimeException(e);
+			}
+			
+			super.executionFinished(awaitTask);
+		}
+		
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+			try {
+				callable.call();
+			} catch (DelayTaskException e) {
+				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
 					exception1 = (EX1) e;
@@ -304,8 +400,6 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 					throw new IllegalStateException("Exception caught that cannot have been thrown", e);
 			}
 		}
-		
-		protected abstract R execute0() throws EX1, EX2, EX3, EX4;
 		
 		//get
 		@Override
@@ -374,9 +468,33 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() {
+		protected void execute() throws DelayTaskException {
+			callAndStoreResult(this::execute0);
+		}
+		
+		protected abstract R execute0() throws EX1, EX2, EX3, EX4, EX5, DelayTaskException;
+		
+		@Override
+		protected void executionFinished(Barrier awaitTask) {
 			try {
-				ret = execute0();
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTaskException e) {
+				throw new RuntimeException(e);
+			}
+			
+			super.executionFinished(awaitTask);
+		}
+		
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+			try {
+				callable.call();
+			} catch (DelayTaskException e) {
+				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
 					exception1 = (EX1) e;
@@ -410,8 +528,6 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 					throw new IllegalStateException("Exception caught that cannot have been thrown", e);
 			}
 		}
-		
-		protected abstract R execute0() throws EX1, EX2, EX3, EX4, EX5;
 		
 		//get
 		@Override

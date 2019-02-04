@@ -27,11 +27,18 @@ public abstract class FutureTask<R> extends RunnableTask implements Future<R> {
 	
 	//execute
 	@Override
-	protected void execute() {
+	protected void execute() throws DelayTaskException {
 		ret = execute0();
 	}
 	
-	protected abstract R execute0();
+	protected abstract R execute0() throws DelayTaskException;
+	
+	@Override
+	protected void executionFinished(Barrier awaitTask) {
+		//noinspection unchecked
+		ret = ((Future<R>) awaitTask).assertGet();
+		super.executionFinished(awaitTask);
+	}
 	
 	//get
 	@Override

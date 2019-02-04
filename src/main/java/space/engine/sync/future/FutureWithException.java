@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @SuppressWarnings("unused")
-public interface FutureWithException<R, EX extends Throwable> extends Barrier {
+public interface FutureWithException<R, EX extends Throwable> extends BaseFuture<R>, Barrier {
 	
 	//abstract
 	R awaitGet() throws InterruptedException, EX;
@@ -15,6 +15,22 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 	R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX;
 	
 	R assertGet() throws FutureNotFinishedException, EX;
+	
+	//anyException
+	@Override
+	default R awaitGetAnyException() throws Throwable {
+		return awaitGet();
+	}
+	
+	@Override
+	default R awaitGetAnyException(long time, TimeUnit unit) throws Throwable {
+		return awaitGet(time, unit);
+	}
+	
+	@Override
+	default R assertGetAnyException() throws Throwable {
+		return assertGet();
+	}
 	
 	//default
 	
@@ -177,7 +193,7 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		};
 	}
 	
-	interface FutureWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends Barrier {
+	interface FutureWith2Exception<R, EX1 extends Throwable, EX2 extends Throwable> extends BaseFuture<R>, Barrier {
 		
 		//abstract
 		R awaitGet() throws InterruptedException, EX1, EX2;
@@ -185,6 +201,22 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2;
 		
 		R assertGet() throws FutureNotFinishedException, EX1, EX2;
+		
+		//anyException
+		@Override
+		default R awaitGetAnyException() throws Throwable {
+			return awaitGet();
+		}
+		
+		@Override
+		default R awaitGetAnyException(long time, TimeUnit unit) throws Throwable {
+			return awaitGet(time, unit);
+		}
+		
+		@Override
+		default R assertGetAnyException() throws Throwable {
+			return assertGet();
+		}
 		
 		//default
 		
@@ -304,7 +336,7 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		}
 	}
 	
-	interface FutureWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends Barrier {
+	interface FutureWith3Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> extends BaseFuture<R>, Barrier {
 		
 		//abstract
 		R awaitGet() throws InterruptedException, EX1, EX2, EX3;
@@ -312,6 +344,22 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3;
 		
 		R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3;
+		
+		//anyException
+		@Override
+		default R awaitGetAnyException() throws Throwable {
+			return awaitGet();
+		}
+		
+		@Override
+		default R awaitGetAnyException(long time, TimeUnit unit) throws Throwable {
+			return awaitGet(time, unit);
+		}
+		
+		@Override
+		default R assertGetAnyException() throws Throwable {
+			return assertGet();
+		}
 		
 		//default
 		
@@ -431,7 +479,7 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		}
 	}
 	
-	interface FutureWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends Barrier {
+	interface FutureWith4Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> extends BaseFuture<R>, Barrier {
 		
 		//abstract
 		R awaitGet() throws InterruptedException, EX1, EX2, EX3, EX4;
@@ -439,6 +487,22 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3, EX4;
 		
 		R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4;
+		
+		//anyException
+		@Override
+		default R awaitGetAnyException() throws Throwable {
+			return awaitGet();
+		}
+		
+		@Override
+		default R awaitGetAnyException(long time, TimeUnit unit) throws Throwable {
+			return awaitGet(time, unit);
+		}
+		
+		@Override
+		default R assertGetAnyException() throws Throwable {
+			return assertGet();
+		}
 		
 		//default
 		
@@ -558,7 +622,7 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		}
 	}
 	
-	interface FutureWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends Barrier {
+	interface FutureWith5Exception<R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> extends BaseFuture<R>, Barrier {
 		
 		//abstract
 		R awaitGet() throws InterruptedException, EX1, EX2, EX3, EX4, EX5;
@@ -566,6 +630,22 @@ public interface FutureWithException<R, EX extends Throwable> extends Barrier {
 		R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException, EX1, EX2, EX3, EX4, EX5;
 		
 		R assertGet() throws FutureNotFinishedException, EX1, EX2, EX3, EX4, EX5;
+		
+		//anyException
+		@Override
+		default R awaitGetAnyException() throws Throwable {
+			return awaitGet();
+		}
+		
+		@Override
+		default R awaitGetAnyException(long time, TimeUnit unit) throws Throwable {
+			return awaitGet(time, unit);
+		}
+		
+		@Override
+		default R assertGetAnyException() throws Throwable {
+			return assertGet();
+		}
 		
 		//default
 		

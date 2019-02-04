@@ -17,6 +17,7 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 		super(locks);
 	}
 	
+	//submit
 	protected synchronized void submit() {
 		submit1(this);
 	}
@@ -27,10 +28,24 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 	public void run() {
 		try {
 			execute();
-		} finally {
 			executionFinished();
+		} catch (DelayTaskException e) {
+			e.barrier.addHook(() -> executionFinished(e.barrier));
+		} catch (Throwable e) {
+			try {
+				executionFinished();
+			} catch (Throwable e2) {
+				RuntimeException run = new RuntimeException(e);
+				run.addSuppressed(e2);
+				throw run;
+			}
+			throw e;
 		}
 	}
 	
-	protected abstract void execute();
+	protected void executionFinished(Barrier awaitTask) {
+		executionFinished();
+	}
+	
+	protected abstract void execute() throws DelayTaskException;
 }
