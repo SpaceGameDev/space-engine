@@ -29,7 +29,7 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 		try {
 			execute();
 			executionFinished();
-		} catch (DelayTaskException e) {
+		} catch (DelayTask e) {
 			e.barrier.addHook(() -> executionFinished(e.barrier));
 		} catch (Throwable e) {
 			try {
@@ -47,5 +47,5 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 		executionFinished();
 	}
 	
-	protected abstract void execute() throws DelayTaskException;
+	protected abstract void execute() throws DelayTask;
 }

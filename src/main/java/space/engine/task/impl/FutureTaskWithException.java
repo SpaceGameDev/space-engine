@@ -37,32 +37,27 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 	
 	//execute
 	@Override
-	protected void execute() throws DelayTaskException {
+	protected void execute() throws DelayTask {
 		callAndStoreResult(this::execute0);
 	}
 	
-	protected abstract R execute0() throws EX, DelayTaskException;
+	protected abstract R execute0() throws EX, DelayTask;
 	
 	@Override
 	protected void executionFinished(Barrier awaitTask) {
-		try {
-			callAndStoreResult(() -> {
-				if (awaitTask instanceof BaseFuture<?>)
-					//noinspection unchecked
-					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-				return null;
-			});
-		} catch (DelayTaskException e) {
-			throw new RuntimeException(e);
-		}
-		
+		callAndStoreResult(() -> {
+			if (awaitTask instanceof BaseFuture<?>)
+				//noinspection unchecked
+				return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+			return null;
+		});
 		super.executionFinished(awaitTask);
 	}
 	
-	protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+	protected void callAndStoreResult(Callable<R> callable) throws DelayTask {
 		try {
 			callable.call();
-		} catch (DelayTaskException e) {
+		} catch (DelayTask e) {
 			throw e;
 		} catch (RuntimeException | Error e) {
 			if (exceptionClass.isInstance(e))
@@ -129,32 +124,28 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() throws DelayTaskException {
+		protected void execute() throws DelayTask {
 			callAndStoreResult(this::execute0);
 		}
 		
-		protected abstract R execute0() throws EX1, EX2, DelayTaskException;
+		protected abstract R execute0() throws EX1, EX2, DelayTask;
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			try {
-				callAndStoreResult(() -> {
-					if (awaitTask instanceof BaseFuture<?>)
-						//noinspection unchecked
-						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-					return null;
-				});
-			} catch (DelayTaskException e) {
-				throw new RuntimeException(e);
-			}
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
 			
 			super.executionFinished(awaitTask);
 		}
 		
-		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTask {
 			try {
 				callable.call();
-			} catch (DelayTaskException e) {
+			} catch (DelayTask e) {
 				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
@@ -232,32 +223,28 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() throws DelayTaskException {
+		protected void execute() throws DelayTask {
 			callAndStoreResult(this::execute0);
 		}
 		
-		protected abstract R execute0() throws EX1, EX2, EX3, DelayTaskException;
+		protected abstract R execute0() throws EX1, EX2, EX3, DelayTask;
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			try {
-				callAndStoreResult(() -> {
-					if (awaitTask instanceof BaseFuture<?>)
-						//noinspection unchecked
-						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-					return null;
-				});
-			} catch (DelayTaskException e) {
-				throw new RuntimeException(e);
-			}
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
 			
 			super.executionFinished(awaitTask);
 		}
 		
-		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTask {
 			try {
 				callable.call();
-			} catch (DelayTaskException e) {
+			} catch (DelayTask e) {
 				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
@@ -345,32 +332,28 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() throws DelayTaskException {
+		protected void execute() throws DelayTask {
 			callAndStoreResult(this::execute0);
 		}
 		
-		protected abstract R execute0() throws EX1, EX2, EX3, EX4, DelayTaskException;
+		protected abstract R execute0() throws EX1, EX2, EX3, EX4, DelayTask;
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			try {
-				callAndStoreResult(() -> {
-					if (awaitTask instanceof BaseFuture<?>)
-						//noinspection unchecked
-						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-					return null;
-				});
-			} catch (DelayTaskException e) {
-				throw new RuntimeException(e);
-			}
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
 			
 			super.executionFinished(awaitTask);
 		}
 		
-		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTask {
 			try {
 				callable.call();
-			} catch (DelayTaskException e) {
+			} catch (DelayTask e) {
 				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
@@ -468,32 +451,28 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		//execute
 		@Override
-		protected void execute() throws DelayTaskException {
+		protected void execute() throws DelayTask {
 			callAndStoreResult(this::execute0);
 		}
 		
-		protected abstract R execute0() throws EX1, EX2, EX3, EX4, EX5, DelayTaskException;
+		protected abstract R execute0() throws EX1, EX2, EX3, EX4, EX5, DelayTask;
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			try {
-				callAndStoreResult(() -> {
-					if (awaitTask instanceof BaseFuture<?>)
-						//noinspection unchecked
-						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-					return null;
-				});
-			} catch (DelayTaskException e) {
-				throw new RuntimeException(e);
-			}
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
 			
 			super.executionFinished(awaitTask);
 		}
 		
-		protected void callAndStoreResult(Callable<R> callable) throws DelayTaskException {
+		protected void callAndStoreResult(Callable<R> callable) throws DelayTask {
 			try {
 				callable.call();
-			} catch (DelayTaskException e) {
+			} catch (DelayTask e) {
 				throw e;
 			} catch (RuntimeException | Error e) {
 				if (exceptionClass1.isInstance(e))
