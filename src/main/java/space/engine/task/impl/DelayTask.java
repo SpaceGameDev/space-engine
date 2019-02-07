@@ -14,7 +14,7 @@ import space.engine.sync.future.FutureWithException;
  * implementations should have a result of null if the barrier is not a Future or rethrow any Exception uncaught which it cannot handle.
  * It is recommended that implementations use {@link BaseFuture} as these Methods are implemented by all types of {@link Future}.
  */
-public final class DelayTask extends RuntimeException {
+public final class DelayTask extends Exception {
 	
 	public final @NotNull Barrier barrier;
 	

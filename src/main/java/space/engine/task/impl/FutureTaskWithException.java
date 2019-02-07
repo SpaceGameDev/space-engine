@@ -45,12 +45,17 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 	
 	@Override
 	protected void executionFinished(Barrier awaitTask) {
-		callAndStoreResult(() -> {
-			if (awaitTask instanceof BaseFuture<?>)
-				//noinspection unchecked
-				return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-			return null;
-		});
+		try {
+			callAndStoreResult(() -> {
+				if (awaitTask instanceof BaseFuture<?>)
+					//noinspection unchecked
+					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+				return null;
+			});
+		} catch (DelayTask e) {
+			throw new RuntimeException(e);
+		}
+		
 		super.executionFinished(awaitTask);
 	}
 	
@@ -132,12 +137,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			callAndStoreResult(() -> {
-				if (awaitTask instanceof BaseFuture<?>)
-					//noinspection unchecked
-					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-				return null;
-			});
+			try {
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTask e) {
+				throw new RuntimeException(e);
+			}
 			
 			super.executionFinished(awaitTask);
 		}
@@ -231,12 +240,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			callAndStoreResult(() -> {
-				if (awaitTask instanceof BaseFuture<?>)
-					//noinspection unchecked
-					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-				return null;
-			});
+			try {
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTask e) {
+				throw new RuntimeException(e);
+			}
 			
 			super.executionFinished(awaitTask);
 		}
@@ -340,12 +353,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			callAndStoreResult(() -> {
-				if (awaitTask instanceof BaseFuture<?>)
-					//noinspection unchecked
-					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-				return null;
-			});
+			try {
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTask e) {
+				throw new RuntimeException(e);
+			}
 			
 			super.executionFinished(awaitTask);
 		}
@@ -459,12 +476,16 @@ public abstract class FutureTaskWithException<R, EX extends Throwable> extends R
 		
 		@Override
 		protected void executionFinished(Barrier awaitTask) {
-			callAndStoreResult(() -> {
-				if (awaitTask instanceof BaseFuture<?>)
-					//noinspection unchecked
-					return ((BaseFuture<R>) awaitTask).assertGetAnyException();
-				return null;
-			});
+			try {
+				callAndStoreResult(() -> {
+					if (awaitTask instanceof BaseFuture<?>)
+						//noinspection unchecked
+						return ((BaseFuture<R>) awaitTask).assertGetAnyException();
+					return null;
+				});
+			} catch (DelayTask e) {
+				throw new RuntimeException(e);
+			}
 			
 			super.executionFinished(awaitTask);
 		}
