@@ -1,13 +1,12 @@
-package space.engine.task;
+package space.engine.sync;
 
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 import space.engine.sync.future.Future;
 import space.engine.sync.lock.SyncLock;
-import space.engine.task.impl.DelayTask;
-import space.engine.task.impl.FutureTask;
-import space.engine.task.impl.MultiTask;
-import space.engine.task.impl.RunnableTask;
+import space.engine.sync.taskImpl.FutureTask;
+import space.engine.sync.taskImpl.MultiTask;
+import space.engine.sync.taskImpl.RunnableTask;
 
 import java.util.Collection;
 import java.util.concurrent.Executor;

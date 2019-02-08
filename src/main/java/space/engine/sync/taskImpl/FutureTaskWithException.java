@@ -1,6 +1,7 @@
-package space.engine.task.impl;
+package space.engine.sync.taskImpl;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.sync.DelayTask;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.BaseFuture;
 import space.engine.sync.future.FutureNotFinishedException;

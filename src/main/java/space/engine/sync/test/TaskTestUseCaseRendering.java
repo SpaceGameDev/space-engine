@@ -1,10 +1,10 @@
-package space.engine.task.test;
+package space.engine.sync.test;
 
+import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
 import space.engine.sync.future.FutureWithException;
-import space.engine.task.TaskCreator;
-import space.engine.task.impl.FutureTaskWithException;
+import space.engine.sync.taskImpl.FutureTaskWithException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static space.engine.task.Tasks.*;
+import static space.engine.sync.Tasks.*;
 
 public class TaskTestUseCaseRendering {
 	

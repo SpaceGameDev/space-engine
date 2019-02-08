@@ -1,18 +1,18 @@
-package space.engine.task.test;
+package space.engine.sync.test;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
-import space.engine.task.TaskCreator;
-import space.engine.task.test.TransactionTest.Entity;
+import space.engine.sync.test.TransactionTest.Entity;
 
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static space.engine.task.Tasks.parallel;
-import static space.engine.task.test.TransactionTest.EXECUTOR;
+import static space.engine.sync.Tasks.parallel;
+import static space.engine.sync.test.TransactionTest.EXECUTOR;
 
 public class LotsOfObjectsTest {
 	

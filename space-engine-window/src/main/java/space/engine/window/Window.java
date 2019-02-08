@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
 import space.engine.key.Key;
 import space.engine.key.attribute.AttributeListCreator;
-import space.engine.task.TaskCreator;
+import space.engine.sync.TaskCreator;
 import space.engine.window.VideoMode.VideoModeDesktop;
 
 import java.util.concurrent.Executor;

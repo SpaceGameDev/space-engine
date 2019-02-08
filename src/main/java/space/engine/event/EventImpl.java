@@ -2,8 +2,8 @@ package space.engine.event;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.event.typehandler.TypeHandler;
-import space.engine.task.TaskCreator;
-import space.engine.task.Tasks;
+import space.engine.sync.TaskCreator;
+import space.engine.sync.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;

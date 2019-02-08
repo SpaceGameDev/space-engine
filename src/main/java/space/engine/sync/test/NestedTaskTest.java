@@ -1,11 +1,11 @@
-package space.engine.task.test;
+package space.engine.sync.test;
 
+import space.engine.sync.DelayTask;
+import space.engine.sync.TaskCreator;
+import space.engine.sync.Tasks;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
 import space.engine.sync.timer.BarrierTimer;
-import space.engine.task.TaskCreator;
-import space.engine.task.Tasks;
-import space.engine.task.impl.DelayTask;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;

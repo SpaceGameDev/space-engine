@@ -1,10 +1,11 @@
-package space.engine.task.impl;
+package space.engine.sync;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.BaseFuture;
 import space.engine.sync.future.Future;
 import space.engine.sync.future.FutureWithException;
+import space.engine.sync.taskImpl.AbstractTask;
 
 /**
  * This Exception can be thrown during the execution of any Task (based upon {@link AbstractTask}) to 'delay' the execution finish.
