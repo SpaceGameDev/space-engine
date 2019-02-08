@@ -1,11 +1,11 @@
 package space.engine.task.test;
 
 import space.engine.sync.barrier.Barrier;
+import space.engine.sync.future.Future;
 import space.engine.sync.timer.BarrierTimer;
 import space.engine.task.TaskCreator;
 import space.engine.task.Tasks;
 import space.engine.task.impl.DelayTask;
-import space.engine.task.impl.FutureTask;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +22,7 @@ public class NestedTaskTest {
 	public static void main(String[] args) throws InterruptedException {
 		ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
-			TaskCreator<? extends FutureTask<float[]>> future = Tasks.future(exec, () -> {
+			TaskCreator<? extends Future<float[]>> future = Tasks.future(exec, () -> {
 				int i = COUNTER.getAndIncrement();
 				if (i % 2 == 0)
 					throw new DelayTask(TIMER.create(i * 500000000L).toFuture(() -> new float[] {i}));

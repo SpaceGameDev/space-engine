@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 import space.engine.task.TaskCreator;
-import space.engine.task.impl.MultiTask;
 import space.engine.task.test.TransactionTest.Entity;
 
 import java.util.concurrent.Executors;
@@ -53,7 +52,7 @@ public class LotsOfObjectsTest {
 		if (FANCY_PRINTOUT)
 			System.out.println(objectsCount + " Objects: taskCreator");
 		time = System.nanoTime();
-		TaskCreator<? extends MultiTask> taskCreator =
+		TaskCreator<? extends Barrier> taskCreator =
 				parallel(IntStream.range(0, world.length)
 								  .boxed()
 								  .flatMap(x -> IntStream.range(0, world.length)
