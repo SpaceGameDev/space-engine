@@ -1,5 +1,6 @@
 package space.engine.sync.test;
 
+import space.engine.Side;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
@@ -7,17 +8,17 @@ import space.engine.sync.lock.SyncLock;
 import space.engine.sync.lock.SyncLockImpl;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static space.engine.Side.*;
 import static space.engine.sync.Tasks.*;
 
 /**
  * To make this work: add the following lines to the top of
- * acquireLocks(SyncLock[] locks, int exceptLock, Runnable callback):
+ * SyncLock.acquireLocks(SyncLock[] locks, int exceptLock, Runnable callback):
  */
 //		if(locks.length == 0) {
 //			callback.run();
@@ -35,7 +36,6 @@ public class TransactionTest {
 	public static boolean FANCY_PRINTOUT = false;
 	
 	public static AtomicInteger COUNTER;
-	public static ExecutorService EXECUTOR;
 	
 	public static class Entity {
 		
@@ -45,7 +45,6 @@ public class TransactionTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			System.out.print(""); //initialization
 			
 			//run
@@ -53,7 +52,7 @@ public class TransactionTest {
 				run(i);
 			}
 		} finally {
-			EXECUTOR.shutdown();
+			Side.exit();
 		}
 	}
 	
@@ -97,9 +96,10 @@ public class TransactionTest {
 	}
 	
 	public static TaskCreator<? extends Barrier> createTransaction(Entity from, Entity to) {
+		Executor exec = sideGet(EXECUTOR_POOL);
 		return sequential(new SyncLock[] {from.lock, to.lock}, Barrier.EMPTY_BARRIER_ARRAY, List.of(
-				runnable(EXECUTOR, () -> from.count--),
-				runnable(EXECUTOR, () -> to.count++)
+				runnable(exec, () -> from.count--),
+				runnable(exec, () -> to.count++)
 		));
 	}
 }

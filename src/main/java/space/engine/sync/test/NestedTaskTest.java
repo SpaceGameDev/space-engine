@@ -1,5 +1,6 @@
 package space.engine.sync.test;
 
+import space.engine.Side;
 import space.engine.sync.DelayTask;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.Tasks;
@@ -8,11 +9,11 @@ import space.engine.sync.future.Future;
 import space.engine.sync.timer.BarrierTimer;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static space.engine.Side.*;
 
 public class NestedTaskTest {
 	
@@ -20,9 +21,8 @@ public class NestedTaskTest {
 	public static final AtomicInteger COUNTER = new AtomicInteger();
 	
 	public static void main(String[] args) throws InterruptedException {
-		ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
-			TaskCreator<? extends Future<float[]>> future = Tasks.future(exec, () -> {
+			TaskCreator<? extends Future<float[]>> future = Tasks.future(sideGet(EXECUTOR_POOL), () -> {
 				int i = COUNTER.getAndIncrement();
 				if (i % 2 == 0)
 					throw new DelayTask(TIMER.create(i * 500000000L).toFuture(() -> new float[] {i}));
@@ -37,7 +37,7 @@ public class NestedTaskTest {
 							 .collect(Collectors.toList())
 			).await();
 		} finally {
-			exec.shutdown();
+			Side.exit();
 		}
 	}
 }

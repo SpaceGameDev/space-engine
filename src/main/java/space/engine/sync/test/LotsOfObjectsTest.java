@@ -1,18 +1,17 @@
 package space.engine.sync.test;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.Side;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 import space.engine.sync.test.TransactionTest.Entity;
 
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static space.engine.sync.Tasks.parallel;
-import static space.engine.sync.test.TransactionTest.EXECUTOR;
 
 public class LotsOfObjectsTest {
 	
@@ -22,7 +21,6 @@ public class LotsOfObjectsTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			System.out.print(""); //initialization
 			
 			//run
@@ -30,7 +28,7 @@ public class LotsOfObjectsTest {
 				System.out.println(String.format("%1$3s", count) + ": " + formatTimeMs(run(count)));
 			}
 		} finally {
-			EXECUTOR.shutdown();
+			Side.exit();
 		}
 	}
 	
