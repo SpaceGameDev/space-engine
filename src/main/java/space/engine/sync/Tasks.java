@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 import static space.engine.ArrayUtils.mergeIfNeeded;
+import static space.engine.Side.*;
 import static space.engine.sync.barrier.Barrier.EMPTY_BARRIER_ARRAY;
 import static space.engine.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
 
@@ -28,16 +29,16 @@ public class Tasks {
 		void run() throws DelayTask;
 	}
 	
-	public static TaskCreator<? extends Barrier> runnableMinimal(RunnableWithDelay run) {
-		return runnable(Runnable::run, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	public static TaskCreator<? extends Barrier> runnable(RunnableWithDelay run) {
+		return runnable(sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
 	}
 	
-	public static TaskCreator<? extends Barrier> runnableMinimal(Barrier[] staticBarriers, RunnableWithDelay run) {
-		return runnable(Runnable::run, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	public static TaskCreator<? extends Barrier> runnable(Barrier[] staticBarriers, RunnableWithDelay run) {
+		return runnable(sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
 	}
 	
-	public static TaskCreator<? extends Barrier> runnableMinimal(SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableWithDelay run) {
-		return runnable(Runnable::run, staticLocks, staticBarriers, run);
+	public static TaskCreator<? extends Barrier> runnable(SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableWithDelay run) {
+		return runnable(sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
 	}
 	
 	public static TaskCreator<? extends Barrier> runnable(Executor exec, Barrier[] staticBarriers, RunnableWithDelay run) {
@@ -69,16 +70,16 @@ public class Tasks {
 		T get() throws DelayTask;
 	}
 	
-	public static <R> TaskCreator<? extends Future<R>> futureMinimal(SupplierWithDelay<R> run) {
-		return future(Runnable::run, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	public static <R> TaskCreator<? extends Future<R>> future(SupplierWithDelay<R> run) {
+		return future(sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
 	}
 	
-	public static <R> TaskCreator<? extends Future<R>> futureMinimal(Barrier[] staticBarriers, SupplierWithDelay<R> run) {
-		return future(Runnable::run, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	public static <R> TaskCreator<? extends Future<R>> future(Barrier[] staticBarriers, SupplierWithDelay<R> run) {
+		return future(sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
 	}
 	
-	public static <R> TaskCreator<? extends Future<R>> futureMinimal(SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelay<R> run) {
-		return future(Runnable::run, staticLocks, staticBarriers, run);
+	public static <R> TaskCreator<? extends Future<R>> future(SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelay<R> run) {
+		return future(sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
 	}
 	
 	public static <R> TaskCreator<? extends Future<R>> future(Executor exec, SupplierWithDelay<R> run) {
