@@ -1,4 +1,4 @@
-package space.engine.task.impl;
+package space.engine.sync.taskImpl;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;
@@ -8,7 +8,7 @@ import space.engine.sync.lock.SyncLock;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static space.engine.task.impl.AbstractTask.TaskState.*;
+import static space.engine.sync.taskImpl.AbstractTask.TaskState.*;
 
 /**
  * AbstractTask implements {@link Barrier} waiting and {@link SyncLock} locking.

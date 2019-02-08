@@ -10,7 +10,7 @@ import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModification;
 import space.engine.logger.BaseLogger;
 import space.engine.logger.LogLevel;
-import space.engine.task.Tasks;
+import space.engine.sync.Tasks;
 import space.engine.window.VideoMode;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;

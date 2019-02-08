@@ -1,7 +1,7 @@
-package space.engine.task.impl;
+package space.engine.sync.taskImpl;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.Side;
+import space.engine.sync.DelayTask;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.lock.SyncLock;
 
@@ -18,22 +18,35 @@ public abstract class RunnableTask extends AbstractTask implements Runnable {
 		super(locks);
 	}
 	
+	//submit
 	protected synchronized void submit() {
 		submit1(this);
 	}
 	
-	protected synchronized void submit1(Runnable toRun) {
-		Side.GLOBAL_EXECUTOR.execute(toRun);
-	}
+	protected abstract void submit1(Runnable toRun);
 	
 	//execution
 	public void run() {
 		try {
 			execute();
-		} finally {
 			executionFinished();
+		} catch (DelayTask e) {
+			e.barrier.addHook(() -> executionFinished(e.barrier));
+		} catch (Throwable e) {
+			try {
+				executionFinished();
+			} catch (Throwable e2) {
+				RuntimeException run = new RuntimeException(e);
+				run.addSuppressed(e2);
+				throw run;
+			}
+			throw e;
 		}
 	}
 	
-	protected abstract void execute();
+	protected void executionFinished(Barrier awaitTask) {
+		executionFinished();
+	}
+	
+	protected abstract void execute() throws DelayTask;
 }

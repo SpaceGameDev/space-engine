@@ -2,7 +2,7 @@ package space.engine.event;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.event.typehandler.TypeHandler;
-import space.engine.task.TaskCreator;
+import space.engine.sync.TaskCreator;
 
 /**
  * The {@link Event} Object is used to {@link Event#addHook(Object)} and {@link Event#removeHook(Object)} Hooks,

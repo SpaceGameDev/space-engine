@@ -1,4 +1,4 @@
-package space.engine.task.impl;
+package space.engine.sync.taskImpl;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;

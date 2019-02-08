@@ -1,4 +1,4 @@
-package space.engine.task;
+package space.engine.sync;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.sync.barrier.Barrier;
@@ -13,12 +13,9 @@ import static space.engine.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
  */
 public interface TaskCreator<TASK extends Barrier> {
 	
-	//change state
-	
 	/**
-	 * Starts the Execution of this Task.
-	 * Eg. on Java-based Tasks, it will submit all Entry points as {@link Runnable Runnables} to a ThreadPool.<br>
-	 * <b>Should only be called once. </b>Calling it more than once should throw an {@link IllegalStateException}.
+	 * Creates a new Task based upn this template.
+	 * The Task may start execution after declared {@link Barrier Barriers} are triggered and while holding declared {@link SyncLock SyncLocks}.
 	 *
 	 * @return the created Task of generic type TASK
 	 */
@@ -27,9 +24,8 @@ public interface TaskCreator<TASK extends Barrier> {
 	}
 	
 	/**
-	 * Starts the Execution of this Task.
-	 * Eg. on Java-based Tasks, it will submit all Entry points as {@link Runnable Runnables} to a ThreadPool.<br>
-	 * <b>Should only be called once. </b>Calling it more than once should throw an {@link IllegalStateException}.
+	 * Creates a new Task based upn this template.
+	 * The Task may start execution after declared {@link Barrier Barriers} are triggered and while holding declared {@link SyncLock SyncLocks}.
 	 *
 	 * @return the created Task of generic type TASK
 	 */
@@ -38,8 +34,8 @@ public interface TaskCreator<TASK extends Barrier> {
 	}
 	
 	/**
-	 * Starts the Execution of this Task.
-	 * Eg. on Java-based Tasks, it will submit all Entry points as {@link Runnable Runnables} to a ThreadPool.<br>
+	 * Creates a new Task based upn this template.
+	 * The Task may start execution after declared {@link Barrier Barriers} are triggered and while holding declared {@link SyncLock SyncLocks}.
 	 *
 	 * @return the created Task of generic type TASK
 	 */

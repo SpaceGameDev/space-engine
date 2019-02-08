@@ -6,7 +6,7 @@ import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AttributeList;
-import space.engine.task.TaskCreator;
+import space.engine.sync.TaskCreator;
 import space.engine.window.VideoMode;
 import space.engine.window.VideoMode.VideoModeDesktop;
 import space.engine.window.Window;

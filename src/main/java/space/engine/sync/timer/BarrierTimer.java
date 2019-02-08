@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A {@link BarrierTimer} allows you to {@link #create(long)} a Barrier triggering when this reached the supplied point in time.
- * When it actually triggeres depends on the implementation.
+ * When it actually triggers depends on the implementation.
+ * Some standard Implementations include the {@link #createUnmodifiable(long)} Methods and {@link BarrierTimerWithTimeControl}.
  */
 public abstract class BarrierTimer {
 	

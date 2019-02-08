@@ -1,7 +1,8 @@
-package space.engine.task.impl;
+package space.engine.sync.taskImpl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.engine.sync.DelayTask;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
 import space.engine.sync.future.FutureNotFinishedException;
@@ -27,11 +28,18 @@ public abstract class FutureTask<R> extends RunnableTask implements Future<R> {
 	
 	//execute
 	@Override
-	protected void execute() {
+	protected void execute() throws DelayTask {
 		ret = execute0();
 	}
 	
-	protected abstract R execute0();
+	protected abstract R execute0() throws DelayTask;
+	
+	@Override
+	protected void executionFinished(Barrier awaitTask) {
+		//noinspection unchecked
+		ret = ((Future<R>) awaitTask).assertGet();
+		super.executionFinished(awaitTask);
+	}
 	
 	//get
 	@Override
