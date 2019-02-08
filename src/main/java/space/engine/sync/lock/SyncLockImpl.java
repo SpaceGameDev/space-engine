@@ -1,11 +1,12 @@
 package space.engine.sync.lock;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.Side;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+
+import static space.engine.Side.*;
 
 public class SyncLockImpl implements SyncLock {
 	
@@ -54,7 +55,7 @@ public class SyncLockImpl implements SyncLock {
 		}
 		
 		//out of tries -> enqueue and try again later
-		Side.GLOBAL_EXECUTOR.execute(() -> unlockRunCallbackTry(modid));
+		sideGet(EXECUTOR_POOL).execute(() -> unlockRunCallbackTry(modid));
 	}
 	
 	private boolean unlockRunCallbackOnce(int modId) {

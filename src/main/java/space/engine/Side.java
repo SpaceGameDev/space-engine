@@ -13,16 +13,19 @@ import space.engine.key.attribute.AttributeListCreator;
 import space.engine.key.attribute.AttributeListModification;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings("unused")
 public class Side {
 	
-	@Deprecated
-	public static Executor GLOBAL_EXECUTOR = Runnable::run;
+	private static ExecutorService GLOBAL_EXECUTOR_POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	
 	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	
 	//attributes
+	public static final Key<Executor> EXECUTOR_POOL = ATTRIBUTE_LIST_CREATOR.generateKey(() -> GLOBAL_EXECUTOR_POOL);
+	
 	//buffer alloc
 	public static final Key<Allocator<DirectBuffer>> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.generateKey();
 	public static final Key<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.generateKey();
@@ -62,7 +65,15 @@ public class Side {
 	
 	private static final ThreadLocal<AttributeList<Side>> THREAD_LOCAL = ThreadLocal.withInitial(ATTRIBUTE_LIST_CREATOR::create);
 	
-	public static @NotNull AttributeList<Side> getSide() {
+	public static @NotNull AttributeList<Side> side() {
 		return THREAD_LOCAL.get();
+	}
+	
+	public static <T> T sideGet(Key<T> key) {
+		return side().get(key);
+	}
+	
+	public static void exit() {
+		GLOBAL_EXECUTOR_POOL.shutdown();
 	}
 }
