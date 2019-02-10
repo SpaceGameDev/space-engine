@@ -25,33 +25,19 @@ public class EventEntry<FUNCTION> {
 	 */
 	public final @NotNull EventEntry<?>[] requiredBy;
 	
-	/**
-	 * the default priority if no dependency is given
-	 */
-	public final int defaultPriority;
-	
 	//constructors
 	public EventEntry(@NotNull FUNCTION function) {
-		this(function, EMPTY_EVENT_ENTRY_ARRAY, EMPTY_EVENT_ENTRY_ARRAY, 0);
+		this(function, EMPTY_EVENT_ENTRY_ARRAY, EMPTY_EVENT_ENTRY_ARRAY);
 	}
 	
 	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry... requires) {
-		this(function, requires, EMPTY_EVENT_ENTRY_ARRAY, 0);
-	}
-	
-	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry<?>[] requires, int defaultPriority) {
-		this(function, requires, EMPTY_EVENT_ENTRY_ARRAY, defaultPriority);
+		this(function, requires, EMPTY_EVENT_ENTRY_ARRAY);
 	}
 	
 	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry<?>[] requires, @NotNull EventEntry<?>[] requiredBy) {
-		this(function, requires, requiredBy, 0);
-	}
-	
-	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry<?>[] requires, @NotNull EventEntry<?>[] requiredBy, int defaultPriority) {
 		this.function = function;
 		this.requires = requires;
 		this.requiredBy = requiredBy;
-		this.defaultPriority = defaultPriority;
 	}
 	
 	//Methods
