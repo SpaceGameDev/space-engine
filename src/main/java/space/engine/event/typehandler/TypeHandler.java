@@ -1,8 +1,7 @@
 package space.engine.event.typehandler;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
+import space.engine.sync.DelayTask;
 
 /**
  * A {@link TypeHandler} handles the Execution of FUNCTIONs and abstracts that.
@@ -10,8 +9,7 @@ import java.util.function.Consumer;
  * @param <FUNCTION> the Function type
  */
 @FunctionalInterface
-public interface TypeHandler<FUNCTION> extends Consumer<FUNCTION> {
+public interface TypeHandler<FUNCTION> {
 	
-	@Override
-	void accept(@NotNull FUNCTION function);
+	void accept(@NotNull FUNCTION function) throws DelayTask;
 }
