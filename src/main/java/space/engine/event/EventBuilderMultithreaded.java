@@ -1,6 +1,7 @@
 package space.engine.event;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.event.typehandler.AllowMultithreading;
 import space.engine.event.typehandler.TypeHandler;
 import space.engine.sync.Tasks;
 import space.engine.sync.barrier.Barrier;
@@ -17,8 +18,10 @@ public class EventBuilderMultithreaded<FUNCTION> extends AbstractEventBuilder<FU
 	
 	@Override
 	public @NotNull Barrier submit(@NotNull TypeHandler<FUNCTION> typeHandler, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
-		List<Node> nodes = getBuild();
+		if (!(typeHandler instanceof AllowMultithreading))
+			throw new IllegalArgumentException("TypeHandler " + typeHandler + " does not allow multithreading!");
 		
+		List<Node> nodes = getBuild();
 		return new MultiTask(locks, barriers) {
 			@Override
 			protected Barrier setup(Barrier start) {
