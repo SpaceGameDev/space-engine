@@ -67,7 +67,7 @@ public abstract class AbstractAttributeList<TYPE> implements ToString {
 	 * creates a new {@link AttributeListModification AttributeListModification}.
 	 * Calls <code>this.{@link AbstractAttributeList#getCreator()}.{@link AttributeListCreator#createModify()}</code> by default.
 	 */
-	public @NotNull AttributeListModification createModify() {
+	public @NotNull AttributeListModification<TYPE> createModify() {
 		return getCreator().createModify();
 	}
 	

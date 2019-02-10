@@ -71,16 +71,21 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 		
 		List<Node> ret = new ArrayList<>(nodeMap.size());
 		while (runMap.size() != 0) {
+			boolean foundAny = false;
 			Set<Entry<Node, AtomicInteger>> entrySet = runMap.entrySet();
-			for (Entry<Node, AtomicInteger> entry : entrySet) {
+			for (Entry<Node, AtomicInteger> entry : new ArrayList<>(entrySet)) {
 				if (entry.getValue().get() == 0) {
+					entrySet.remove(entry);
+					foundAny = true;
+					
 					Node node = entry.getKey();
 					ret.add(node);
-					
-					entrySet.remove(entry);
 					node.next.forEach(nextNode -> runMap.get(nextNode).decrementAndGet());
 				}
 			}
+			
+			if (!foundAny)
+				throw new RuntimeException("Couldn't resolve dependencies! Maybe there was a dependency circle?");
 		}
 		
 		return ret;
@@ -124,8 +129,8 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 		public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 			ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 			tsh.add("entry", this.entry);
-			tsh.add("next", this.next);
-			tsh.add("prev", this.prev);
+			tsh.add("next.size()", this.next.size());
+			tsh.add("prev.size()", this.prev.size());
 			return tsh.build();
 		}
 		
