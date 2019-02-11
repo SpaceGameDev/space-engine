@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>, Cache {
 	
@@ -65,15 +66,14 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 	}
 	
 	protected List<Node> computeDependencyOrderedList(Map<EventEntry<?>, Node> nodeMap) {
-		Map<Node, AtomicInteger> runMap = new HashMap<>();
-		for (Node value : nodeMap.values())
-			runMap.put(value, new AtomicInteger(value.prev.size()));
+		Map<Node, AtomicInteger> runMap = nodeMap.values().stream().collect(Collectors.toMap(node -> node, node -> new AtomicInteger(node.prev.size()), (a, b) -> b));
 		
 		List<Node> ret = new ArrayList<>(nodeMap.size());
 		while (runMap.size() != 0) {
 			boolean foundAny = false;
 			Set<Entry<Node, AtomicInteger>> entrySet = runMap.entrySet();
-			for (Entry<Node, AtomicInteger> entry : new ArrayList<>(entrySet)) {
+			//noinspection unchecked
+			for (Entry<Node, AtomicInteger> entry : entrySet.toArray(new Entry[0])) {
 				if (entry.getValue().get() == 0) {
 					entrySet.remove(entry);
 					foundAny = true;
