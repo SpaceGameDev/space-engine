@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class BaseLogger extends AbstractLogger {
 	
-	//	DependencyEventCreator<Prefix> handler = new DependencyEventBuilderSinglethread<>();
-//	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new DependencyEventBuilderSinglethread<>();
+	//	DependencyEventCreator<Prefix> handler = new EventBuilderSinglethread<>();
+//	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new EventBuilderSinglethread<>();
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {

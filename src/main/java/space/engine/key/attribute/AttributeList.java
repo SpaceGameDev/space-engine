@@ -5,8 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.delegate.collection.ConvertingCollection;
 import space.engine.event.Event;
-import space.engine.event.EventImpl;
+import space.engine.event.EventBuilderSinglethread;
 import space.engine.key.Key;
+import space.engine.sync.barrier.Barrier;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> {
 	
 	@NotNull
-	public EventImpl<Consumer<ChangeEvent>> changeEvent = new EventImpl<>();
+	public Event<Consumer<ChangeEvent>> changeEvent = new EventBuilderSinglethread<>();
 	
 	public AttributeList(AttributeListCreator<TYPE> creator) {
 		super(creator, AttributeListCreator.DEFAULT);
@@ -54,7 +55,13 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> {
 		
 		//trigger events
 		ChangeEvent chEvent = new ChangeEvent<>(this, mod);
-		changeEvent.execute(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
+		Barrier event = changeEvent.submit(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
+		try {
+			//FIXME: don't block
+			event.await();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 		
 		//apply values
 		mod.table().forEach(entry -> {
