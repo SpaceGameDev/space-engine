@@ -14,6 +14,9 @@ public interface IndexMap<VALUE> {
 	//capacity
 	boolean isExpandable();
 	
+	/**
+	 * Gets the current estimated size of the {@link IndexMap}.
+	 */
 	int size();
 	
 	default boolean isEmpty() {
@@ -43,7 +46,9 @@ public interface IndexMap<VALUE> {
 	
 	//addAll
 	default void addAll(@NotNull Collection<? extends VALUE> coll) {
-		coll.forEach(this::add);
+		for (VALUE value : coll) {
+			add(value);
+		}
 	}
 	
 	default void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * <li>if <b>NOT</b> {@link CachingIndexMap#allowIterateOverExisting} <b>(default)</b>: throws an {@link UnsupportedOperationException} with message "Cache iteration not allowed!"</li>
  * </ul>
  * <br>
- * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe. See {@link space.engine.indexmap.ConcurrentIndexMapArray}.
+ * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
  */
 public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache {
 	

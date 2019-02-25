@@ -17,35 +17,63 @@ import java.util.function.Supplier;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
-	public static int DEFAULT_CAPACITY = 16;
-	public static int EXPAND_SHIFT = 1;
+	public static final int DEFAULT_CAPACITY = 16;
+	public static final int EXPAND_SHIFT = 1;
 	
-	public int length;
+	protected final VALUE defaultObject;
 	public VALUE[] array;
+	public int length;
 	
 	public IndexMapArray() {
-		this(DEFAULT_CAPACITY);
+		this(null, DEFAULT_CAPACITY);
 	}
 	
 	public IndexMapArray(int initCapacity) {
-		//noinspection unchecked
-		this.array = (VALUE[]) new Object[initCapacity];
+		this(null, initCapacity);
 	}
 	
-	public IndexMapArray(VALUE[] array) {
-		this.array = array;
+	public IndexMapArray(IndexMap<VALUE> coll) {
+		this(null, coll.toArray());
+	}
+	
+	public IndexMapArray(VALUE[] elements) {
+		this(null, elements);
+	}
+	
+	public IndexMapArray(@Nullable VALUE defaultObject) {
+		this(defaultObject, DEFAULT_CAPACITY);
+	}
+	
+	public IndexMapArray(@Nullable VALUE defaultObject, int initCapacity) {
+		this.defaultObject = defaultObject;
+		//noinspection unchecked
+		this.array = (VALUE[]) new Object[initCapacity];
+		this.length = 0;
+		
+		VALUE def = this.defaultObject;
+		if (def != null)
+			Arrays.fill(array, def);
+	}
+	
+	public IndexMapArray(@Nullable VALUE defaultObject, IndexMap<VALUE> coll) {
+		this(defaultObject, coll.toArray());
+	}
+	
+	public IndexMapArray(@Nullable VALUE defaultObject, VALUE[] elements) {
+		this.defaultObject = defaultObject;
+		//noinspection unchecked
+		this.array = (VALUE[]) Arrays.copyOf(elements, elements.length, Object[].class);
 		this.length = array.length;
 	}
 	
 	//capacity
-	public boolean ensureCapacityAvailable(int index) {
-		return ensureCapacity(index + 1);
-	}
-	
-	public boolean ensureCapacity(int capa) {
+	public boolean ensureCapacity(int index) {
 		int oldl = array.length;
-		if (oldl < capa) {
-			array = Arrays.copyOf(array, ArrayUtils.getOptimalArraySizeExpansion(oldl, capa, EXPAND_SHIFT));
+		VALUE def = defaultObject;
+		if (oldl < index + 1) {
+			array = Arrays.copyOf(array, ArrayUtils.getOptimalArraySizeExpansion(oldl, index + 1, EXPAND_SHIFT));
+			if (def != null)
+				Arrays.fill(array, oldl, array.length, def);
 			return true;
 		}
 		return false;
@@ -63,7 +91,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	//internal methods
 	protected VALUE putAndExpand(int index, @Nullable VALUE v) {
-		ensureCapacityAvailable(index);
+		ensureCapacity(index);
 		if (index >= length)
 			length = index + 1;
 		
@@ -72,18 +100,13 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		return ret;
 	}
 	
-	@SuppressWarnings("ConstantConditions")
-	protected VALUE getDefault() {
-		return null;
-	}
-	
 	//access
 	@Override
 	public VALUE get(int index) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
-			return getDefault();
+			return defaultObject;
 		
 		return array[index];
 	}
@@ -106,10 +129,10 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
 		if (index >= array.length)
-			return getDefault();
+			return defaultObject;
 		
 		VALUE ret = array[index];
-		array[index] = getDefault();
+		array[index] = defaultObject;
 		return ret;
 	}
 	
@@ -158,7 +181,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 			return def;
 		
 		VALUE ret = array[index];
-		return ret != null ? ret : def;
+		return ret == defaultObject ? def : ret;
 	}
 	
 	@Override
@@ -187,7 +210,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	public boolean replace(int index, @Nullable VALUE oldValue, @Nullable VALUE newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
+		if (Objects.equals(index < array.length ? array[index] : defaultObject, oldValue))
 			return false;
 		
 		putAndExpand(index, newValue);
@@ -198,7 +221,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	public boolean replace(int index, @Nullable VALUE oldValue, @NotNull Supplier<? extends VALUE> newValue) {
 		if (index < 0)
 			throw new IndexOutOfBoundsException("no negative index!");
-		if (Objects.equals(index < array.length ? array[index] : getDefault(), oldValue))
+		if (Objects.equals(index < array.length ? array[index] : defaultObject, oldValue))
 			return false;
 		
 		putAndExpand(index, newValue.get());
@@ -249,7 +272,7 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	//other
 	@Override
 	public void clear() {
-		Arrays.fill(array, 0, length, getDefault());
+		Arrays.fill(array, 0, length, defaultObject);
 	}
 	
 	@NotNull
@@ -322,6 +345,19 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 			public boolean add(IndexMap.Entry<VALUE> entry) {
 				IndexMapArray.this.put(entry.getIndex(), entry.getValue());
 				return true;
+			}
+			
+			@Override
+			public boolean contains(Object o) {
+				if (!(o instanceof IndexMap.Entry))
+					return false;
+				IndexMap.Entry entry = (IndexMap.Entry) o;
+				return Objects.equals(get(entry.getIndex()), entry.getValue());
+			}
+			
+			@Override
+			public void clear() {
+				IndexMapArray.this.clear();
 			}
 		};
 	}

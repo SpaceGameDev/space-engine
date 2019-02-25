@@ -27,11 +27,6 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	}
 	
 	@Override
-	public synchronized boolean ensureCapacityAvailable(int index) {
-		return super.ensureCapacityAvailable(index);
-	}
-	
-	@Override
 	public synchronized boolean ensureCapacity(int capa) {
 		return super.ensureCapacity(capa);
 	}
@@ -49,11 +44,6 @@ public class ConcurrentIndexMapArray<VALUE> extends IndexMapArray<VALUE> {
 	@Override
 	protected synchronized VALUE putAndExpand(int index, VALUE v) {
 		return super.putAndExpand(index, v);
-	}
-	
-	@Override
-	protected synchronized VALUE getDefault() {
-		return super.getDefault();
 	}
 	
 	@Override
