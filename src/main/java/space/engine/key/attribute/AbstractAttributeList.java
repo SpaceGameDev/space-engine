@@ -3,8 +3,8 @@ package space.engine.key.attribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
+import space.engine.indexmap.ConcurrentIndexMap;
 import space.engine.indexmap.IndexMap;
-import space.engine.indexmap.IndexMapArray;
 import space.engine.key.Key;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
@@ -18,7 +18,7 @@ public abstract class AbstractAttributeList<TYPE> implements ToString {
 	
 	protected AbstractAttributeList(AttributeListCreator<TYPE> creator, Object defaultObject) {
 		this.creator = creator;
-		this.indexMap = new IndexMapArray<>(defaultObject, creator.getInitialIndexMapCapacity());
+		this.indexMap = new ConcurrentIndexMap<>(defaultObject);
 	}
 	
 	//get
