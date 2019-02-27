@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.delegate.collection.ConvertingCollection;
 import space.engine.event.Event;
-import space.engine.event.EventBuilderSinglethread;
+import space.engine.event.SequentialEventBuilder;
 import space.engine.key.Key;
 import space.engine.sync.barrier.Barrier;
 
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> {
 	
 	@NotNull
-	public Event<Consumer<ChangeEvent>> changeEvent = new EventBuilderSinglethread<>();
+	public Event<Consumer<ChangeEvent>> changeEvent = new SequentialEventBuilder<>();
 	
 	public AttributeList(AttributeListCreator<TYPE> creator) {
 		super(creator, AttributeListCreator.DEFAULT);

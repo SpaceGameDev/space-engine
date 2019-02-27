@@ -67,11 +67,11 @@ public class EventTest {
 	
 	@Test
 	public void testEventBuilderSinglethread() throws InterruptedException {
-		testEvent(new EventBuilderSinglethread<>());
+		testEvent(new SequentialEventBuilder<>());
 	}
 	
 	@Test
 	public void testEventBuilderMultithreaded() throws InterruptedException {
-		testEvent(new EventBuilderMultithreaded<>());
+		testEvent(new ParallelEventBuilder<>());
 	}
 }
