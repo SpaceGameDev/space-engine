@@ -1,11 +1,39 @@
 package space.engine.logger;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.event.Event;
+import space.engine.event.EventEntry;
+import space.engine.event.SequentialEventBuilder;
+import space.engine.event.typehandler.TypeBiConsumer;
+import space.engine.logger.prefix.LogLevelPrefix;
+import space.engine.logger.prefix.Prefix;
+import space.engine.logger.prefix.SubLoggerPrefix;
+import space.engine.logger.prefix.ThreadPrefix;
+import space.engine.logger.prefix.TimePrefix;
+import space.engine.logger.printer.SeparatedPrinter;
+import space.engine.logger.printer.SimpleStringPrinter;
+import space.engine.string.CharSequence2D;
+import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.sync.Tasks;
+import space.engine.sync.barrier.Barrier;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class BaseLogger extends AbstractLogger {
 	
-	//	DependencyEventCreator<Prefix> handler = new SequentialEventBuilder<>();
-//	DependencyEventCreator<BiConsumer<LogMessage, CharSequence2D>> printer = new SequentialEventBuilder<>();
+	public static final EventEntry<Prefix> PREFIX_TIME = new EventEntry<>(new TimePrefix(new SimpleDateFormat("HH:mm:ss")));
+	public static final EventEntry<Prefix> PREFIX_THREAD = new EventEntry<>(new ThreadPrefix());
+	public static final EventEntry<Prefix> PREFIX_LOGLEVEL = new EventEntry<>(new LogLevelPrefix());
+	public static final EventEntry<Prefix> PREFIX_SUBLOGGER = new EventEntry<>(new SubLoggerPrefix());
+	
+	public static final EventEntry<BiConsumer<LogMessage, CharSequence2D>> PRINTER_SEPARATED = new EventEntry<>(new SeparatedPrinter(new SimpleStringPrinter(System.out),
+																																	 new SimpleStringPrinter(System.err)));
+	public static final EventEntry<BiConsumer<LogMessage, CharSequence2D>> PRINTER_OUT = new EventEntry<>(new SimpleStringPrinter(System.out));
+	
+	Event<Prefix> handler = new SequentialEventBuilder<>();
+	Event<BiConsumer<LogMessage, CharSequence2D>> printer = new SequentialEventBuilder<>();
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {
@@ -36,13 +64,11 @@ public class BaseLogger extends AbstractLogger {
 	
 	//log
 	@Override
-	public void logDirect0(LogMessage msg) {
-//		try {
-//			handler.execute(consumer -> consumer.accept(msg)).await();
-//			printer.execute(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D())).await();
-//		} catch (InterruptedException e) {
-//			Thread.currentThread().interrupt();
-//		}
+	public Barrier logDirect0(LogMessage msg) {
+		return Tasks.sequential(List.of(
+				handler.taskCreator(consumer -> consumer.accept(msg)),
+				printer.taskCreator(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D()))
+		)).submit();
 	}
 	
 	//utility
@@ -51,10 +77,10 @@ public class BaseLogger extends AbstractLogger {
 	 * adds a {@link java.util.Date} (formatted with HH:mm:ss), {@link Thread}, {@link LogLevel} and {@link SubLogger} prefix to the {@link BaseLogger}
 	 */
 	public static BaseLogger defaultHandler(BaseLogger logger) {
-//		logger.handler.addHook(DependencyEventEntry.fromFunction(new TimePrefix(new SimpleDateFormat("HH:mm:ss")), "time", 0));
-//		logger.handler.addHook(DependencyEventEntry.fromFunction(new ThreadPrefix(), "thread", 1));
-//		logger.handler.addHook(DependencyEventEntry.fromFunction(new LogLevelPrefix(), "loglevel", 2));
-//		logger.handler.addHook(DependencyEventEntry.fromFunction(new SubLoggerPrefix(), "sublogger", 3));
+		logger.handler.addHook(PREFIX_TIME);
+		logger.handler.addHook(PREFIX_THREAD);
+		logger.handler.addHook(PREFIX_LOGLEVEL);
+		logger.handler.addHook(PREFIX_SUBLOGGER);
 		return logger;
 	}
 	
@@ -62,7 +88,7 @@ public class BaseLogger extends AbstractLogger {
 	 * adds the default System.out and System.err {@link java.io.PrintStream}s as Printer to the BaseLogger
 	 */
 	public static BaseLogger defaultPrinter(BaseLogger logger) {
-//		logger.printer.addHook(DependencyEventEntry.fromFunction(new SeparatedPrinter(new SimpleStringPrinter(System.out), new SimpleStringPrinter(System.err)), "system"));
+		logger.printer.addHook(PRINTER_SEPARATED);
 		return logger;
 	}
 }

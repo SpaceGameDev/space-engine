@@ -1,6 +1,7 @@
 package space.engine.logger;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.sync.barrier.Barrier;
 
 public abstract class AbstractLogger implements Logger {
 	
@@ -10,10 +11,11 @@ public abstract class AbstractLogger implements Logger {
 		this.minLevel = minLevel;
 	}
 	
-	public final void logDirect(@NotNull LogMessage msg) {
+	public final Barrier logDirect(@NotNull LogMessage msg) {
 		if (minLevel.allowLog(msg.level))
-			logDirect0(msg);
+			return logDirect0(msg);
+		return Barrier.ALWAYS_TRIGGERED_BARRIER;
 	}
 	
-	public abstract void logDirect0(LogMessage msg);
+	public abstract Barrier logDirect0(LogMessage msg);
 }
