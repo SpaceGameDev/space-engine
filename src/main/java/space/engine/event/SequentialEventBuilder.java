@@ -13,7 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EventBuilderSinglethread<FUNCTION> extends AbstractEventBuilder<FUNCTION> {
+/**
+ * This implementation of {@link Event} will call it's hooks sequentially in a single thread
+ */
+public class SequentialEventBuilder<FUNCTION> extends AbstractEventBuilder<FUNCTION> {
 	
 	private volatile @Nullable List<FUNCTION> build;
 	

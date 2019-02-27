@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EventBuilderMultithreaded<FUNCTION> extends AbstractEventBuilder<FUNCTION> {
+/**
+ * This implementation of {@link Event} will submit it's hooks individually as tasks and use Barriers to ensure correct ordering.
+ */
+public class ParallelEventBuilder<FUNCTION> extends AbstractEventBuilder<FUNCTION> {
 	
 	private volatile List<Node> build;
 	
