@@ -18,20 +18,20 @@ public interface Window extends Freeable, Executor {
 	
 	AttributeListCreator<Window> CREATOR = new AttributeListCreator<>();
 	
-	Key<@NotNull VideoMode> VIDEO_MODE = CREATOR.generateKey(VideoMode.createVideoModeDesktop(800, 600));
+	Key<@NotNull VideoMode> VIDEO_MODE = CREATOR.createKey(VideoMode.createVideoModeDesktop(800, 600));
 	/**
 	 * ignored when <code>VIDEO_MODE == {@link space.engine.window.VideoMode.VideoModeDesktop} && {@link VideoModeDesktop#hasTransparency()}</code>
 	 */
-	Key<@NotNull Integer> ALPHA_BITS = CREATOR.generateKey(0);
-	Key<@NotNull Integer> DEPTH_BITS = CREATOR.generateKey(0);
-	Key<@NotNull Integer> STENCIL_BITS = CREATOR.generateKey(0);
+	Key<@NotNull Integer> ALPHA_BITS = CREATOR.createKey(0);
+	Key<@NotNull Integer> DEPTH_BITS = CREATOR.createKey(0);
+	Key<@NotNull Integer> STENCIL_BITS = CREATOR.createKey(0);
 	
 	//attributes
-	Key<@NotNull String> TITLE = CREATOR.generateKey("Untitled Window");
-	Key<@NotNull Boolean> VISIBLE = CREATOR.generateKey(Boolean.TRUE);
-	Key<@NotNull Boolean> RESIZEABLE = CREATOR.generateKey(Boolean.FALSE);
-	Key<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.generateKey(Boolean.TRUE);
-	Key<@NotNull Boolean> BORDERLESS = CREATOR.generateKey(Boolean.FALSE);
+	Key<@NotNull String> TITLE = CREATOR.createKey("Untitled Window");
+	Key<@NotNull Boolean> VISIBLE = CREATOR.createKey(Boolean.TRUE);
+	Key<@NotNull Boolean> RESIZEABLE = CREATOR.createKey(Boolean.FALSE);
+	Key<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.createKey(Boolean.TRUE);
+	Key<@NotNull Boolean> BORDERLESS = CREATOR.createKey(Boolean.FALSE);
 	
 	//methods
 	void swapBuffers();

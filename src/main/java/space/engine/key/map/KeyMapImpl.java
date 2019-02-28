@@ -175,7 +175,7 @@ public class KeyMapImpl<VALUE> implements KeyMap<VALUE>, ToString {
 		
 		@NotNull
 		public Collection<Key<?>> getKeys() {
-			return gen.getKeys();
+			return gen.getKeysIndexed();
 		}
 		
 		public int estimateKeyPoolMax() {

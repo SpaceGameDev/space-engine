@@ -22,13 +22,13 @@ public interface WindowContext extends Freeable {
 	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();
 	
 	//api
-	Key<Object> API_TYPE = CREATOR.generateKey();
+	Key<Object> API_TYPE = CREATOR.createKey();
 	
 	//OpenGL / OpenGL ES
-	Key<GLProfile> GL_PROFILE = CREATOR.generateKey(GLProfile.PROFILE_ANY);
-	Key<Integer> GL_VERSION_MAJOR = CREATOR.generateKey(2);
-	Key<Integer> GL_VERSION_MINOR = CREATOR.generateKey(1);
-	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.generateKey(Boolean.FALSE);
+	Key<GLProfile> GL_PROFILE = CREATOR.createKey(GLProfile.PROFILE_ANY);
+	Key<Integer> GL_VERSION_MAJOR = CREATOR.createKey(2);
+	Key<Integer> GL_VERSION_MINOR = CREATOR.createKey(1);
+	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKey(Boolean.FALSE);
 	
 	//enums
 	enum OpenGLApiType {

@@ -1,11 +1,11 @@
 package space.engine.event;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import space.engine.Side;
 import space.engine.key.attribute.AttributeList;
-import space.engine.key.attribute.AttributeListModification;
+import space.engine.key.attribute.AttributeListModify;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,12 +57,12 @@ public class EventTest {
 		assertEquals(callCounter.get(), acceptAll.length);
 	}
 	
-	@Before
-	public void before() {
+	@BeforeClass
+	public void before() throws InterruptedException {
 		AttributeList<Side> side = side();
-		AttributeListModification<Side> modify = side.createModify();
+		AttributeListModify modify = side.createModify();
 		modify.put(EXECUTOR_POOL, Runnable::run);
-		side.apply(modify);
+		modify.apply().await();
 	}
 	
 	@Test

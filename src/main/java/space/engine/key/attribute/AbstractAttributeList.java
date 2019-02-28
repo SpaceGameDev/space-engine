@@ -3,42 +3,39 @@ package space.engine.key.attribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
-import space.engine.indexmap.ConcurrentIndexMap;
 import space.engine.indexmap.IndexMap;
-import space.engine.key.Key;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
-import java.util.Collection;
-
 public abstract class AbstractAttributeList<TYPE> implements ToString {
 	
-	protected AttributeListCreator<TYPE> creator;
-	protected IndexMap<Object> indexMap;
+	protected IndexMap<@Nullable Object> indexMap;
 	
-	protected AbstractAttributeList(AttributeListCreator<TYPE> creator, Object defaultObject) {
-		this.creator = creator;
-		this.indexMap = new ConcurrentIndexMap<>(defaultObject);
+	protected AbstractAttributeList(IndexMap<@Nullable Object> indexMap) {
+		this.indexMap = indexMap;
 	}
 	
-	//get
-	public <V> @Nullable Object getDirect(@NotNull Key<V> key) {
-		creator.check(key);
-		return indexMap.get(key.getID());
+	//abstract
+	public abstract @NotNull AttributeListCreator<TYPE> creator();
+	
+	//direct access
+	public <V> @Nullable Object getDirect(@NotNull AttributeKey<V> key) {
+		verifyKey(key);
+		return indexMap.get(key.id);
+	}
+	
+	public <V> @Nullable Object putDirect(@NotNull AttributeKey<V> key, @Nullable Object value) {
+		verifyKey(key);
+		return indexMap.put(key.id, value);
 	}
 	
 	//other
+	public void verifyKey(AttributeKey<?> key) {
+		creator().assertKeyOf(key);
+	}
+	
 	public int size() {
 		return indexMap.size();
-	}
-	
-	public AttributeListCreator<TYPE> getCreator() {
-		return creator;
-	}
-	
-	@NotNull
-	public Collection<Object> values() {
-		return indexMap.values();
 	}
 	
 	//toString
@@ -47,7 +44,7 @@ public abstract class AbstractAttributeList<TYPE> implements ToString {
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {
 		ToStringHelperObjectsInstance<TSHTYPE> tsh = api.createObjectInstance(this);
 		tsh.add("indexMap", indexMap);
-		tsh.add("creator", creator);
+		tsh.add("creator", creator());
 		return tsh.build();
 	}
 	
@@ -56,45 +53,4 @@ public abstract class AbstractAttributeList<TYPE> implements ToString {
 		return toString0();
 	}
 	
-	public <V> boolean isDefault(@NotNull Key<V> key) {
-		return getDirect(key) == AttributeListCreator.DEFAULT;
-	}
-	
-	public <V> boolean isNotDefault(@NotNull Key<V> key) {
-		return getDirect(key) != AttributeListCreator.DEFAULT;
-	}
-	
-	/**
-	 * creates a new {@link AttributeListModification AttributeListModification}.
-	 * Calls <code>this.{@link AbstractAttributeList#getCreator()}.{@link AttributeListCreator#createModify()}</code> by default.
-	 */
-	public @NotNull AttributeListModification<TYPE> createModify() {
-		return getCreator().createModify();
-	}
-	
-	/**
-	 * gets an {@link java.util.Iterator} over all index / value pairs
-	 */
-	@NotNull
-	public abstract Collection<? extends space.engine.key.attribute.AbstractEntry<?>> table();
-	
-	protected abstract class AbstractEntry<V> implements space.engine.key.attribute.AbstractEntry<V> {
-		
-		protected Key<V> key;
-		
-		public AbstractEntry(Key<V> key) {
-			this.key = key;
-		}
-		
-		@NotNull
-		@Override
-		public Key<V> getKey() {
-			return key;
-		}
-		
-		@Override
-		public Object getValueDirect() {
-			return AbstractAttributeList.this.getDirect(key);
-		}
-	}
 }

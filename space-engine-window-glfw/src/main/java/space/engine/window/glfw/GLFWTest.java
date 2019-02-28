@@ -7,7 +7,7 @@ import space.engine.buffer.direct.alloc.UnsafeAllocator;
 import space.engine.buffer.string.DefaultStringConverter;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
-import space.engine.key.attribute.AttributeListModification;
+import space.engine.key.attribute.AttributeListModify;
 import space.engine.logger.BaseLogger;
 import space.engine.logger.LogLevel;
 import space.engine.sync.Tasks;
@@ -42,7 +42,7 @@ public class GLFWTest {
 		System.setProperty("org.lwjgl.util.NoChecks", "true");
 		
 		//side
-		AttributeListModification<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
+		AttributeListModify<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
 		UnsafeAllocator alloc = new UnsafeAllocator();
 		Side.initBufferAlloc(mod, alloc);
 		Side.initBufferStringConverter(mod, new DefaultStringConverter(alloc));
@@ -61,17 +61,17 @@ public class GLFWTest {
 		WindowFramework windowfw = new GLFWWindowFramework();
 		
 		//context
-		AttributeListModification<WindowContext> windowContextAtt = WindowContext.CREATOR.createModify();
+		AttributeListModify<WindowContext> windowContextAtt = WindowContext.CREATOR.createModify();
 		windowContextAtt.put(API_TYPE, OpenGLApiType.GL);
-		WindowContext windowContext = windowfw.createContext(windowContextAtt.createNewList());
+		WindowContext windowContext = windowfw.createContext(windowContextAtt.createNewAttributeList());
 		GLFW.glfwMakeContextCurrent(0);
 		
 		//window
-		AttributeListModification<Window> windowAtt = Window.CREATOR.createModify();
+		AttributeListModify<Window> windowAtt = Window.CREATOR.createModify();
 		windowAtt.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
 		windowAtt.put(BORDERLESS, Boolean.TRUE);
 		windowAtt.put(TITLE, "GLFWTest Window");
-		AttributeList<Window> attList = windowAtt.createNewList();
+		AttributeList<Window> attList = windowAtt.createNewAttributeList();
 		Window window = windowContext.createWindow(attList);
 		
 		if (CRASH)
