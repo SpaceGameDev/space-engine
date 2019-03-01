@@ -11,12 +11,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class KeyGenerator<KEYTYPE extends Key<?>> {
 	
+	private final @NotNull Class<?> keyClass;
 	private AtomicInteger counter = new AtomicInteger();
 	private IndexMap<KEYTYPE> keymap = new ConcurrentIndexMap<>();
 	
-	protected int generateNextId(KEYTYPE key) {
+	public KeyGenerator(@NotNull Class<?> keyClass) {
+		this.keyClass = keyClass;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected int generateNextId(@NotNull Key<?> key) {
+		if (!keyClass.isAssignableFrom(key.getClass())) {
+			throw new IllegalKeyException(key);
+		}
 		int id = counter.getAndIncrement();
-		keymap.put(id, key);
+		keymap.put(id, (KEYTYPE) key);
 		return id;
 	}
 	
@@ -35,8 +44,8 @@ public class KeyGenerator<KEYTYPE extends Key<?>> {
 	 *
 	 * @return true if the key was made by this generator and is valid
 	 */
-	public boolean isKeyOf(@NotNull KEYTYPE key) {
-		return keymap.get(key.id) == key;
+	public boolean isKeyOf(@NotNull Key<?> key) {
+		return keyClass.isAssignableFrom(key.getClass()) && keymap.get(key.id) == key;
 	}
 	
 	/**
@@ -44,8 +53,8 @@ public class KeyGenerator<KEYTYPE extends Key<?>> {
 	 *
 	 * @throws IllegalKeyException if the Key was not made by this generator
 	 */
-	public void assertKeyOf(@NotNull KEYTYPE key) throws IllegalKeyException {
-		if (isKeyOf(key))
+	public void assertKeyOf(@NotNull Key<?> key) throws IllegalKeyException {
+		if (!isKeyOf(key))
 			throw new IllegalKeyException();
 	}
 	

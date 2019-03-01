@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
-import static space.engine.Side.side;
 import static space.engine.window.Window.*;
 import static space.engine.window.WindowContext.API_TYPE;
 
@@ -46,7 +45,7 @@ public class GLFWTest {
 		UnsafeAllocator alloc = new UnsafeAllocator();
 		Side.initBufferAlloc(mod, alloc);
 		Side.initBufferStringConverter(mod, new DefaultStringConverter(alloc));
-		side().apply(mod);
+		mod.apply();
 		
 		//logger
 		BaseLogger logger = new BaseLogger();

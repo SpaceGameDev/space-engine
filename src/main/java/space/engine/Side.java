@@ -24,20 +24,20 @@ public class Side {
 	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	
 	//attributes
-	public static final AttributeKey<Executor> EXECUTOR_POOL = ATTRIBUTE_LIST_CREATOR.createKey(() -> GLOBAL_EXECUTOR_POOL);
+	public static final AttributeKey<Executor> EXECUTOR_POOL = ATTRIBUTE_LIST_CREATOR.createKeyWithDefault(GLOBAL_EXECUTOR_POOL);
 	
 	//buffer alloc
-	public static final AttributeKey<Allocator<DirectBuffer>> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.createKey();
-	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.createKey();
-	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.createKey();
+	public static final AttributeKey<Allocator<DirectBuffer>> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//buffer alloc stack
-	public static final AttributeKey<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.createKey();
-	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.createKey();
-	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.createKey();
+	public static final AttributeKey<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//buffer string converter
-	public static final AttributeKey<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.createKey();
+	public static final AttributeKey<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//initializer
 	//buffer alloc

@@ -2,7 +2,7 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
-import space.engine.key.Key;
+import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
 
@@ -22,13 +22,13 @@ public interface WindowContext extends Freeable {
 	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();
 	
 	//api
-	Key<Object> API_TYPE = CREATOR.createKey();
+	AttributeKey<Object> API_TYPE = CREATOR.createKeyNormal();
 	
 	//OpenGL / OpenGL ES
-	Key<GLProfile> GL_PROFILE = CREATOR.createKey(GLProfile.PROFILE_ANY);
-	Key<Integer> GL_VERSION_MAJOR = CREATOR.createKey(2);
-	Key<Integer> GL_VERSION_MINOR = CREATOR.createKey(1);
-	Key<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKey(Boolean.FALSE);
+	AttributeKey<GLProfile> GL_PROFILE = CREATOR.createKeyWithDefault(GLProfile.PROFILE_ANY);
+	AttributeKey<Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(2);
+	AttributeKey<Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(1);
+	AttributeKey<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(false);
 	
 	//enums
 	enum OpenGLApiType {

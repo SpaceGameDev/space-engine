@@ -1,7 +1,7 @@
 package space.engine.key;
 
 @SuppressWarnings("unused")
-public class Key<T> {
+public class Key<V> {
 	
 	public final int id;
 	
@@ -10,7 +10,7 @@ public class Key<T> {
 	 *
 	 * @param gen your generator
 	 */
-	protected Key(KeyGenerator gen) {
+	protected Key(KeyGenerator<?> gen) {
 		id = gen.generateNextId(this);
 	}
 }

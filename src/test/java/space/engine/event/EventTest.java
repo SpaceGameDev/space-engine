@@ -60,7 +60,7 @@ public class EventTest {
 	@BeforeClass
 	public void before() throws InterruptedException {
 		AttributeList<Side> side = side();
-		AttributeListModify modify = side.createModify();
+		AttributeListModify<Side> modify = side.createModify();
 		modify.put(EXECUTOR_POOL, Runnable::run);
 		modify.apply().await();
 	}
