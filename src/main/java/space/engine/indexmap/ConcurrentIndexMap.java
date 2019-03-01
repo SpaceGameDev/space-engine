@@ -54,8 +54,12 @@ public class ConcurrentIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	public ConcurrentIndexMap(@Nullable VALUE defaultObject, int capacityInnerArray) {
 		this.defaultObject = defaultObject;
 		this.capacityInnerArray = capacityInnerArray;
+		
 		//noinspection unchecked
-		this.array = new AtomicReferenceArray[] {new AtomicReferenceArray<>(capacityInnerArray)};
+		VALUE[] firstArray = (VALUE[]) new Object[capacityInnerArray];
+		Arrays.fill(firstArray, defaultObject);
+		//noinspection unchecked
+		this.array = new AtomicReferenceArray[] {new AtomicReferenceArray<>(firstArray)};
 	}
 	
 	public ConcurrentIndexMap(@Nullable VALUE defaultObject, IndexMap<VALUE> indexMap) {
