@@ -4,6 +4,7 @@ import org.junit.Test;
 import space.engine.SingleThreadPoolTest;
 import space.engine.sync.barrier.Barrier;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +27,15 @@ public class TasksTest extends SingleThreadPoolTest {
 	}
 	
 	@Test
+	public void testRunnableDelayed() throws InterruptedException {
+		AtomicBoolean b = new AtomicBoolean(false);
+		runnable(() -> {
+			throw new DelayTask(runnable(() -> b.set(true)).submit());
+		}).submit().await();
+		assertTrue(b.get());
+	}
+	
+	@Test
 	public void testMultipleTasksFromOneCreator() throws InterruptedException {
 		AtomicInteger counter = new AtomicInteger();
 		TaskCreator<? extends Barrier> taskCreator = runnable(counter::incrementAndGet);
@@ -36,6 +46,38 @@ public class TasksTest extends SingleThreadPoolTest {
 	@Test
 	public void testFuture() throws InterruptedException {
 		assertEquals(future(() -> "string").submit().awaitGet(), "string");
+	}
+	
+	@Test(expected = IOException.class)
+	public void testFutureWithException() throws InterruptedException, IOException {
+		futureWithException(IOException.class, () -> {
+			throw new IOException("inside task");
+		}).submit().awaitGet();
+	}
+	
+	@Test(expected = IOException.class)
+	public void testFutureWithXException() throws InterruptedException, IOException, ClassNotFoundException, NoSuchMethodException {
+		Tasks.<Object, NoSuchMethodException, IOException, ClassNotFoundException>futureWith3Exception(NoSuchMethodException.class, IOException.class, ClassNotFoundException.class, () -> {
+			throw new IOException("inside task");
+		}).submit().awaitGet();
+	}
+	
+	@Test(expected = IOException.class)
+	public void testFutureWithExceptionDelayed() throws InterruptedException, IOException {
+		futureWithException(IOException.class, () -> {
+			throw new DelayTask(futureWithException(IOException.class, () -> {
+				throw new IOException("inside task");
+			}).submit());
+		}).submit().awaitGet();
+	}
+	
+	@Test(expected = IOException.class)
+	public void testFutureWithXExceptionDelayed() throws InterruptedException, IOException, ClassNotFoundException {
+		futureWith3Exception(RuntimeException.class, IOException.class, ClassNotFoundException.class, () -> {
+			throw new DelayTask(futureWithException(IOException.class, () -> {
+				throw new IOException("inside task");
+			}).submit());
+		}).submit().awaitGet();
 	}
 	
 	@Test
