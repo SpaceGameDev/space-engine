@@ -1,11 +1,8 @@
 package space.engine.event;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import space.engine.Side;
-import space.engine.key.attribute.AttributeList;
-import space.engine.key.attribute.AttributeListModify;
+import space.engine.SingleThreadPoolTest;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,9 +10,8 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static space.engine.Side.*;
 
-public class EventTest {
+public class EventTest extends SingleThreadPoolTest {
 	
 	final int eventInput = 42;
 	AtomicInteger callCounter = new AtomicInteger();
@@ -55,14 +51,6 @@ public class EventTest {
 		Arrays.stream(acceptAll).forEach(eventImpl::addHook);
 		eventImpl.submit(func -> func.accept(eventInput)).await();
 		assertEquals(callCounter.get(), acceptAll.length);
-	}
-	
-	@BeforeClass
-	public void before() throws InterruptedException {
-		AttributeList<Side> side = side();
-		AttributeListModify<Side> modify = side.createModify();
-		modify.put(EXECUTOR_POOL, Runnable::run);
-		modify.apply().await();
 	}
 	
 	@Test
