@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 
-public class TypeBiConsumer<T, U> implements TypeHandler<BiConsumer<T, U>>, AllowMultithreading {
+public class TypeBiConsumer<T, U> implements TypeHandlerParallel<BiConsumer<T, U>> {
 	
 	public T t;
 	public U u;

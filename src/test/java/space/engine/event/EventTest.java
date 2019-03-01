@@ -3,6 +3,7 @@ package space.engine.event;
 import org.junit.Assert;
 import org.junit.Test;
 import space.engine.SingleThreadPoolTest;
+import space.engine.event.typehandler.TypeHandlerParallel;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +50,7 @@ public class EventTest extends SingleThreadPoolTest {
 	
 	public void testEvent(Event<Consumer<Integer>> eventImpl) throws InterruptedException {
 		Arrays.stream(acceptAll).forEach(eventImpl::addHook);
-		eventImpl.submit(func -> func.accept(eventInput)).await();
+		eventImpl.submit((TypeHandlerParallel<Consumer<Integer>>) func -> func.accept(eventInput)).await();
 		assertEquals(callCounter.get(), acceptAll.length);
 	}
 	

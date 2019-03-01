@@ -2,7 +2,7 @@ package space.engine.event.typehandler;
 
 import org.jetbrains.annotations.NotNull;
 
-public class TypeRunnable implements TypeHandler<Runnable>, AllowMultithreading {
+public class TypeRunnable implements TypeHandlerParallel<Runnable> {
 	
 	public static final TypeRunnable INSTANCE = new TypeRunnable();
 	

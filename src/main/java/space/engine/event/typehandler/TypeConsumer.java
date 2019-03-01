@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class TypeConsumer<T> implements TypeHandler<Consumer<T>>, AllowMultithreading {
+public class TypeConsumer<T> implements TypeHandlerParallel<Consumer<T>> {
 	
 	public T obj;
 	
