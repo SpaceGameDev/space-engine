@@ -40,7 +40,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	public CharSequence2D makeTable(String className, MonofontGuiElement guiElement, ColumnDirection direction, IndexMap<CharSequence2D> elements) {
 		//axis size
 		IndexAxisMapInt axis = new IndexAxisMapInt();
-		Collection<Entry<CharSequence2D>> iter = elements.table();
+		Collection<Entry<CharSequence2D>> iter = elements.entrySet();
 		for (Entry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			CharSequence2D value = elem.getValue();
@@ -62,7 +62,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 		buffer.setY(0).setX(0).append(leftBound).append(className).fill(maxX - className.length(), line).append(rightBound);
 		
 		//entries
-		iter = elements.table();
+		iter = elements.entrySet();
 		for (Entry<CharSequence2D> elem : iter) {
 			int index = elem.getIndex();
 			int startx = axis.getIndex(1, index) + index * separatorLength + 1;

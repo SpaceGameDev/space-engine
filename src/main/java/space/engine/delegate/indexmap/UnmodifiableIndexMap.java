@@ -113,8 +113,8 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@NotNull
 	@Override
-	public Collection<Entry<VALUE>> table() {
-		return new ConvertingCollection.BiDirectionalUnmodifiable<>(super.table(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
+	public Collection<Entry<VALUE>> entrySet() {
+		return new ConvertingCollection.BiDirectionalUnmodifiable<>(super.entrySet(), UnmodifiableEntry::new, entry -> indexMap.getEntry(entry.getIndex()));
 	}
 	
 	@NotNull

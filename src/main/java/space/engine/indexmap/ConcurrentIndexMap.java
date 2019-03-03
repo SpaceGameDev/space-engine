@@ -5,13 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.ArrayUtils;
 import space.engine.baseobject.ToString;
+import space.engine.delegate.collection.UnmodifiableCollection;
 import space.engine.delegate.iterator.Iteratorable;
 import space.engine.string.toStringHelper.ToStringHelper;
 
 import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
@@ -256,48 +259,28 @@ public class ConcurrentIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	@Override
 	public void clear() {
 		AtomicReferenceArray<VALUE>[] array = this.array;
-		for (AtomicReferenceArray<VALUE> valueAtomicReferenceArray : array)
+		for (AtomicReferenceArray<VALUE> innerArray : array)
 			for (int inner = 0; inner < capacityInnerArray; inner++)
-				valueAtomicReferenceArray.set(inner, defaultObject);
+				innerArray.set(inner, defaultObject);
 	}
 	
 	@NotNull
 	@Override
 	public Collection<VALUE> values() {
-		return new AbstractCollection<>() {
-			@NotNull
-			@Override
-			public Iterator<VALUE> iterator() {
-				return new Iteratorable<>() {
-					int index;
-					
-					@Override
-					public boolean hasNext() {
-						return index < ConcurrentIndexMap.this.size();
-					}
-					
-					@Override
-					public VALUE next() {
-						return get(index++);
-					}
-					
-					@Override
-					public void remove() {
-						ConcurrentIndexMap.this.remove(index - 1);
-					}
-				};
+		List<VALUE> ret = new ArrayList<>();
+		for (AtomicReferenceArray<VALUE> innerArray : array) {
+			for (int innerIndex = 0; innerIndex < capacityInnerArray; innerIndex++) {
+				VALUE value = innerArray.get(innerIndex);
+				if (value != null)
+					ret.add(value);
 			}
-			
-			@Override
-			public int size() {
-				return ConcurrentIndexMap.this.size();
-			}
-		};
+		}
+		return new UnmodifiableCollection<>(ret);
 	}
 	
 	@NotNull
 	@Override
-	public Collection<IndexMap.Entry<VALUE>> table() {
+	public Collection<IndexMap.Entry<VALUE>> entrySet() {
 		return new AbstractCollection<>() {
 			@NotNull
 			@Override

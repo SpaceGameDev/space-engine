@@ -130,7 +130,7 @@ public class AttributeListModify<TYPE> extends AbstractAttributeList<TYPE> {
 			Barrier changeEventTask = list.changeEvent.submit(callback -> callback.accept(this, changes), start);
 			//noinspection CodeBlock2Expr
 			return runnable(() -> {
-				indexMap.table()
+				indexMap.entrySet()
 						.stream()
 						.filter(entry -> entry.getValue() != UNCHANGED)
 						.forEach(entry -> list.indexMap.put(entry.getIndex(), entry.getValue()));

@@ -149,8 +149,8 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	@NotNull
 	@Override
-	public Collection<Entry<VALUE>> table() {
-		return indexMap.table();
+	public Collection<Entry<VALUE>> entrySet() {
+		return indexMap.entrySet();
 	}
 	
 	@NotNull

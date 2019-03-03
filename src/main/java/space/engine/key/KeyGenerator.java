@@ -1,7 +1,6 @@
 package space.engine.key;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.delegate.collection.UnmodifiableCollection;
 import space.engine.delegate.indexmap.UnmodifiableIndexMap;
 import space.engine.indexmap.ConcurrentIndexMap;
 import space.engine.indexmap.IndexMap;
@@ -69,6 +68,6 @@ public class KeyGenerator<KEYTYPE extends Key<?>> {
 	 * gets all keys in a collection of keys
 	 */
 	public @NotNull Collection<KEYTYPE> getKeys() {
-		return new UnmodifiableCollection<>(keymap.values());
+		return keymap.values();
 	}
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.ArrayUtils;
 import space.engine.baseobject.ToString;
+import space.engine.delegate.collection.UnmodifiableCollection;
 import space.engine.delegate.iterator.Iteratorable;
 import space.engine.string.toStringHelper.ToStringHelper;
 
@@ -14,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
@@ -277,41 +279,14 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	
 	@NotNull
 	@Override
+	@SuppressWarnings("FuseStreamOperations")
 	public Collection<VALUE> values() {
-		return new AbstractCollection<>() {
-			@NotNull
-			@Override
-			public Iterator<VALUE> iterator() {
-				return new Iteratorable<>() {
-					int index;
-					
-					@Override
-					public boolean hasNext() {
-						return index < length;
-					}
-					
-					@Override
-					public VALUE next() {
-						return array[index++];
-					}
-					
-					@Override
-					public void remove() {
-						IndexMapArray.this.remove(index - 1);
-					}
-				};
-			}
-			
-			@Override
-			public int size() {
-				return IndexMapArray.this.length;
-			}
-		};
+		return new UnmodifiableCollection<>(Arrays.stream(array).filter(Objects::nonNull).collect(Collectors.toList()));
 	}
 	
 	@NotNull
 	@Override
-	public Collection<IndexMap.Entry<VALUE>> table() {
+	public Collection<IndexMap.Entry<VALUE>> entrySet() {
 		return new AbstractCollection<>() {
 			@NotNull
 			@Override

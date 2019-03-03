@@ -146,7 +146,7 @@ public class KeyMap<VALUE> implements ToString {
 	 */
 	@NotNull
 	public Collection<? extends Entry> table() {
-		return new ConvertingCollection.BiDirectional<>(map.table(), Entry::new, entry -> map.getEntry(entry.getKey().id));
+		return new ConvertingCollection.BiDirectional<>(map.entrySet(), Entry::new, entry -> map.getEntry(entry.getKey().id));
 	}
 	
 	@NotNull

@@ -149,8 +149,8 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	
 	@NotNull
 	@Override
-	public Collection<Entry<VALUE>> table() {
-		return indexMap.get().table();
+	public Collection<Entry<VALUE>> entrySet() {
+		return indexMap.get().entrySet();
 	}
 	
 	@NotNull
