@@ -21,7 +21,7 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 	
 	protected final @NotNull AttributeListCreator<TYPE> creator;
 	private final @NotNull SyncLock lock = new SyncLockImpl();
-	protected final @NotNull Event<BiConsumer<AttributeListModify, List<AttributeKey<?>>>> changeEvent = new SequentialEventBuilder<>();
+	protected final @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> changeEvent = new SequentialEventBuilder<>();
 	
 	protected AttributeList(@NotNull AttributeListCreator<TYPE> creator) {
 		super(new ConcurrentIndexMap<>(DEFAULT));
@@ -44,11 +44,11 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 		return lock.unlock();
 	}
 	
-	public void addHook(@NotNull EventEntry<BiConsumer<AttributeListModify, List<AttributeKey<?>>>> hook) {
+	public void addHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
 		changeEvent.addHook(hook);
 	}
 	
-	public boolean removeHook(@NotNull EventEntry<BiConsumer<AttributeListModify, List<AttributeKey<?>>>> hook) {
+	public boolean removeHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
 		return changeEvent.removeHook(hook);
 	}
 	
@@ -58,14 +58,10 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 		return creator;
 	}
 	
-	public @NotNull Event<BiConsumer<AttributeListModify, List<AttributeKey<?>>>> getChangeEvent() {
+	public @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> getChangeEvent() {
 		return changeEvent;
 	}
 	
-	public <V> V get(@NotNull AttributeKey<V> key) {
-		verifyKey(key);
-		return key.attributeListGet(this);
-	}
 	
 	/**
 	 * creates a new {@link AttributeListModify AttributeListModify}.

@@ -64,11 +64,6 @@ public class AttributeListModify<TYPE> extends AbstractAttributeList<TYPE> {
 		return indexMap.get(key.id);
 	}
 	
-	public <V> V get(@NotNull AttributeKey<V> key) {
-		verifyKey(key);
-		return key.attributeListGet(this);
-	}
-	
 	public <V> boolean isUnchanged(@NotNull AttributeKey<V> key) {
 		verifyKey(key);
 		return indexMap.get(key.id) == UNCHANGED;

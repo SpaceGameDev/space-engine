@@ -29,6 +29,12 @@ public abstract class AbstractAttributeList<TYPE> implements ToString {
 		return indexMap.put(key.id, value);
 	}
 	
+	//get
+	public <V> V get(@NotNull AttributeKey<V> key) {
+		verifyKey(key);
+		return key.attributeListGet(this);
+	}
+	
 	//other
 	public void verifyKey(AttributeKey<?> key) {
 		creator().assertKeyOf(key);
