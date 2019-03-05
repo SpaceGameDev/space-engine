@@ -5,6 +5,7 @@ import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AttributeList;
+import space.engine.sync.future.Future;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.exception.WindowUnsupportedApiTypeException;
@@ -56,8 +57,8 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 	}
 	
 	@Override
-	public @NotNull Window createWindow(@NotNull AttributeList<Window> format) {
-		return new GLFWWindow(this, format, storage);
+	public @NotNull Future<GLFWWindow> createWindow(@NotNull AttributeList<Window> format) {
+		return GLFWWindow.create(this, format, storage);
 	}
 	
 	public static class Storage extends FreeableStorageImpl {

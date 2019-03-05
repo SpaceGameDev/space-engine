@@ -5,6 +5,7 @@ import space.engine.baseobject.Freeable;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
+import space.engine.sync.future.Future;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
@@ -16,7 +17,7 @@ import space.engine.key.attribute.AttributeListCreator;
 @SuppressWarnings("unused")
 public interface WindowContext extends Freeable {
 	
-	@NotNull Window createWindow(@NotNull AttributeList<Window> format);
+	Future<? extends Window> createWindow(@NotNull AttributeList<Window> format);
 	
 	//attributes
 	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();

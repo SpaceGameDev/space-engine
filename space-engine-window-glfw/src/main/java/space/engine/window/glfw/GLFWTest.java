@@ -60,24 +60,23 @@ public class GLFWTest {
 		WindowFramework windowfw = new GLFWWindowFramework();
 		
 		//context
-		AttributeListModify<WindowContext> windowContextAtt = WindowContext.CREATOR.createModify();
-		windowContextAtt.put(API_TYPE, OpenGLApiType.GL);
-		WindowContext windowContext = windowfw.createContext(windowContextAtt.createNewAttributeList());
+		AttributeListModify<WindowContext> windowContextAttInitial = WindowContext.CREATOR.createModify();
+		windowContextAttInitial.put(API_TYPE, OpenGLApiType.GL);
+		WindowContext windowContext = windowfw.createContext(windowContextAttInitial.createNewAttributeList());
 		GLFW.glfwMakeContextCurrent(0);
 		
 		//window
-		AttributeListModify<Window> windowAtt = Window.CREATOR.createModify();
-		windowAtt.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
-		windowAtt.put(BORDERLESS, Boolean.TRUE);
-		windowAtt.put(TITLE, "GLFWTest Window");
-		AttributeList<Window> attList = windowAtt.createNewAttributeList();
-		Window window = windowContext.createWindow(attList);
+		AttributeListModify<Window> windowAttInitial = Window.CREATOR.createModify();
+		windowAttInitial.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
+		windowAttInitial.put(BORDERLESS, Boolean.TRUE);
+		windowAttInitial.put(TITLE, "GLFWTest Window");
+		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
+		Window window = windowContext.createWindow(windowAtt).awaitGet();
 		
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
 		Tasks.runnable(window, () -> {
-			GLFW.glfwMakeContextCurrent(((GLFWWindow) window).storage.getWindowPointer());
 			GL.createCapabilities();
 			
 			int[] viewport = new int[4];
@@ -101,6 +100,21 @@ public class GLFWTest {
 				window.swapBuffers();
 			}).submit().await();
 			Thread.sleep(1000 / 60);
+			
+			//changing out window
+			if (i % 600 == 299) {
+				System.out.println("windowed");
+				AttributeListModify<Window> modify = windowAtt.createModify();
+				modify.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, false));
+				modify.put(BORDERLESS, false);
+				modify.apply().await();
+			} else if (i % 600 == 599) {
+				System.out.println("transparent");
+				AttributeListModify<Window> modify = windowAtt.createModify();
+				modify.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
+				modify.put(BORDERLESS, true);
+				modify.apply().await();
+			}
 		}
 		
 		if (FREE_WINDOW) {
