@@ -1,7 +1,6 @@
 package space.engine.logger;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeBiConsumer;
@@ -13,27 +12,28 @@ import space.engine.logger.prefix.TimePrefix;
 import space.engine.logger.printer.SeparatedPrinter;
 import space.engine.logger.printer.SimpleStringPrinter;
 import space.engine.string.CharSequence2D;
+import space.engine.string.String2D;
 import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.sync.DelayTask;
 import space.engine.sync.Tasks;
 import space.engine.sync.barrier.Barrier;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.function.BiConsumer;
 
 public class BaseLogger extends AbstractLogger {
 	
 	public static final EventEntry<Prefix> PREFIX_TIME = new EventEntry<>(new TimePrefix(new SimpleDateFormat("HH:mm:ss")));
-	public static final EventEntry<Prefix> PREFIX_THREAD = new EventEntry<>(new ThreadPrefix());
-	public static final EventEntry<Prefix> PREFIX_LOGLEVEL = new EventEntry<>(new LogLevelPrefix());
-	public static final EventEntry<Prefix> PREFIX_SUBLOGGER = new EventEntry<>(new SubLoggerPrefix());
+	public static final EventEntry<Prefix> PREFIX_THREAD = new EventEntry<>(new ThreadPrefix(), PREFIX_TIME);
+	public static final EventEntry<Prefix> PREFIX_LOGLEVEL = new EventEntry<>(new LogLevelPrefix(), PREFIX_THREAD);
+	public static final EventEntry<Prefix> PREFIX_SUBLOGGER = new EventEntry<>(new SubLoggerPrefix(), PREFIX_LOGLEVEL);
 	
 	public static final EventEntry<BiConsumer<LogMessage, CharSequence2D>> PRINTER_SEPARATED = new EventEntry<>(new SeparatedPrinter(new SimpleStringPrinter(System.out),
 																																	 new SimpleStringPrinter(System.err)));
 	public static final EventEntry<BiConsumer<LogMessage, CharSequence2D>> PRINTER_OUT = new EventEntry<>(new SimpleStringPrinter(System.out));
 	
-	Event<Prefix> handler = new SequentialEventBuilder<>();
-	Event<BiConsumer<LogMessage, CharSequence2D>> printer = new SequentialEventBuilder<>();
+	SequentialEventBuilder<Prefix> handler = new SequentialEventBuilder<>();
+	SequentialEventBuilder<BiConsumer<LogMessage, CharSequence2D>> printer = new SequentialEventBuilder<>();
 	public String prefixMessageSeparator;
 	
 	public BaseLogger() {
@@ -65,10 +65,11 @@ public class BaseLogger extends AbstractLogger {
 	//log
 	@Override
 	public Barrier logDirect0(LogMessage msg) {
-		return Tasks.sequential(List.of(
-				handler.taskCreator(consumer -> consumer.accept(msg)),
-				printer.taskCreator(new TypeBiConsumer<>(msg, new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D()))
-		)).submit();
+		Barrier taskHandler = handler.submit(consumer -> consumer.accept(msg));
+		return Tasks.runnable(() -> {
+			String2D str = new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
+			throw new DelayTask(printer.submit(new TypeBiConsumer<>(msg, str)));
+		}).submit(taskHandler);
 	}
 	
 	//utility

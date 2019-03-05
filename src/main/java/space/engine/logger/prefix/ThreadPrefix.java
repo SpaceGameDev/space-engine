@@ -13,6 +13,6 @@ public class ThreadPrefix extends AbstractPrefix {
 	
 	@Override
 	public void accept(LogMessage logMessage) {
-		logMessage.prefix.append(startChar).append(Thread.currentThread().getName()).append(endChar);
+		logMessage.prefix.append(startChar).append(logMessage.thread.getName()).append(endChar);
 	}
 }
