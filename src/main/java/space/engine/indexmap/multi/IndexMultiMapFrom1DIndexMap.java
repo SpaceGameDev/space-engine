@@ -152,7 +152,7 @@ public class IndexMultiMapFrom1DIndexMap<VALUE> implements IndexMultiMap<VALUE> 
 	}
 	
 	public Collection<IndexMultiMapEntry<VALUE>> tableComplete() {
-		return new ConvertingCollection.BiDirectional<>(indexMap.table(),
+		return new ConvertingCollection.BiDirectional<>(indexMap.entrySet(),
 														IndexMultiMapFrom1DIndexMap.Entry::new,
 														entry -> entry instanceof IndexMultiMapFrom1DIndexMap.Entry ? ((Entry<VALUE>) entry).entry : null);
 	}

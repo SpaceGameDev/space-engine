@@ -1,89 +1,73 @@
 package space.engine.key.attribute;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import space.engine.delegate.collection.ConvertingCollection;
 import space.engine.event.Event;
+import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
-import space.engine.key.Key;
-import space.engine.sync.barrier.Barrier;
+import space.engine.indexmap.ConcurrentIndexMap;
+import space.engine.sync.lock.SyncLock;
+import space.engine.sync.lock.SyncLockImpl;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 
-public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> {
+import static space.engine.key.attribute.AttributeListCreator.DEFAULT;
+
+/**
+ * {@link AttributeList} is threadsafe, however it's modify Object {@link AttributeListModify} is not.
+ */
+public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements SyncLock {
 	
-	@NotNull
-	public Event<Consumer<ChangeEvent>> changeEvent = new SequentialEventBuilder<>();
+	protected final @NotNull AttributeListCreator<TYPE> creator;
+	private final @NotNull SyncLock lock = new SyncLockImpl();
+	protected final @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> changeEvent = new SequentialEventBuilder<>();
 	
-	public AttributeList(AttributeListCreator<TYPE> creator) {
-		super(creator, AttributeListCreator.DEFAULT);
+	protected AttributeList(@NotNull AttributeListCreator<TYPE> creator) {
+		super(new ConcurrentIndexMap<>(DEFAULT));
+		this.creator = creator;
 	}
 	
-	//get
-	@SuppressWarnings("unchecked")
-	public <V> V get(@NotNull Key<V> key) {
-		creator.check(key);
-		return AttributeListCreator.correctDefault((V) indexMap.get(key.getID()), key);
+	//delegate
+	@Override
+	public boolean tryLockNow() {
+		return lock.tryLockNow();
 	}
 	
-	@Nullable
-	@Contract("_, !null -> !null")
-	@SuppressWarnings("unchecked")
-	public <V> V getOrDefault(@NotNull Key<V> key, @Nullable V def) {
-		creator.check(key);
-		Object o = indexMap.get(key.getID());
-		return o == AttributeListCreator.DEFAULT ? def : (V) o;
+	@Override
+	public void tryLockLater(BooleanSupplier callback) {
+		lock.tryLockLater(callback);
 	}
 	
-	//other
-	@NotNull
-	public Event<Consumer<ChangeEvent>> getChangeEvent() {
+	@Override
+	public Runnable unlock() {
+		return lock.unlock();
+	}
+	
+	public void addHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
+		changeEvent.addHook(hook);
+	}
+	
+	public boolean removeHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
+		return changeEvent.removeHook(hook);
+	}
+	
+	//methods
+	@Override
+	public @NotNull AttributeListCreator<TYPE> creator() {
+		return creator;
+	}
+	
+	public @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> getChangeEvent() {
 		return changeEvent;
 	}
 	
-	public synchronized void apply(AttributeListModification<TYPE> mod2) {
-		//unchanged check and replacement
-		AttributeListModification<TYPE> mod = creator.createModify();
-		mod2.table().forEach(entry -> {
-			Key<?> key = entry.getKey();
-			Object value = entry.getValueDirect();
-			mod.putDirect(key, Objects.equals(value, this.getDirect(key)) ? AttributeListCreator.UNCHANGED : value);
-		});
-		
-		//trigger events
-		ChangeEvent chEvent = new ChangeEvent<>(this, mod);
-		Barrier event = changeEvent.submit(attributeListChangeEventConsumer -> attributeListChangeEventConsumer.accept(chEvent));
-		try {
-			//FIXME: don't block
-			event.await();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		
-		//apply values
-		mod.table().forEach(entry -> {
-			Object value = entry.getValueDirect();
-			if (value != AttributeListCreator.UNCHANGED)
-				this.indexMap.put(entry.getKey().getID(), value);
-		});
-	}
 	
-	protected class ListEntry<V> extends AbstractEntry<V> implements space.engine.key.attribute.AbstractEntry<V> {
-		
-		public ListEntry(Key<V> key) {
-			super(key);
-		}
-		
-		public V getValue() {
-			return AttributeList.this.get(key);
-		}
-	}
-	
-	@NotNull
-	public Collection<? extends ListEntry<?>> table() {
-		return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> new ListEntry<>(creator.gen.getKey(entry.getIndex())), entry -> indexMap.getEntry(entry.getKey().getID()));
+	/**
+	 * creates a new {@link AttributeListModify AttributeListModify}.
+	 * Calls <code>this.{@link AbstractAttributeList#creator()}.{@link AttributeListCreator#createModify()}</code> by default.
+	 */
+	public @NotNull AttributeListModify<TYPE> createModify() {
+		return new AttributeListModify<>(this);
 	}
 }

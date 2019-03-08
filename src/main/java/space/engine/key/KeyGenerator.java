@@ -1,46 +1,32 @@
 package space.engine.key;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import space.engine.delegate.indexmap.UnmodifiableIndexMap;
+import space.engine.indexmap.ConcurrentIndexMap;
+import space.engine.indexmap.IndexMap;
 
 import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public interface KeyGenerator {
+public class KeyGenerator<KEYTYPE extends Key<?>> {
 	
-	//generate
+	private final @NotNull Class<?> keyClass;
+	private AtomicInteger counter = new AtomicInteger();
+	private IndexMap<KEYTYPE> keymap = new ConcurrentIndexMap<>();
 	
-	/**
-	 * generates a new {@link Key}
-	 *
-	 * @param <T> the {@link Key Key's} generic
-	 * @return the new {@link Key}
-	 */
-	@NotNull <T> Key<T> generateKey();
-	
-	/**
-	 * generates a new {@link Key}
-	 *
-	 * @param <T> the {@link Key Key's} generic
-	 * @param def the default value
-	 * @return the new {@link Key}
-	 */
-	@NotNull
-	default <T> Key<T> generateKey(@Nullable T def) {
-		return generateKey(() -> def);
+	public KeyGenerator(@NotNull Class<?> keyClass) {
+		this.keyClass = keyClass;
 	}
 	
-	/**
-	 * generates a new {@link Key}
-	 *
-	 * @param <T> the {@link Key Key's} generic
-	 * @param def the Supplier of the default value
-	 * @return the new {@link Key}
-	 */
-	@NotNull <T> Key<T> generateKey(@NotNull Supplier<T> def);
-	
-	//key
+	@SuppressWarnings("unchecked")
+	protected int generateNextId(@NotNull Key<?> key) {
+		if (!keyClass.isAssignableFrom(key.getClass())) {
+			throw new IllegalKeyException(key);
+		}
+		int id = counter.getAndIncrement();
+		keymap.put(id, (KEYTYPE) key);
+		return id;
+	}
 	
 	/**
 	 * gets the key of an id
@@ -48,82 +34,40 @@ public interface KeyGenerator {
 	 * @param id the id of the {@link Key}
 	 * @return the {@link Key} associated with the id
 	 */
-	Key<?> getKey(int id);
+	public KEYTYPE getKey(int id) {
+		return keymap.get(id);
+	}
 	
 	/**
 	 * checks weather the key is from this generator
 	 *
 	 * @return true if the key was made by this generator and is valid
 	 */
-	boolean isKeyOf(Key<?> key);
+	public boolean isKeyOf(@NotNull Key<?> key) {
+		return keyClass.isAssignableFrom(key.getClass()) && keymap.get(key.id) == key;
+	}
 	
 	/**
-	 * gets all keys
+	 * checks weather the key is from this generator
 	 *
-	 * @return all {@link Key IKeys} available
+	 * @throws IllegalKeyException if the Key was not made by this generator
 	 */
-	@NotNull Collection<Key<?>> getKeys();
+	public void assertKeyOf(@NotNull Key<?> key) throws IllegalKeyException {
+		if (!isKeyOf(key))
+			throw new IllegalKeyException();
+	}
 	
 	/**
-	 * Estimates the max ID of all Keys.
-	 * If no estimation can be done -1 is returned
-	 *
-	 * @return the estimated max ID of all Keys or -1 if not supported
+	 * gets all keys in an {@link IndexMap} with `key id` -> `key`
 	 */
-	int estimateKeyPoolMax();
+	public @NotNull IndexMap<KEYTYPE> getKeysIndexed() {
+		return new UnmodifiableIndexMap<>(keymap);
+	}
 	
 	/**
-	 * every key generated will be submitted to the Consumer
-	 *
-	 * @param onGen the Consumer accepting the {@link Key IKeys}
-	 * @return a new {@link KeyGenerator} with the described functionality
+	 * gets all keys in a collection of keys
 	 */
-	default KeyGenerator whenGenerated(@NotNull Consumer<Key<?>> onGen) {
-		return new KeyGenerator() {
-			@NotNull
-			@Override
-			public <T> Key<T> generateKey() {
-				Key<T> key = KeyGenerator.this.generateKey();
-				onGen.accept(key);
-				return key;
-			}
-			
-			@NotNull
-			@Override
-			public <T> Key<T> generateKey(T def) {
-				Key<T> key = KeyGenerator.this.generateKey(def);
-				onGen.accept(key);
-				return key;
-			}
-			
-			@NotNull
-			@Override
-			public <T> Key<T> generateKey(@NotNull Supplier<T> def) {
-				Key<T> key = KeyGenerator.this.generateKey(def);
-				onGen.accept(key);
-				return key;
-			}
-			
-			@Override
-			public Key<?> getKey(int id) {
-				return KeyGenerator.this.getKey(id);
-			}
-			
-			@Override
-			public boolean isKeyOf(Key<?> key) {
-				return KeyGenerator.this.isKeyOf(key);
-			}
-			
-			@NotNull
-			@Override
-			public Collection<Key<?>> getKeys() {
-				return KeyGenerator.this.getKeys();
-			}
-			
-			@Override
-			public int estimateKeyPoolMax() {
-				return KeyGenerator.this.estimateKeyPoolMax();
-			}
-		};
+	public @NotNull Collection<KEYTYPE> getKeys() {
+		return keymap.values();
 	}
 }

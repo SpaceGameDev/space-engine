@@ -2,7 +2,7 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
-import space.engine.key.Key;
+import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.TaskCreator;
 import space.engine.window.VideoMode.VideoModeDesktop;
@@ -18,20 +18,20 @@ public interface Window extends Freeable, Executor {
 	
 	AttributeListCreator<Window> CREATOR = new AttributeListCreator<>();
 	
-	Key<@NotNull VideoMode> VIDEO_MODE = CREATOR.generateKey(VideoMode.createVideoModeDesktop(800, 600));
+	AttributeKey<@NotNull VideoMode> VIDEO_MODE = CREATOR.createKeyWithDefault(VideoMode.createVideoModeDesktop(800, 600));
 	/**
 	 * ignored when <code>VIDEO_MODE == {@link space.engine.window.VideoMode.VideoModeDesktop} && {@link VideoModeDesktop#hasTransparency()}</code>
 	 */
-	Key<@NotNull Integer> ALPHA_BITS = CREATOR.generateKey(0);
-	Key<@NotNull Integer> DEPTH_BITS = CREATOR.generateKey(0);
-	Key<@NotNull Integer> STENCIL_BITS = CREATOR.generateKey(0);
+	AttributeKey<@NotNull Integer> ALPHA_BITS = CREATOR.createKeyWithDefault(0);
+	AttributeKey<@NotNull Integer> DEPTH_BITS = CREATOR.createKeyWithDefault(0);
+	AttributeKey<@NotNull Integer> STENCIL_BITS = CREATOR.createKeyWithDefault(0);
 	
 	//attributes
-	Key<@NotNull String> TITLE = CREATOR.generateKey("Untitled Window");
-	Key<@NotNull Boolean> VISIBLE = CREATOR.generateKey(Boolean.TRUE);
-	Key<@NotNull Boolean> RESIZEABLE = CREATOR.generateKey(Boolean.FALSE);
-	Key<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.generateKey(Boolean.TRUE);
-	Key<@NotNull Boolean> BORDERLESS = CREATOR.generateKey(Boolean.FALSE);
+	AttributeKey<@NotNull String> TITLE = CREATOR.createKeyWithDefault("Untitled Window");
+	AttributeKey<@NotNull Boolean> VISIBLE = CREATOR.createKeyWithDefault(Boolean.TRUE);
+	AttributeKey<@NotNull Boolean> RESIZEABLE = CREATOR.createKeyWithDefault(Boolean.FALSE);
+	AttributeKey<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.createKeyWithDefault(Boolean.TRUE);
+	AttributeKey<@NotNull Boolean> BORDERLESS = CREATOR.createKeyWithDefault(Boolean.FALSE);
 	
 	//methods
 	void swapBuffers();

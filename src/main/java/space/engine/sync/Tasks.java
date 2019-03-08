@@ -3,8 +3,18 @@ package space.engine.sync;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 import space.engine.sync.future.Future;
+import space.engine.sync.future.FutureWithException;
+import space.engine.sync.future.FutureWithException.FutureWith2Exception;
+import space.engine.sync.future.FutureWithException.FutureWith3Exception;
+import space.engine.sync.future.FutureWithException.FutureWith4Exception;
+import space.engine.sync.future.FutureWithException.FutureWith5Exception;
 import space.engine.sync.lock.SyncLock;
 import space.engine.sync.taskImpl.FutureTask;
+import space.engine.sync.taskImpl.FutureTaskWithException;
+import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith2Exception;
+import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith3Exception;
+import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith4Exception;
+import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith5Exception;
 import space.engine.sync.taskImpl.MultiTask;
 import space.engine.sync.taskImpl.RunnableTask;
 
@@ -99,6 +109,229 @@ public class Tasks {
 			
 			@Override
 			protected R execute0() throws DelayTask {
+				return run.get();
+			}
+		};
+	}
+	
+	//FutureWithException
+	@FunctionalInterface
+	public interface SupplierWithDelayAndException<T, EX extends Throwable> {
+		
+		T get() throws DelayTask, EX;
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, SupplierWithDelayAndException<R, EX> run) {
+		return futureWithException(exceptionClass, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, Barrier[] staticBarriers, SupplierWithDelayAndException<R, EX> run) {
+		return futureWithException(exceptionClass, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAndException<R, EX> run) {
+		return futureWithException(exceptionClass, sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, Executor exec, SupplierWithDelayAndException<R, EX> run) {
+		return futureWithException(exceptionClass, exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, Executor exec, Barrier[] staticBarriers, SupplierWithDelayAndException<R, EX> run) {
+		return futureWithException(exceptionClass, exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX extends Throwable> TaskCreator<? extends FutureWithException<R, EX>> futureWithException(Class<EX> exceptionClass, Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAndException<R, EX> run) {
+		return (locks, barriers) -> new FutureTaskWithException<>(exceptionClass, mergeIfNeeded(SyncLock[]::new, staticLocks, locks), mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected R execute0() throws DelayTask, EX {
+				return run.get();
+			}
+		};
+	}
+	
+	//FutureWith2Exception
+	@FunctionalInterface
+	public interface SupplierWithDelayAnd2Exception<T, EX1 extends Throwable, EX2 extends Throwable> {
+		
+		T get() throws DelayTask, EX1, EX2;
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return futureWith2Exception(exceptionClass1, exceptionClass2, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Barrier[] staticBarriers, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return futureWith2Exception(exceptionClass1, exceptionClass2, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return futureWith2Exception(exceptionClass1, exceptionClass2, sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Executor exec, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return futureWith2Exception(exceptionClass1, exceptionClass2, exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Executor exec, Barrier[] staticBarriers, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return futureWith2Exception(exceptionClass1, exceptionClass2, exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable> TaskCreator<? extends FutureWith2Exception<R, EX1, EX2>> futureWith2Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd2Exception<R, EX1, EX2> run) {
+		return (locks, barriers) -> new FutureTaskWith2Exception<>(exceptionClass1,
+																   exceptionClass2,
+																   mergeIfNeeded(SyncLock[]::new, staticLocks, locks),
+																   mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected R execute0() throws DelayTask, EX1, EX2 {
+				return run.get();
+			}
+		};
+	}
+	
+	//FutureWith3Exception
+	@FunctionalInterface
+	public interface SupplierWithDelayAnd3Exception<T, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> {
+		
+		T get() throws DelayTask, EX1, EX2, EX3;
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return futureWith3Exception(exceptionClass1, exceptionClass2, exceptionClass3, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Barrier[] staticBarriers, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return futureWith3Exception(exceptionClass1, exceptionClass2, exceptionClass3, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return futureWith3Exception(exceptionClass1, exceptionClass2, exceptionClass3, sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Executor exec, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return futureWith3Exception(exceptionClass1, exceptionClass2, exceptionClass3, exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Executor exec, Barrier[] staticBarriers, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return futureWith3Exception(exceptionClass1, exceptionClass2, exceptionClass3, exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable> TaskCreator<? extends FutureWith3Exception<R, EX1, EX2, EX3>> futureWith3Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd3Exception<R, EX1, EX2, EX3> run) {
+		return (locks, barriers) -> new FutureTaskWith3Exception<>(exceptionClass1,
+																   exceptionClass2,
+																   exceptionClass3,
+																   mergeIfNeeded(SyncLock[]::new, staticLocks, locks),
+																   mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected R execute0() throws DelayTask, EX1, EX2, EX3 {
+				return run.get();
+			}
+		};
+	}
+	
+	//FutureWith4Exception
+	@FunctionalInterface
+	public interface SupplierWithDelayAnd4Exception<T, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> {
+		
+		T get() throws DelayTask, EX1, EX2, EX3, EX4;
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return futureWith4Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Barrier[] staticBarriers, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return futureWith4Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return futureWith4Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Executor exec, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return futureWith4Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Executor exec, Barrier[] staticBarriers, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return futureWith4Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable> TaskCreator<? extends FutureWith4Exception<R, EX1, EX2, EX3, EX4>> futureWith4Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd4Exception<R, EX1, EX2, EX3, EX4> run) {
+		return (locks, barriers) -> new FutureTaskWith4Exception<>(exceptionClass1,
+																   exceptionClass2,
+																   exceptionClass3,
+																   exceptionClass4,
+																   mergeIfNeeded(SyncLock[]::new, staticLocks, locks),
+																   mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected R execute0() throws DelayTask, EX1, EX2, EX3, EX4 {
+				return run.get();
+			}
+		};
+	}
+	
+	//FutureWith5Exception
+	@FunctionalInterface
+	public interface SupplierWithDelayAnd5Exception<T, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> {
+		
+		T get() throws DelayTask, EX1, EX2, EX3, EX4, EX5;
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return futureWith5Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, Barrier[] staticBarriers, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return futureWith5Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, sideGet(EXECUTOR_POOL), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return futureWith5Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, sideGet(EXECUTOR_POOL), staticLocks, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, Executor exec, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return futureWith5Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, Executor exec, Barrier[] staticBarriers, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return futureWith5Exception(exceptionClass1, exceptionClass2, exceptionClass3, exceptionClass4, exceptionClass5, exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static <R, EX1 extends Throwable, EX2 extends Throwable, EX3 extends Throwable, EX4 extends Throwable, EX5 extends Throwable> TaskCreator<? extends FutureWith5Exception<R, EX1, EX2, EX3, EX4, EX5>> futureWith5Exception(Class<EX1> exceptionClass1, Class<EX2> exceptionClass2, Class<EX3> exceptionClass3, Class<EX4> exceptionClass4, Class<EX5> exceptionClass5, Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, SupplierWithDelayAnd5Exception<R, EX1, EX2, EX3, EX4, EX5> run) {
+		return (locks, barriers) -> new FutureTaskWith5Exception<>(exceptionClass1,
+																   exceptionClass2,
+																   exceptionClass3,
+																   exceptionClass4,
+																   exceptionClass5,
+																   mergeIfNeeded(SyncLock[]::new, staticLocks, locks),
+																   mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected R execute0() throws DelayTask, EX1, EX2, EX3, EX4, EX5 {
 				return run.get();
 			}
 		};

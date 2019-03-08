@@ -14,6 +14,9 @@ public interface IndexMap<VALUE> {
 	//capacity
 	boolean isExpandable();
 	
+	/**
+	 * Gets the current estimated size of the {@link IndexMap}.
+	 */
 	int size();
 	
 	default boolean isEmpty() {
@@ -43,11 +46,13 @@ public interface IndexMap<VALUE> {
 	
 	//addAll
 	default void addAll(@NotNull Collection<? extends VALUE> coll) {
-		coll.forEach(this::add);
+		for (VALUE value : coll) {
+			add(value);
+		}
 	}
 	
 	default void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
-		for (Entry<? extends VALUE> entry : indexMap.table()) {
+		for (Entry<? extends VALUE> entry : indexMap.entrySet()) {
 			VALUE value = entry.getValue();
 			if (value != null)
 				put(entry.getIndex(), value);
@@ -55,7 +60,7 @@ public interface IndexMap<VALUE> {
 	}
 	
 	default void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
-		for (Entry<? extends VALUE> entry : indexMap.table())
+		for (Entry<? extends VALUE> entry : indexMap.entrySet())
 			computeIfAbsent(entry.getIndex(), entry::getValue);
 	}
 	
@@ -137,9 +142,16 @@ public interface IndexMap<VALUE> {
 	//other
 	void clear();
 	
+	/**
+	 * Returns a {@link Collection} containing all non-null values. The {@link Collection} is unmodifiable.
+	 */
 	@NotNull Collection<VALUE> values();
 	
-	@NotNull Collection<Entry<VALUE>> table();
+	/**
+	 * Returns a {@link Collection} of {@link Entry Entries}. Entries contain an int index and the mapped value. The mapped value may be null.
+	 * The {@link Collection} may be modified to change this IndexMap.
+	 */
+	@NotNull Collection<Entry<VALUE>> entrySet();
 	
 	//entry
 	interface Entry<VALUE> {

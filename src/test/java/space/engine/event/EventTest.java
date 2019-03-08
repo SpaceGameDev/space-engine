@@ -1,11 +1,9 @@
 package space.engine.event;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import space.engine.Side;
-import space.engine.key.attribute.AttributeList;
-import space.engine.key.attribute.AttributeListModification;
+import space.engine.SingleThreadPoolTest;
+import space.engine.event.typehandler.TypeHandlerParallel;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,9 +11,8 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static space.engine.Side.*;
 
-public class EventTest {
+public class EventTest extends SingleThreadPoolTest {
 	
 	final int eventInput = 42;
 	AtomicInteger callCounter = new AtomicInteger();
@@ -53,16 +50,8 @@ public class EventTest {
 	
 	public void testEvent(Event<Consumer<Integer>> eventImpl) throws InterruptedException {
 		Arrays.stream(acceptAll).forEach(eventImpl::addHook);
-		eventImpl.submit(func -> func.accept(eventInput)).await();
+		eventImpl.submit((TypeHandlerParallel<Consumer<Integer>>) func -> func.accept(eventInput)).await();
 		assertEquals(callCounter.get(), acceptAll.length);
-	}
-	
-	@Before
-	public void before() {
-		AttributeList<Side> side = side();
-		AttributeListModification<Side> modify = side.createModify();
-		modify.put(EXECUTOR_POOL, Runnable::run);
-		side.apply(modify);
 	}
 	
 	@Test

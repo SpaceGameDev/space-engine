@@ -7,10 +7,10 @@ import space.engine.buffer.direct.DirectBuffer;
 import space.engine.buffer.direct.alloc.stack.AllocatorStack;
 import space.engine.buffer.pointer.PointerAllocatorCollection;
 import space.engine.buffer.string.BufferStringConverter;
-import space.engine.key.Key;
+import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
-import space.engine.key.attribute.AttributeListModification;
+import space.engine.key.attribute.AttributeListModify;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -24,38 +24,38 @@ public class Side {
 	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	
 	//attributes
-	public static final Key<Executor> EXECUTOR_POOL = ATTRIBUTE_LIST_CREATOR.generateKey(() -> GLOBAL_EXECUTOR_POOL);
+	public static final AttributeKey<Executor> EXECUTOR_POOL = ATTRIBUTE_LIST_CREATOR.createKeyWithDefault(GLOBAL_EXECUTOR_POOL);
 	
 	//buffer alloc
-	public static final Key<Allocator<DirectBuffer>> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final Key<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final Key<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final AttributeKey<Allocator<DirectBuffer>> BUFFER_ALLOC = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_ARRAY = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//buffer alloc stack
-	public static final Key<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final Key<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.generateKey();
-	public static final Key<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final AttributeKey<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
+	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//buffer string converter
-	public static final Key<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.generateKey();
+	public static final AttributeKey<BufferStringConverter> BUFFER_STRING_CONVERTER = ATTRIBUTE_LIST_CREATOR.createKeyNormal();
 	
 	//initializer
 	//buffer alloc
-	public static void initBufferAlloc(AttributeListModification<Side> modify, Allocator<DirectBuffer> alloc) {
+	public static void initBufferAlloc(AttributeListModify modify, Allocator<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC, alloc);
 		modify.put(BUFFER_ALLOC_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_POINTER, new PointerAllocatorCollection(alloc));
 	}
 	
 	//buffer alloc stack
-	public static void initBufferAllocStack(AttributeListModification<Side> modify, AllocatorStack<DirectBuffer> alloc) {
+	public static void initBufferAllocStack(AttributeListModify modify, AllocatorStack<DirectBuffer> alloc) {
 		modify.put(BUFFER_ALLOC_STACK, alloc);
 		modify.put(BUFFER_ALLOC_STACK_ARRAY, new ArrayAllocatorCollection(alloc));
 		modify.put(BUFFER_ALLOC_STACK_POINTER, new PointerAllocatorCollection(alloc));
 	}
 	
 	//buffer string converter
-	public static void initBufferStringConverter(AttributeListModification<Side> modify, BufferStringConverter converter) {
+	public static void initBufferStringConverter(AttributeListModify modify, BufferStringConverter converter) {
 		modify.put(BUFFER_STRING_CONVERTER, converter);
 	}
 	
@@ -69,7 +69,7 @@ public class Side {
 		return THREAD_LOCAL.get();
 	}
 	
-	public static <T> T sideGet(Key<T> key) {
+	public static <T> T sideGet(AttributeKey<T> key) {
 		return side().get(key);
 	}
 	

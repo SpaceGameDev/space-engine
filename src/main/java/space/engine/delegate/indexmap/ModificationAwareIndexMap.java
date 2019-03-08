@@ -155,8 +155,11 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	
 	@NotNull
 	@Override
-	public Collection<Entry<VALUE>> table() {
-		return new ModificationAwareCollection<>(new ConvertingCollection.BiDirectional<>(super.table(), entry -> new ModificationAwareEntry<>(entry, onModification), modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<VALUE>) modEntry).entry : null), onModification);
+	public Collection<Entry<VALUE>> entrySet() {
+		return new ModificationAwareCollection<>(new ConvertingCollection.BiDirectional<>(super.entrySet(),
+																						  entry -> new ModificationAwareEntry<>(entry, onModification),
+																						  modEntry -> modEntry instanceof ModificationAwareEntry ? ((ModificationAwareEntry<VALUE>) modEntry).entry : null),
+												 onModification);
 	}
 	
 	@NotNull

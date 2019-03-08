@@ -4,9 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.sync.DelayTask;
 
 /**
- * A {@link TypeHandler} handles the Execution of FUNCTIONs and abstracts that.
+ * A {@link TypeHandler} handles the Execution of FUNCTIONs.
  *
  * @param <FUNCTION> the Function type
+ * @see TypeHandlerParallel if this TypeHandler allows parallel execution.
  */
 @FunctionalInterface
 public interface TypeHandler<FUNCTION> {

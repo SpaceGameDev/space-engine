@@ -16,13 +16,13 @@ import java.util.function.Supplier;
  * A {@link CachingIndexMap} is a {@link Map} that caches values inside it's {@link CachingIndexMap#indexMap}. If an Entry is not found it will call the {@link CachingIndexMap#def} Function in order to get the Default value and write it back into it's cache.
  * Any <code>null</code> values returned by the {@link CachingIndexMap#def} Function are properly cached and handled, so that the Function will not be recalled if such values are returned.<br>
  * <br>
- * Any Functions allowing for iteration over this {@link Map} like {@link CachingIndexMap#values()}, {@link CachingIndexMap#table()}, {@link CachingIndexMap#toArray()} and {@link CachingIndexMap#toArray(Object[])} have two behaviors:
+ * Any Functions allowing for iteration over this {@link Map} like {@link CachingIndexMap#values()}, {@link CachingIndexMap#entrySet()}, {@link CachingIndexMap#toArray()} and {@link CachingIndexMap#toArray(Object[])} have two behaviors:
  * <ul>
  * <li>if {@link CachingIndexMap#allowIterateOverExisting}: iterates over already written values to the {@link CachingIndexMap#indexMap} cache</li>
  * <li>if <b>NOT</b> {@link CachingIndexMap#allowIterateOverExisting} <b>(default)</b>: throws an {@link UnsupportedOperationException} with message "Cache iteration not allowed!"</li>
  * </ul>
  * <br>
- * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe. See {@link space.engine.indexmap.ConcurrentIndexMapArray}.
+ * {@link CachingIndexMap} is threadsafe, if the internal {@link CachingIndexMap#indexMap} is threadsafe.
  */
 public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VALUE, VALUE> implements Cache {
 	
@@ -136,7 +136,7 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@Override
 	public void putAllIfAbsent(@NotNull IndexMap<? extends VALUE> indexMap) {
-		indexMap.table().forEach(entry -> super.computeIfAbsent(entry.getIndex(), () -> {
+		indexMap.entrySet().forEach(entry -> super.computeIfAbsent(entry.getIndex(), () -> {
 			VALUE defValue = def.apply(entry.getIndex());
 			return defValue != null ? defValue : entry.getValue();
 		}));
@@ -169,9 +169,9 @@ public class CachingIndexMap<VALUE> extends ConvertingIndexMap.BiDirectional<VAL
 	
 	@NotNull
 	@Override
-	public Collection<IndexMap.Entry<VALUE>> table() {
+	public Collection<IndexMap.Entry<VALUE>> entrySet() {
 		if (allowIterateOverExisting)
-			return super.table();
+			return super.entrySet();
 		throw new UnsupportedOperationException("Cache iteration not allowed!");
 	}
 	

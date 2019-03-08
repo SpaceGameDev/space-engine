@@ -52,7 +52,7 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	
 	public IndexMap<CharSequence2D> buildList() {
 		IndexMap<@Nullable CharSequence2D> charTable = new IndexMapArray<>();
-		for (Entry<MonofontGuiElement> entry : list.table()) {
+		for (Entry<MonofontGuiElement> entry : list.entrySet()) {
 			MonofontGuiElement value = entry.getValue();
 			charTable.put(entry.getIndex(), value != null ? value.buildSequence2D() : null);
 		}

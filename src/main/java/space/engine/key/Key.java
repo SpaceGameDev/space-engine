@@ -1,21 +1,16 @@
 package space.engine.key;
 
-import org.jetbrains.annotations.Nullable;
-
-@FunctionalInterface
 @SuppressWarnings("unused")
-public interface Key<T> {
+public class Key<V> {
+	
+	public final int id;
 	
 	/**
-	 * gets the id of the key. It can be expected that {@link Key} ids are assigned sequentially.
+	 * Constructor for the Key. <b>DO NOT MAKE THIS CONSTRUCTOR PUBLIC.</b> Only call it internally inside your custom createKey()-Method inside your {@link KeyGenerator}.
+	 *
+	 * @param gen your generator
 	 */
-	int getID();
-	
-	/**
-	 * gets the default value of this key. If not overridden, it will return null.
-	 */
-	@Nullable
-	default T getDefaultValue() {
-		return null;
+	protected Key(KeyGenerator<?> gen) {
+		id = gen.generateNextId(this);
 	}
 }

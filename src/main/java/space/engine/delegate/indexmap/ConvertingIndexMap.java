@@ -290,8 +290,10 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@NotNull
 		@Override
-		public Collection<IndexMap.Entry<T>> table() {
-			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
+		public Collection<IndexMap.Entry<T>> entrySet() {
+			return new ConvertingCollection.BiDirectionalUnmodifiable<>(indexMap.entrySet(),
+																		entry -> entry == null ? null : new Entry(entry),
+																		entry -> entry instanceof OneDirectionalUnmodifiable.Entry ? ((Entry) entry).entry : null);
 		}
 		
 		@NotNull
@@ -488,8 +490,10 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		
 		@NotNull
 		@Override
-		public Collection<IndexMap.Entry<T>> table() {
-			return new ConvertingCollection.BiDirectional<>(indexMap.table(), entry -> entry == null ? null : new Entry(entry), entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
+		public Collection<IndexMap.Entry<T>> entrySet() {
+			return new ConvertingCollection.BiDirectional<>(indexMap.entrySet(),
+															entry -> entry == null ? null : new Entry(entry),
+															entry -> entry instanceof BiDirectionalSparse.Entry ? ((Entry) entry).entry : null);
 		}
 		
 		@NotNull
