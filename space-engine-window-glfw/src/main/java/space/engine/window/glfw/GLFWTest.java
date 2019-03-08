@@ -65,7 +65,7 @@ public class GLFWTest {
 		//context
 		AttributeListModify<WindowContext> windowContextAttInitial = WindowContext.CREATOR.createModify();
 		windowContextAttInitial.put(API_TYPE, OpenGLApiType.GL);
-		WindowContext windowContext = windowfw.createContext(windowContextAttInitial.createNewAttributeList());
+		WindowContext windowContext = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
 		GLFW.glfwMakeContextCurrent(0);
 		
 		//window
@@ -73,9 +73,9 @@ public class GLFWTest {
 		windowAttInitial.put(VIDEO_MODE, VideoModeDesktopExtension.class);
 		windowAttInitial.put(WIDTH, 1080);
 		windowAttInitial.put(HEIGHT, 1080);
-		windowAttInitial.put(HAS_TRANSPARENCY, true);
 //		windowAttInitial.put(POS_X, 0);
 //		windowAttInitial.put(POS_Y, 0);
+		windowAttInitial.put(HAS_TRANSPARENCY, true);
 		windowAttInitial.put(BORDERLESS, Boolean.TRUE);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
@@ -95,7 +95,7 @@ public class GLFWTest {
 		
 		int[] w = new int[1];
 		int[] h = new int[1];
-		GLFW.glfwGetWindowSize(((GLFWWindow) window).storage.getWindowPointer(), w, h);
+		GLFW.glfwGetWindowSize(((GLFWWindow) window).getWindowPointer(), w, h);
 		System.out.println(w[0] + "x" + h[0]);
 		
 		for (int i = 0; i < SECONDS * 60; i++) {

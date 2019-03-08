@@ -7,6 +7,7 @@ import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.direct.alloc.stack.AllocatorStack;
 import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.key.attribute.AttributeList;
+import space.engine.sync.future.Future;
 import space.engine.window.Monitor;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowFramework;
@@ -33,14 +34,9 @@ public class GLFWWindowFramework implements WindowFramework {
 	//window
 	@NotNull
 	@Override
-	public WindowContext createContext(@NotNull AttributeList<WindowContext> format) {
-		return new GLFWContext(this, format, GLFWInstance.instanceRef);
+	public Future<? extends WindowContext> createContext(@NotNull AttributeList<WindowContext> format) {
+		return GLFWContext.create(this, format, GLFWInstance.instanceRef);
 	}
-
-//	@Override
-//	public Window createWindow(AttributeList<Window> format) {
-//		return new GLFWWindow(this, GLFWInstance.instanceRef, format);
-//	}
 	
 	@Override
 	public Collection<Class<? extends WindowExtension>> getSupportedWindowExtensions() {

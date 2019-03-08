@@ -3,6 +3,7 @@ package space.engine.window;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
 import space.engine.key.attribute.AttributeList;
+import space.engine.sync.future.Future;
 import space.engine.window.extensions.WindowExtension;
 
 import java.util.Collection;
@@ -20,14 +21,9 @@ public interface WindowFramework extends Freeable {
 	
 	Collection<Class<? extends WindowExtension>> getSupportedWindowExtensions();
 	
-	@NotNull WindowContext createContext(@NotNull AttributeList<WindowContext> format);
+	@NotNull Future<? extends WindowContext> createContext(@NotNull AttributeList<WindowContext> format);
 	
 	@NotNull Monitor[] getAllMonitors();
 	
 	@NotNull Monitor getPrimaryMonitor();
-	
-	@NotNull
-	static WindowFrameworkCreator[] getAvailableFrameworks() {
-		return new WindowFrameworkCreator[] {};
-	}
 }

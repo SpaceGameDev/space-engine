@@ -9,6 +9,7 @@ import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AbstractAttributeList;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModify;
+import space.engine.sync.DelayTask;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
@@ -46,13 +47,15 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	 */
 	public final @NotNull GLFWContext context;
 	public final @NotNull AttributeList<Window> format;
-	protected final Storage storage;
+	private final Storage storage;
 	
 	public static @NotNull Future<GLFWWindow> create(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, FreeableStorage... parents) {
-		GLFWWindow glfwWindow = new GLFWWindow(context, format, parents);
-		Barrier initTask = runnable(glfwWindow.storage, () -> glfwWindow.initializeNativeWindow(format)).submit();
-		format.addHook(new EventEntry<>((modify, changes) -> runnable(glfwWindow.storage, () -> glfwWindow.initializeNativeWindow(modify)).submit()));
-		return initTask.toFuture(() -> glfwWindow);
+		GLFWWindow window = new GLFWWindow(context, format, parents);
+		Barrier initTask = runnable(window.storage, () -> window.initializeNativeWindow(format)).submit();
+		format.addHook(new EventEntry<>((modify, changes) -> {
+			throw new DelayTask(runnable(window.storage, () -> window.initializeNativeWindow(modify)).submit());
+		}));
+		return initTask.toFuture(() -> window);
 	}
 	
 	private GLFWWindow(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, FreeableStorage... parents) {
@@ -66,6 +69,19 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		storage.execute(command);
 	}
 	
+	/**
+	 * if thread == {@link WindowThread}: always a valid pointer
+	 * if thread != {@link WindowThread}: return value may be valid or 0
+	 */
+	public long getWindowPointer() throws FreedException {
+		return storage.getWindowPointer();
+	}
+	
+	@Override
+	public @NotNull FreeableStorage getStorage() {
+		return storage;
+	}
+	
 	@Override
 	public TaskCreator openGL_SwapBuffer(int opengl_texture_id) {
 		throw new UnsupportedOperationException("Not implemented!");
@@ -77,14 +93,9 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	}
 	
 	@Override
+	@WindowThread
 	public void swapBuffers() {
 		glfwSwapBuffers(storage.getWindowPointer());
-	}
-	
-	//storage
-	@Override
-	public @NotNull FreeableStorage getStorage() {
-		return storage;
 	}
 	
 	//windowThread
@@ -165,7 +176,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 				
 				//createWindow
-				storage.windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.storage.getWindowPointer());
+				storage.windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.getWindowPointer());
 				if (prevPosition != null)
 					glfwSetWindowPos(storage.windowPointer, prevPosition[0], prevPosition[1]);
 				
@@ -184,7 +195,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				glfwWindowHint(GLFW_REFRESH_RATE, videoModeFullscreen.refreshRate());
 				
 				//createWindow
-				storage.windowPointer = glfwCreateWindow(videoModeFullscreen.width(), videoModeFullscreen.height(), newFormat.get(TITLE), monitor.pointer, context.storage.getWindowPointer());
+				storage.windowPointer = glfwCreateWindow(videoModeFullscreen.width(), videoModeFullscreen.height(), newFormat.get(TITLE), monitor.pointer, context.getWindowPointer());
 			} else {
 				throw new IllegalStateException("format[VIDEO_MODE] was unsupported type: " + videoMode.getName());
 			}
@@ -215,15 +226,10 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		storage.deleteNativeWindow();
 	}
 	
-	@WindowThread
-	public long getWindowPointer() throws FreedException {
-		return storage.getWindowPointer();
-	}
-	
 	public static class Storage extends FreeableStorageImpl implements Executor {
 		
-		private long windowPointer;
-		private ExecutorService exec = Executors.newSingleThreadExecutor(r -> new Thread(r, "GLFWWindowThread-" + WINDOW_THREAD_COUNTER.getAndIncrement()));
+		protected volatile long windowPointer;
+		protected ExecutorService exec = Executors.newSingleThreadExecutor(r -> new Thread(r, "GLFWWindowThread-" + WINDOW_THREAD_COUNTER.getAndIncrement()));
 		
 		public Storage(Object referent, FreeableStorage... parents) {
 			super(referent, parents);
@@ -235,6 +241,8 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 			exec.shutdown();
 			//noinspection ConstantConditions
 			exec = null;
+			
+			deleteNativeWindow();
 		}
 		
 		@WindowThread

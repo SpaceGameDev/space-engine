@@ -7,6 +7,8 @@ import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.future.Future;
 
+import java.util.concurrent.Executor;
+
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
  *
@@ -15,7 +17,7 @@ import space.engine.sync.future.Future;
  * If you have a finished FrameBuffer, call {\@link Window#openGL_SwapFramebuffer(int)} or {\@link Window#openGL_ES_SwapFramebuffer(int)} respectively.
  */
 @SuppressWarnings("unused")
-public interface WindowContext extends Freeable {
+public interface WindowContext extends Freeable, Executor {
 	
 	Future<? extends Window> createWindow(@NotNull AttributeList<Window> format);
 	
