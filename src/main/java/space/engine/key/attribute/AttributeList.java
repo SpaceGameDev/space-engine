@@ -5,11 +5,11 @@ import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.indexmap.ConcurrentIndexMap;
+import space.engine.sync.DelayTask;
 import space.engine.sync.lock.SyncLock;
 import space.engine.sync.lock.SyncLockImpl;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 import static space.engine.key.attribute.AttributeListCreator.DEFAULT;
@@ -21,7 +21,7 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 	
 	protected final @NotNull AttributeListCreator<TYPE> creator;
 	private final @NotNull SyncLock lock = new SyncLockImpl();
-	protected final @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> changeEvent = new SequentialEventBuilder<>();
+	protected final @NotNull Event<ChangeEvent<TYPE>> changeEvent = new SequentialEventBuilder<>();
 	
 	protected AttributeList(@NotNull AttributeListCreator<TYPE> creator) {
 		super(new ConcurrentIndexMap<>(DEFAULT));
@@ -44,11 +44,11 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 		return lock.unlock();
 	}
 	
-	public void addHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
+	public void addHook(@NotNull EventEntry<ChangeEvent<TYPE>> hook) {
 		changeEvent.addHook(hook);
 	}
 	
-	public boolean removeHook(@NotNull EventEntry<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> hook) {
+	public boolean removeHook(@NotNull EventEntry<ChangeEvent<TYPE>> hook) {
 		return changeEvent.removeHook(hook);
 	}
 	
@@ -58,7 +58,7 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 		return creator;
 	}
 	
-	public @NotNull Event<BiConsumer<AttributeListModify<TYPE>, List<AttributeKey<?>>>> getChangeEvent() {
+	public @NotNull Event<ChangeEvent<TYPE>> getChangeEvent() {
 		return changeEvent;
 	}
 	
@@ -70,4 +70,11 @@ public class AttributeList<TYPE> extends AbstractAttributeList<TYPE> implements 
 	public @NotNull AttributeListModify<TYPE> createModify() {
 		return new AttributeListModify<>(this);
 	}
+	
+	@FunctionalInterface
+	public interface ChangeEvent<TYPE> {
+		
+		void onChange(AttributeListModify<TYPE> modify, List<AttributeKey<?>> changedKeys) throws DelayTask;
+	}
+	
 }
