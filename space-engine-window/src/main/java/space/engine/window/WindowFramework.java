@@ -3,6 +3,9 @@ package space.engine.window;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
 import space.engine.key.attribute.AttributeList;
+import space.engine.window.extensions.WindowExtension;
+
+import java.util.Collection;
 
 /**
  * The {@link WindowFramework} is the first Interface you interact with when opening any {@link Window Windows}.
@@ -14,6 +17,8 @@ import space.engine.key.attribute.AttributeList;
  * </ul>
  */
 public interface WindowFramework extends Freeable {
+	
+	Collection<Class<? extends WindowExtension>> getSupportedWindowExtensions();
 	
 	@NotNull WindowContext createContext(@NotNull AttributeList<WindowContext> format);
 	

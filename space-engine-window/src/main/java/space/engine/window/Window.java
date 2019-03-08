@@ -5,7 +5,7 @@ import space.engine.baseobject.Freeable;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.TaskCreator;
-import space.engine.window.VideoMode.VideoModeDesktop;
+import space.engine.window.extensions.VideoModeExtension;
 
 import java.util.concurrent.Executor;
 
@@ -18,9 +18,9 @@ public interface Window extends Freeable, Executor {
 	
 	AttributeListCreator<Window> CREATOR = new AttributeListCreator<>();
 	
-	AttributeKey<@NotNull VideoMode> VIDEO_MODE = CREATOR.createKeyWithDefault(VideoMode.createVideoModeDesktop(800, 600));
+	AttributeKey<@NotNull Class<? extends VideoModeExtension>> VIDEO_MODE = CREATOR.createKeyNormal();
 	/**
-	 * ignored when <code>VIDEO_MODE == {@link space.engine.window.VideoMode.VideoModeDesktop} && {@link VideoModeDesktop#hasTransparency()}</code>
+	 * ignored when using {@link space.engine.window.extensions.VideoModeDesktopExtension} with {@link space.engine.window.extensions.VideoModeDesktopExtension#HAS_TRANSPARENCY}
 	 */
 	AttributeKey<@NotNull Integer> ALPHA_BITS = CREATOR.createKeyWithDefault(0);
 	AttributeKey<@NotNull Integer> DEPTH_BITS = CREATOR.createKeyWithDefault(0);
@@ -29,9 +29,7 @@ public interface Window extends Freeable, Executor {
 	//attributes
 	AttributeKey<@NotNull String> TITLE = CREATOR.createKeyWithDefault("Untitled Window");
 	AttributeKey<@NotNull Boolean> VISIBLE = CREATOR.createKeyWithDefault(Boolean.TRUE);
-	AttributeKey<@NotNull Boolean> RESIZEABLE = CREATOR.createKeyWithDefault(Boolean.FALSE);
 	AttributeKey<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.createKeyWithDefault(Boolean.TRUE);
-	AttributeKey<@NotNull Boolean> BORDERLESS = CREATOR.createKeyWithDefault(Boolean.FALSE);
 	
 	//methods
 	void swapBuffers();

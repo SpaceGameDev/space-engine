@@ -10,6 +10,14 @@ import space.engine.key.attribute.AttributeList;
 import space.engine.window.Monitor;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowFramework;
+import space.engine.window.extensions.BorderlessExtension;
+import space.engine.window.extensions.ResizeableExtension;
+import space.engine.window.extensions.VideoModeDesktopExtension;
+import space.engine.window.extensions.VideoModeFullscreenExtension;
+import space.engine.window.extensions.WindowExtension;
+
+import java.util.Collection;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.Side.*;
@@ -26,13 +34,18 @@ public class GLFWWindowFramework implements WindowFramework {
 	@NotNull
 	@Override
 	public WindowContext createContext(@NotNull AttributeList<WindowContext> format) {
-		return new GLFWContext(format, GLFWInstance.instanceRef);
+		return new GLFWContext(this, format, GLFWInstance.instanceRef);
 	}
 
 //	@Override
 //	public Window createWindow(AttributeList<Window> format) {
 //		return new GLFWWindow(this, GLFWInstance.instanceRef, format);
 //	}
+	
+	@Override
+	public Collection<Class<? extends WindowExtension>> getSupportedWindowExtensions() {
+		return List.of(BorderlessExtension.class, ResizeableExtension.class, VideoModeDesktopExtension.class, VideoModeFullscreenExtension.class);
+	}
 	
 	//monitor
 	@NotNull

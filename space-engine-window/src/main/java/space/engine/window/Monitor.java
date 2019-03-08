@@ -41,4 +41,22 @@ public interface Monitor {
 	 * get all available video modes
 	 */
 	@NotNull VideoMode[] getAvailableVideoModes();
+	
+	interface VideoMode {
+		
+		Monitor monitor();
+		
+		int width();
+		
+		int height();
+		
+		int refreshRate();
+		
+		int bitsR();
+		
+		int bitsG();
+		
+		int bitsB();
+	}
+	
 }

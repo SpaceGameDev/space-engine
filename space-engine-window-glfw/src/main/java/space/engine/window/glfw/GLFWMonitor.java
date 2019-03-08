@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
 import space.engine.window.Monitor;
-import space.engine.window.VideoMode;
-import space.engine.window.VideoMode.VideoModeMonitor;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -85,7 +83,7 @@ public class GLFWMonitor implements Monitor {
 		return availableVideoModes;
 	}
 	
-	public class GLFWVideoModeMonitor implements VideoModeMonitor {
+	public class GLFWVideoModeMonitor implements VideoMode {
 		
 		public GLFWVidMode mode;
 		
@@ -95,7 +93,7 @@ public class GLFWMonitor implements Monitor {
 		
 		@Override
 		@NotNull
-		public GLFWMonitor getMonitor() {
+		public GLFWMonitor monitor() {
 			return GLFWMonitor.this;
 		}
 		

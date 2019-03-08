@@ -11,11 +11,11 @@ import space.engine.key.attribute.AttributeListModify;
 import space.engine.logger.BaseLogger;
 import space.engine.logger.LogLevel;
 import space.engine.sync.Tasks;
-import space.engine.window.VideoMode;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowContext.OpenGLApiType;
 import space.engine.window.WindowFramework;
+import space.engine.window.extensions.VideoModeDesktopExtension;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -24,6 +24,9 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static space.engine.window.Window.*;
 import static space.engine.window.WindowContext.API_TYPE;
+import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
+import static space.engine.window.extensions.VideoModeDesktopExtension.*;
+import static space.engine.window.extensions.VideoModeExtension.HEIGHT;
 
 public class GLFWTest {
 	
@@ -67,7 +70,9 @@ public class GLFWTest {
 		
 		//window
 		AttributeListModify<Window> windowAttInitial = Window.CREATOR.createModify();
-		windowAttInitial.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
+		windowAttInitial.put(VIDEO_MODE, VideoModeDesktopExtension.class);
+		windowAttInitial.put(WIDTH, 1080);
+		windowAttInitial.put(HEIGHT, 1080);
 		windowAttInitial.put(BORDERLESS, Boolean.TRUE);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
@@ -105,13 +110,13 @@ public class GLFWTest {
 			if (i % 600 == 299) {
 				System.out.println("windowed");
 				AttributeListModify<Window> modify = windowAtt.createModify();
-				modify.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, false));
+				modify.put(HAS_TRANSPARENCY, false);
 				modify.put(BORDERLESS, false);
 				modify.apply().await();
 			} else if (i % 600 == 599) {
 				System.out.println("transparent");
 				AttributeListModify<Window> modify = windowAtt.createModify();
-				modify.put(VIDEO_MODE, VideoMode.createVideoModeDesktop(1080, 1080, 0, 0, true));
+				modify.put(HAS_TRANSPARENCY, true);
 				modify.put(BORDERLESS, true);
 				modify.apply().await();
 			}

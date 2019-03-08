@@ -16,9 +16,12 @@ import static space.engine.window.glfw.GLFWUtil.*;
 
 public class GLFWContext implements WindowContext, FreeableWithStorage {
 	
+	public final GLFWWindowFramework framework;
 	protected Storage storage;
 	
-	public GLFWContext(AttributeList<WindowContext> format, FreeableStorage... parents) {
+	public GLFWContext(GLFWWindowFramework framework, AttributeList<WindowContext> format, FreeableStorage... parents) {
+		this.framework = framework;
+		
 		synchronized (GLFWInstance.GLFW_SYNC) {
 			//additional window settings
 			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
