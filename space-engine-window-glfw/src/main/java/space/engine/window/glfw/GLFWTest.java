@@ -73,6 +73,9 @@ public class GLFWTest {
 		windowAttInitial.put(VIDEO_MODE, VideoModeDesktopExtension.class);
 		windowAttInitial.put(WIDTH, 1080);
 		windowAttInitial.put(HEIGHT, 1080);
+		windowAttInitial.put(HAS_TRANSPARENCY, true);
+//		windowAttInitial.put(POS_X, 0);
+//		windowAttInitial.put(POS_Y, 0);
 		windowAttInitial.put(BORDERLESS, Boolean.TRUE);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
@@ -107,19 +110,24 @@ public class GLFWTest {
 			Thread.sleep(1000 / 60);
 			
 			//changing out window
-			if (i % 600 == 299) {
-				System.out.println("windowed");
-				AttributeListModify<Window> modify = windowAtt.createModify();
-				modify.put(HAS_TRANSPARENCY, false);
-				modify.put(BORDERLESS, false);
-				modify.apply().await();
-			} else if (i % 600 == 599) {
-				System.out.println("transparent");
-				AttributeListModify<Window> modify = windowAtt.createModify();
-				modify.put(HAS_TRANSPARENCY, true);
-				modify.put(BORDERLESS, true);
-				modify.apply().await();
-			}
+//			if (i % 600 == 299) {
+//				System.out.println("windowed");
+//				AttributeListModify<Window> modify = windowAtt.createModify();
+//				modify.put(HAS_TRANSPARENCY, false);
+//				modify.put(BORDERLESS, false);
+//				modify.apply().await();
+//			} else if (i % 600 == 599) {
+//				System.out.println("transparent");
+//				AttributeListModify<Window> modify = windowAtt.createModify();
+//				modify.put(HAS_TRANSPARENCY, true);
+//				modify.put(BORDERLESS, true);
+//				modify.apply().await();
+//			}
+
+//			AttributeListModify<Window> modify = windowAtt.createModify();
+//			modify.put(POS_X, modify.get(POS_X) + 1);
+//			modify.put(POS_Y, modify.get(POS_Y) + 1);
+//			modify.apply().await();
 		}
 		
 		if (FREE_WINDOW) {

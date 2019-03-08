@@ -8,6 +8,7 @@ import space.engine.freeableStorage.FreeableStorage;
 import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AbstractAttributeList;
 import space.engine.key.attribute.AttributeList;
+import space.engine.key.attribute.AttributeListModify;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
@@ -26,13 +27,14 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.sync.Tasks.runnable;
 import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
 import static space.engine.window.extensions.ResizeableExtension.*;
-import static space.engine.window.extensions.VideoModeDesktopExtension.HAS_TRANSPARENCY;
-import static space.engine.window.extensions.VideoModeExtension.*;
+import static space.engine.window.extensions.VideoModeDesktopExtension.*;
+import static space.engine.window.extensions.VideoModeFullscreenExtension.FULLSCREEN_VIDEO_MODE;
 import static space.engine.window.glfw.GLFWUtil.toGLFWBoolean;
 
 public class GLFWWindow implements Window, FreeableWithStorage {
@@ -88,16 +90,58 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	//windowThread
 	@WindowThread
 	protected void initializeNativeWindow(AbstractAttributeList<Window> newFormat) {
+		long oldWindowPointer = getWindowPointer();
+		boolean existingWindow = oldWindowPointer != 0;
+		if (existingWindow && newFormat instanceof AttributeListModify) {
+			AttributeListModify<Window> modify = (AttributeListModify<Window>) newFormat;
+			boolean requiresReopen = Stream.of(VIDEO_MODE, ALPHA_BITS, DEPTH_BITS, STENCIL_BITS, DOUBLE_BUFFER, HAS_TRANSPARENCY, RESIZEABLE, BORDERLESS)
+										   .anyMatch(modify::hasChanged);
+			if (!requiresReopen) {
+				
+				//change current window
+				if (modify.hasChanged(TITLE))
+					glfwSetWindowTitle(oldWindowPointer, modify.get(TITLE));
+				if (modify.hasChanged(VISIBLE))
+					if (modify.get(VISIBLE))
+						glfwShowWindow(oldWindowPointer);
+					else
+						glfwHideWindow(oldWindowPointer);
+				if (modify.get(VIDEO_MODE) == VideoModeDesktopExtension.class) {
+					if (modify.hasChanged(WIDTH) || modify.hasChanged(HEIGHT))
+						glfwSetWindowSize(oldWindowPointer, modify.get(WIDTH), modify.get(HEIGHT));
+					if (modify.hasChanged(POS_X) || modify.hasChanged(POS_Y)) {
+						Integer posx = modify.get(POS_X);
+						Integer posy = modify.get(POS_Y);
+						if (posx != null && posy != null)
+							glfwSetWindowPos(oldWindowPointer, posx, posy);
+					}
+				} else if (modify.get(VIDEO_MODE) == VideoModeFullscreenExtension.class) {
+					if (modify.hasChanged(FULLSCREEN_VIDEO_MODE)) {
+						VideoMode videoModeFullscreen = getVideoModeFullscreen(newFormat);
+						GLFWMonitor monitor = getVideoModeFullscreenMonitor(videoModeFullscreen);
+						glfwSetWindowMonitor(oldWindowPointer, monitor.pointer, 0, 0, videoModeFullscreen.width(), videoModeFullscreen.height(), videoModeFullscreen.refreshRate());
+					}
+				}
+				if (modify.hasChanged(MINX) || modify.hasChanged(MINY) || modify.hasChanged(MAXX) || modify.hasChanged(MAXY))
+					glfwSetWindowSizeLimits(oldWindowPointer, modify.get(MINX), modify.get(MINY), modify.get(MAXX), modify.get(MAXY));
+				return;
+			}
+		}
+		
+		//requires new window
+		//store old data
 		int[] prevPosition = null;
-		if (storage.windowPointer != 0) {
+		if (existingWindow) {
 			int[] posx = new int[1];
 			int[] posy = new int[1];
 			glfwGetWindowPos(storage.windowPointer, posx, posy);
 			prevPosition = new int[] {posx[0], posy[0]};
 		}
 		
+		//delete old
 		deleteNativeWindow();
 		
+		//create new
 		synchronized (GLFWInstance.GLFW_SYNC) {
 			glfwDefaultWindowHints();
 			
@@ -129,12 +173,8 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				if (resizable)
 					glfwSetWindowSizeLimits(storage.windowPointer, newFormat.get(MINX), newFormat.get(MINY), newFormat.get(MAXX), newFormat.get(MAXY));
 			} else if (videoMode == VideoModeFullscreenExtension.class) {
-				VideoMode videoModeFullscreen = newFormat.get(VideoModeFullscreenExtension.FULLSCREEN_VIDEO_MODE);
-				if (videoModeFullscreen == null)
-					videoModeFullscreen = context.framework.getPrimaryMonitor().getDefaultVideoMode();
-				Monitor monitor = videoModeFullscreen.monitor();
-				if (!(monitor instanceof GLFWMonitor))
-					throw new IllegalArgumentException("Monitor not from GLFW");
+				VideoMode videoModeFullscreen = getVideoModeFullscreen(newFormat);
+				GLFWMonitor monitor = getVideoModeFullscreenMonitor(videoModeFullscreen);
 				
 				//fbo
 				glfwWindowHint(GLFW_RED_BITS, videoModeFullscreen.bitsR());
@@ -144,11 +184,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				glfwWindowHint(GLFW_REFRESH_RATE, videoModeFullscreen.refreshRate());
 				
 				//createWindow
-				storage.windowPointer = glfwCreateWindow(videoModeFullscreen.width(),
-														 videoModeFullscreen.height(),
-														 newFormat.get(TITLE),
-														 ((GLFWMonitor) monitor).pointer,
-														 context.storage.getWindowPointer());
+				storage.windowPointer = glfwCreateWindow(videoModeFullscreen.width(), videoModeFullscreen.height(), newFormat.get(TITLE), monitor.pointer, context.storage.getWindowPointer());
 			} else {
 				throw new IllegalStateException("format[VIDEO_MODE] was unsupported type: " + videoMode.getName());
 			}
@@ -158,6 +194,20 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		if (newFormat.get(VISIBLE)) {
 			glfwShowWindow(storage.windowPointer);
 		}
+	}
+	
+	private VideoMode getVideoModeFullscreen(AbstractAttributeList<Window> newFormat) {
+		VideoMode videoModeFullscreen = newFormat.get(FULLSCREEN_VIDEO_MODE);
+		if (videoModeFullscreen != null)
+			return videoModeFullscreen;
+		return context.framework.getPrimaryMonitor().getDefaultVideoMode();
+	}
+	
+	private GLFWMonitor getVideoModeFullscreenMonitor(VideoMode videoModeFullscreen) {
+		Monitor monitor = videoModeFullscreen.monitor();
+		if (!(monitor instanceof GLFWMonitor))
+			throw new IllegalArgumentException("Monitor not from GLFW");
+		return (GLFWMonitor) monitor;
 	}
 	
 	@WindowThread
