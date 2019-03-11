@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.ARBFramebufferObject.*;
 import static org.lwjgl.opengl.GL11.*;
 import static space.engine.sync.Tasks.runnable;
 import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
@@ -85,8 +84,27 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	}
 	
 	@Override
-	public TaskCreator openGL_SwapBuffer(int opengl_texture_id) {
-		throw new UnsupportedOperationException("Not implemented!");
+	public TaskCreator openGL_SwapBuffer(int opengl_tex_id) {
+		return runnable(storage, () -> {
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, opengl_tex_id);
+			
+			glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex2f(-1, -1);
+			glTexCoord2f(1, 0);
+			glVertex2f(1, -1);
+			glTexCoord2f(1, 1);
+			glVertex2f(1, 1);
+			glTexCoord2f(0, 1);
+			glVertex2f(-1, 1);
+			glEnd();
+			
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
+			
+			swapBuffers();
+		});
 	}
 	
 	@Override

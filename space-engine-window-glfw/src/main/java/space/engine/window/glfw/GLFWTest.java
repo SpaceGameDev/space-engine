@@ -1,25 +1,34 @@
 package space.engine.window.glfw;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
+import space.engine.baseobject.Freeable;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModify;
 import space.engine.logger.BaseLogger;
 import space.engine.logger.LogLevel;
-import space.engine.sync.Tasks;
+import space.engine.sync.TaskCreator;
+import space.engine.sync.barrier.Barrier;
+import space.engine.sync.future.Future;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
-import space.engine.window.WindowContext.OpenGLApiType;
+import space.engine.window.WindowContext.*;
 import space.engine.window.WindowFramework;
 import space.engine.window.extensions.VideoModeDesktopExtension;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL30.*;
+import static space.engine.sync.Tasks.*;
 import static space.engine.window.Window.*;
-import static space.engine.window.WindowContext.API_TYPE;
+import static space.engine.window.WindowContext.*;
 import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
 import static space.engine.window.extensions.VideoModeDesktopExtension.*;
 import static space.engine.window.extensions.VideoModeExtension.HEIGHT;
@@ -27,7 +36,8 @@ import static space.engine.window.extensions.VideoModeExtension.HEIGHT;
 public class GLFWTest {
 	
 	public static boolean CRASH = false;
-	public static int SECONDS = 30;
+	public static int SECONDS = 300000000;
+	public static final int WINDOW_CNT = 5;
 	public static boolean FREE_WINDOW = false;
 	public static ExampleDraw exampleDraw = ExampleDraw.ROTATING_CUBE;
 	
@@ -54,7 +64,10 @@ public class GLFWTest {
 		//context
 		AttributeListModify<WindowContext> windowContextAttInitial = WindowContext.CREATOR.createModify();
 		windowContextAttInitial.put(API_TYPE, OpenGLApiType.GL);
-		WindowContext windowContext = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
+		windowContextAttInitial.put(GL_VERSION_MAJOR, 3);
+		windowContextAttInitial.put(GL_VERSION_MINOR, 0);
+		windowContextAttInitial.put(GL_FORWARD_COMPATIBLE, false);
+		WindowContext context = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
 		GLFW.glfwMakeContextCurrent(0);
 		
 		//window
@@ -65,35 +78,35 @@ public class GLFWTest {
 //		windowAttInitial.put(POS_X, 0);
 //		windowAttInitial.put(POS_Y, 0);
 		windowAttInitial.put(HAS_TRANSPARENCY, true);
-		windowAttInitial.put(BORDERLESS, Boolean.TRUE);
+		windowAttInitial.put(BORDERLESS, true);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
-		Window window = windowContext.createWindow(windowAtt).awaitGet();
+		List<Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {
+			try {
+				return window.awaitGet();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}).collect(Collectors.toList());
 		
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
-		Tasks.runnable(window, () -> {
-			int[] viewport = new int[4];
-			glGetIntegerv(GL_VIEWPORT, viewport);
-			System.out.println(Arrays.toString(viewport));
-			System.out.println(glGetInteger(GL_RED_BITS) + "-" + glGetInteger(GL_GREEN_BITS) + "-" + glGetInteger(GL_BLUE_BITS) + "-" + glGetInteger(GL_ALPHA_BITS) + "-" + glGetInteger(GL_DEPTH_BITS) + "-" + glGetInteger(GL_STENCIL_BITS));
-		}).submit().await();
-		
-		int[] w = new int[1];
-		int[] h = new int[1];
-		GLFW.glfwGetWindowSize(((GLFWWindow) window).getWindowPointer(), w, h);
-		System.out.println(w[0] + "x" + h[0]);
+		FboInfo fboInfo = createFbo(context, 1080, 1080).submit().awaitGet();
 		
 		for (int i = 0; i < SECONDS * 60; i++) {
+			
 			int i2 = i;
-			Tasks.runnable(window, () -> {
+			Barrier draw = runnable(context, () -> {
+				glBindFramebuffer(GL_FRAMEBUFFER, fboInfo.fboId);
+				glViewport(0, 0, 1080, 1080);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				
 				exampleDraw.run.accept(i2 / 60f);
-				
-				window.swapBuffers();
-			}).submit().await();
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glFinish();
+			}).submit();
+			Barrier.awaitAll(windows.stream().map(w -> w.openGL_SwapBuffer(fboInfo.texId).submit(draw)).toArray(Barrier[]::new)).await();
+			
 			Thread.sleep(1000 / 60);
 			
 			//changing out window
@@ -117,11 +130,59 @@ public class GLFWTest {
 //			modify.apply().await();
 		}
 		
+		deleteFbo(context, fboInfo).submit().await();
+		
 		if (FREE_WINDOW) {
-			window.free();
+			windows.forEach(Freeable::free);
 			windowfw.free();
 		}
 		logger.log(LogLevel.INFO, "Exit!");
+	}
+	
+	public static class FboInfo {
+		
+		public final int texId;
+		public final int fboId;
+		
+		public FboInfo(int texId, int fboId) {
+			this.texId = texId;
+			this.fboId = fboId;
+		}
+	}
+	
+	private static @NotNull TaskCreator<? extends Future<FboInfo>> createFbo(WindowContext context, int width, int height) {
+		return future(context, () -> {
+			int tex = glGenTextures();
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			
+			int fbo = glGenFramebuffers();
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			
+			int fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+				glDeleteFramebuffers(fbo);
+				glDeleteTextures(tex);
+				throw new RuntimeException("FBO status: " + Integer.toHexString(fboStatus));
+			}
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			
+			return new FboInfo(tex, fbo);
+		});
+	}
+	
+	private static @NotNull TaskCreator<? extends Barrier> deleteFbo(WindowContext context, FboInfo info) {
+		return runnable(context, () -> {
+			glDeleteFramebuffers(info.fboId);
+			glDeleteTextures(info.texId);
+		});
 	}
 	
 	public enum ExampleDraw {

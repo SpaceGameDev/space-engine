@@ -30,9 +30,9 @@ public interface WindowContext extends Freeable, Executor {
 	
 	//OpenGL / OpenGL ES
 	AttributeKey<@NotNull GLProfile> GL_PROFILE = CREATOR.createKeyWithDefault(GLProfile.PROFILE_ANY);
-	AttributeKey<@NotNull Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(2);
-	AttributeKey<@NotNull Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(1);
-	AttributeKey<@NotNull Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(false);
+	AttributeKey<@NotNull Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(3);
+	AttributeKey<@NotNull Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(2);
+	AttributeKey<@NotNull Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(true);
 	
 	//enums
 	enum OpenGLApiType {
