@@ -7,4 +7,6 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
 	implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
 	implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
+	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion"
+	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion:$parent.lwjglNatives"
 }

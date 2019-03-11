@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.ARBFramebufferObject.*;
+import static org.lwjgl.opengl.GL11.*;
 import static space.engine.sync.Tasks.runnable;
 import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
 import static space.engine.window.extensions.ResizeableExtension.*;
@@ -199,8 +201,10 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 			} else {
 				throw new IllegalStateException("format[VIDEO_MODE] was unsupported type: " + videoMode.getName());
 			}
-			glfwMakeContextCurrent(storage.getWindowPointer());
 		}
+		
+		glfwMakeContextCurrent(storage.getWindowPointer());
+		context.createCapabilities();
 		
 		if (newFormat.get(VISIBLE)) {
 			glfwShowWindow(storage.windowPointer);

@@ -1,7 +1,6 @@
 package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
 import space.engine.Side;
 import space.engine.buffer.direct.alloc.UnsafeAllocator;
 import space.engine.buffer.string.DefaultStringConverter;
@@ -85,8 +84,6 @@ public class GLFWTest {
 			throw new RuntimeException("Test Crash!");
 		
 		Tasks.runnable(window, () -> {
-			GL.createCapabilities();
-			
 			int[] viewport = new int[4];
 			glGetIntegerv(GL_VIEWPORT, viewport);
 			System.out.println(Arrays.toString(viewport));

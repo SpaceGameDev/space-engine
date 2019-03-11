@@ -1,6 +1,9 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengles.GLES;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.key.attribute.AbstractAttributeList;
@@ -21,6 +24,7 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 	
 	public final @NotNull GLFWWindowFramework framework;
 	private final @NotNull Storage storage;
+	private @Nullable Object apiType;
 	
 	public static Future<GLFWContext> create(@NotNull GLFWWindowFramework framework, @NotNull AttributeList<WindowContext> format, FreeableStorage... parents) {
 		GLFWContext context = new GLFWContext(framework, parents);
@@ -64,7 +68,7 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 			glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 			
 			//gl api settings
-			@NotNull Object apiType = newFormat.get(API_TYPE);
+			apiType = newFormat.get(API_TYPE);
 			// noinspection StatementWithEmptyBody
 			if (apiType == null) {
 				//no context via window api
@@ -79,6 +83,8 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 						glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, newFormat.get(GL_VERSION_MAJOR));
 						glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, newFormat.get(GL_VERSION_MINOR));
 						break;
+					default:
+						throw new WindowUnsupportedApiTypeException(apiType);
 				}
 			} else {
 				throw new WindowUnsupportedApiTypeException(apiType);
@@ -86,6 +92,30 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 			
 			//create
 			storage.windowPointer = glfwCreateWindow(1, 1, "hidden_context_window", 0L, 0L);
+		}
+		
+		glfwMakeContextCurrent(storage.getWindowPointer());
+		createCapabilities();
+	}
+	
+	@WindowThread
+	public void createCapabilities() {
+		// noinspection StatementWithEmptyBody
+		if (apiType == null) {
+			//no context via window api
+		} else if (apiType instanceof OpenGLApiType) {
+			switch ((OpenGLApiType) apiType) {
+				case GL:
+					GL.createCapabilities();
+					break;
+				case GL_ES:
+					GLES.createCapabilities();
+					break;
+				default:
+					throw new WindowUnsupportedApiTypeException(apiType);
+			}
+		} else {
+			throw new WindowUnsupportedApiTypeException(apiType);
 		}
 	}
 }
