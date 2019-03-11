@@ -1,9 +1,6 @@
 package space.engine.window.glfw;
 
 import org.lwjgl.glfw.GLFW;
-import space.engine.Side;
-import space.engine.buffer.direct.alloc.UnsafeAllocator;
-import space.engine.buffer.string.DefaultStringConverter;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModify;
@@ -41,13 +38,6 @@ public class GLFWTest {
 	
 	public static void main(String[] args) throws Exception {
 		System.setProperty("org.lwjgl.util.NoChecks", "true");
-		
-		//side
-		AttributeListModify<Side> mod = Side.ATTRIBUTE_LIST_CREATOR.createModify();
-		UnsafeAllocator alloc = new UnsafeAllocator();
-		Side.initBufferAlloc(mod, alloc);
-		Side.initBufferStringConverter(mod, new DefaultStringConverter(alloc));
-		mod.apply();
 		
 		//logger
 		BaseLogger logger = new BaseLogger();
