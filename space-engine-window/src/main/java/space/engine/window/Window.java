@@ -2,6 +2,7 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
+import space.engine.event.Event;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.TaskCreator;
@@ -48,4 +49,57 @@ public interface Window extends Freeable, Executor {
 	 * @return a Task it tell you when swapping is finished
 	 */
 	@NotNull TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
+	
+	//events
+	@NotNull Event<WindowCloseCallback> getWindowCloseEvent();
+	
+	@FunctionalInterface
+	interface WindowCloseCallback {
+		
+		void windowRequestClose(Window window);
+	}
+	
+	@NotNull Event<WindowMoveAndResizeCallback> getWindowResizeEvent();
+	
+	@FunctionalInterface
+	interface WindowMoveAndResizeCallback {
+		
+		void windowResize(Window window, int posx, int posy, int width, int height);
+	}
+	
+	@NotNull Event<WindowFramebufferSizeCallback> getWindowFramebufferSizeEvent();
+	
+	@FunctionalInterface
+	interface WindowFramebufferSizeCallback {
+		
+		void windowFramebufferSize(Window window, int width, int height);
+	}
+	
+	@NotNull Event<WindowFocusCallback> getWindowFocusEvent();
+	
+	@FunctionalInterface
+	interface WindowFocusCallback {
+		
+		void windowFocusChange(Window window, WindowFocus focus);
+		
+		enum WindowFocus {
+			
+			/**
+			 * Window is focused by the user.
+			 * <b>Has</b> to be supported.
+			 */
+			FOCUSED,
+			/**
+			 * Window is in background and may be visible.
+			 * <b>Has</b> to be supported.
+			 */
+			BACKGROUND,
+			/**
+			 * Window is in background and not visible.
+			 * May <b>not</b> be supported.
+			 */
+			HIDDEN
+			
+		}
+	}
 }

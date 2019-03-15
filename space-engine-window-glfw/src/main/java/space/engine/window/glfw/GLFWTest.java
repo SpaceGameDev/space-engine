@@ -3,6 +3,7 @@ package space.engine.window.glfw;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import space.engine.baseobject.Freeable;
+import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModify;
@@ -17,8 +18,10 @@ import space.engine.window.WindowContext.*;
 import space.engine.window.WindowFramework;
 import space.engine.window.extensions.VideoModeDesktopExtension;
 
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -81,20 +84,25 @@ public class GLFWTest {
 		windowAttInitial.put(BORDERLESS, true);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
-		List<Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {
+		Set<? extends Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {
 			try {
 				return window.awaitGet();
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toMap(Function.identity(), o -> true, (o, o2) -> o, ConcurrentHashMap::new)).keySet(true);
+		windows.forEach(window -> window.getWindowCloseEvent().addHook(new EventEntry<>(window1 -> {
+			//FIXME this is a bit scary, though shouldn't break as long as we don't do continuous event polling
+			windows.remove(window1);
+			window1.free();
+		})));
 		
 		if (CRASH)
 			throw new RuntimeException("Test Crash!");
 		
 		FboInfo fboInfo = createFbo(context, 1080, 1080).submit().awaitGet();
 		
-		for (int i = 0; i < SECONDS * 60; i++) {
+		for (int i = 0; i < SECONDS * 60 && windows.size() != 0; i++) {
 			
 			int i2 = i;
 			Barrier draw = runnable(context, () -> {

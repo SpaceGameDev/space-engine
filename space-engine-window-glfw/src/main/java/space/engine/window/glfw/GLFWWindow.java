@@ -1,9 +1,18 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
+import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
+import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
+import org.lwjgl.glfw.GLFWWindowIconifyCallbackI;
+import org.lwjgl.glfw.GLFWWindowPosCallbackI;
+import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import space.engine.baseobject.Freeable.FreeableWithStorage;
 import space.engine.baseobject.exceptions.FreedException;
+import space.engine.event.Event;
 import space.engine.event.EventEntry;
+import space.engine.event.SequentialEventBuilder;
+import space.engine.event.typehandler.TypeHandlerParallel;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AbstractAttributeList;
@@ -16,6 +25,7 @@ import space.engine.sync.future.Future;
 import space.engine.window.Monitor;
 import space.engine.window.Monitor.VideoMode;
 import space.engine.window.Window;
+import space.engine.window.Window.WindowFocusCallback.WindowFocus;
 import space.engine.window.extensions.VideoModeDesktopExtension;
 import space.engine.window.extensions.VideoModeExtension;
 import space.engine.window.extensions.VideoModeFullscreenExtension;
@@ -177,6 +187,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		deleteNativeWindow();
 		
 		//create new
+		long windowPointer;
 		synchronized (GLFWInstance.GLFW_SYNC) {
 			glfwDefaultWindowHints();
 			
@@ -200,13 +211,13 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 				
 				//createWindow
-				storage.windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.getWindowPointer());
+				windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.getWindowPointer());
 				if (prevPosition != null)
-					glfwSetWindowPos(storage.windowPointer, prevPosition[0], prevPosition[1]);
+					glfwSetWindowPos(windowPointer, prevPosition[0], prevPosition[1]);
 				
 				//extension ResizeableExtension
 				if (resizable)
-					glfwSetWindowSizeLimits(storage.windowPointer, newFormat.get(MINX), newFormat.get(MINY), newFormat.get(MAXX), newFormat.get(MAXY));
+					glfwSetWindowSizeLimits(windowPointer, newFormat.get(MINX), newFormat.get(MINY), newFormat.get(MAXX), newFormat.get(MAXY));
 			} else if (videoMode == VideoModeFullscreenExtension.class) {
 				VideoMode videoModeFullscreen = getVideoModeFullscreen(newFormat);
 				GLFWMonitor monitor = getVideoModeFullscreenMonitor(videoModeFullscreen);
@@ -219,17 +230,26 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 				glfwWindowHint(GLFW_REFRESH_RATE, videoModeFullscreen.refreshRate());
 				
 				//createWindow
-				storage.windowPointer = glfwCreateWindow(videoModeFullscreen.width(), videoModeFullscreen.height(), newFormat.get(TITLE), monitor.pointer, context.getWindowPointer());
+				windowPointer = glfwCreateWindow(videoModeFullscreen.width(), videoModeFullscreen.height(), newFormat.get(TITLE), monitor.pointer, context.getWindowPointer());
 			} else {
 				throw new IllegalStateException("format[VIDEO_MODE] was unsupported type: " + videoMode.getName());
 			}
 		}
 		
-		glfwMakeContextCurrent(storage.getWindowPointer());
+		storage.windowPointer = windowPointer;
+		glfwMakeContextCurrent(windowPointer);
 		context.createCapabilities();
 		
+		//events
+		glfwSetWindowCloseCallback(windowPointer, eventGLFWWindowCloseCallback);
+		glfwSetWindowPosCallback(windowPointer, eventGLFWWindowPosCallback);
+		glfwSetWindowSizeCallback(windowPointer, eventGLFWWindowSizeCallback);
+		glfwSetFramebufferSizeCallback(windowPointer, eventGLFWFramebufferSizeCallback);
+		glfwSetWindowFocusCallback(windowPointer, eventGLFWWindowFocusCallback);
+		glfwSetWindowIconifyCallback(windowPointer, eventGLFWWindowIconifyCallback);
+		
 		if (newFormat.get(VISIBLE)) {
-			glfwShowWindow(storage.windowPointer);
+			glfwShowWindow(windowPointer);
 		}
 	}
 	
@@ -286,6 +306,75 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	public void swapBuffers() {
 		glfwSwapBuffers(storage.getWindowPointer());
 		glfwPollEvents();
+	}
+	
+	//events
+	private final Event<WindowCloseCallback> eventWindowClose = new SequentialEventBuilder<>();
+	private final Event<WindowMoveAndResizeCallback> eventWindowMoveAndResize = new SequentialEventBuilder<>();
+	private final Event<WindowFramebufferSizeCallback> eventWindowFramebufferSize = new SequentialEventBuilder<>();
+	private final Event<WindowFocusCallback> eventWindowFocus = new SequentialEventBuilder<>();
+	
+	//event extra vars
+	private WindowFocus focus;
+	
+	//event callbacks
+	private final GLFWWindowCloseCallbackI eventGLFWWindowCloseCallback = window ->
+			eventWindowClose.submit((TypeHandlerParallel<WindowCloseCallback>) callback -> callback.windowRequestClose(GLFWWindow.this));
+	private final GLFWWindowPosCallbackI eventGLFWWindowPosCallback = (window, x, y) -> {
+		int[] width = new int[1];
+		int[] height = new int[1];
+		glfwGetWindowSize(getWindowPointer(), width, height);
+		eventWindowMoveAndResize.submit((TypeHandlerParallel<WindowMoveAndResizeCallback>) callback -> callback.windowResize(GLFWWindow.this, x, y, width[0], height[0]));
+	};
+	private final GLFWWindowSizeCallbackI eventGLFWWindowSizeCallback = (window, width, height) -> {
+		int[] x = new int[1];
+		int[] y = new int[1];
+		glfwGetWindowPos(getWindowPointer(), x, y);
+		eventWindowMoveAndResize.submit((TypeHandlerParallel<WindowMoveAndResizeCallback>) callback -> callback.windowResize(GLFWWindow.this, x[0], y[0], width, height));
+	};
+	private final GLFWFramebufferSizeCallbackI eventGLFWFramebufferSizeCallback = (window, width, height) ->
+			eventWindowFramebufferSize.submit((TypeHandlerParallel<WindowFramebufferSizeCallback>) callback -> callback.windowFramebufferSize(this, width, height));
+	private final GLFWWindowFocusCallbackI eventGLFWWindowFocusCallback = (window, focused) -> {
+		if (focused) {
+			focus = WindowFocus.FOCUSED;
+		} else {
+			if (focus == WindowFocus.FOCUSED)
+				focus = WindowFocus.BACKGROUND;
+		}
+		triggerEventWindowFocus();
+	};
+	private final GLFWWindowIconifyCallbackI eventGLFWWindowIconifyCallback = (window, iconified) -> {
+		if (iconified) {
+			focus = WindowFocus.HIDDEN;
+		} else {
+			if (focus == WindowFocus.HIDDEN)
+				focus = WindowFocus.BACKGROUND;
+		}
+		triggerEventWindowFocus();
+	};
+	
+	private void triggerEventWindowFocus() {
+		eventWindowFocus.submit((TypeHandlerParallel<WindowFocusCallback>) callback -> callback.windowFocusChange(this, focus));
+	}
+	
+	@Override
+	public @NotNull Event<WindowCloseCallback> getWindowCloseEvent() {
+		return eventWindowClose;
+	}
+	
+	@Override
+	public @NotNull Event<WindowMoveAndResizeCallback> getWindowResizeEvent() {
+		return eventWindowMoveAndResize;
+	}
+	
+	@Override
+	public @NotNull Event<WindowFramebufferSizeCallback> getWindowFramebufferSizeEvent() {
+		return eventWindowFramebufferSize;
+	}
+	
+	@Override
+	public @NotNull Event<WindowFocusCallback> getWindowFocusEvent() {
+		return eventWindowFocus;
 	}
 	
 	@Retention(RetentionPolicy.SOURCE)
