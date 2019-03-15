@@ -31,9 +31,6 @@ public interface Window extends Freeable, Executor {
 	AttributeKey<@NotNull Boolean> VISIBLE = CREATOR.createKeyWithDefault(Boolean.TRUE);
 	AttributeKey<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.createKeyWithDefault(Boolean.TRUE);
 	
-	//methods
-	void swapBuffers();
-	
 	//context implementation specific methods
 	
 	/**
@@ -42,7 +39,7 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_texture_id the FBO id from OpenGL
 	 * @return a Task it tell you when swapping is finished
 	 */
-	TaskCreator openGL_SwapBuffer(int opengl_texture_id);
+	@NotNull TaskCreator openGL_SwapBuffer(int opengl_texture_id);
 	
 	/**
 	 * Swap the Framebuffer of a FBO from OpenGL ES.
@@ -50,5 +47,5 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_es_texture_id the FBO id from OpenGL ES
 	 * @return a Task it tell you when swapping is finished
 	 */
-	TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
+	@NotNull TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
 }

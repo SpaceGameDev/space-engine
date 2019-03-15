@@ -65,6 +65,50 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		this.storage = new Storage(this, parents);
 	}
 	
+	//storage
+	@Override
+	public @NotNull FreeableStorage getStorage() {
+		return storage;
+	}
+	
+	public static class Storage extends FreeableStorageImpl implements Executor {
+		
+		protected volatile long windowPointer;
+		protected ExecutorService exec = Executors.newSingleThreadExecutor(r -> new Thread(r, "GLFWWindowThread-" + WINDOW_THREAD_COUNTER.getAndIncrement()));
+		
+		public Storage(Object referent, FreeableStorage... parents) {
+			super(referent, parents);
+		}
+		
+		@Override
+		protected void handleFree() {
+			exec.execute(this::deleteNativeWindow);
+			exec.shutdown();
+			//noinspection ConstantConditions
+			exec = null;
+		}
+		
+		@WindowThread
+		private void deleteNativeWindow() {
+			if (windowPointer != 0) {
+				glfwDestroyWindow(windowPointer);
+				windowPointer = 0;
+			}
+		}
+		
+		public long getWindowPointer() throws FreedException {
+			throwIfFreed();
+			return windowPointer;
+		}
+		
+		@Override
+		public void execute(@NotNull Runnable command) {
+			throwIfFreed();
+			exec.execute(command);
+		}
+	}
+	
+	//basic
 	@Override
 	public void execute(@NotNull Runnable command) {
 		storage.execute(command);
@@ -78,47 +122,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		return storage.getWindowPointer();
 	}
 	
-	@Override
-	public @NotNull FreeableStorage getStorage() {
-		return storage;
-	}
-	
-	@Override
-	public TaskCreator openGL_SwapBuffer(int opengl_tex_id) {
-		return runnable(storage, () -> {
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, opengl_tex_id);
-			
-			glBegin(GL_QUADS);
-			glTexCoord2f(0, 0);
-			glVertex2f(-1, -1);
-			glTexCoord2f(1, 0);
-			glVertex2f(1, -1);
-			glTexCoord2f(1, 1);
-			glVertex2f(1, 1);
-			glTexCoord2f(0, 1);
-			glVertex2f(-1, 1);
-			glEnd();
-			
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
-			
-			swapBuffers();
-		});
-	}
-	
-	@Override
-	public TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id) {
-		throw new UnsupportedOperationException("Not implemented!");
-	}
-	
-	@Override
-	@WindowThread
-	public void swapBuffers() {
-		glfwSwapBuffers(storage.getWindowPointer());
-	}
-	
-	//windowThread
+	//windowThread init and delete
 	@WindowThread
 	protected void initializeNativeWindow(AbstractAttributeList<Window> newFormat) {
 		long oldWindowPointer = getWindowPointer();
@@ -248,43 +252,40 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		storage.deleteNativeWindow();
 	}
 	
-	public static class Storage extends FreeableStorageImpl implements Executor {
-		
-		protected volatile long windowPointer;
-		protected ExecutorService exec = Executors.newSingleThreadExecutor(r -> new Thread(r, "GLFWWindowThread-" + WINDOW_THREAD_COUNTER.getAndIncrement()));
-		
-		public Storage(Object referent, FreeableStorage... parents) {
-			super(referent, parents);
-		}
-		
-		@Override
-		protected void handleFree() {
-			exec.execute(this::deleteNativeWindow);
-			exec.shutdown();
-			//noinspection ConstantConditions
-			exec = null;
+	//swap buffers
+	@Override
+	public @NotNull TaskCreator openGL_SwapBuffer(int opengl_tex_id) {
+		return runnable(storage, () -> {
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, opengl_tex_id);
 			
-			deleteNativeWindow();
-		}
-		
-		@WindowThread
-		private void deleteNativeWindow() {
-			if (windowPointer != 0) {
-				glfwDestroyWindow(windowPointer);
-				windowPointer = 0;
-			}
-		}
-		
-		public long getWindowPointer() throws FreedException {
-			throwIfFreed();
-			return windowPointer;
-		}
-		
-		@Override
-		public void execute(@NotNull Runnable command) {
-			throwIfFreed();
-			exec.execute(command);
-		}
+			glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex2f(-1, -1);
+			glTexCoord2f(1, 0);
+			glVertex2f(1, -1);
+			glTexCoord2f(1, 1);
+			glVertex2f(1, 1);
+			glTexCoord2f(0, 1);
+			glVertex2f(-1, 1);
+			glEnd();
+			
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
+			
+			swapBuffers();
+		});
+	}
+	
+	@Override
+	public @NotNull TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id) {
+		throw new UnsupportedOperationException("Not implemented!");
+	}
+	
+	@WindowThread
+	public void swapBuffers() {
+		glfwSwapBuffers(storage.getWindowPointer());
+		glfwPollEvents();
 	}
 	
 	@Retention(RetentionPolicy.SOURCE)
