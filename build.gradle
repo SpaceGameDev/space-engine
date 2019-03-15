@@ -5,7 +5,7 @@ plugins {
 import org.gradle.internal.os.OperatingSystem
 
 ext {
-	lwjglVersion = '3.1.4'
+	lwjglVersion = '3.2.1'
 
 	switch (OperatingSystem.current()) {
 		case OperatingSystem.WINDOWS:
