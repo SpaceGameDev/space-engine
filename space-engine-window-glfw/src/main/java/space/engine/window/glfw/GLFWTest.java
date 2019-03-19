@@ -1,7 +1,6 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 import space.engine.baseobject.Freeable;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
@@ -12,6 +11,7 @@ import space.engine.logger.LogLevel;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
+import space.engine.window.InputDevice.Keyboard;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowContext.*;
@@ -32,15 +32,14 @@ import static org.lwjgl.opengl.GL30.*;
 import static space.engine.sync.Tasks.*;
 import static space.engine.window.Window.*;
 import static space.engine.window.WindowContext.*;
-import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
-import static space.engine.window.extensions.VideoModeDesktopExtension.*;
+import static space.engine.window.extensions.VideoModeDesktopExtension.WIDTH;
 import static space.engine.window.extensions.VideoModeExtension.HEIGHT;
 
 public class GLFWTest {
 	
 	public static boolean CRASH = false;
 	public static int SECONDS = 300000000;
-	public static final int WINDOW_CNT = 5;
+	public static final int WINDOW_CNT = 1;
 	public static boolean FREE_WINDOW = false;
 	public static ExampleDraw exampleDraw = ExampleDraw.ROTATING_CUBE;
 	
@@ -71,7 +70,8 @@ public class GLFWTest {
 		windowContextAttInitial.put(GL_VERSION_MINOR, 0);
 		windowContextAttInitial.put(GL_FORWARD_COMPATIBLE, false);
 		WindowContext context = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
-		GLFW.glfwMakeContextCurrent(0);
+		
+		context.getInputDevicesOfType(Keyboard.class).awaitGet().forEach(keyboard -> keyboard.getCharacterInputEvent().addHook(new EventEntry<>(System.out::println)));
 		
 		//window
 		AttributeListModify<Window> windowAttInitial = Window.CREATOR.createModify();
@@ -80,8 +80,8 @@ public class GLFWTest {
 		windowAttInitial.put(HEIGHT, 1080);
 //		windowAttInitial.put(POS_X, 0);
 //		windowAttInitial.put(POS_Y, 0);
-		windowAttInitial.put(HAS_TRANSPARENCY, true);
-		windowAttInitial.put(BORDERLESS, true);
+//		windowAttInitial.put(HAS_TRANSPARENCY, true);
+//		windowAttInitial.put(BORDERLESS, true);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
 		Set<? extends Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {

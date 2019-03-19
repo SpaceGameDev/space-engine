@@ -6,9 +6,12 @@ import space.engine.baseobject.Freeable;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
+import space.engine.sync.Tasks;
 import space.engine.sync.future.Future;
 
+import java.util.Collection;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
@@ -33,6 +36,14 @@ public interface WindowContext extends Freeable, Executor {
 	AttributeKey<@NotNull Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(3);
 	AttributeKey<@NotNull Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(2);
 	AttributeKey<@NotNull Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(true);
+	
+	//input
+	@NotNull Future<Collection<? extends InputDevice>> getInputDevices();
+	
+	default <T extends InputDevice> @NotNull Future<Collection<T>> getInputDevicesOfType(Class<T> type) {
+		Future<Collection<? extends InputDevice>> inputDevices = getInputDevices();
+		return Tasks.<Collection<T>>future(() -> inputDevices.assertGet().stream().filter(type::isInstance).map(type::cast).collect(Collectors.toList())).submit(inputDevices);
+	}
 	
 	//enums
 	enum OpenGLApiType {

@@ -26,14 +26,11 @@ import space.engine.window.Monitor;
 import space.engine.window.Monitor.VideoMode;
 import space.engine.window.Window;
 import space.engine.window.Window.WindowFocusCallback.WindowFocus;
+import space.engine.window.WindowThread;
 import space.engine.window.extensions.VideoModeDesktopExtension;
 import space.engine.window.extensions.VideoModeExtension;
 import space.engine.window.extensions.VideoModeFullscreenExtension;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -247,6 +244,21 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		glfwSetFramebufferSizeCallback(windowPointer, eventGLFWFramebufferSizeCallback);
 		glfwSetWindowFocusCallback(windowPointer, eventGLFWWindowFocusCallback);
 		glfwSetWindowIconifyCallback(windowPointer, eventGLFWWindowIconifyCallback);
+		glfwSetKeyCallback(windowPointer, (window, key, scancode, action, mods) -> {
+			switch (action) {
+				case GLFW_PRESS:
+					context.triggerKeyInputEventKeyboard(key, true);
+					break;
+				case GLFW_RELEASE:
+					context.triggerKeyInputEventKeyboard(key, false);
+					break;
+				case GLFW_REPEAT:
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
+		});
+		glfwSetCharCallback(windowPointer, (window, codepoint) -> context.triggerCharacterInputEventKeyboard(new String(Character.toChars(codepoint))));
 		
 		if (newFormat.get(VISIBLE)) {
 			glfwShowWindow(windowPointer);
@@ -257,7 +269,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		VideoMode videoModeFullscreen = newFormat.get(FULLSCREEN_VIDEO_MODE);
 		if (videoModeFullscreen != null)
 			return videoModeFullscreen;
-		return context.framework.getPrimaryMonitor().getDefaultVideoMode();
+		return context.framework.getPrimaryMonitorDirect().getDefaultVideoMode();
 	}
 	
 	private GLFWMonitor getVideoModeFullscreenMonitor(VideoMode videoModeFullscreen) {
@@ -375,11 +387,5 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	@Override
 	public @NotNull Event<WindowFocusCallback> getWindowFocusEvent() {
 		return eventWindowFocus;
-	}
-	
-	@Retention(RetentionPolicy.SOURCE)
-	@Target(ElementType.METHOD)
-	public @interface WindowThread {
-	
 	}
 }

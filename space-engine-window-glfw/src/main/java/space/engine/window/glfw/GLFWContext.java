@@ -5,15 +5,28 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengles.GLES;
 import space.engine.baseobject.exceptions.FreedException;
+import space.engine.event.Event;
+import space.engine.event.SequentialEventBuilder;
+import space.engine.event.typehandler.TypeHandlerParallel;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.key.attribute.AbstractAttributeList;
 import space.engine.key.attribute.AttributeList;
 import space.engine.sync.future.Future;
+import space.engine.window.InputDevice;
+import space.engine.window.InputDevice.KeyInputDevice.CharacterInputEvent;
+import space.engine.window.InputDevice.KeyInputDevice.KeyInputEvent;
+import space.engine.window.InputDevice.Keyboard;
+import space.engine.window.InputDevice.Mouse;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
+import space.engine.window.WindowThread;
 import space.engine.window.exception.WindowUnsupportedApiTypeException;
 import space.engine.window.glfw.GLFWWindow.Storage;
-import space.engine.window.glfw.GLFWWindow.WindowThread;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.sync.Tasks.runnable;
@@ -36,6 +49,13 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 		this.storage = new Storage(this, parents);
 	}
 	
+	//storage
+	@Override
+	public @NotNull FreeableStorage getStorage() {
+		return storage;
+	}
+	
+	//basic
 	@Override
 	public void execute(@NotNull Runnable command) {
 		storage.execute(command);
@@ -48,17 +68,109 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 		return storage.getWindowPointer();
 	}
 	
-	@Override
-	public @NotNull FreeableStorage getStorage() {
-		return storage;
-	}
-	
+	//window creation
 	@Override
 	public @NotNull Future<GLFWWindow> createWindow(@NotNull AttributeList<Window> format) {
 		return GLFWWindow.create(this, format, storage);
 	}
 	
-	//windowThread
+	//input
+	private final @NotNull Event<KeyInputEvent> eventKeyInputKeyboard = new SequentialEventBuilder<>();
+	private final @NotNull Event<CharacterInputEvent> eventCharacterInputKeyboard = new SequentialEventBuilder<>();
+	private final @NotNull Event<KeyInputEvent> eventKeyInputMouse = new SequentialEventBuilder<>();
+	private final @NotNull Set<Integer> pressedKeysKeyboard = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
+	private final @NotNull Set<Integer> pressedKeysMouse = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
+	
+	private final @NotNull List<InputDevice> inputDevices = List.of(new Keyboard() {
+		@Override
+		public String getName() {
+			return "Keyboard";
+		}
+		
+		@Override
+		public Event<KeyInputEvent> getKeyInputEvent() {
+			return eventKeyInputKeyboard;
+		}
+		
+		@Override
+		public Event<CharacterInputEvent> getCharacterInputEvent() {
+			return eventCharacterInputKeyboard;
+		}
+		
+		@Override
+		public boolean isKeyDown(int key) {
+			return pressedKeysKeyboard.contains(key);
+		}
+		
+		@Override
+		public String getKeyName(int key) {
+			return glfwGetKeyName(key, 0);
+		}
+	}, new Mouse() {
+		@Override
+		public String getName() {
+			return "Mouse";
+		}
+		
+		@Override
+		public boolean isKeyDown(int key) {
+			return pressedKeysMouse.contains(key);
+		}
+		
+		@Override
+		public @NotNull String getKeyName(int key) {
+			return "Mouse button " + key;
+		}
+		
+		@Override
+		public Event<KeyInputEvent> getKeyInputEvent() {
+			return eventKeyInputMouse;
+		}
+		
+		@Override
+		public Event<CharacterInputEvent> getCharacterInputEvent() {
+			return Event.voidEvent();
+		}
+		
+		@Override
+		public double[] getPosition() {
+			double[] x = new double[1];
+			double[] y = new double[1];
+			glfwGetCursorPos(getWindowPointer(), x, y);
+			return new double[] {x[0], y[0]};
+		}
+	});
+	
+	@Override
+	public @NotNull Future<Collection<? extends InputDevice>> getInputDevices() {
+		return Future.finished(inputDevices);
+	}
+	
+	public void triggerKeyInputEventKeyboard(int key, boolean pressed) {
+		if (pressed) {
+			pressedKeysKeyboard.add(key);
+		} else {
+			pressedKeysKeyboard.remove(key);
+		}
+		
+		eventKeyInputKeyboard.submit((TypeHandlerParallel<KeyInputEvent>) callback -> callback.onKeyInput(key, pressed));
+	}
+	
+	public void triggerCharacterInputEventKeyboard(String input) {
+		eventCharacterInputKeyboard.submit((TypeHandlerParallel<CharacterInputEvent>) callback -> callback.onKeyInput(input));
+	}
+	
+	public void triggerKeyInputEventMouse(int key, boolean pressed) {
+		if (pressed) {
+			pressedKeysMouse.add(key);
+		} else {
+			pressedKeysMouse.remove(key);
+		}
+		
+		eventKeyInputMouse.submit((TypeHandlerParallel<KeyInputEvent>) callback -> callback.onKeyInput(key, pressed));
+	}
+	
+	//windowThread init
 	@WindowThread
 	protected void initializeNativeWindow(AbstractAttributeList<WindowContext> newFormat) {
 		synchronized (GLFWInstance.GLFW_SYNC) {

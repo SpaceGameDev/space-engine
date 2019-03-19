@@ -23,7 +23,8 @@ public interface WindowFramework extends Freeable {
 	
 	@NotNull Future<? extends WindowContext> createContext(@NotNull AttributeList<WindowContext> format);
 	
-	@NotNull Monitor[] getAllMonitors();
+	//monitor
+	@NotNull Future<? extends Monitor> getPrimaryMonitor();
 	
-	@NotNull Monitor getPrimaryMonitor();
+	@NotNull Future<Collection<? extends Monitor>> getAllMonitors();
 }
