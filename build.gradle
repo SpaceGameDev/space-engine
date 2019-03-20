@@ -26,8 +26,8 @@ allprojects {
 	
 	apply plugin: 'java-library'
 
-	targetCompatibility = 1.9
-	sourceCompatibility = 1.9
+	targetCompatibility = 1.10
+	sourceCompatibility = 1.10
 
 	repositories {
 		mavenLocal()
