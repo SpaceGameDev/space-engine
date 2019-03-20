@@ -17,17 +17,45 @@ import static space.engine.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
 public interface Event<FUNCTION> {
 	
 	/**
-	 * adds a Hook.
+	 * adds the hook to this event
 	 *
-	 * @param hook the Hook to add
+	 * @param hook the hook to add
 	 */
 	void addHook(@NotNull EventEntry<FUNCTION> hook);
 	
 	/**
-	 * Removes a Hook.<br>
+	 * creates a {@link EventEntry} and adds it as a hook.
+	 */
+	default EventEntry<FUNCTION> addHook(FUNCTION function) {
+		EventEntry<FUNCTION> entry = new EventEntry<>(function);
+		addHook(entry);
+		return entry;
+	}
+	
+	/**
+	 * creates a {@link EventEntry} and adds it as a hook.
+	 */
+	default EventEntry<FUNCTION> addHook(FUNCTION function, @NotNull EventEntry<?>... requires) {
+		EventEntry<FUNCTION> entry = new EventEntry<>(function, requires);
+		addHook(entry);
+		return entry;
+	}
+	
+	/**
+	 * creates a {@link EventEntry} and adds it as a hook.
+	 */
+	default EventEntry<FUNCTION> addHook(FUNCTION function, @NotNull EventEntry<?>[] requiredBy, @NotNull EventEntry<?>... requires) {
+		EventEntry<FUNCTION> entry = new EventEntry<>(function, requiredBy, requires);
+		addHook(entry);
+		return entry;
+	}
+	
+	/**
+	 * Removes the specified hook.<br>
 	 * It is expected that the Method will be called very rarely and mustn't be optimized via hashing or other techniques.
 	 *
-	 * @param hook the Hook to be removed
+	 * @param hook the hook to be removed
+	 * @return true if successful
 	 */
 	boolean removeHook(@NotNull EventEntry<FUNCTION> hook);
 	
