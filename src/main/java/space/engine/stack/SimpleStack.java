@@ -6,31 +6,32 @@ import java.util.Arrays;
 
 public class SimpleStack<T> implements Stack<T> {
 	
+	private int pointer = 0;
 	public IndexMapArray<T> list = new IndexMapArray<>();
 	
 	@Override
 	public void push(T t) {
-		list.add(t);
+		list.put(pointer++, t);
 	}
 	
 	@Override
 	public long pushPointer(T t) {
-		int ret = list.size();
+		int ret = pointer++;
 		list.put(ret, t);
 		return ret;
 	}
 	
 	@Override
 	public T pop() {
-		return list.remove(list.size() - 1);
+		return list.remove(pointer--);
 	}
 	
 	@Override
 	public T popPointer(long id) {
-		int l = list.size() - 1;
-		int i = (int) (id + 1);
-		if (i > l)
-			Arrays.fill(list.array, i, l, null);
+		int last = pointer - 1;
+		int from = (int) (id + 1);
+		if (from > last)
+			Arrays.fill(list.array, from, last, null);
 		
 		return list.remove((int) id);
 	}

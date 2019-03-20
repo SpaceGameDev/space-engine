@@ -26,7 +26,7 @@ public class EventTest extends SingleThreadPoolTest {
 	EventEntry<Consumer<Integer>> accept56_2 = new EventEntry<>(createAcceptFunction(5, 6), accept234_1, accept234_2, accept234_3);
 	EventEntry<Consumer<Integer>> accept7 = new EventEntry<>(createAcceptFunction(7), accept56_2, accept56_1);
 	EventEntry<Consumer<Integer>> accept9 = new EventEntry<>(createAcceptFunction(9));
-	EventEntry<Consumer<Integer>> accept8 = new EventEntry<>(createAcceptFunction(8), new EventEntry[] {accept7}, new EventEntry[] {accept9});
+	EventEntry<Consumer<Integer>> accept8 = new EventEntry<>(createAcceptFunction(8), new EventEntry[] {accept9}, new EventEntry[] {accept7});
 	
 	@SuppressWarnings("unchecked")
 	EventEntry<Consumer<Integer>>[] acceptAll = new EventEntry[] {

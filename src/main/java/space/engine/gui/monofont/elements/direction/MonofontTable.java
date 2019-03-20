@@ -38,25 +38,6 @@ public class MonofontTable extends MonofontGuiElementCaching implements GuiTable
 		return CREATOR;
 	}
 	
-	//access
-	@Override
-	public void add(GuiElement gui) {
-		if (!(gui instanceof MonofontGuiElement))
-			throw new IllegalGuiElementException(gui);
-		MonofontGuiElement v = (MonofontGuiElement) gui;
-		v.setParent(this);
-		table.add(v);
-	}
-	
-	@Override
-	public void add(int[] pos, GuiElement gui) {
-		if (!(gui instanceof MonofontGuiElement))
-			throw new IllegalGuiElementException(gui);
-		MonofontGuiElement v = (MonofontGuiElement) gui;
-		v.setParent(this);
-		table.add(pos, v);
-	}
-	
 	@Nullable
 	public GuiElement put(int[] pos, GuiElement gui) {
 		if (!(gui instanceof MonofontGuiElement))

@@ -24,12 +24,6 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 	}
 	
 	@Override
-	public void add(VALUE value) {
-		super.add(value);
-		onModification.run();
-	}
-	
-	@Override
 	public VALUE put(int index, VALUE value) {
 		VALUE ret = super.put(index, value);
 		onModification.run();
@@ -41,13 +35,6 @@ public class ModificationAwareIndexMap<VALUE> extends DelegatingIndexMap<VALUE> 
 		VALUE ret = super.remove(index);
 		onModification.run();
 		return ret;
-	}
-	
-	@Override
-	public void addAll(@NotNull Collection<? extends VALUE> coll) {
-		super.addAll(coll);
-		if (!coll.isEmpty())
-			onModification.run();
 	}
 	
 	@Override

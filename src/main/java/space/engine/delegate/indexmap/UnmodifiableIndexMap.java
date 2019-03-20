@@ -19,16 +19,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 		super(indexMap);
 	}
 	
-	@Override
-	public boolean isExpandable() {
-		return false;
-	}
-	
-	@Override
-	public void add(VALUE value) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
 	@NotNull
 	@Override
 	public Entry<VALUE> getEntry(int index) {
@@ -42,11 +32,6 @@ public class UnmodifiableIndexMap<VALUE> extends DelegatingIndexMap<VALUE> {
 	
 	@Override
 	public VALUE remove(int index) {
-		throw new UnsupportedOperationException("Unmodifiable");
-	}
-	
-	@Override
-	public void addAll(@NotNull Collection<? extends VALUE> coll) {
 		throw new UnsupportedOperationException("Unmodifiable");
 	}
 	

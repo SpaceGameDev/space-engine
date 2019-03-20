@@ -19,12 +19,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 		this.indexMap = indexMap;
 	}
 	
-	//delegate
-	@Override
-	public boolean isExpandable() {
-		return indexMap.isExpandable();
-	}
-	
 	@Override
 	public int size() {
 		return indexMap.size();
@@ -38,11 +32,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public boolean contains(int index) {
 		return indexMap.contains(index);
-	}
-	
-	@Override
-	public void add(VALUE value) {
-		indexMap.add(value);
 	}
 	
 	@Override
@@ -74,11 +63,6 @@ public class DelegatingIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE[] toArray(@NotNull VALUE[] array) {
 		return indexMap.toArray(array);
-	}
-	
-	@Override
-	public void addAll(@NotNull Collection<? extends VALUE> coll) {
-		indexMap.addAll(coll);
 	}
 	
 	@Override
