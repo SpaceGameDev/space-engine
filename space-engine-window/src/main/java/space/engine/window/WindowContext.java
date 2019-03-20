@@ -3,15 +3,13 @@ package space.engine.window;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.Freeable;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
-import space.engine.sync.Tasks;
 import space.engine.sync.future.Future;
 
-import java.util.Collection;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
@@ -38,12 +36,7 @@ public interface WindowContext extends Freeable, Executor {
 	AttributeKey<@NotNull Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(true);
 	
 	//input
-	@NotNull Future<Collection<? extends InputDevice>> getInputDevices();
-	
-	default <T extends InputDevice> @NotNull Future<Collection<T>> getInputDevicesOfType(Class<T> type) {
-		Future<Collection<? extends InputDevice>> inputDevices = getInputDevices();
-		return Tasks.<Collection<T>>future(() -> inputDevices.assertGet().stream().filter(type::isInstance).map(type::cast).collect(Collectors.toList())).submit(inputDevices);
-	}
+	@NotNull ObservableCollection<? extends InputDevice> getInputDevices();
 	
 	//enums
 	enum OpenGLApiType {

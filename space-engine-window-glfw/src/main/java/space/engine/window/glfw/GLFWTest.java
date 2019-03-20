@@ -1,6 +1,7 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import space.engine.baseobject.Freeable;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
@@ -71,7 +72,15 @@ public class GLFWTest {
 		windowContextAttInitial.put(GL_FORWARD_COMPATIBLE, false);
 		WindowContext context = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
 		
-		context.getInputDevicesOfType(Keyboard.class).awaitGet().forEach(keyboard -> keyboard.getCharacterInputEvent().addHook(new EventEntry<>(System.out::println)));
+		context.getInputDevices().addHookAsStartedEmpty(change -> change.added().stream()
+																		.filter(Keyboard.class::isInstance).map(Keyboard.class::cast)
+																		.forEach(o -> {
+																			o.getCharacterInputEvent().addHook(System.out::print);
+																			o.getKeyInputEvent().addHook((key, wasPressed) -> {
+																				if (wasPressed && key == GLFW.GLFW_KEY_ENTER)
+																					System.out.println();
+																			});
+																		}));
 		
 		//window
 		AttributeListModify<Window> windowAttInitial = Window.CREATOR.createModify();

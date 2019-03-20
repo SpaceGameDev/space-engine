@@ -2,10 +2,7 @@ package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
-import space.engine.Side;
-import space.engine.buffer.array.ArrayBufferPointer;
-import space.engine.buffer.direct.alloc.stack.AllocatorStack;
-import space.engine.buffer.pointer.PointerBufferLong;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.key.attribute.AttributeList;
 import space.engine.sync.future.Future;
 import space.engine.window.Monitor;
@@ -19,11 +16,8 @@ import space.engine.window.extensions.WindowExtension;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static space.engine.Side.*;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
 
 public class GLFWWindowFramework implements WindowFramework {
 	
@@ -48,25 +42,8 @@ public class GLFWWindowFramework implements WindowFramework {
 	//monitor
 	@NotNull
 	@Override
-	public Future<Collection<? extends Monitor>> getAllMonitors() {
-		return Future.finished(getAllMonitorsDirect());
-	}
-	
-	public Collection<GLFWMonitor> getAllMonitorsDirect() {
-		AttributeList<Side> side = side();
-		AllocatorStack allocStack = side.get(BUFFER_ALLOC_STACK);
-		try {
-			allocStack.push();
-			PointerBufferLong monitorCnt = side.get(BUFFER_ALLOC_STACK_POINTER).allocLong.malloc();
-			long monitorAddress = nglfwGetMonitors(monitorCnt.address());
-			ArrayBufferPointer monitorList = side.get(BUFFER_ALLOC_STACK_ARRAY).allocPointer.createNoFree(monitorAddress, monitorCnt.getLong());
-			
-			return LongStream.range(0, monitorList.length())
-							 .mapToObj(i -> new GLFWMonitor(monitorList.getPointer(i)))
-							 .collect(Collectors.toList());
-		} finally {
-			allocStack.pop();
-		}
+	public ObservableCollection<? extends Monitor> getAllMonitors() {
+		return glfwInstance.monitors;
 	}
 	
 	@NotNull

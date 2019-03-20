@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengles.GLES;
 import space.engine.baseobject.exceptions.FreedException;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.event.Event;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerParallel;
@@ -23,7 +24,6 @@ import space.engine.window.WindowThread;
 import space.engine.window.exception.WindowUnsupportedApiTypeException;
 import space.engine.window.glfw.GLFWWindow.Storage;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,7 +81,7 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 	private final @NotNull Set<Integer> pressedKeysKeyboard = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
 	private final @NotNull Set<Integer> pressedKeysMouse = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
 	
-	private final @NotNull List<InputDevice> inputDevices = List.of(new Keyboard() {
+	private final @NotNull ObservableCollection<InputDevice> inputDevices = new ObservableCollection<>(List.of(new Keyboard() {
 		@Override
 		public String getName() {
 			return "Keyboard";
@@ -139,11 +139,11 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 			glfwGetCursorPos(getWindowPointer(), x, y);
 			return new double[] {x[0], y[0]};
 		}
-	});
+	}));
 	
 	@Override
-	public @NotNull Future<Collection<? extends InputDevice>> getInputDevices() {
-		return Future.finished(inputDevices);
+	public @NotNull ObservableCollection<? extends InputDevice> getInputDevices() {
+		return inputDevices;
 	}
 	
 	public void triggerKeyInputEventKeyboard(int key, boolean pressed) {

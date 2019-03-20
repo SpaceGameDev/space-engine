@@ -2,6 +2,7 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.key.attribute.AttributeList;
 import space.engine.sync.future.Future;
 import space.engine.window.extensions.WindowExtension;
@@ -26,5 +27,5 @@ public interface WindowFramework extends Freeable {
 	//monitor
 	@NotNull Future<? extends Monitor> getPrimaryMonitor();
 	
-	@NotNull Future<Collection<? extends Monitor>> getAllMonitors();
+	@NotNull ObservableCollection<? extends Monitor> getAllMonitors();
 }
