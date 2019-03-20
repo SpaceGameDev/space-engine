@@ -64,19 +64,35 @@ public class ObservableSet<E> implements Set<E> {
 		return changeEvent.addHook(changeConsumer, requiredBy, requires);
 	}
 	
+	/**
+	 * Adds the supplied hook and acts as if this collection would have been empty and it would fill it with the current actual value.
+	 * In other words: calls the event with added() being the current value
+	 */
 	public void addHookAsStartedEmpty(@NotNull EventEntry<Consumer<Change<E>>> hook) {
 		changeEvent.addHook(hook);
 		callAsStartedEmpty(hook);
 	}
 	
+	/**
+	 * Adds the supplied hook and acts as if this collection would have been empty and it would fill it with the current actual value.
+	 * In other words: calls the event with added() being the current value
+	 */
 	public EventEntry<Consumer<Change<E>>> addHookAsStartedEmpty(Consumer<Change<E>> changeConsumer) {
 		return callAsStartedEmpty(changeEvent.addHook(changeConsumer));
 	}
 	
+	/**
+	 * Adds the supplied hook and acts as if this collection would have been empty and it would fill it with the current actual value.
+	 * In other words: calls the event with added() being the current value
+	 */
 	public EventEntry<Consumer<Change<E>>> addHookAsStartedEmpty(Consumer<Change<E>> changeConsumer, @NotNull EventEntry<?>... requires) {
 		return callAsStartedEmpty(changeEvent.addHook(changeConsumer, requires));
 	}
 	
+	/**
+	 * Adds the supplied hook and acts as if this collection would have been empty and it would fill it with the current actual value.
+	 * In other words: calls the event with added() being the current value
+	 */
 	public EventEntry<Consumer<Change<E>>> addHookAsStartedEmpty(Consumer<Change<E>> changeConsumer, @NotNull EventEntry<?>[] requiredBy, @NotNull EventEntry<?>... requires) {
 		return callAsStartedEmpty(changeEvent.addHook(changeConsumer, requiredBy, requires));
 	}
