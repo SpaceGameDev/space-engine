@@ -12,8 +12,6 @@ public interface IndexMap<VALUE> {
 	int[] EMPTYINT = Empties.EMPTY_INT_ARRAY;
 	
 	//capacity
-	boolean isExpandable();
-	
 	/**
 	 * Gets the current estimated size of the {@link IndexMap}.
 	 */
@@ -28,10 +26,6 @@ public interface IndexMap<VALUE> {
 		return get(index) != null;
 	}
 	
-	default void add(VALUE value) {
-		put(size(), value);
-	}
-	
 	VALUE get(int index);
 	
 	@NotNull Entry<VALUE> getEntry(int index);
@@ -43,13 +37,6 @@ public interface IndexMap<VALUE> {
 	VALUE[] toArray();
 	
 	VALUE[] toArray(@NotNull VALUE[] array);
-	
-	//addAll
-	default void addAll(@NotNull Collection<? extends VALUE> coll) {
-		for (VALUE value : coll) {
-			add(value);
-		}
-	}
 	
 	default void putAll(@NotNull IndexMap<? extends VALUE> indexMap) {
 		for (Entry<? extends VALUE> entry : indexMap.entrySet()) {

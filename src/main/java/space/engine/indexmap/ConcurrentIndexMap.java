@@ -106,11 +106,6 @@ public class ConcurrentIndexMap<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean isExpandable() {
-		return true;
-	}
-	
-	@Override
 	public int size() {
 		return array.length * capacityInnerArray;
 	}

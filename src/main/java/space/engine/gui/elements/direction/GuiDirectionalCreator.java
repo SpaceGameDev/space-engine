@@ -11,17 +11,14 @@ import space.engine.gui.GuiElement;
 public interface GuiDirectionalCreator extends GuiCreator {
 	
 	/**
-	 * creates a {@link GuiDirectional}.
-	 * Use the Methods {@link GuiDirectional#add(GuiElement)}, {@link GuiDirectional#put(int, GuiElement)}
-	 * and {@link GuiDirectional#remove(int)} to config it like a {@link space.engine.indexmap.IndexMap}.
+	 * Creates a {@link GuiDirectional}.
+	 * Use the Methods {@link GuiDirectional#put(int, GuiElement)} and {@link GuiDirectional#remove(int)} to config it like a {@link space.engine.indexmap.IndexMap}.
 	 *
 	 * @return a new {@link GuiDirectional} to fill a table within
 	 */
 	GuiDirectional create();
 	
 	interface GuiDirectional extends GuiElement {
-		
-		void add(GuiElement v);
 		
 		@Nullable GuiElement put(int index, @Nullable GuiElement v);
 		

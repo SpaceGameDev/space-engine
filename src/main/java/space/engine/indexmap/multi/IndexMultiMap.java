@@ -64,17 +64,6 @@ public interface IndexMultiMap<VALUE> {
 		return get(pos) != null;
 	}
 	
-	default void add(VALUE v) {
-		put(new int[] {size()}, v);
-	}
-	
-	default void add(int[] pos, VALUE v) {
-		int[] p = new int[pos.length + 1];
-		System.arraycopy(pos, 0, p, 0, pos.length);
-		p[pos.length] = size(pos);
-		put(p, v);
-	}
-	
 	@Nullable VALUE get(int[] pos);
 	
 	@NotNull IndexMultiMapEntry<? extends VALUE> getEntry(int[] pos);

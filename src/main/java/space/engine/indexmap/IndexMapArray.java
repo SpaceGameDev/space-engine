@@ -82,11 +82,6 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 	}
 	
 	@Override
-	public boolean isExpandable() {
-		return true;
-	}
-	
-	@Override
 	public int size() {
 		return length;
 	}
@@ -151,13 +146,6 @@ public class IndexMapArray<VALUE> implements IndexMap<VALUE>, ToString {
 			array = (VALUE[]) new Object[length];
 		System.arraycopy(this.array, 0, array, 0, length);
 		return array;
-	}
-	
-	//addAll
-	@Override
-	public void addAll(@NotNull Collection<? extends VALUE> coll) {
-		ensureCapacity(length + coll.size());
-		IndexMap.super.addAll(coll);
 	}
 	
 	@Override

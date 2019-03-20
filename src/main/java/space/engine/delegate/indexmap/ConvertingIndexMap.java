@@ -143,11 +143,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public boolean isExpandable() {
-			return false;
-		}
-		
-		@Override
 		public int size() {
 			return indexMap.size();
 		}
@@ -155,11 +150,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		@Override
 		public boolean contains(int index) {
 			return get(index) != null;
-		}
-		
-		@Override
-		public void add(T value) {
-			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
@@ -214,11 +204,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 			for (int i = 0; i < org.length; i++)
 				a[i] = remap.apply((org[i]));
 			return a;
-		}
-		
-		@Override
-		public void addAll(@NotNull Collection<? extends T> coll) {
-			throw new UnsupportedOperationException("unmodifiable");
 		}
 		
 		@Override
@@ -398,11 +383,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		}
 		
 		@Override
-		public void add(T value) {
-			indexMap.add(reverseSparse.apply(value));
-		}
-		
-		@Override
 		public T put(int index, T value) {
 			return remap.apply(indexMap.put(index, reverseSparse.apply(value)));
 		}
@@ -416,11 +396,6 @@ public abstract class ConvertingIndexMap<F, T> implements IndexMap<T>, ToString 
 		@Override
 		public IndexMap.Entry<T> getEntry(int index) {
 			return new Entry(indexMap.getEntry(index));
-		}
-		
-		@Override
-		public void addAll(@NotNull Collection<? extends T> coll) {
-			indexMap.addAll(new ConvertingCollection.OneDirectionalUnmodifiable<>(coll, reverseSparse));
 		}
 		
 		@Override

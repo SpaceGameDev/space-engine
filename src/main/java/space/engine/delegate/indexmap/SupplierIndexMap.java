@@ -21,11 +21,6 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	}
 	
 	@Override
-	public boolean isExpandable() {
-		return indexMap.get().isExpandable();
-	}
-	
-	@Override
 	public int size() {
 		return indexMap.get().size();
 	}
@@ -38,11 +33,6 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public boolean contains(int index) {
 		return indexMap.get().contains(index);
-	}
-	
-	@Override
-	public void add(VALUE value) {
-		indexMap.get().add(value);
 	}
 	
 	@Override
@@ -74,11 +64,6 @@ public class SupplierIndexMap<VALUE> implements ToString, IndexMap<VALUE> {
 	@Override
 	public VALUE[] toArray(@NotNull VALUE[] array) {
 		return indexMap.get().toArray(array);
-	}
-	
-	@Override
-	public void addAll(@NotNull Collection<? extends VALUE> coll) {
-		indexMap.get().addAll(coll);
 	}
 	
 	@Override

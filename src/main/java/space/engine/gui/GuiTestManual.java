@@ -23,12 +23,14 @@ public class GuiTestManual {
 		println(api.get(GuiText1DCreator.class).create("Hi!"));
 		
 		GuiRow row = api.get(GuiRowCreator.class).create();
-		row.add(api.get(GuiText2DCreator.class).create(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append("Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
+		row.put(0,
+				api.get(GuiText2DCreator.class).create(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append(
+						"Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
 		
 		GuiColumn column = api.get(GuiColumnCreator.class).create();
-		column.add(api.get(GuiText1DCreator.class).create("Hi there!!!"));
-		column.add(api.get(GuiText1DCreator.class).create("I'm writing things..."));
-		row.add(column);
+		column.put(0, api.get(GuiText1DCreator.class).create("Hi there!!!"));
+		column.put(1, api.get(GuiText1DCreator.class).create("I'm writing things..."));
+		row.put(1, column);
 		
 		GuiTable table = api.get(GuiTableCreator.class).create();
 		table.put(new int[] {0, 0}, api.get(GuiText1DCreator.class).create("7"));
@@ -42,7 +44,7 @@ public class GuiTestManual {
 		table.put(new int[] {2, 2}, api.get(GuiText1DCreator.class).create("3"));
 		table.put(new int[] {3, 1}, api.get(GuiText1DCreator.class).create("0"));
 		table.put(new int[] {3, 2}, api.get(GuiText1DCreator.class).create(","));
-		row.add(table);
+		row.put(2, table);
 		
 		println(row);
 	}

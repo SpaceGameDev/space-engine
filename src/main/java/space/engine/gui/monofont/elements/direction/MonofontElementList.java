@@ -20,15 +20,6 @@ public abstract class MonofontElementList extends MonofontGuiElementCaching impl
 	}
 	
 	@Override
-	public void add(GuiElement gui) {
-		if (!(gui instanceof MonofontGuiElement))
-			throw new IllegalGuiElementException(gui);
-		MonofontGuiElement v = (MonofontGuiElement) gui;
-		v.setParent(this);
-		list.add(v);
-	}
-	
-	@Override
 	@Nullable
 	public GuiElement put(int index, @Nullable GuiElement gui) {
 		if (!(gui instanceof MonofontGuiElement))
