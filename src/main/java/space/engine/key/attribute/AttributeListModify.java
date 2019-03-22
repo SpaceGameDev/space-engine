@@ -122,7 +122,7 @@ public class AttributeListModify<TYPE> extends AbstractAttributeList<TYPE> {
 								.limit(indexMap.size()) //limit to the max index which was set
 								.filter(this::hasChanged)
 								.collect(Collectors.toList());
-			Barrier changeEventTask = list.changeEvent.submit(callback -> callback.accept(this, changes), start);
+			Barrier changeEventTask = list.changeEvent.submit(callback -> callback.onChange(this, changes), start);
 			//noinspection CodeBlock2Expr
 			return runnable(() -> {
 				indexMap.entrySet()

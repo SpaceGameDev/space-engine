@@ -1,10 +1,15 @@
 package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.Freeable;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;
+import space.engine.sync.future.Future;
+
+import java.util.concurrent.Executor;
 
 /**
  * The {@link WindowContext} is the Conext you do all your drawing with.
@@ -14,21 +19,24 @@ import space.engine.key.attribute.AttributeListCreator;
  * If you have a finished FrameBuffer, call {\@link Window#openGL_SwapFramebuffer(int)} or {\@link Window#openGL_ES_SwapFramebuffer(int)} respectively.
  */
 @SuppressWarnings("unused")
-public interface WindowContext extends Freeable {
+public interface WindowContext extends Freeable, Executor {
 	
-	@NotNull Window createWindow(@NotNull AttributeList<Window> format);
+	Future<? extends Window> createWindow(@NotNull AttributeList<Window> format);
 	
 	//attributes
 	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();
 	
 	//api
-	AttributeKey<Object> API_TYPE = CREATOR.createKeyNormal();
+	AttributeKey<@Nullable Object> API_TYPE = CREATOR.createKeyNormal();
 	
 	//OpenGL / OpenGL ES
-	AttributeKey<GLProfile> GL_PROFILE = CREATOR.createKeyWithDefault(GLProfile.PROFILE_ANY);
-	AttributeKey<Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(2);
-	AttributeKey<Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(1);
-	AttributeKey<Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(false);
+	AttributeKey<@NotNull GLProfile> GL_PROFILE = CREATOR.createKeyWithDefault(GLProfile.PROFILE_ANY);
+	AttributeKey<@NotNull Integer> GL_VERSION_MAJOR = CREATOR.createKeyWithDefault(3);
+	AttributeKey<@NotNull Integer> GL_VERSION_MINOR = CREATOR.createKeyWithDefault(2);
+	AttributeKey<@NotNull Boolean> GL_FORWARD_COMPATIBLE = CREATOR.createKeyWithDefault(true);
+	
+	//input
+	@NotNull ObservableCollection<? extends InputDevice> getInputDevices();
 	
 	//enums
 	enum OpenGLApiType {

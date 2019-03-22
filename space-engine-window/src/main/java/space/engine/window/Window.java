@@ -2,10 +2,11 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
+import space.engine.event.Event;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.TaskCreator;
-import space.engine.window.VideoMode.VideoModeDesktop;
+import space.engine.window.extensions.VideoModeExtension;
 
 import java.util.concurrent.Executor;
 
@@ -18,9 +19,9 @@ public interface Window extends Freeable, Executor {
 	
 	AttributeListCreator<Window> CREATOR = new AttributeListCreator<>();
 	
-	AttributeKey<@NotNull VideoMode> VIDEO_MODE = CREATOR.createKeyWithDefault(VideoMode.createVideoModeDesktop(800, 600));
+	AttributeKey<@NotNull Class<? extends VideoModeExtension>> VIDEO_MODE = CREATOR.createKeyNormal();
 	/**
-	 * ignored when <code>VIDEO_MODE == {@link space.engine.window.VideoMode.VideoModeDesktop} && {@link VideoModeDesktop#hasTransparency()}</code>
+	 * ignored when using {@link space.engine.window.extensions.VideoModeDesktopExtension} with {@link space.engine.window.extensions.VideoModeDesktopExtension#HAS_TRANSPARENCY}
 	 */
 	AttributeKey<@NotNull Integer> ALPHA_BITS = CREATOR.createKeyWithDefault(0);
 	AttributeKey<@NotNull Integer> DEPTH_BITS = CREATOR.createKeyWithDefault(0);
@@ -29,12 +30,7 @@ public interface Window extends Freeable, Executor {
 	//attributes
 	AttributeKey<@NotNull String> TITLE = CREATOR.createKeyWithDefault("Untitled Window");
 	AttributeKey<@NotNull Boolean> VISIBLE = CREATOR.createKeyWithDefault(Boolean.TRUE);
-	AttributeKey<@NotNull Boolean> RESIZEABLE = CREATOR.createKeyWithDefault(Boolean.FALSE);
 	AttributeKey<@NotNull Boolean> DOUBLE_BUFFER = CREATOR.createKeyWithDefault(Boolean.TRUE);
-	AttributeKey<@NotNull Boolean> BORDERLESS = CREATOR.createKeyWithDefault(Boolean.FALSE);
-	
-	//methods
-	void swapBuffers();
 	
 	//context implementation specific methods
 	
@@ -44,7 +40,7 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_texture_id the FBO id from OpenGL
 	 * @return a Task it tell you when swapping is finished
 	 */
-	TaskCreator openGL_SwapBuffer(int opengl_texture_id);
+	@NotNull TaskCreator openGL_SwapBuffer(int opengl_texture_id);
 	
 	/**
 	 * Swap the Framebuffer of a FBO from OpenGL ES.
@@ -52,5 +48,58 @@ public interface Window extends Freeable, Executor {
 	 * @param opengl_es_texture_id the FBO id from OpenGL ES
 	 * @return a Task it tell you when swapping is finished
 	 */
-	TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
+	@NotNull TaskCreator openGL_ES_SwapBuffer(int opengl_es_texture_id);
+	
+	//events
+	@NotNull Event<WindowCloseCallback> getWindowCloseEvent();
+	
+	@FunctionalInterface
+	interface WindowCloseCallback {
+		
+		void windowRequestClose(Window window);
+	}
+	
+	@NotNull Event<WindowMoveAndResizeCallback> getWindowResizeEvent();
+	
+	@FunctionalInterface
+	interface WindowMoveAndResizeCallback {
+		
+		void windowResize(Window window, int posx, int posy, int width, int height);
+	}
+	
+	@NotNull Event<WindowFramebufferSizeCallback> getWindowFramebufferSizeEvent();
+	
+	@FunctionalInterface
+	interface WindowFramebufferSizeCallback {
+		
+		void windowFramebufferSize(Window window, int width, int height);
+	}
+	
+	@NotNull Event<WindowFocusCallback> getWindowFocusEvent();
+	
+	@FunctionalInterface
+	interface WindowFocusCallback {
+		
+		void windowFocusChange(Window window, WindowFocus focus);
+		
+		enum WindowFocus {
+			
+			/**
+			 * Window is focused by the user.
+			 * <b>Has</b> to be supported.
+			 */
+			FOCUSED,
+			/**
+			 * Window is in background and may be visible.
+			 * <b>Has</b> to be supported.
+			 */
+			BACKGROUND,
+			/**
+			 * Window is in background and not visible.
+			 * May <b>not</b> be supported.
+			 */
+			HIDDEN
+			
+		}
+	}
 }

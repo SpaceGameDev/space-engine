@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
 import space.engine.window.Monitor;
-import space.engine.window.VideoMode;
-import space.engine.window.VideoMode.VideoModeMonitor;
+
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -26,7 +26,7 @@ public class GLFWMonitor implements Monitor {
 		int[] y = new int[1];
 		
 		//name
-		name = glfwGetMonitorName(pointer);
+		name = Objects.requireNonNull(glfwGetMonitorName(pointer));
 		
 		//physicalSize
 		glfwGetMonitorPhysicalSize(pointer, x, y);
@@ -39,11 +39,11 @@ public class GLFWMonitor implements Monitor {
 		posY = y[0];
 		
 		//videoMode
-		currentVideoMode = new GLFWVideoModeMonitor(glfwGetVideoMode(pointer));
-		Buffer modes = glfwGetVideoModes(pointer);
-		VideoMode[] array = new VideoMode[modes.remaining()];
-		for (GLFWVidMode mode : modes)
-			array[modes.position()] = new GLFWVideoModeMonitor(mode);
+		currentVideoMode = new GLFWVideoModeMonitor(Objects.requireNonNull(glfwGetVideoMode(pointer)));
+		Buffer modes = Objects.requireNonNull(glfwGetVideoModes(pointer));
+		VideoMode[] array = new VideoMode[modes.capacity()];
+		for (int i = 0; i < array.length; i++)
+			array[i] = new GLFWVideoModeMonitor(modes.get(i));
 		availableVideoModes = array;
 	}
 	
@@ -85,7 +85,22 @@ public class GLFWMonitor implements Monitor {
 		return availableVideoModes;
 	}
 	
-	public class GLFWVideoModeMonitor implements VideoModeMonitor {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof GLFWMonitor))
+			return false;
+		GLFWMonitor that = (GLFWMonitor) o;
+		return pointer == that.pointer;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(pointer);
+	}
+	
+	public class GLFWVideoModeMonitor implements VideoMode {
 		
 		public GLFWVidMode mode;
 		
@@ -95,7 +110,7 @@ public class GLFWMonitor implements Monitor {
 		
 		@Override
 		@NotNull
-		public GLFWMonitor getMonitor() {
+		public GLFWMonitor monitor() {
 			return GLFWMonitor.this;
 		}
 		

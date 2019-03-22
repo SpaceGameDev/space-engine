@@ -1,10 +1,12 @@
 dependencies {
-    api project(':space-engine:space-engine-window')
-    
-    implementation "org.lwjgl:lwjgl:$parent.lwjglVersion"
-    implementation "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
-    implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"
-    implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
-    implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
-    implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
+	api project(':space-engine:space-engine-window')
+
+	implementation "org.lwjgl:lwjgl:$parent.lwjglVersion"
+	implementation "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
+	implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion"
+	implementation "org.lwjgl:lwjgl-glfw:$parent.lwjglVersion:$parent.lwjglNatives"
+	implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion"
+	implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
+	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion"
+	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion:$parent.lwjglNatives"
 }

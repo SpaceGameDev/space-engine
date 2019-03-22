@@ -2,7 +2,12 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Freeable;
+import space.engine.delegate.collection.ObservableCollection;
 import space.engine.key.attribute.AttributeList;
+import space.engine.sync.future.Future;
+import space.engine.window.extensions.WindowExtension;
+
+import java.util.Collection;
 
 /**
  * The {@link WindowFramework} is the first Interface you interact with when opening any {@link Window Windows}.
@@ -15,14 +20,12 @@ import space.engine.key.attribute.AttributeList;
  */
 public interface WindowFramework extends Freeable {
 	
-	@NotNull WindowContext createContext(@NotNull AttributeList<WindowContext> format);
+	Collection<Class<? extends WindowExtension>> getSupportedWindowExtensions();
 	
-	@NotNull Monitor[] getAllMonitors();
+	@NotNull Future<? extends WindowContext> createContext(@NotNull AttributeList<WindowContext> format);
 	
-	@NotNull Monitor getPrimaryMonitor();
+	//monitor
+	@NotNull Future<? extends Monitor> getPrimaryMonitor();
 	
-	@NotNull
-	static WindowFrameworkCreator[] getAvailableFrameworks() {
-		return new WindowFrameworkCreator[] {};
-	}
+	@NotNull ObservableCollection<? extends Monitor> getAllMonitors();
 }

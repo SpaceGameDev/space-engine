@@ -6,7 +6,7 @@ import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.lock.SyncLock;
 
-import static space.engine.sync.barrier.Barrier.EMPTY_BARRIER_ARRAY;
+import static space.engine.sync.barrier.Barrier.*;
 import static space.engine.sync.lock.SyncLock.EMPTY_SYNCLOCK_ARRAY;
 
 /**
@@ -90,4 +90,24 @@ public interface Event<FUNCTION> {
 	default @NotNull TaskCreator<? extends Barrier> taskCreator(@NotNull TypeHandler<FUNCTION> typeHandler) {
 		return (locks, barriers) -> submit(typeHandler, locks, barriers);
 	}
+	
+	static <FUNCTION> Event<FUNCTION> voidEvent() {
+		return new Event<>() {
+			@Override
+			public void addHook(@NotNull EventEntry<FUNCTION> hook) {
+			
+			}
+			
+			@Override
+			public boolean removeHook(@NotNull EventEntry<FUNCTION> hook) {
+				return false;
+			}
+			
+			@Override
+			public @NotNull Barrier submit(@NotNull TypeHandler<FUNCTION> typeHandler, @NotNull SyncLock[] locks, @NotNull Barrier... barriers) {
+				return ALWAYS_TRIGGERED_BARRIER;
+			}
+		};
+	}
+	
 }
