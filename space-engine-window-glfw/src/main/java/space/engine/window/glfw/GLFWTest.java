@@ -1,7 +1,6 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 import space.engine.baseobject.Freeable;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
@@ -13,6 +12,7 @@ import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
 import space.engine.window.InputDevice.Keyboard;
+import space.engine.window.Keycode;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowContext.*;
@@ -77,7 +77,7 @@ public class GLFWTest {
 																		.forEach(o -> {
 																			o.getCharacterInputEvent().addHook(System.out::print);
 																			o.getKeyInputEvent().addHook((key, wasPressed) -> {
-																				if (wasPressed && key == GLFW.GLFW_KEY_ENTER)
+																				if (wasPressed && key == Keycode.KEY_ENTER)
 																					System.out.println();
 																			});
 																		}));
