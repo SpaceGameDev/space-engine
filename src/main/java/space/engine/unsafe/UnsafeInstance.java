@@ -20,39 +20,27 @@ public class UnsafeInstance {
 		UNSAFE = u;
 	}
 	
-	public static Unsafe getUnsafe() {
-		return UNSAFE;
-	}
-	
-	public static boolean isUnsafeAvailable() {
-		return UNSAFE != null;
-	}
-	
-	public static void throwIfUnavailable() throws NoUnsafeException {
-		if (!isUnsafeAvailable())
+	public static Unsafe getUnsafe() throws NoUnsafeException {
+		if (UNSAFE == null)
 			throw new NoUnsafeException("Unsafe is not avaible!");
-	}
-	
-	public static Unsafe getUnsafeOrThrow() throws NoUnsafeException {
-		throwIfUnavailable();
 		return UNSAFE;
 	}
 	
 	public static long objectFieldOffset(Class<?> clazz, String name) throws UnsafeNoFieldException {
 		try {
-			return UNSAFE.objectFieldOffset(clazz.getDeclaredField(name));
-		} catch (Exception e) {
+			return getUnsafe().objectFieldOffset(clazz.getDeclaredField(name));
+		} catch (NoSuchFieldException e) {
 			throw new UnsafeNoFieldException("Field " + clazz.getName() + "." + name, e);
 		}
 	}
 	
-	@SuppressWarnings("EmptyCatchBlock")
 	public static long objectFieldOffsetWithSuper(Class<?> clazz, String name) throws UnsafeNoFieldException {
+		Unsafe unsafe = getUnsafe();
 		Class<?> c = clazz;
 		while (c != null) {
 			try {
-				return UNSAFE.objectFieldOffset(c.getDeclaredField(name));
-			} catch (NoSuchFieldException e) {
+				return unsafe.objectFieldOffset(c.getDeclaredField(name));
+			} catch (NoSuchFieldException ignored) {
 			
 			}
 			c = c.getSuperclass();

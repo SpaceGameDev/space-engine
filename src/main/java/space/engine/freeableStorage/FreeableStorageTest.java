@@ -109,7 +109,7 @@ public class FreeableStorageTest {
 	public static class Thing {
 		
 		static final AtomicInteger idGen = new AtomicInteger();
-//		private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
+//		private static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 //		static final long OFFSET_PARENT = UnsafeInstance.objectFieldOffset(FreeableStorageImpl.class, "parent");
 		
 		Parent parent;

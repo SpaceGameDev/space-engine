@@ -10,7 +10,7 @@ import static space.engine.unsafe.UnsafeInstance.objectFieldOffsetWithSuper;
 
 public class NioByteBufferWrapper {
 	
-	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
+	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 	
 	public static final Class<?> BYTE_BUFFER_CLASS;
 	public static final long BYTE_BUFFER_ADDRESS;

@@ -1,6 +1,5 @@
-package space.engine.buffer;
+package space.engine.unsafe;
 
-import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
 import static sun.misc.Unsafe.ARRAY_BOOLEAN_BASE_OFFSET;
@@ -10,7 +9,7 @@ import static sun.misc.Unsafe.ARRAY_BOOLEAN_BASE_OFFSET;
  */
 public class AllowBooleanArrayCopy {
 	
-	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
+	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 	
 	/**
 	 * this is true if booleans are
@@ -20,6 +19,7 @@ public class AllowBooleanArrayCopy {
 	public static final boolean ALLOW_BOOLEAN_ARRAY_COPY;
 	
 	static {
-		ALLOW_BOOLEAN_ARRAY_COPY = (UNSAFE.getByte(new boolean[] {true}, (long) ARRAY_BOOLEAN_BASE_OFFSET) != (byte) 0) && (UNSAFE.getByte(new boolean[] {false}, (long) ARRAY_BOOLEAN_BASE_OFFSET) == (byte) 0);
+		ALLOW_BOOLEAN_ARRAY_COPY = UNSAFE.getByte(new boolean[] {true}, (long) ARRAY_BOOLEAN_BASE_OFFSET) != (byte) 0
+				&& UNSAFE.getByte(new boolean[] {false}, (long) ARRAY_BOOLEAN_BASE_OFFSET) == (byte) 0;
 	}
 }
