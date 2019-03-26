@@ -74,19 +74,57 @@ public interface Barrier {
 	//await
 	
 	/**
-	 * waits until event is triggered
+	 * Waits until event is triggered
 	 *
 	 * @throws InterruptedException if an interrupt occurs
 	 */
 	void await() throws InterruptedException;
 	
 	/**
-	 * waits until event is triggered with a timeout
+	 * Waits until event is triggered with a timeout
 	 *
 	 * @throws InterruptedException if an interrupt occurs
 	 * @throws TimeoutException     thrown if waiting takes longer than the specified timeout
 	 */
 	void await(long time, TimeUnit unit) throws InterruptedException, TimeoutException;
+	
+	/**
+	 * Waits until event is triggered and doesn't return when interrupted.
+	 * The interrupt status of this {@link Thread} will be restored.
+	 */
+	default void awaitUninterrupted() {
+		boolean interrupted = false;
+		while (true) {
+			try {
+				await();
+				break;
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+		if (interrupted)
+			Thread.currentThread().interrupt();
+	}
+	
+	/**
+	 * Waits until event is triggered with a timeout and doesn't return when interrupted.
+	 * The interrupt status of this {@link Thread} will be restored.
+	 *
+	 * @throws TimeoutException thrown if waiting takes longer than the specified timeout
+	 */
+	default void awaitUninterrupted(long time, TimeUnit unit) throws TimeoutException {
+		boolean interrupted = false;
+		while (true) {
+			try {
+				await(time, unit);
+				break;
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+		if (interrupted)
+			Thread.currentThread().interrupt();
+	}
 	
 	//default methods
 	default <R> Future<R> toFuture(Future<R> supplier) {
