@@ -180,7 +180,7 @@ public final class FreeableStorageCleaner {
 				
 			}
 			logger.log(INFO, "2. direct free");
-			FreeableStorageTest.LIST_ROOT.free();
+			FreeableStorage.ROOT_LIST.free();
 			
 			logger.log(INFO, "3. gc free");
 			System.gc();
