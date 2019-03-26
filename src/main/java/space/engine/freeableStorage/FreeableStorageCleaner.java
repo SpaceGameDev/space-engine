@@ -1,18 +1,21 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.Nullable;
+import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.logger.NullLogger;
 import space.engine.string.builder.CharBufferBuilder2D;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
-import java.util.ArrayList;
-import java.util.function.Consumer;
+import java.util.Objects;
 
-import static space.engine.logger.LogLevel.*;
+import static space.engine.logger.LogLevel.INFO;
 
 public final class FreeableStorageCleaner {
+	
+	//the QUEUE
+	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
 	
 	static {
 		initialize();
@@ -23,13 +26,6 @@ public final class FreeableStorageCleaner {
 	@Nullable
 	private static ThreadInfo cleanupThreadInfo;
 	
-	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
-	public static volatile Logger cleanupLogger = NullLogger.NULL_LOGGER;
-	public static volatile boolean cleanupLoggerDebug = false;
-	public static volatile Consumer<Reference<?>> cleanupThreadIllegalReference = ref -> {
-		throw new IllegalArgumentException("Inappropriate Reference of type " + ref.getClass().getName() + ": " + ref);
-	};
-	
 	private static final class ThreadInfo {
 		
 		Thread thread;
@@ -37,6 +33,9 @@ public final class FreeableStorageCleaner {
 	}
 	
 	//logger
+	public static volatile Logger cleanupLogger = NullLogger.NULL_LOGGER;
+	public static volatile boolean cleanupLoggerDebug = false;
+	
 	public static void setCleanupLogger(Logger baseLogger) {
 		setCleanupLogger(baseLogger, false);
 	}
@@ -59,7 +58,7 @@ public final class FreeableStorageCleaner {
 				} catch (InterruptedException ignore) {
 				
 				} catch (Throwable e) {
-					e.printStackTrace();
+					cleanupLogger.log(LogLevel.ERROR, e.getMessage());
 				}
 			}
 		});
@@ -72,82 +71,53 @@ public final class FreeableStorageCleaner {
 	}
 	
 	//handle
-	static void handle(long timeout) throws InterruptedException {
-		handle(QUEUE.remove(timeout));
-	}
-	
-	static void handle(Reference<?> ref1) {
-		//ref1 == null -> retry
+	private static void handle(long timeout) throws InterruptedException {
+		Reference<?> ref1 = QUEUE.remove(timeout);
 		if (ref1 == null)
 			return;
+		handle(ref1);
 		
-		//one reference, no further -> handle
-		Reference<?> ref2 = QUEUE.poll();
-		if (ref2 == null) {
-			handleReference(ref1);
-			return;
-		}
-		
-		//more than two references
-		//-> collect
-		ArrayList<Freeable> list = new ArrayList<>();
-		handleReferenceOrAdd(list, ref1);
-		handleReferenceOrAdd(list, ref2);
+		//handle all remaining objects in the queue
+		int count = 1;
 		Reference<?> ref;
-		while ((ref = QUEUE.poll()) != null) {
-			handleReferenceOrAdd(list, ref);
+		for (; (ref = QUEUE.poll()) != null; count++) {
+			handle(ref);
 		}
 		
-		//-> log if logger exists
+		//log object count
+		cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(count).append(" Objects via GC").toString());
+	}
+	
+	private static void handle(Reference<?> ref) {
 		if (cleanupLoggerDebug)
-			cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC: ").append(list).toString());
-		else
-			cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(list.size()).append(" Objects via GC").toString());
-		
-		//-> handle
-		list.forEach(Freeable::free);
-	}
-	
-	private static void handleReference(Reference<?> ref) {
-		if (ref instanceof Freeable) {
-			if (cleanupLoggerDebug)
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC: [").append(ref).append(']').toString());
-			else
-				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC").toString());
-			((Freeable) ref).free();
-		} else
-			cleanupThreadIllegalReference.accept(ref);
-	}
-	
-	private static void handleReferenceOrAdd(ArrayList<Freeable> array, Reference<?> ref) {
+			cleanupLogger.log(LogLevel.FINEST, "Cleaning up " + ref);
 		if (ref instanceof Freeable)
-			array.add((Freeable) ref);
+			((Freeable) ref).free();
 		else
-			cleanupThreadIllegalReference.accept(ref);
+			throw new IllegalArgumentException("Inappropriate Reference of type " + ref.getClass().getName() + ": " + ref);
 	}
 	
 	//stop
-	public static synchronized void stopCleanupThread() {
+	public static synchronized boolean stopCleanupThread() {
 		if (cleanupThreadInfo == null)
-			throw new IllegalStateException("No CleanupThread started!");
+			return false;
 		
 		cleanupThreadInfo.doRun = false;
 		cleanupThreadInfo.thread.interrupt();
 		cleanupThreadInfo = null;
+		return true;
 	}
 	
-	public static void stopAndJoinCleanupThread() throws InterruptedException {
+	public static boolean stopAndJoinCleanupThread() throws InterruptedException {
 		Thread thread;
 		synchronized (FreeableStorageCleaner.class) {
-			if (cleanupThreadInfo == null)
-				return;
-			
-			cleanupThreadInfo.doRun = false;
-			thread = cleanupThreadInfo.thread;
-			thread.interrupt();
-			cleanupThreadInfo = null;
+			ThreadInfo cleanupThreadInfo = FreeableStorageCleaner.cleanupThreadInfo;
+			if (!stopCleanupThread())
+				return false;
+			thread = Objects.requireNonNull(cleanupThreadInfo).thread;
 		}
 		thread.join();
+		return true;
 	}
 	
 	//isRunning
@@ -174,19 +144,22 @@ public final class FreeableStorageCleaner {
 			} catch (InterruptedException ignore) {
 				
 			}
-			logger.log(INFO, "2. direct free");
-			Freeable.ROOT_LIST.free();
+			
+			logger.log(INFO, "2. ROOT_LIST free");
+			Freeable.ROOT_LIST.free().awaitUninterrupted();
 			
 			logger.log(INFO, "3. gc free");
 			System.gc();
 			System.runFinalization();
-			
-			try {
-				handle(100);
-				logger.log(INFO, "Final cleanup complete!");
-			} catch (InterruptedException e) {
-				logger.log(ERROR, "FreeableStorageCleanup shutdown procedure was interrupted! Not all resources may have been freed!");
+			while (true) {
+				try {
+					handle(100);
+					break;
+				} catch (InterruptedException ignored) {
+				}
 			}
+			
+			logger.log(INFO, "Final cleanup complete!");
 		});
 		thread.setName("FreeableStorageShutdown");
 		thread.setPriority(8);
