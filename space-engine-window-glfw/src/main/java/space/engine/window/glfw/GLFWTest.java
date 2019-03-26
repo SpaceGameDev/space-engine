@@ -153,6 +153,7 @@ public class GLFWTest {
 			windowfw.free();
 		}
 		logger.log(LogLevel.INFO, "Exit!");
+		System.exit(0);
 	}
 	
 	public static class FboInfo {
