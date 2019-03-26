@@ -46,11 +46,6 @@ public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 	}
 	
 	@Override
-	public int freePriority() {
-		return buffer.freePriority();
-	}
-	
-	@Override
 	@NotNull
 	public FreeableStorageList getSubList() {
 		return buffer.getSubList();

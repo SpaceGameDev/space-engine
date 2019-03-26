@@ -1,29 +1,22 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableStorageList.Entry;
 
 import java.lang.ref.SoftReference;
+import java.util.Arrays;
 
 public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements FreeableStorage {
 	
 	private volatile boolean isFreed = false;
 	private final FreeableStorageList.Entry[] entries;
-	private final int freePriority;
-	private FreeableStorageList subList;
+	private volatile FreeableStorageList subList;
 	
-	public FreeableStorageSoft(T referent, FreeableStorage... lists) {
+	public FreeableStorageSoft(@Nullable T referent, @NotNull FreeableStorage... parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
-		
-		int freePriority = Integer.MIN_VALUE;
-		entries = new FreeableStorageList.Entry[lists.length];
-		for (int i = 0; i < lists.length; i++) {
-			entries[i] = lists[i].getSubList().insert(this);
-			int lfp = lists[i].freePriority();
-			if (lfp > freePriority)
-				freePriority = lfp;
-		}
-		this.freePriority = freePriority - 1;
+		entries = Arrays.stream(parents).map(parent -> parent.getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	
 	//free
@@ -45,21 +38,28 @@ public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements
 	
 	protected abstract void handleFree();
 	
+	//isFreed
 	@Override
 	public boolean isFreed() {
 		return isFreed;
 	}
 	
-	//other
 	@Override
-	public int freePriority() {
-		return freePriority;
+	public void throwIfFreed() throws FreedException {
+		if (isFreed)
+			throw new FreedException(this);
 	}
 	
 	//children
 	@NotNull
 	@Override
-	public synchronized FreeableStorageList getSubList() {
-		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));
+	public FreeableStorageList getSubList() {
+		if (subList != null)
+			return subList;
+		synchronized (this) {
+			if (subList != null)
+				return subList;
+			return subList = FreeableStorageListImpl.createList();
+		}
 	}
 }

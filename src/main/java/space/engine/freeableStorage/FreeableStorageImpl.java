@@ -6,26 +6,17 @@ import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableStorageList.Entry;
 
 import java.lang.ref.PhantomReference;
+import java.util.Arrays;
 
 public abstract class FreeableStorageImpl extends PhantomReference<Object> implements FreeableStorage {
 	
 	private volatile boolean isFreed = false;
 	private final FreeableStorageList.Entry[] entries;
-	private final int freePriority;
-	private FreeableStorageList subList;
+	private volatile FreeableStorageList subList;
 	
 	public FreeableStorageImpl(@Nullable Object referent, @NotNull FreeableStorage... parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
-		
-		int freePriority = Integer.MIN_VALUE;
-		entries = new FreeableStorageList.Entry[parents.length];
-		for (int i = 0; i < parents.length; i++) {
-			entries[i] = parents[i].getSubList().insert(this);
-			int lfp = parents[i].freePriority();
-			if (lfp > freePriority)
-				freePriority = lfp;
-		}
-		this.freePriority = freePriority - 1;
+		entries = Arrays.stream(parents).map(parent -> parent.getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	
 	//free
@@ -59,16 +50,16 @@ public abstract class FreeableStorageImpl extends PhantomReference<Object> imple
 			throw new FreedException(this);
 	}
 	
-	//other
-	@Override
-	public int freePriority() {
-		return freePriority;
-	}
-	
 	//children
 	@NotNull
 	@Override
-	public synchronized FreeableStorageList getSubList() {
-		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));
+	public FreeableStorageList getSubList() {
+		if (subList != null)
+			return subList;
+		synchronized (this) {
+			if (subList != null)
+				return subList;
+			return subList = FreeableStorageListImpl.createList();
+		}
 	}
 }

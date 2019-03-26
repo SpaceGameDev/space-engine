@@ -8,7 +8,7 @@ import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
 /**
- * Use {@link FreeableStorageListImpl#createList(int)} to create a List.
+ * Use {@link FreeableStorageListImpl#createList()} to create a List.
  *
  * @implNote This is just a Base-Object for the inner classes:
  * {@link FreeableStorageListImpl.List List} and it's {@link Entry Entry}.
@@ -16,8 +16,8 @@ import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsIn
 public abstract class FreeableStorageListImpl implements Freeable {
 	
 	//static creator
-	public static FreeableStorageList createList(int freePriority) {
-		return new List(freePriority);
+	public static FreeableStorageList createList() {
+		return new List();
 	}
 	
 	//object fields
@@ -72,10 +72,7 @@ public abstract class FreeableStorageListImpl implements Freeable {
 	 */
 	private static class List extends FreeableStorageListImpl implements FreeableStorageList, ToString {
 		
-		public int freePriority;
-		
-		private List(int freePriority) {
-			this.freePriority = freePriority;
+		private List() {
 			prev = this;
 			next = this;
 		}
@@ -84,11 +81,6 @@ public abstract class FreeableStorageListImpl implements Freeable {
 		@Override
 		public FreeableStorageListImpl.List.Entry insert(@NotNull FreeableStorage storage) {
 			return new Entry(storage);
-		}
-		
-		@Override
-		public int freePriority() {
-			return freePriority;
 		}
 		
 		@Override
@@ -114,7 +106,6 @@ public abstract class FreeableStorageListImpl implements Freeable {
 			
 			ToStringHelperObjectsInstance<T> tsh = api.createObjectInstance(this);
 			tsh.add("size", size);
-			tsh.add("freePriority", this.freePriority);
 			return tsh.build();
 		}
 		

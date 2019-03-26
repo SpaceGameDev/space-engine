@@ -31,13 +31,7 @@ import space.engine.baseobject.Freeable;
  */
 public interface FreeableStorage extends Freeable {
 	
-	FreeableStorageList ROOT_LIST = FreeableStorageListImpl.createList(0);
-	
-	/**
-	 * Higher numbers are released first, lower later.
-	 * Use this to increase efficiency of freeing and removing from any {@link FreeableStorageList}
-	 */
-	int freePriority();
+	FreeableStorageList ROOT_LIST = FreeableStorageListImpl.createList();
 	
 	/**
 	 * Gets the subList of this {@link FreeableStorage}

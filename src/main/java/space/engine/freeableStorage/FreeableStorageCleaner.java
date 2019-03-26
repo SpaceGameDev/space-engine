@@ -9,7 +9,6 @@ import space.engine.string.builder.CharBufferBuilder2D;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.function.Consumer;
 
 import static space.engine.logger.LogLevel.*;
@@ -99,9 +98,6 @@ public final class FreeableStorageCleaner {
 		while ((ref = QUEUE.poll()) != null) {
 			handleReferenceOrAdd(list, ref);
 		}
-		
-		//-> sort
-		list.sort(Comparator.comparingInt(FreeableStorage::freePriority).reversed());
 		
 		//-> log if logger exists
 		if (cleanupLoggerDebug)

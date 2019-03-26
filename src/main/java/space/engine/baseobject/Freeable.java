@@ -51,11 +51,6 @@ public interface Freeable {
 			return getStorage().isFreed();
 		}
 		
-		@Override
-		default int freePriority() {
-			return getStorage().freePriority();
-		}
-		
 		@NotNull
 		@Override
 		default FreeableStorageList getSubList() {

@@ -14,9 +14,6 @@ public interface FreeableStorageList extends FreeableStorage {
 	@Override
 	boolean isFreed();
 	
-	@Override
-	int freePriority();
-	
 	//other
 	@NotNull
 	@Override
