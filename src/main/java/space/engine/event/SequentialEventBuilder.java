@@ -37,6 +37,18 @@ public class SequentialEventBuilder<FUNCTION> extends AbstractEventBuilder<FUNCT
 		return runnableWithDelay[0].submit(locks, barriers);
 	}
 	
+	public void runImmediately(@NotNull TypeHandler<FUNCTION> typeHandler) {
+		for (FUNCTION function : getBuild()) {
+			try {
+				typeHandler.accept(function);
+			} catch (DelayTask e) {
+				//waiting is generally a bad idea, but we cannot do anything else in this case
+				//SequentialEventBuilders used with runImmediately should either way never enter this state
+				e.barrier.awaitUninterrupted();
+			}
+		}
+	}
+	
 	//build
 	public List<FUNCTION> getBuild() {
 		//non-synchronized access

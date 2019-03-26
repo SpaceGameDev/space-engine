@@ -402,4 +402,17 @@ public class Tasks {
 			}
 		};
 	}
+	
+	//other functional interfaces with Delay
+	@FunctionalInterface
+	public interface ConsumerWithDelay<T> {
+		
+		void accept(T t) throws DelayTask;
+	}
+	
+	@FunctionalInterface
+	public interface FunctionWithDelay<T, R> {
+		
+		R apply(T t) throws DelayTask;
+	}
 }
