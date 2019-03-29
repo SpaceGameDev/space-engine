@@ -1,5 +1,6 @@
 dependencies {
-	api project(':space-engine:space-engine-window')
+	api parent
+	api parent.project(':space-engine-window')
 
 	implementation "org.lwjgl:lwjgl:$parent.lwjglVersion"
 	implementation "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
