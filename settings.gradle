@@ -1,6 +1,4 @@
-findProject(':space-engine').name = "space-engine"
+rootProject.name = 'space-engine'
 
-include 'space-engine:space-engine-window'
-findProject(':space-engine:space-engine-window').name = 'space-engine-window'
-include 'space-engine:space-engine-window-glfw'
-findProject(':space-engine:space-engine-window-glfw').name = 'space-engine-window-glfw'
+include 'space-engine-window'
+include 'space-engine-window-glfw'
