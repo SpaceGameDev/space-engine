@@ -17,6 +17,8 @@ public class EventTest extends SingleThreadPoolTest {
 	final int eventInput = 42;
 	AtomicInteger callCounter = new AtomicInteger();
 	
+	EventEntry<Consumer<Integer>> unused = new EventEntry<>(createAcceptFunction(-42));
+	
 	EventEntry<Consumer<Integer>> accept0 = new EventEntry<>(createAcceptFunction(0));
 	EventEntry<Consumer<Integer>> accept1 = new EventEntry<>(createAcceptFunction(1), accept0);
 	EventEntry<Consumer<Integer>> accept234_1 = new EventEntry<>(createAcceptFunction(2, 4), accept1);
@@ -24,9 +26,9 @@ public class EventTest extends SingleThreadPoolTest {
 	EventEntry<Consumer<Integer>> accept234_3 = new EventEntry<>(createAcceptFunction(2, 4), accept1);
 	EventEntry<Consumer<Integer>> accept56_1 = new EventEntry<>(createAcceptFunction(5, 6), accept234_1, accept234_2, accept234_3);
 	EventEntry<Consumer<Integer>> accept56_2 = new EventEntry<>(createAcceptFunction(5, 6), accept234_1, accept234_2, accept234_3);
-	EventEntry<Consumer<Integer>> accept7 = new EventEntry<>(createAcceptFunction(7), accept56_2, accept56_1);
+	EventEntry<Consumer<Integer>> accept7 = new EventEntry<>(createAcceptFunction(7), accept56_2, accept56_1, unused);
 	EventEntry<Consumer<Integer>> accept9 = new EventEntry<>(createAcceptFunction(9));
-	EventEntry<Consumer<Integer>> accept8 = new EventEntry<>(createAcceptFunction(8), new EventEntry[] {accept9}, new EventEntry[] {accept7});
+	EventEntry<Consumer<Integer>> accept8 = new EventEntry<>(createAcceptFunction(8), new EventEntry[] {accept9}, new EventEntry[] {accept7, unused});
 	
 	@SuppressWarnings("unchecked")
 	EventEntry<Consumer<Integer>>[] acceptAll = new EventEntry[] {

@@ -48,10 +48,16 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 		//adding Dependencies
 		allNodes.values().forEach(node -> {
 			EventEntry<FUNCTION> entry = node.entry;
-			for (EventEntry<?> require : entry.requires)
-				allNodes.get(require).addDependencyAfter(node);
-			for (EventEntry<?> requiredBy : entry.requiredBy)
-				node.addDependencyAfter(allNodes.get(requiredBy));
+			for (EventEntry<?> require : entry.requires) {
+				Node other = allNodes.get(require);
+				if (other != null)
+					other.addDependencyAfter(node);
+			}
+			for (EventEntry<?> requiredBy : entry.requiredBy) {
+				Node other = allNodes.get(requiredBy);
+				if (other != null)
+					node.addDependencyAfter(other);
+			}
 		});
 		
 		//optimizeNextPriority

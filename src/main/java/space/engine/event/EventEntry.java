@@ -34,7 +34,7 @@ public class EventEntry<FUNCTION> {
 		this(function, EMPTY_EVENT_ENTRY_ARRAY, requires);
 	}
 	
-	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry<?>[] requiredBy, @NotNull EventEntry<?>... requires) {
+	public EventEntry(@NotNull FUNCTION function, @NotNull EventEntry<?>[] requiredBy, @NotNull EventEntry<?>[] requires) {
 		this.function = function;
 		this.requires = requires;
 		this.requiredBy = requiredBy;
