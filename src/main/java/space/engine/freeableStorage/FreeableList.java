@@ -3,11 +3,18 @@ package space.engine.freeableStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.exceptions.FreedException;
+import space.engine.sync.barrier.Barrier;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
+import static space.engine.sync.barrier.Barrier.ALWAYS_TRIGGERED_BARRIER;
 
 public class FreeableList implements Freeable {
 	
 	private boolean isFreed = false;
 	private @Nullable Entry first;
+	private @Nullable Barrier freeBarrier;
 	
 	public synchronized FreeableList.Entry insert(@NotNull Freeable storage) {
 		if (isFreed)
@@ -23,23 +30,27 @@ public class FreeableList implements Freeable {
 	}
 	
 	@Override
-	public synchronized void free() {
+	public synchronized @NotNull Barrier free() {
 		if (isFreed)
-			return;
+			return Objects.requireNonNull(freeBarrier);
 		isFreed = true;
 		
 		if (first == null)
-			return;
+			return freeBarrier = ALWAYS_TRIGGERED_BARRIER;
 		
 		//free entries
+		ArrayList<Barrier> list = new ArrayList<>();
 		Entry next = first;
 		while (next != null) {
-			next.freeable.free();
+			Barrier free = next.freeable.free();
+			if (free != ALWAYS_TRIGGERED_BARRIER)
+				list.add(free);
 			next = next.next;
 		}
 		
 		//make entries unreachable
 		first = null;
+		return freeBarrier = Barrier.awaitAll(list);
 	}
 	
 	@Override

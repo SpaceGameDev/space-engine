@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.engine.sync.barrier.Barrier;
 
 public class SubDirectBuffer extends UnsafeNonFreeDirectBuffer {
 	
@@ -16,9 +17,9 @@ public class SubDirectBuffer extends UnsafeNonFreeDirectBuffer {
 	}
 	
 	@Override
-	public synchronized void free() {
-		super.free();
+	public synchronized @NotNull Barrier free() {
 		parent = null;
+		return super.free();
 	}
 	
 	@NotNull

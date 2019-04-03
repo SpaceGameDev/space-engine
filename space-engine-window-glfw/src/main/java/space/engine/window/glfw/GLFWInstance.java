@@ -8,6 +8,7 @@ import space.engine.delegate.collection.ObservableCollection;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.FreeableList;
 import space.engine.freeableStorage.FreeableStorageWeak;
+import space.engine.sync.barrier.Barrier;
 import space.engine.window.exception.WindowFrameworkInitializationException;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,8 +58,8 @@ public class GLFWInstance implements Freeable {
 	
 	//free
 	@Override
-	public void free() {
-	
+	public @NotNull Barrier free() {
+		return Barrier.ALWAYS_TRIGGERED_BARRIER;
 	}
 	
 	@Override
@@ -80,13 +81,14 @@ public class GLFWInstance implements Freeable {
 		}
 		
 		@Override
-		protected void handleFree() {
+		protected @NotNull Barrier handleFree() {
 			synchronized (GLFWInstance.class) {
 				if (this == instanceRef) {
 					instanceRef = null;
 					glfwTerminate();
 				}
 			}
+			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
 }

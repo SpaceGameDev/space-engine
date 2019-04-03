@@ -88,11 +88,12 @@ public class GLFWWindow implements Window, FreeableWrapper {
 		}
 		
 		@Override
-		protected void handleFree() {
+		protected @NotNull Barrier handleFree() {
 			exec.execute(this::deleteNativeWindow);
 			exec.shutdown();
 			//noinspection ConstantConditions
 			exec = null;
+			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 		
 		@WindowThread

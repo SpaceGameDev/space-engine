@@ -28,7 +28,7 @@ public class BufferAllocatorStackBufferList implements AllocatorStack<DirectBuff
 	
 	protected BufferAllocatorStackBufferList(@NotNull Allocator<DirectBuffer> alloc, @SuppressWarnings("NullableProblems") @NotNull PointerList pointerList) {
 		this.alloc = alloc;
-		this.stack = new MultiStack<>(DEFAULT_START_SIZE, DirectBuffer::free, pointerList);
+		this.stack = new MultiStack<>(DEFAULT_START_SIZE, Freeable::free, pointerList);
 	}
 	
 	//stack

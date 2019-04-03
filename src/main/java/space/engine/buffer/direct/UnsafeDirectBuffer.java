@@ -11,6 +11,7 @@ import space.engine.string.String2D;
 import space.engine.string.builder.CharBufferBuilder2D;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.engine.sync.barrier.Barrier;
 import space.engine.unsafe.AllowBooleanArrayCopy;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
@@ -58,9 +59,10 @@ public class UnsafeDirectBuffer implements DirectBuffer, FreeableWrapper, ToStri
 		}
 		
 		@Override
-		protected synchronized void handleFree() {
+		protected synchronized @NotNull Barrier handleFree() {
 			UNSAFE.freeMemory(address);
 			address = 0;
+			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 		
 		public long address() {

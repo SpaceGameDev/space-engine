@@ -5,6 +5,7 @@ import space.engine.buffer.exception.BufferAddressNullException;
 import space.engine.buffer.exception.BufferOutOfBoundsException;
 import space.engine.freeableStorage.FreeableList;
 import space.engine.string.String2D;
+import space.engine.sync.barrier.Barrier;
 
 /**
  * Wraps a {@link DirectBuffer} and checks all parameters,
@@ -41,8 +42,8 @@ public class CheckedDirectBuffer implements DirectBuffer {
 	
 	//delegates
 	@Override
-	public void free() {
-		buffer.free();
+	public @NotNull Barrier free() {
+		return buffer.free();
 	}
 	
 	@Override

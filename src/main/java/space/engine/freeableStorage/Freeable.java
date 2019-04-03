@@ -5,6 +5,7 @@ import space.engine.baseobject.exceptions.FreedException;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerFirstFunction;
 import space.engine.sync.Tasks.FunctionWithDelay;
+import space.engine.sync.barrier.Barrier;
 
 /**
  * {@link Freeable} is an advanced native or other resource free-ing system.
@@ -39,8 +40,11 @@ public interface Freeable {
 	
 	/**
 	 * Frees the resource
+	 *
+	 * @return a Barrier when the recourse will be freed.
+	 * Use {@link Barrier#ALWAYS_TRIGGERED_BARRIER} if it is already freed or freed immediately.
 	 */
-	void free();
+	@NotNull Barrier free();
 	
 	/**
 	 * Checks if the resource was already freed. Mostly used in context with {@link #throwIfFreed()}.
@@ -87,8 +91,8 @@ public interface Freeable {
 	static @NotNull FreeableStorage createDummy(@NotNull Object[] parents) {
 		return new FreeableStorage(null, parents) {
 			@Override
-			protected void handleFree() {
-			
+			protected @NotNull Barrier handleFree() {
+				return Barrier.ALWAYS_TRIGGERED_BARRIER;
 			}
 		};
 	}
@@ -101,8 +105,8 @@ public interface Freeable {
 		@NotNull Freeable getStorage();
 		
 		@Override
-		default void free() {
-			getStorage().free();
+		default @NotNull Barrier free() {
+			return getStorage().free();
 		}
 		
 		@Override

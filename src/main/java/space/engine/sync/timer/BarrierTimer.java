@@ -218,8 +218,10 @@ public abstract class BarrierTimer {
 		}
 		
 		@Override
-		protected void handleFree() {
+		protected @NotNull Barrier handleFree() {
 			interrupt();
+			//don't care about the Thread still being alive
+			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
 }

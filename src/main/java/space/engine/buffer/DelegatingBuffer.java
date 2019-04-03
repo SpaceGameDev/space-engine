@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.freeableStorage.FreeableList;
 import space.engine.string.String2D;
+import space.engine.sync.barrier.Barrier;
 
 public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 	
@@ -29,8 +30,8 @@ public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 	}
 	
 	@Override
-	public void free() {
-		buffer.free();
+	public @NotNull Barrier free() {
+		return buffer.free();
 	}
 	
 	@Override
