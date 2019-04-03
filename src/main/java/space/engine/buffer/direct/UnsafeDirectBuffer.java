@@ -3,8 +3,9 @@ package space.engine.buffer.direct;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Dumpable;
 import space.engine.baseobject.ToString;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
-import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.math.MathUtils;
 import space.engine.string.String2D;
 import space.engine.string.builder.CharBufferBuilder2D;
@@ -21,7 +22,7 @@ import static sun.misc.Unsafe.*;
  * An <b>UNCHECKED</b> implementation of {@link DirectBuffer}.
  * <p>Use {@link CheckedDirectBuffer} if you need any access checked.</p>
  */
-public class UnsafeDirectBuffer implements DirectBuffer, ToString {
+public class UnsafeDirectBuffer implements DirectBuffer, FreeableWrapper, ToString {
 	
 	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 	
@@ -30,27 +31,27 @@ public class UnsafeDirectBuffer implements DirectBuffer, ToString {
 	protected UnsafeDirectBuffer() {
 	}
 	
-	public UnsafeDirectBuffer(long capacity, FreeableStorage... parents) {
+	public UnsafeDirectBuffer(long capacity, Object[] parents) {
 		this(UNSAFE.allocateMemory(capacity), capacity, parents);
 	}
 	
-	public UnsafeDirectBuffer(long address, long capacity, FreeableStorage... parents) {
+	public UnsafeDirectBuffer(long address, long capacity, Object[] parents) {
 		this.storage = new Storage(this, address, capacity, parents);
 	}
 	
 	@NotNull
 	@Override
-	public FreeableStorage getStorage() {
+	public Freeable getStorage() {
 		return storage;
 	}
 	
 	//storage
-	public static class Storage extends FreeableStorageImpl implements ToString {
+	public static class Storage extends FreeableStorage implements ToString {
 		
 		protected long address;
 		protected long capacity;
 		
-		public Storage(Object referent, long address, long capacity, FreeableStorage... parents) {
+		public Storage(Object referent, long address, long capacity, Object[] parents) {
 			super(referent, parents);
 			this.address = address;
 			this.capacity = capacity;

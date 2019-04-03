@@ -3,20 +3,20 @@ package space.engine.freeableStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.exceptions.FreedException;
-import space.engine.freeableStorage.FreeableStorageList.Entry;
+import space.engine.freeableStorage.FreeableList.Entry;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
-public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements FreeableStorage {
+public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements Freeable {
 	
 	private volatile boolean isFreed = false;
-	private final FreeableStorageList.Entry[] entries;
-	private volatile FreeableStorageList subList;
+	private final FreeableList.Entry[] entries;
+	private volatile FreeableList subList;
 	
-	public FreeableStorageWeak(@Nullable T referent, @NotNull FreeableStorage... parents) {
+	public FreeableStorageWeak(@Nullable T referent, @NotNull Object[] parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
-		entries = Arrays.stream(parents).map(parent -> parent.getSubList().insert(this)).toArray(Entry[]::new);
+		entries = Arrays.stream(parents).map(parent -> Freeable.getFreeable(parent).getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	
 	//free
@@ -53,13 +53,13 @@ public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements
 	//children
 	@NotNull
 	@Override
-	public FreeableStorageList getSubList() {
+	public FreeableList getSubList() {
 		if (subList != null)
 			return subList;
 		synchronized (this) {
 			if (subList != null)
 				return subList;
-			return subList = FreeableStorageListImpl.createList();
+			return subList = new FreeableList();
 		}
 	}
 }

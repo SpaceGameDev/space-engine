@@ -3,7 +3,7 @@ package space.engine.buffer.direct;
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.exception.BufferAddressNullException;
 import space.engine.buffer.exception.BufferOutOfBoundsException;
-import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.FreeableList;
 import space.engine.string.String2D;
 
 /**
@@ -40,10 +40,19 @@ public class CheckedDirectBuffer implements DirectBuffer {
 	}
 	
 	//delegates
-	@NotNull
 	@Override
-	public FreeableStorage getStorage() {
-		return buffer.getStorage();
+	public void free() {
+		buffer.free();
+	}
+	
+	@Override
+	public boolean isFreed() {
+		return buffer.isFreed();
+	}
+	
+	@Override
+	public @NotNull FreeableList getSubList() {
+		return buffer.getSubList();
 	}
 	
 	@Override

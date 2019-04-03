@@ -6,7 +6,6 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.DelegatingBuffer;
 import space.engine.buffer.direct.DirectBuffer;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.primitive.Primitive;
 
 public class AbstractPointerBuffer<@Self SELF extends AbstractPointerBuffer<SELF>> extends DelegatingBuffer<DirectBuffer> {
@@ -41,50 +40,50 @@ public class AbstractPointerBuffer<@Self SELF extends AbstractPointerBuffer<SELF
 		//methods with capacity
 		@NotNull
 		@Override
-		public T create(long address, long capacity, @NotNull FreeableStorage... parents) {
+		public T create(long address, long capacity, @NotNull Object[] parents) {
 			checkCapacity(capacity);
 			return create(address, parents);
 		}
 		
 		@NotNull
 		@Override
-		public T createNoFree(long address, long capacity, @NotNull FreeableStorage... parents) {
+		public T createNoFree(long address, long capacity, @NotNull Object[] parents) {
 			checkCapacity(capacity);
 			return createNoFree(address, parents);
 		}
 		
 		@NotNull
 		@Override
-		public T malloc(long capacity, @NotNull FreeableStorage... parents) {
+		public T malloc(long capacity, @NotNull Object[] parents) {
 			checkCapacity(capacity);
 			return malloc(parents);
 		}
 		
 		@NotNull
 		@Override
-		public T calloc(long capacity, @NotNull FreeableStorage... parents) {
+		public T calloc(long capacity, @NotNull Object[] parents) {
 			checkCapacity(capacity);
 			return calloc(parents);
 		}
 		
 		//methods without capacity
 		@NotNull
-		public T create(long address, @NotNull FreeableStorage... parents) {
+		public T create(long address, @NotNull Object[] parents) {
 			return creator.create(alloc.create(address, primitive.bytes, parents));
 		}
 		
 		@NotNull
-		public T createNoFree(long address, @NotNull FreeableStorage... parents) {
+		public T createNoFree(long address, @NotNull Object[] parents) {
 			return creator.create(alloc.createNoFree(address, primitive.bytes, parents));
 		}
 		
 		@NotNull
-		public T malloc(@NotNull FreeableStorage... parents) {
+		public T malloc(@NotNull Object[] parents) {
 			return creator.create(alloc.malloc(primitive.bytes, parents));
 		}
 		
 		@NotNull
-		public T calloc(@NotNull FreeableStorage... parents) {
+		public T calloc(@NotNull Object[] parents) {
 			return creator.create(alloc.calloc(primitive.bytes, parents));
 		}
 	}

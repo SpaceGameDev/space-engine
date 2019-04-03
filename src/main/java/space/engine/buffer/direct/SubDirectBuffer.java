@@ -2,7 +2,6 @@ package space.engine.buffer.direct;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 
@@ -11,8 +10,8 @@ public class SubDirectBuffer extends UnsafeNonFreeDirectBuffer {
 	@Nullable
 	public Object parent;
 	
-	public SubDirectBuffer(long address, long capacity, @Nullable Object parent, FreeableStorage... lists) {
-		super(address, capacity, lists);
+	public SubDirectBuffer(long address, long capacity, @Nullable Object parent, Object[] parents) {
+		super(address, capacity, parents);
 		this.parent = parent;
 	}
 	

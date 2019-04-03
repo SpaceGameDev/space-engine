@@ -172,7 +172,7 @@ public abstract class BarrierTimer {
 		private Thread th;
 		
 		public Runner(BarrierTimer timer) {
-			super(timer, ROOT_LIST);
+			super(timer, new Object[] {ROOT_LIST});
 			
 			th = new Thread(this, "BarrierTimerThread-" + TH_COUNTER.getAndIncrement());
 			th.setDaemon(true);

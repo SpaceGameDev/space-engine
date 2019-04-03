@@ -37,7 +37,7 @@ public class DefaultStringConverter implements BufferStringConverter {
 	@Override
 	public DirectBuffer memStringUTF8(String str, boolean nullTerm) {
 		int length = memStringUTF8Length(str, nullTerm);
-		DirectBuffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length, new Object[] {});
 		UTF8_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
 			buffer.putByte(length - 1, NULL_CHARACTER);
@@ -47,7 +47,7 @@ public class DefaultStringConverter implements BufferStringConverter {
 	@Override
 	public DirectBuffer memStringUTF16(String str, boolean nullTerm) {
 		int length = memStringUTF16Length(str, nullTerm);
-		DirectBuffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length, new Object[] {});
 		UTF16_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm) {
 			buffer.putByte(length - 2, NULL_CHARACTER);
@@ -59,7 +59,7 @@ public class DefaultStringConverter implements BufferStringConverter {
 	@Override
 	public DirectBuffer memStringASCII(String str, boolean nullTerm) {
 		int length = memStringASCIILength(str, nullTerm);
-		DirectBuffer buffer = alloc.malloc(length);
+		DirectBuffer buffer = alloc.malloc(length, new Object[] {});
 		ASCII_ENCODER.encode(CharBuffer.wrap(str), NioByteBufferWrapper.wrap(buffer), false);
 		if (nullTerm)
 			buffer.putByte(length - 1, NULL_CHARACTER);

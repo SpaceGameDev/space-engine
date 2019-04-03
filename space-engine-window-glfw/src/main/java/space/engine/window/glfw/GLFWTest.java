@@ -1,7 +1,6 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.baseobject.Freeable;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
@@ -150,7 +149,7 @@ public class GLFWTest {
 		deleteFbo(context, fboInfo).submit().await();
 		
 		if (FREE_WINDOW) {
-			windows.forEach(Freeable::free);
+			windows.forEach(Window::free);
 			windowfw.free();
 		}
 		logger.log(LogLevel.INFO, "Exit!");

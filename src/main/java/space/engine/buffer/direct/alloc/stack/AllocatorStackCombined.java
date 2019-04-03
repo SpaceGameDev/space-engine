@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.ToString;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.direct.DirectBuffer;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.stack.SimpleStack;
 import space.engine.stack.Stack;
 import space.engine.string.toStringHelper.ToStringHelper;
@@ -28,14 +27,14 @@ public class AllocatorStackCombined implements AllocatorStack<DirectBuffer>, ToS
 	public Stack<BiIntEntry> stack = new SimpleStack<>();
 	
 	//constructor
-	public AllocatorStackCombined(Allocator<DirectBuffer> alloc) {
-		this(alloc, DEFAULT_LARGE_THRESHOLD);
+	public AllocatorStackCombined(Allocator<DirectBuffer> alloc, Object[] parents) {
+		this(alloc, DEFAULT_LARGE_THRESHOLD, parents);
 	}
 	
 	@SuppressWarnings("ConstantConditions")
-	public AllocatorStackCombined(Allocator<DirectBuffer> alloc, int largeThreshold, FreeableStorage... lists) {
+	public AllocatorStackCombined(Allocator<DirectBuffer> alloc, int largeThreshold, Object[] parents) {
 		this.alloc = alloc;
-		this.oneBuffer = new AllocatorStackOneBuffer(alloc, AllocatorStackOneBuffer.DEFAULT_CAPACITY, null, lists);
+		this.oneBuffer = new AllocatorStackOneBuffer(alloc, AllocatorStackOneBuffer.DEFAULT_CAPACITY, null, parents);
 		this.bufferList = new BufferAllocatorStackBufferList(alloc, null);
 		this.largeThreshold = largeThreshold;
 	}
@@ -82,26 +81,26 @@ public class AllocatorStackCombined implements AllocatorStack<DirectBuffer>, ToS
 	//create
 	@NotNull
 	@Override
-	public DirectBuffer create(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer create(long address, long capacity, @NotNull Object[] parents) {
 		return bufferList.create(address, capacity, parents);
 	}
 	
 	@NotNull
 	@Override
-	public DirectBuffer createNoFree(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer createNoFree(long address, long capacity, @NotNull Object[] parents) {
 		return alloc.createNoFree(address, capacity, parents);
 	}
 	
 	//malloc
 	@NotNull
 	@Override
-	public DirectBuffer malloc(long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, @NotNull Object[] parents) {
 		return capacity > largeThreshold ? bufferList.malloc(capacity, parents) : oneBuffer.malloc(capacity, parents);
 	}
 	
 	@NotNull
 	@Override
-	public DirectBuffer calloc(long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer calloc(long capacity, @NotNull Object[] parents) {
 		DirectBuffer buffer = malloc(capacity, parents);
 		buffer.clear();
 		return buffer;

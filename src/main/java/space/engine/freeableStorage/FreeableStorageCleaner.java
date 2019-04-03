@@ -1,7 +1,6 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.Nullable;
-import space.engine.baseobject.Freeable;
 import space.engine.logger.Logger;
 import space.engine.logger.NullLogger;
 import space.engine.string.builder.CharBufferBuilder2D;
@@ -91,7 +90,7 @@ public final class FreeableStorageCleaner {
 		
 		//more than two references
 		//-> collect
-		ArrayList<FreeableStorage> list = new ArrayList<>();
+		ArrayList<Freeable> list = new ArrayList<>();
 		handleReferenceOrAdd(list, ref1);
 		handleReferenceOrAdd(list, ref2);
 		Reference<?> ref;
@@ -110,19 +109,19 @@ public final class FreeableStorageCleaner {
 	}
 	
 	private static void handleReference(Reference<?> ref) {
-		if (ref instanceof FreeableStorage) {
+		if (ref instanceof Freeable) {
 			if (cleanupLoggerDebug)
 				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC: [").append(ref).append(']').toString());
 			else
 				cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up 1 Objects via GC").toString());
-			((FreeableStorage) ref).free();
+			((Freeable) ref).free();
 		} else
 			cleanupThreadIllegalReference.accept(ref);
 	}
 	
-	private static void handleReferenceOrAdd(ArrayList<FreeableStorage> array, Reference<?> ref) {
-		if (ref instanceof FreeableStorage)
-			array.add((FreeableStorage) ref);
+	private static void handleReferenceOrAdd(ArrayList<Freeable> array, Reference<?> ref) {
+		if (ref instanceof Freeable)
+			array.add((Freeable) ref);
 		else
 			cleanupThreadIllegalReference.accept(ref);
 	}
@@ -176,7 +175,7 @@ public final class FreeableStorageCleaner {
 				
 			}
 			logger.log(INFO, "2. direct free");
-			FreeableStorage.ROOT_LIST.free();
+			Freeable.ROOT_LIST.free();
 			
 			logger.log(INFO, "3. gc free");
 			System.gc();

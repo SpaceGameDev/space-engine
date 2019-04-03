@@ -2,10 +2,9 @@ package space.engine.buffer.direct.alloc.stack;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import space.engine.baseobject.Freeable;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.direct.DirectBuffer;
-import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.Freeable;
 import space.engine.stack.PointerList;
 import space.engine.stack.multistack.MultiStack;
 
@@ -64,7 +63,7 @@ public class BufferAllocatorStackBufferList implements AllocatorStack<DirectBuff
 	//create
 	@NotNull
 	@Override
-	public DirectBuffer create(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer create(long address, long capacity, @NotNull Object[] parents) {
 		return stack.put(alloc.create(address, capacity, parents));
 	}
 	
@@ -72,20 +71,20 @@ public class BufferAllocatorStackBufferList implements AllocatorStack<DirectBuff
 	@Override
 	@Deprecated
 	@Contract("_, _, _ -> fail")
-	public DirectBuffer createNoFree(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer createNoFree(long address, long capacity, @NotNull Object[] parents) {
 		throw new UnsupportedOperationException();
 	}
 	
 	//malloc
 	@NotNull
 	@Override
-	public DirectBuffer malloc(long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer malloc(long capacity, @NotNull Object[] parents) {
 		return stack.put(alloc.malloc(capacity, parents));
 	}
 	
 	@NotNull
 	@Override
-	public DirectBuffer calloc(long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer calloc(long capacity, @NotNull Object[] parents) {
 		return stack.put(alloc.calloc(capacity, parents));
 	}
 }
