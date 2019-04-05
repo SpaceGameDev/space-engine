@@ -14,9 +14,6 @@ import space.engine.logger.printer.SimpleStringPrinter;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
 import space.engine.string.builder.CharBufferBuilder2D;
-import space.engine.sync.DelayTask;
-import space.engine.sync.Tasks;
-import space.engine.sync.barrier.Barrier;
 
 import java.text.SimpleDateFormat;
 import java.util.function.BiConsumer;
@@ -64,12 +61,10 @@ public class BaseLogger extends AbstractLogger {
 	
 	//log
 	@Override
-	public Barrier logDirect0(LogMessage msg) {
-		Barrier taskHandler = handler.submit(consumer -> consumer.accept(msg));
-		return Tasks.runnable(() -> {
-			String2D str = new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
-			throw new DelayTask(printer.submit(new TypeBiConsumer<>(msg, str)));
-		}).submit(taskHandler);
+	public void logDirect0(LogMessage msg) {
+		handler.runImmediately(consumer -> consumer.accept(msg));
+		String2D str = new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
+		printer.runImmediately(new TypeBiConsumer<>(msg, str));
 	}
 	
 	//utility
