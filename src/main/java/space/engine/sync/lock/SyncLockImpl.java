@@ -42,10 +42,10 @@ public class SyncLockImpl implements SyncLock {
 			modId = this.modId;
 		}
 		
-		return () -> unlockRunCallbackOnce(modId);
+		return () -> unlockRunCallbackTry(modId);
 	}
 	
-	private void unlockRunCallbackTry(final int modid) {
+	private void unlockRunCallbackTry(final int modId) {
 		for (int i = 0; i < SYNCLOCK_CALLBACK_TRIES; i++) {
 			if (unlockRunCallbackOnce(modId))
 				return;
@@ -55,7 +55,7 @@ public class SyncLockImpl implements SyncLock {
 		}
 		
 		//out of tries -> enqueue and try again later
-		sideGet(EXECUTOR_POOL).execute(() -> unlockRunCallbackTry(modid));
+		sideGet(EXECUTOR_POOL).execute(() -> unlockRunCallbackTry(modId));
 	}
 	
 	private boolean unlockRunCallbackOnce(int modId) {
