@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("unused")
 public class Side {
 	
-	private static ExecutorService GLOBAL_EXECUTOR_POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private static ExecutorService GLOBAL_EXECUTOR_POOL = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
 	
 	public static final AttributeListCreator<Side> ATTRIBUTE_LIST_CREATOR = new AttributeListCreator<>();
 	
