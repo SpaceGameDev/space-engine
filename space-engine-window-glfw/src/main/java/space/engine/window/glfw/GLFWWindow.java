@@ -7,14 +7,14 @@ import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
 import org.lwjgl.glfw.GLFWWindowIconifyCallbackI;
 import org.lwjgl.glfw.GLFWWindowPosCallbackI;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
-import space.engine.baseobject.Freeable.FreeableWithStorage;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerParallel;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
-import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.key.attribute.AbstractAttributeList;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListModify;
@@ -46,7 +46,7 @@ import static space.engine.window.extensions.VideoModeDesktopExtension.*;
 import static space.engine.window.extensions.VideoModeFullscreenExtension.FULLSCREEN_VIDEO_MODE;
 import static space.engine.window.glfw.GLFWUtil.toGLFWBoolean;
 
-public class GLFWWindow implements Window, FreeableWithStorage {
+public class GLFWWindow implements Window, FreeableWrapper {
 	
 	private static final AtomicInteger WINDOW_THREAD_COUNTER = new AtomicInteger();
 	
@@ -57,7 +57,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	public final @NotNull AttributeList<Window> format;
 	private final Storage storage;
 	
-	public static @NotNull Future<GLFWWindow> create(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, FreeableStorage... parents) {
+	public static @NotNull Future<GLFWWindow> create(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, Object[] parents) {
 		GLFWWindow window = new GLFWWindow(context, format, parents);
 		Barrier initTask = runnable(window.storage, () -> window.initializeNativeWindow(format)).submit();
 		format.addHook(new EventEntry<>((modify, changes) -> {
@@ -66,7 +66,7 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 		return initTask.toFuture(() -> window);
 	}
 	
-	private GLFWWindow(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, FreeableStorage... parents) {
+	private GLFWWindow(@NotNull GLFWContext context, @NotNull AttributeList<Window> format, Object[] parents) {
 		this.context = context;
 		this.format = format;
 		this.storage = new Storage(this, parents);
@@ -74,25 +74,26 @@ public class GLFWWindow implements Window, FreeableWithStorage {
 	
 	//storage
 	@Override
-	public @NotNull FreeableStorage getStorage() {
+	public @NotNull Freeable getStorage() {
 		return storage;
 	}
 	
-	public static class Storage extends FreeableStorageImpl implements Executor {
+	public static class Storage extends FreeableStorage implements Executor {
 		
 		protected volatile long windowPointer;
 		protected ExecutorService exec = Executors.newSingleThreadExecutor(r -> new Thread(r, "GLFWWindowThread-" + WINDOW_THREAD_COUNTER.getAndIncrement()));
 		
-		public Storage(Object referent, FreeableStorage... parents) {
+		public Storage(Object referent, Object[] parents) {
 			super(referent, parents);
 		}
 		
 		@Override
-		protected void handleFree() {
-			exec.execute(this::deleteNativeWindow);
+		protected @NotNull Barrier handleFree() {
+			Barrier submit = runnable(exec, this::deleteNativeWindow).submit();
 			exec.shutdown();
 			//noinspection ConstantConditions
 			exec = null;
+			return submit;
 		}
 		
 		@WindowThread

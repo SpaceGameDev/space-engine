@@ -9,7 +9,7 @@ import space.engine.delegate.collection.ObservableCollection;
 import space.engine.event.Event;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerParallel;
-import space.engine.freeableStorage.FreeableStorage;
+import space.engine.freeableStorage.Freeable;
 import space.engine.key.attribute.AbstractAttributeList;
 import space.engine.key.attribute.AttributeList;
 import space.engine.sync.future.Future;
@@ -30,28 +30,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static space.engine.sync.Tasks.runnable;
-import static space.engine.window.WindowContext.FreeableWithStorage;
+import static space.engine.window.WindowContext.FreeableWrapper;
 import static space.engine.window.glfw.GLFWUtil.*;
 
-public class GLFWContext implements WindowContext, FreeableWithStorage {
+public class GLFWContext implements WindowContext, FreeableWrapper {
 	
 	public final @NotNull GLFWWindowFramework framework;
 	private final @NotNull Storage storage;
 	private @Nullable Object apiType;
 	
-	public static Future<GLFWContext> create(@NotNull GLFWWindowFramework framework, @NotNull AttributeList<WindowContext> format, FreeableStorage... parents) {
+	public static Future<GLFWContext> create(@NotNull GLFWWindowFramework framework, @NotNull AttributeList<WindowContext> format, Object[] parents) {
 		GLFWContext context = new GLFWContext(framework, parents);
 		return runnable(context.storage, () -> context.initializeNativeWindow(format)).submit().toFuture(() -> context);
 	}
 	
-	private GLFWContext(@NotNull GLFWWindowFramework framework, FreeableStorage... parents) {
+	private GLFWContext(@NotNull GLFWWindowFramework framework, Object[] parents) {
 		this.framework = framework;
 		this.storage = new Storage(this, parents);
 	}
 	
 	//storage
 	@Override
-	public @NotNull FreeableStorage getStorage() {
+	public @NotNull Freeable getStorage() {
 		return storage;
 	}
 	
@@ -71,7 +71,7 @@ public class GLFWContext implements WindowContext, FreeableWithStorage {
 	//window creation
 	@Override
 	public @NotNull Future<GLFWWindow> createWindow(@NotNull AttributeList<Window> format) {
-		return GLFWWindow.create(this, format, storage);
+		return GLFWWindow.create(this, format, new Object[] {storage});
 	}
 	
 	//input

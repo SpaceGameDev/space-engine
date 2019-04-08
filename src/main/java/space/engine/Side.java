@@ -19,6 +19,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static space.engine.freeableStorage.Freeable.ROOT_LIST;
+
 @SuppressWarnings("unused")
 public class Side {
 	
@@ -35,7 +37,8 @@ public class Side {
 	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyWithInitial(() -> new PointerAllocatorCollection(sideGet(BUFFER_ALLOC)));
 	
 	//buffer alloc stack
-	public static final AttributeKey<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.createKeyWithInitial(() -> new AllocatorStackCombined(sideGet(BUFFER_ALLOC)));
+	public static final AttributeKey<AllocatorStack<DirectBuffer>> BUFFER_ALLOC_STACK = ATTRIBUTE_LIST_CREATOR.createKeyWithInitial(() -> new AllocatorStackCombined(sideGet(BUFFER_ALLOC),
+																																									 new Object[] {ROOT_LIST}));
 	public static final AttributeKey<ArrayAllocatorCollection> BUFFER_ALLOC_STACK_ARRAY = ATTRIBUTE_LIST_CREATOR.createKeyWithInitial(() -> new ArrayAllocatorCollection(sideGet(BUFFER_ALLOC)));
 	public static final AttributeKey<PointerAllocatorCollection> BUFFER_ALLOC_STACK_POINTER = ATTRIBUTE_LIST_CREATOR.createKeyWithInitial(() -> new PointerAllocatorCollection(sideGet(BUFFER_ALLOC)));
 	

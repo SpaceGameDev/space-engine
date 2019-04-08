@@ -1,8 +1,8 @@
 package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.baseobject.Freeable;
 import space.engine.event.Event;
+import space.engine.freeableStorage.Freeable;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeListCreator;
 import space.engine.sync.TaskCreator;

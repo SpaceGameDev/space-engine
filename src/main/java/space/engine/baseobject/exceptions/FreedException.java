@@ -1,6 +1,6 @@
 package space.engine.baseobject.exceptions;
 
-import space.engine.baseobject.Freeable;
+import space.engine.freeableStorage.Freeable;
 import space.engine.string.builder.CharBufferBuilder2D;
 
 /**

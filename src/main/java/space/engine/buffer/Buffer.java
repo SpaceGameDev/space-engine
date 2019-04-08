@@ -1,9 +1,9 @@
 package space.engine.buffer;
 
 import space.engine.baseobject.Dumpable;
-import space.engine.baseobject.Freeable.FreeableWithStorage;
+import space.engine.freeableStorage.Freeable;
 
-public interface Buffer extends FreeableWithStorage, Dumpable {
+public interface Buffer extends Freeable, Dumpable {
 	
 	long address();
 	

@@ -5,7 +5,6 @@ import space.engine.annotation.Self;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.DelegatingBuffer;
 import space.engine.buffer.direct.DirectBuffer;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.primitive.Primitive;
 
 public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> extends DelegatingBuffer<DirectBuffer> {
@@ -28,25 +27,25 @@ public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer
 		
 		@NotNull
 		@Override
-		public T create(long address, long length, @NotNull FreeableStorage... parents) {
+		public T create(long address, long length, @NotNull Object[] parents) {
 			return creator.create(alloc.create(address, length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
-		public T createNoFree(long address, long length, @NotNull FreeableStorage... parents) {
+		public T createNoFree(long address, long length, @NotNull Object[] parents) {
 			return creator.create(alloc.createNoFree(address, length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
-		public T malloc(long length, @NotNull FreeableStorage... parents) {
+		public T malloc(long length, @NotNull Object[] parents) {
 			return creator.create(alloc.malloc(length * primitive.bytes, parents), length);
 		}
 		
 		@NotNull
 		@Override
-		public T calloc(long length, @NotNull FreeableStorage... parents) {
+		public T calloc(long length, @NotNull Object[] parents) {
 			return creator.create(alloc.calloc(length * primitive.bytes, parents), length);
 		}
 	}

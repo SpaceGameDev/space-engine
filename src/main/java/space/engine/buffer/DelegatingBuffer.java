@@ -2,9 +2,9 @@ package space.engine.buffer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.exceptions.FreedException;
-import space.engine.freeableStorage.FreeableStorage;
-import space.engine.freeableStorage.FreeableStorageList;
+import space.engine.freeableStorage.FreeableList;
 import space.engine.string.String2D;
+import space.engine.sync.barrier.Barrier;
 
 public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 	
@@ -30,14 +30,8 @@ public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 	}
 	
 	@Override
-	@NotNull
-	public FreeableStorage getStorage() {
-		return buffer.getStorage();
-	}
-	
-	@Override
-	public void free() {
-		buffer.free();
+	public @NotNull Barrier free() {
+		return buffer.free();
 	}
 	
 	@Override
@@ -45,14 +39,8 @@ public class DelegatingBuffer<BUFFER extends Buffer> implements Buffer {
 		return buffer.isFreed();
 	}
 	
-	@Override
-	public int freePriority() {
-		return buffer.freePriority();
-	}
-	
-	@Override
 	@NotNull
-	public FreeableStorageList getSubList() {
+	public FreeableList getSubList() {
 		return buffer.getSubList();
 	}
 	

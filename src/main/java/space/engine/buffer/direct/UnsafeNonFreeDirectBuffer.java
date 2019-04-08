@@ -1,6 +1,7 @@
 package space.engine.buffer.direct;
 
-import space.engine.freeableStorage.FreeableStorage;
+import org.jetbrains.annotations.NotNull;
+import space.engine.sync.barrier.Barrier;
 
 /**
  * This Buffer will <b>NOT</b> be freed. <br>
@@ -8,11 +9,11 @@ import space.engine.freeableStorage.FreeableStorage;
  */
 public class UnsafeNonFreeDirectBuffer extends UnsafeDirectBuffer {
 	
-	public UnsafeNonFreeDirectBuffer(long address, long capacity, FreeableStorage... parents) {
+	public UnsafeNonFreeDirectBuffer(long address, long capacity, Object[] parents) {
 		this.storage = new Storage(this, address, capacity, parents) {
 			@Override
-			protected synchronized void handleFree() {
-			
+			protected synchronized @NotNull Barrier handleFree() {
+				return Barrier.ALWAYS_TRIGGERED_BARRIER;
 			}
 		};
 	}

@@ -8,8 +8,8 @@ import space.engine.baseobject.ToString;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.direct.DirectBuffer;
 import space.engine.buffer.direct.SubDirectBuffer;
+import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.FreeableStorage;
-import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.stack.PointerList;
 import space.engine.string.String2D;
 import space.engine.string.toStringHelper.ToStringHelper;
@@ -27,7 +27,7 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	@NotNull
 	public Allocator<DirectBuffer> alloc;
 	@NotNull
-	public FreeableStorageImpl storage;
+	public FreeableStorage storage;
 	@SuppressWarnings("NullableProblems")
 	@NotNull
 	public DirectBuffer buffer;
@@ -36,17 +36,17 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	public PointerList pointerList;
 	
 	//constructor
-	public AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, FreeableStorage... parents) {
+	public AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, Object[] parents) {
 		this(alloc, DEFAULT_CAPACITY, parents);
 	}
 	
-	public AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, FreeableStorage... parents) {
+	public AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, Object[] parents) {
 		this(alloc, initCapacity, new PointerList(), parents);
 	}
 	
-	protected AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, @SuppressWarnings("NullableProblems") @NotNull PointerList pointerList, FreeableStorage... parents) {
+	protected AllocatorStackOneBuffer(@NotNull Allocator<DirectBuffer> alloc, long initCapacity, @SuppressWarnings("NullableProblems") @NotNull PointerList pointerList, Object[] parents) {
 		this.alloc = alloc;
-		this.storage = FreeableStorage.createDummy(parents);
+		this.storage = Freeable.createDummy(parents);
 		makeInternalBuffer(initCapacity);
 		this.pointerList = pointerList;
 	}
@@ -59,7 +59,7 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	}
 	
 	public void makeInternalBuffer(long capacity) {
-		buffer = alloc.malloc(capacity, storage);
+		buffer = alloc.malloc(capacity, new Object[] {storage});
 	}
 	
 	//stack
@@ -100,15 +100,15 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	
 	@NotNull
 	@Override
-	public DirectBuffer malloc(long capacity, @NotNull FreeableStorage... parents) {
-		FreeableStorage[] parents2 = Arrays.copyOf(parents, parents.length + 1);
-		parents2[parents.length] = buffer.getStorage();
+	public DirectBuffer malloc(long capacity, @NotNull Object[] parents) {
+		Object[] parents2 = Arrays.copyOf(parents, parents.length + 1);
+		parents2[parents.length] = buffer;
 		return new SubDirectBuffer(mallocInternal(capacity), capacity, buffer, parents2);
 	}
 	
 	@NotNull
 	@Override
-	public DirectBuffer calloc(long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer calloc(long capacity, @NotNull Object[] parents) {
 		DirectBuffer buffer = malloc(capacity, parents);
 		buffer.clear();
 		return buffer;
@@ -119,7 +119,7 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	@Override
 	@Deprecated
 	@Contract("_, _, _ -> fail")
-	public DirectBuffer create(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer create(long address, long capacity, @NotNull Object[] parents) {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -127,7 +127,7 @@ public class AllocatorStackOneBuffer implements AllocatorStack<DirectBuffer>, To
 	@Override
 	@Deprecated
 	@Contract("_, _, _ -> fail")
-	public DirectBuffer createNoFree(long address, long capacity, @NotNull FreeableStorage... parents) {
+	public DirectBuffer createNoFree(long address, long capacity, @NotNull Object[] parents) {
 		throw new UnsupportedOperationException();
 	}
 	

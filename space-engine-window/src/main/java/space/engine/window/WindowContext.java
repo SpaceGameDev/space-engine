@@ -2,8 +2,8 @@ package space.engine.window;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.engine.baseobject.Freeable;
 import space.engine.delegate.collection.ObservableCollection;
+import space.engine.freeableStorage.Freeable;
 import space.engine.key.attribute.AttributeKey;
 import space.engine.key.attribute.AttributeList;
 import space.engine.key.attribute.AttributeListCreator;

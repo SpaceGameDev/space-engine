@@ -1,65 +1,87 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.freeableStorage.FreeableStorageList.Entry;
+import org.jetbrains.annotations.Nullable;
+import space.engine.baseobject.exceptions.FreedException;
+import space.engine.freeableStorage.FreeableList.Entry;
+import space.engine.sync.DelayTask;
+import space.engine.sync.Tasks;
+import space.engine.sync.barrier.Barrier;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Objects;
 
-public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements FreeableStorage {
+public abstract class FreeableStorageWeak<T> extends WeakReference<T> implements Freeable {
 	
 	private volatile boolean isFreed = false;
-	private final FreeableStorageList.Entry[] entries;
-	private final int freePriority;
-	private FreeableStorageList subList;
+	private final FreeableList.Entry[] entries;
+	private volatile @Nullable FreeableList subList;
+	private @Nullable Barrier freeBarrier;
 	
-	public FreeableStorageWeak(T referent, FreeableStorage... lists) {
+	public FreeableStorageWeak(@Nullable T referent, @NotNull Object[] parents) {
 		super(referent, FreeableStorageCleaner.QUEUE);
-		
-		int freePriority = Integer.MIN_VALUE;
-		entries = new FreeableStorageList.Entry[lists.length];
-		for (int i = 0; i < lists.length; i++) {
-			entries[i] = lists[i].getSubList().insert(this);
-			int lfp = lists[i].freePriority();
-			if (lfp > freePriority)
-				freePriority = lfp;
-		}
-		this.freePriority = freePriority - 1;
+		entries = Arrays.stream(parents).map(parent -> Freeable.getFreeable(parent).getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	
 	//free
 	@Override
-	public synchronized final void free() {
+	public synchronized final @NotNull Barrier free() {
 		if (isFreed)
-			return;
+			return Objects.requireNonNull(freeBarrier);
 		isFreed = true;
 		
-		//entries
-		for (Entry entry : entries)
-			entry.remove();
-		//subList
-		if (subList != null)
-			subList.free();
+		FreeableList subList = this.subList;
+		if (subList != null) {
+			Barrier subListFree = subList.free();
+			if (subListFree != Barrier.ALWAYS_TRIGGERED_BARRIER) {
+				
+				//we need to wait for subList to free
+				freeBarrier = Tasks.runnable(() -> {
+					throw new DelayTask(handleFree());
+				}).submit(subListFree);
+				freeBarrier.addHook(this::removeEntries);
+				return freeBarrier;
+			}
+		}
 		
-		handleFree();
+		//no waiting for subList
+		freeBarrier = handleFree();
+		freeBarrier.addHook(this::removeEntries);
+		return freeBarrier;
 	}
 	
-	protected abstract void handleFree();
+	protected abstract @NotNull Barrier handleFree();
 	
+	private void removeEntries() {
+		for (Entry entry : entries)
+			entry.remove();
+	}
+	
+	//isFreed
 	@Override
 	public boolean isFreed() {
 		return isFreed;
 	}
 	
-	//other
 	@Override
-	public int freePriority() {
-		return freePriority;
+	public void throwIfFreed() throws FreedException {
+		if (isFreed)
+			throw new FreedException(this);
 	}
 	
 	//children
 	@NotNull
 	@Override
-	public synchronized FreeableStorageList getSubList() {
-		return subList != null ? subList : (subList = FreeableStorageListImpl.createList(freePriority));
+	public FreeableList getSubList() {
+		FreeableList subList = this.subList;
+		if (subList != null)
+			return subList;
+		synchronized (this) {
+			subList = this.subList;
+			if (subList != null)
+				return subList;
+			return this.subList = new FreeableList();
+		}
 	}
 }

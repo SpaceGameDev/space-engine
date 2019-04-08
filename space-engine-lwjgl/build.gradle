@@ -1,0 +1,10 @@
+dependencies {
+    api parent
+    api "org.lwjgl:lwjgl:$parent.lwjglVersion"
+    api "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
+
+    testImplementation 'org.hamcrest:hamcrest:2.1'
+    testImplementation 'junit:junit:4.12'
+    //vulkan structs and buffers are used for testing; a VkInstance is never created
+    testImplementation "org.lwjgl:lwjgl-vulkan:$parent.lwjglVersion"
+}
