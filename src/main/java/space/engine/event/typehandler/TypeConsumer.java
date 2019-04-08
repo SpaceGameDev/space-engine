@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+/**
+ * Allows parallel calls.
+ */
 public class TypeConsumer<T> implements TypeHandlerParallel<Consumer<T>> {
 	
 	public T obj;

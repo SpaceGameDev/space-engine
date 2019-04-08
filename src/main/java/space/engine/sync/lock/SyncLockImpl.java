@@ -42,48 +42,53 @@ public class SyncLockImpl implements SyncLock {
 			modId = this.modId;
 		}
 		
-		return () -> unlockRunCallbackOnce(modId);
+		return () -> unlockFindNext(modId);
 	}
 	
-	private void unlockRunCallbackTry(final int modid) {
-		for (int i = 0; i < SYNCLOCK_CALLBACK_TRIES; i++) {
-			if (unlockRunCallbackOnce(modId))
-				return;
-			
-			//possible to better prevent lifelocks though performance advantage negligible; only at extreme transaction counts (> 100,000)
-//			Thread.yield();
-		}
-		
-		//out of tries -> enqueue and try again later
-		sideGet(EXECUTOR_POOL).execute(() -> unlockRunCallbackTry(modid));
-	}
-	
-	private boolean unlockRunCallbackOnce(int modId) {
+	private void unlockFindNext(final int modId) {
 		BooleanSupplier callback;
 		
-		//lock and get callback
 		synchronized (this) {
-			if (locked || modId != this.modId)
-				return true;
+			if (locked || modId != this.modId) {
+				//someone else locked this Lock -> he will search for the next task
+				return;
+			}
+			
+			//lock and get first callback
 			if (notifyUnlock.isEmpty()) {
 				//no callback found to accept lock
-				return true;
+				return;
 			}
 			callback = notifyUnlock.remove(0);
 			locked = true;
 		}
 		
-		//call callback
-		if (callback.getAsBoolean()) {
-			//accepted lock
-			return true;
+		for (int i = 0; true; i++) {
+			if (callback.getAsBoolean()) {
+				//accepted lock
+				return;
+			}
+			
+			synchronized (this) {
+				if (i >= SYNCLOCK_CALLBACK_TRIES) {
+					//out of tries -> enqueue and try again later
+					locked = false;
+					sideGet(EXECUTOR_POOL).execute(() -> unlockFindNext(modId));
+					return;
+				}
+				
+				//get next callback
+				if (notifyUnlock.isEmpty()) {
+					//no callback found to accept lock
+					locked = false;
+					return;
+				}
+				callback = notifyUnlock.remove(0);
+			}
+			
+			//performance advantage is negligible; only at extreme transaction counts (> 100,000) between the same two objects it is still very unnoticeable
+//			Thread.yield();
 		}
-		
-		//unlock
-		synchronized (this) {
-			locked = false;
-		}
-		return false;
 	}
 	
 	@Override

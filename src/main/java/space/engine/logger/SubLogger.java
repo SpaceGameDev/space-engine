@@ -1,7 +1,6 @@
 package space.engine.logger;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.sync.barrier.Barrier;
 
 public class SubLogger extends AbstractLogger {
 	
@@ -33,7 +32,7 @@ public class SubLogger extends AbstractLogger {
 	
 	//log
 	@Override
-	public Barrier logDirect0(LogMessage msg) {
-		return parent.logDirect(msg);
+	public void logDirect0(LogMessage msg) {
+		parent.logDirect(msg);
 	}
 }

@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 
+/**
+ * Allows parallel calls.
+ */
 public class TypeBiConsumer<T, U> implements TypeHandlerParallel<BiConsumer<T, U>> {
 	
 	public T t;

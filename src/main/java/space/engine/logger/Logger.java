@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
-import space.engine.sync.barrier.Barrier;
 
 public interface Logger {
 	
@@ -24,5 +23,5 @@ public interface Logger {
 		logDirect(new LogMessage(Thread.currentThread(), this, level, str));
 	}
 	
-	Barrier logDirect(@NotNull LogMessage msg);
+	void logDirect(@NotNull LogMessage msg);
 }

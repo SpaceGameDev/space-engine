@@ -3,7 +3,6 @@ package space.engine.buffer.direct;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Dumpable;
 import space.engine.baseobject.ToString;
-import space.engine.buffer.AllowBooleanArrayCopy;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.freeableStorage.FreeableStorageImpl;
 import space.engine.math.MathUtils;
@@ -11,6 +10,7 @@ import space.engine.string.String2D;
 import space.engine.string.builder.CharBufferBuilder2D;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
+import space.engine.unsafe.AllowBooleanArrayCopy;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
@@ -23,7 +23,7 @@ import static sun.misc.Unsafe.*;
  */
 public class UnsafeDirectBuffer implements DirectBuffer, ToString {
 	
-	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafeOrThrow();
+	private static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 	
 	public Storage storage;
 	

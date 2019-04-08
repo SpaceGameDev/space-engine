@@ -2,7 +2,6 @@ package space.engine.logger;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.string.CharSequence2D;
-import space.engine.sync.barrier.Barrier;
 
 /**
  * all_msg > /dev/null
@@ -35,16 +34,13 @@ public class NullLogger implements Logger {
 	//log
 	@Override
 	public void log(@NotNull LogLevel level, @NotNull String str) {
-	
 	}
 	
 	@Override
 	public void log(@NotNull LogLevel level, @NotNull CharSequence2D str) {
-	
 	}
 	
 	@Override
-	public Barrier logDirect(@NotNull LogMessage msg) {
-		return Barrier.ALWAYS_TRIGGERED_BARRIER;
+	public void logDirect(@NotNull LogMessage msg) {
 	}
 }

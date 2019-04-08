@@ -25,7 +25,9 @@ public class LotsOfObjectsTest {
 			
 			//run
 			for (int count : OBJECT_COUNT) {
-				System.out.println(String.format("%1$3s", count) + ": " + formatTimeMs(run(count)));
+				long timeNeeded = run(count);
+				System.out.println(String.format("%1$3s", count) + ": " + formatTimeMs(timeNeeded)
+										   + " " + ((double) (count * (count - 1)) / (timeNeeded / 1E9d)) + "tr/s");
 			}
 		} finally {
 			Side.exit();

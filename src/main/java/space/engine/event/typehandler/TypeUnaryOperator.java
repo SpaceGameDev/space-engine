@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Sequential only.
+ */
 public class TypeUnaryOperator<T> implements TypeHandler<UnaryOperator<T>> {
 	
 	public T obj;
