@@ -32,15 +32,16 @@ import static org.lwjgl.opengl.GL30.*;
 import static space.engine.sync.Tasks.*;
 import static space.engine.window.Window.*;
 import static space.engine.window.WindowContext.*;
-import static space.engine.window.extensions.VideoModeDesktopExtension.WIDTH;
+import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
+import static space.engine.window.extensions.VideoModeDesktopExtension.*;
 import static space.engine.window.extensions.VideoModeExtension.HEIGHT;
 
 public class GLFWTest {
 	
 	public static boolean CRASH = false;
 	public static int SECONDS = 300000000;
-	public static final int WINDOW_CNT = 1;
-	public static boolean FREE_WINDOW = false;
+	public static final int WINDOW_CNT = 5;
+	public static boolean FREE_WINDOW = true;
 	public static ExampleDraw exampleDraw = ExampleDraw.ROTATING_CUBE;
 	
 	public static final double MULTIPLIER = (2 * PI) / 3;
@@ -88,8 +89,8 @@ public class GLFWTest {
 		windowAttInitial.put(HEIGHT, 1080);
 //		windowAttInitial.put(POS_X, 0);
 //		windowAttInitial.put(POS_Y, 0);
-//		windowAttInitial.put(HAS_TRANSPARENCY, true);
-//		windowAttInitial.put(BORDERLESS, true);
+		windowAttInitial.put(HAS_TRANSPARENCY, true);
+		windowAttInitial.put(BORDERLESS, true);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
 		Set<? extends Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {
