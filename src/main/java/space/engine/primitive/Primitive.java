@@ -31,4 +31,13 @@ public class Primitive<T> {
 		this.isAligned = UnsignedMath.isPowerOfTwo(bytes);
 		this.shift = isAligned ? UnsignedMath.getPowerOfTwoFloor(bytes) : -1;
 	}
+	
+	public final long multiply(long i) {
+		return isAligned ? i << shift : i * bytes;
+	}
+	
+	public final long divide(long i) {
+		return isAligned ? i >> shift : i / bytes;
+	}
+	
 }
