@@ -1,5 +1,7 @@
 package space.engine.buffer;
 
+import space.engine.buffer.alloc.AllocatorStackImpl;
+import space.engine.freeableStorage.Freeable;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
@@ -30,6 +32,12 @@ public abstract class Allocator {
 	
 	public static Allocator allocatorHeap() {
 		return ALLOCATOR_HEAP;
+	}
+	
+	private static final ThreadLocal<AllocatorStack> ALLOCATOR_STACK = ThreadLocal.withInitial(() -> new AllocatorStackImpl(ALLOCATOR_HEAP, 64L * 1024, new Object[] {Freeable.ROOT_LIST}));
+	
+	public static AllocatorStack allocatorStack() {
+		return ALLOCATOR_STACK.get();
 	}
 	
 	private static final Allocator ALLOCATOR_NOOP = new Allocator() {
