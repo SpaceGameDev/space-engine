@@ -72,13 +72,20 @@ public interface Freeable {
 	@NotNull FreeableList getSubList();
 	
 	//static
-	static Freeable getFreeable(Object object) {
+	static Barrier freeObject(@NotNull Object object) {
+		return getFreeable(object).free();
+	}
+	
+	static @NotNull Freeable getFreeable(@NotNull Object object) {
 		if (object instanceof Freeable)
 			return (Freeable) object;
 		
 		TypeHandlerFirstFunction<Object, Freeable> handler = new TypeHandlerFirstFunction<>(object);
 		GET_SUBLIST_EVENT.runImmediately(handler);
-		return handler.result();
+		Freeable result = handler.result();
+		if (result != null)
+			return result;
+		throw new RuntimeException("Object " + object + " could not be resolved to a Freeable!");
 	}
 	
 	/**
