@@ -1,6 +1,7 @@
 package space.engine.buffer;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.freeableStorage.Freeable;
 import space.engine.primitive.JavaPrimitives;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
@@ -115,7 +116,7 @@ public class NioBufferWrapper {
 		ByteBuffer b = wrap(CLASS_BYTE, buffer.address() + offset, length);
 		UNSAFE.putBoolean(b, BIG_ENDIAN_BYTE, bigEndian);
 		UNSAFE.putBoolean(b, NATIVE_BYTE_ORDER_BYTE, true);
-		UNSAFE.putObject(b, ATTACHMENT_BYTE, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_BYTE, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
@@ -126,7 +127,7 @@ public class NioBufferWrapper {
 	public static @NotNull ShortBuffer wrapShort(@NotNull Buffer buffer, long offset, long length) {
 		Buffer.checkFromIndexSize(offset, length * JavaPrimitives.SHORT.bytes, buffer.sizeOf());
 		ShortBuffer b = wrap(CLASS_SHORT, buffer.address() + offset, length);
-		UNSAFE.putObject(b, ATTACHMENT_SHORT, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_SHORT, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
@@ -137,7 +138,7 @@ public class NioBufferWrapper {
 	public static @NotNull IntBuffer wrapInt(@NotNull Buffer buffer, long offset, long length) {
 		Buffer.checkFromIndexSize(offset, length * JavaPrimitives.INT.bytes, buffer.sizeOf());
 		IntBuffer b = wrap(CLASS_INT, buffer.address() + offset, length);
-		UNSAFE.putObject(b, ATTACHMENT_INT, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_INT, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
@@ -148,7 +149,7 @@ public class NioBufferWrapper {
 	public static @NotNull LongBuffer wrapLong(@NotNull Buffer buffer, long offset, long length) {
 		Buffer.checkFromIndexSize(offset, length * JavaPrimitives.LONG.bytes, buffer.sizeOf());
 		LongBuffer b = wrap(CLASS_LONG, buffer.address() + offset, length);
-		UNSAFE.putObject(b, ATTACHMENT_LONG, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_LONG, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
@@ -159,7 +160,7 @@ public class NioBufferWrapper {
 	public static @NotNull FloatBuffer wrapFloat(@NotNull Buffer buffer, long offset, long length) {
 		Buffer.checkFromIndexSize(offset, length * JavaPrimitives.FLOAT.bytes, buffer.sizeOf());
 		FloatBuffer b = wrap(CLASS_FLOAT, buffer.address() + offset, length);
-		UNSAFE.putObject(b, ATTACHMENT_FLOAT, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_FLOAT, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
@@ -170,7 +171,7 @@ public class NioBufferWrapper {
 	public static @NotNull DoubleBuffer wrapDouble(@NotNull Buffer buffer, long offset, long length) {
 		Buffer.checkFromIndexSize(offset, length * JavaPrimitives.DOUBLE.bytes, buffer.sizeOf());
 		DoubleBuffer b = wrap(CLASS_DOUBLE, buffer.address() + offset, length);
-		UNSAFE.putObject(b, ATTACHMENT_DOUBLE, buffer);
+		UNSAFE.putObject(b, ATTACHMENT_DOUBLE, Freeable.createDummy(new Object[] {buffer}));
 		return b;
 	}
 	
