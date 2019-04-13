@@ -68,6 +68,14 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 		return UNSAFE.getAddress(address() + type().multiply(index));
 	}
 	
+	public void putPointer(long index, Buffer b) {
+		putPointer(index, b.address());
+	}
+	
+	public void putPointer(long index, java.nio.Buffer b) {
+		putPointer(index, NioBufferWrapper.getAddress(b));
+	}
+	
 	public void putPointer(long index, long b) {
 		Buffer.checkIndex(index, this.length);
 		UNSAFE.putAddress(address() + type().multiply(index), b);

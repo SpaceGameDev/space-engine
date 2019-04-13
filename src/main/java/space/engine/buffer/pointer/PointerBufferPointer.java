@@ -2,6 +2,7 @@ package space.engine.buffer.pointer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
+import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.Primitive;
 import space.engine.primitive.Primitives;
@@ -63,6 +64,14 @@ public class PointerBufferPointer extends AbstractPointerBuffer<PointerBufferPoi
 	//single
 	public long getPointer() {
 		return UNSAFE.getAddress(address());
+	}
+	
+	public void putPointer(Buffer b) {
+		putPointer(b.address());
+	}
+	
+	public void putPointer(java.nio.Buffer b) {
+		putPointer(NioBufferWrapper.getAddress(b));
 	}
 	
 	public void putPointer(long b) {
