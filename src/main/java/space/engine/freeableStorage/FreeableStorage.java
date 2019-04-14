@@ -20,7 +20,7 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	private @Nullable Barrier freeBarrier;
 	
 	public FreeableStorage(@Nullable Object referent, @NotNull Object[] parents) {
-		super(referent, FreeableStorageCleaner.QUEUE);
+		super(referent, parents.length == 0 ? null : FreeableStorageCleaner.QUEUE);
 		entries = Arrays.stream(parents).map(parent -> Freeable.getFreeable(parent).getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	
