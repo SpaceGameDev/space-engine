@@ -22,6 +22,22 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	//alloc
 	
 	/**
+	 * Allocates a new {@link ArrayBufferDouble} and fills it with the contents of the array. If the {@link ArrayBufferDouble} is freed, it will free the memory.
+	 */
+	public static ArrayBufferDouble alloc(AllocatorStack.Frame allocator, double[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferDouble} and fills it with the contents of the array. If the {@link ArrayBufferDouble} is freed, it will free the memory.
+	 */
+	public static ArrayBufferDouble alloc(Allocator allocator, double[] array, @NotNull Object[] parents) {
+		ArrayBufferDouble buffer = new ArrayBufferDouble(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link ArrayBufferDouble} of length. The Contents are undefined. If the {@link ArrayBufferDouble} is freed, it will free the memory.
 	 */
 	public static ArrayBufferDouble malloc(AllocatorStack.Frame allocator, long length) {

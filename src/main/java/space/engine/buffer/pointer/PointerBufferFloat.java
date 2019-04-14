@@ -20,6 +20,22 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferFloat} and fills it with the supplied value. If the {@link PointerBufferFloat} is freed, it will free the memory.
+	 */
+	public static PointerBufferFloat alloc(AllocatorStack.Frame allocator, float value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferFloat} and fills it with the supplied value. If the {@link PointerBufferFloat} is freed, it will free the memory.
+	 */
+	public static PointerBufferFloat alloc(Allocator allocator, float value, @NotNull Object[] parents) {
+		PointerBufferFloat buffer = new PointerBufferFloat(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putFloat(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferFloat}. The Contents are undefined. If the {@link PointerBufferFloat} is freed, it will free the memory.
 	 */
 	public static PointerBufferFloat malloc(AllocatorStack.Frame allocator) {

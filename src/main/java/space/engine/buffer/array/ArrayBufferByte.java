@@ -22,6 +22,22 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	//alloc
 	
 	/**
+	 * Allocates a new {@link ArrayBufferByte} and fills it with the contents of the array. If the {@link ArrayBufferByte} is freed, it will free the memory.
+	 */
+	public static ArrayBufferByte alloc(AllocatorStack.Frame allocator, byte[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferByte} and fills it with the contents of the array. If the {@link ArrayBufferByte} is freed, it will free the memory.
+	 */
+	public static ArrayBufferByte alloc(Allocator allocator, byte[] array, @NotNull Object[] parents) {
+		ArrayBufferByte buffer = new ArrayBufferByte(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link ArrayBufferByte} of length. The Contents are undefined. If the {@link ArrayBufferByte} is freed, it will free the memory.
 	 */
 	public static ArrayBufferByte malloc(AllocatorStack.Frame allocator, long length) {

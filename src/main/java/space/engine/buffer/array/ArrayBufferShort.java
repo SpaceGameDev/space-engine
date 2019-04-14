@@ -22,6 +22,22 @@ public class ArrayBufferShort extends AbstractArrayBuffer<ArrayBufferShort> {
 	//alloc
 	
 	/**
+	 * Allocates a new {@link ArrayBufferShort} and fills it with the contents of the array. If the {@link ArrayBufferShort} is freed, it will free the memory.
+	 */
+	public static ArrayBufferShort alloc(AllocatorStack.Frame allocator, short[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferShort} and fills it with the contents of the array. If the {@link ArrayBufferShort} is freed, it will free the memory.
+	 */
+	public static ArrayBufferShort alloc(Allocator allocator, short[] array, @NotNull Object[] parents) {
+		ArrayBufferShort buffer = new ArrayBufferShort(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link ArrayBufferShort} of length. The Contents are undefined. If the {@link ArrayBufferShort} is freed, it will free the memory.
 	 */
 	public static ArrayBufferShort malloc(AllocatorStack.Frame allocator, long length) {

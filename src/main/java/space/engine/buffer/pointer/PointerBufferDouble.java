@@ -20,6 +20,22 @@ public class PointerBufferDouble extends AbstractPointerBuffer<PointerBufferDoub
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferDouble} and fills it with the supplied value. If the {@link PointerBufferDouble} is freed, it will free the memory.
+	 */
+	public static PointerBufferDouble alloc(AllocatorStack.Frame allocator, double value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferDouble} and fills it with the supplied value. If the {@link PointerBufferDouble} is freed, it will free the memory.
+	 */
+	public static PointerBufferDouble alloc(Allocator allocator, double value, @NotNull Object[] parents) {
+		PointerBufferDouble buffer = new PointerBufferDouble(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putDouble(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferDouble}. The Contents are undefined. If the {@link PointerBufferDouble} is freed, it will free the memory.
 	 */
 	public static PointerBufferDouble malloc(AllocatorStack.Frame allocator) {

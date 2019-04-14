@@ -20,6 +20,22 @@ public class PointerBufferShort extends AbstractPointerBuffer<PointerBufferShort
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferShort} and fills it with the supplied value. If the {@link PointerBufferShort} is freed, it will free the memory.
+	 */
+	public static PointerBufferShort alloc(AllocatorStack.Frame allocator, short value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferShort} and fills it with the supplied value. If the {@link PointerBufferShort} is freed, it will free the memory.
+	 */
+	public static PointerBufferShort alloc(Allocator allocator, short value, @NotNull Object[] parents) {
+		PointerBufferShort buffer = new PointerBufferShort(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putShort(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferShort}. The Contents are undefined. If the {@link PointerBufferShort} is freed, it will free the memory.
 	 */
 	public static PointerBufferShort malloc(AllocatorStack.Frame allocator) {

@@ -19,6 +19,54 @@ public class PointerBufferPointer extends AbstractPointerBuffer<PointerBufferPoi
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, Buffer value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, Buffer value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, java.nio.Buffer value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, java.nio.Buffer value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, long value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, long value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferPointer}. The Contents are undefined. If the {@link PointerBufferPointer} is freed, it will free the memory.
 	 */
 	public static PointerBufferPointer malloc(AllocatorStack.Frame allocator) {

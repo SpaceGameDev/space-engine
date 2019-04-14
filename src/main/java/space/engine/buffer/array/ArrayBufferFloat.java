@@ -22,6 +22,22 @@ public class ArrayBufferFloat extends AbstractArrayBuffer<ArrayBufferFloat> {
 	//alloc
 	
 	/**
+	 * Allocates a new {@link ArrayBufferFloat} and fills it with the contents of the array. If the {@link ArrayBufferFloat} is freed, it will free the memory.
+	 */
+	public static ArrayBufferFloat alloc(AllocatorStack.Frame allocator, float[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferFloat} and fills it with the contents of the array. If the {@link ArrayBufferFloat} is freed, it will free the memory.
+	 */
+	public static ArrayBufferFloat alloc(Allocator allocator, float[] array, @NotNull Object[] parents) {
+		ArrayBufferFloat buffer = new ArrayBufferFloat(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link ArrayBufferFloat} of length. The Contents are undefined. If the {@link ArrayBufferFloat} is freed, it will free the memory.
 	 */
 	public static ArrayBufferFloat malloc(AllocatorStack.Frame allocator, long length) {

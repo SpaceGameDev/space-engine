@@ -21,6 +21,54 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	//alloc
 	
 	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, Buffer[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(Allocator allocator, Buffer[] array, @NotNull Object[] parents) {
+		ArrayBufferPointer buffer = new ArrayBufferPointer(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, java.nio.Buffer[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(Allocator allocator, java.nio.Buffer[] array, @NotNull Object[] parents) {
+		ArrayBufferPointer buffer = new ArrayBufferPointer(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, long[] array) {
+		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
+	 */
+	public static ArrayBufferPointer alloc(Allocator allocator, long[] array, @NotNull Object[] parents) {
+		ArrayBufferPointer buffer = new ArrayBufferPointer(allocator, allocator.malloc(array.length * TYPE.bytes), array.length, parents);
+		buffer.copyFrom(array);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link ArrayBufferPointer} of length. The Contents are undefined. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
 	public static ArrayBufferPointer malloc(AllocatorStack.Frame allocator, long length) {
@@ -121,6 +169,32 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 			for (int i = 0; i < length; i++)
 				dest[destIndex + i] = (long) UNSAFE.getInt(srcAddress + i) & 0xFFFF_FFFFL;
 		}
+	}
+	
+	public void copyFrom(Buffer[] src) {
+		copyFrom(src, 0, 0, src.length);
+	}
+	
+	public void copyFrom(Buffer[] src, int srcIndex, long destIndex, int length) {
+		Buffer.checkFromIndexSize(srcIndex, length, src.length);
+		Buffer.checkFromIndexSize(destIndex, length, this.length);
+		
+		long destAddress = address() + type().multiply(destIndex);
+		for (int i = 0; i < length; i++)
+			UNSAFE.putAddress(destAddress + i, src[srcIndex + i].address());
+	}
+	
+	public void copyFrom(java.nio.Buffer[] src) {
+		copyFrom(src, 0, 0, src.length);
+	}
+	
+	public void copyFrom(java.nio.Buffer[] src, int srcIndex, long destIndex, int length) {
+		Buffer.checkFromIndexSize(srcIndex, length, src.length);
+		Buffer.checkFromIndexSize(destIndex, length, this.length);
+		
+		long destAddress = address() + type().multiply(destIndex);
+		for (int i = 0; i < length; i++)
+			UNSAFE.putAddress(destAddress + i, NioBufferWrapper.getAddress(src[srcIndex + i]));
 	}
 	
 	public void copyFrom(long[] src) {

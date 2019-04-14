@@ -20,6 +20,22 @@ public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> 
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferLong} and fills it with the supplied value. If the {@link PointerBufferLong} is freed, it will free the memory.
+	 */
+	public static PointerBufferLong alloc(AllocatorStack.Frame allocator, long value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferLong} and fills it with the supplied value. If the {@link PointerBufferLong} is freed, it will free the memory.
+	 */
+	public static PointerBufferLong alloc(Allocator allocator, long value, @NotNull Object[] parents) {
+		PointerBufferLong buffer = new PointerBufferLong(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putLong(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferLong}. The Contents are undefined. If the {@link PointerBufferLong} is freed, it will free the memory.
 	 */
 	public static PointerBufferLong malloc(AllocatorStack.Frame allocator) {

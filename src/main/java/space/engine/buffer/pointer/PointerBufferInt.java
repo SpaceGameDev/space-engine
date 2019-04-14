@@ -20,6 +20,22 @@ public class PointerBufferInt extends AbstractPointerBuffer<PointerBufferInt> {
 	//alloc
 	
 	/**
+	 * Allocates a new {@link PointerBufferInt} and fills it with the supplied value. If the {@link PointerBufferInt} is freed, it will free the memory.
+	 */
+	public static PointerBufferInt alloc(AllocatorStack.Frame allocator, int value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferInt} and fills it with the supplied value. If the {@link PointerBufferInt} is freed, it will free the memory.
+	 */
+	public static PointerBufferInt alloc(Allocator allocator, int value, @NotNull Object[] parents) {
+		PointerBufferInt buffer = new PointerBufferInt(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putInt(value);
+		return buffer;
+	}
+	
+	/**
 	 * Allocates a new {@link PointerBufferInt}. The Contents are undefined. If the {@link PointerBufferInt} is freed, it will free the memory.
 	 */
 	public static PointerBufferInt malloc(AllocatorStack.Frame allocator) {
