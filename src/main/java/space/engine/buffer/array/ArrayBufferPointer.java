@@ -8,6 +8,8 @@ import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.Primitive;
 
+import java.util.stream.LongStream;
+
 import static space.engine.Device.IS_64_BIT;
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.buffer.Allocator.allocatorNoop;
@@ -212,5 +214,9 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 			for (int i = 0; i < length; i++)
 				UNSAFE.putInt(destAddress + i, (int) src[srcIndex + i]);
 		}
+	}
+	
+	public LongStream stream() {
+		return LongStream.range(0, length()).map(this::getPointer);
 	}
 }

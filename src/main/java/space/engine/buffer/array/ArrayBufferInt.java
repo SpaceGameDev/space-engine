@@ -10,6 +10,8 @@ import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
 
 import java.nio.IntBuffer;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.buffer.Allocator.allocatorNoop;
@@ -133,5 +135,9 @@ public class ArrayBufferInt extends AbstractArrayBuffer<ArrayBufferInt> {
 		Buffer.checkFromIndexSize(srcIndex, length, src.length);
 		Buffer.checkFromIndexSize(destIndex, length, this.length);
 		UNSAFE.copyMemory(src, ARRAY_INT_BASE_OFFSET + srcIndex * ARRAY_INT_INDEX_SCALE, null, address() + type().multiply(destIndex), type().multiply(length));
+	}
+	
+	public IntStream stream() {
+		return LongStream.range(0, length()).mapToInt(this::getInt);
 	}
 }
