@@ -92,6 +92,15 @@ public class NioBufferWrapper {
 		}
 	}
 	
+	//getAddress
+	public static long getAddress(@NotNull java.nio.Buffer buffer) {
+		return UNSAFE.getLong(buffer, ADDRESS);
+	}
+	
+	public static long getLength(@NotNull java.nio.Buffer buffer) {
+		return UNSAFE.getLong(buffer, CAPACITY);
+	}
+	
 	//wrap
 	public static @NotNull ByteBuffer wrapByte(@NotNull Buffer buffer) {
 		return wrapByte(buffer, 0, buffer.sizeOf());
