@@ -1,6 +1,7 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerFirstFunction;
@@ -89,14 +90,26 @@ public interface Freeable {
 	}
 	
 	/**
-	 * Creates a new {@link Freeable} which won't free anything by itself, but still frees it's Children. <br>
-	 * It can be used as a Layer in between multiple {@link Freeable FreeableStorages}.
+	 * Creates a new {@link FreeableStorage} which won't free anything by itself, but still frees it's Children. <br>
+	 * It can be used as an in between Layer to other {@link FreeableStorage} Objects.
 	 *
-	 * @param parents the parents it should have
+	 * @param parents  the parents it should have
 	 * @return a new dummy {@link Freeable}
 	 */
 	static @NotNull FreeableStorage createDummy(@NotNull Object[] parents) {
-		return new FreeableStorage(null, parents) {
+		return createDummy(null, parents);
+	}
+	
+	/**
+	 * Creates a new {@link FreeableStorage} which won't free anything by itself, but still frees it's Children. <br>
+	 * It can be used as an in between Layer to other {@link FreeableStorage} Objects.
+	 *
+	 * @param referent the referent of the FreeableStorage or null
+	 * @param parents  the parents it should have
+	 * @return a new dummy {@link Freeable}
+	 */
+	static @NotNull FreeableStorage createDummy(@Nullable Object referent, @NotNull Object[] parents) {
+		return new FreeableStorage(referent, parents) {
 			@Override
 			protected @NotNull Barrier handleFree() {
 				return Barrier.ALWAYS_TRIGGERED_BARRIER;
