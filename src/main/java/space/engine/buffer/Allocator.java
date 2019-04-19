@@ -1,33 +1,62 @@
 package space.engine.buffer;
 
-import org.jetbrains.annotations.NotNull;
-import space.engine.buffer.array.AbstractArrayBuffer;
-import space.engine.buffer.direct.DirectBuffer;
-import space.engine.buffer.pointer.AbstractPointerBuffer;
+import space.engine.unsafe.UnsafeInstance;
+import sun.misc.Unsafe;
 
-/**
- * An Allocator for {@link DirectBuffer Buffers}. It can:
- * <ul>
- * <li>{@link Allocator#create(long, long, Object...)} create a Buffer-Object with address and capacity</li>
- * <li>{@link Allocator#createNoFree(long, long, Object...)} create a Buffer-Object that will <b>NOT</b> free itself</li>
- * <li>{@link Allocator#malloc(long, Object...)} allocate a Buffer containing uninitialized memory</li>
- * <li>{@link Allocator#calloc(long, Object...)} allocate a Buffer containing cleared out data / all zeros</li>
- * </ul>
- * <p><b>NOTE: the definition of capacity will vary depending on the implementation!</b></p>
- * Some Examples:
- * <ul>
- * <li>{@link DirectBuffer}: number of bytes the {@link DirectBuffer} should have</li>
- * <li>{@link AbstractArrayBuffer}: number of primitive type the {@link AbstractArrayBuffer} should have</li>
- * <li>{@link AbstractPointerBuffer}: only checks if the buffers capacity is enough to hold one primitive type</li>
- * </ul>
- */
-public interface Allocator<T> {
+public abstract class Allocator {
 	
-	@NotNull T create(long address, long capacity, @NotNull Object[] parents);
+	protected static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
 	
-	@NotNull T createNoFree(long address, long capacity, @NotNull Object[] parents);
+	//default allocators
+	private static final Allocator ALLOCATOR_HEAP = new Allocator() {
+		@Override
+		public long malloc(long sizeOf) {
+			return UNSAFE.allocateMemory(sizeOf);
+		}
+		
+		@Override
+		public long calloc(long sizeOf) {
+			//calloc sadly not supported by Unsafe
+			long address = UNSAFE.allocateMemory(sizeOf);
+			UNSAFE.setMemory(address, sizeOf, (byte) 0);
+			return address;
+		}
+		
+		@Override
+		public void free(long address) {
+			UNSAFE.freeMemory(address);
+		}
+	};
 	
-	@NotNull T malloc(long capacity, @NotNull Object[] parents);
+	public static Allocator allocatorHeap() {
+		return ALLOCATOR_HEAP;
+	}
 	
-	@NotNull T calloc(long capacity, @NotNull Object[] parents);
+	private static final Allocator ALLOCATOR_NOOP = new Allocator() {
+		@Override
+		public long malloc(long sizeOf) {
+			throw new UnsupportedOperationException();
+		}
+		
+		@Override
+		public long calloc(long sizeOf) {
+			throw new UnsupportedOperationException();
+		}
+		
+		@Override
+		public void free(long address) {
+		
+		}
+	};
+	
+	public static Allocator allocatorNoop() {
+		return ALLOCATOR_NOOP;
+	}
+	
+	//object
+	public abstract long malloc(long sizeOf);
+	
+	public abstract long calloc(long sizeOf);
+	
+	public abstract void free(long address);
 }

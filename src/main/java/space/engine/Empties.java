@@ -11,4 +11,6 @@ public class Empties {
 	public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
 	public static final boolean[] EMPTY_BOOLEAN_ARRAY = new boolean[0];
 	public static final char[] EMPTY_CHAR_ARRAY = new char[0];
+	
+	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 }

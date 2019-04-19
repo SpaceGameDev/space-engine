@@ -1,30 +1,84 @@
 package space.engine.buffer.pointer;
 
+import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.direct.DirectBuffer;
+import space.engine.buffer.NioBufferWrapper;
+import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
 
-import static space.engine.primitive.Primitives.INT16;
+import java.nio.ShortBuffer;
+
+import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
 public class PointerBufferShort extends AbstractPointerBuffer<PointerBufferShort> {
 	
-	public static final Primitive<?> TYPE = INT16;
+	public static final Primitive<?> TYPE = JavaPrimitives.SHORT;
 	
-	public static PointerAllocator<PointerBufferShort> createAlloc(Allocator<DirectBuffer> alloc) {
-		return new PointerAllocator<>(alloc, TYPE, PointerBufferShort::new);
+	//alloc
+	
+	/**
+	 * Allocates a new {@link PointerBufferShort}. The Contents are undefined. If the {@link PointerBufferShort} is freed, it will free the memory.
+	 */
+	public static PointerBufferShort malloc(Allocator allocator, @NotNull Object[] parents) {
+		return new PointerBufferShort(allocator, allocator.malloc(TYPE.bytes), parents);
 	}
 	
-	public PointerBufferShort(DirectBuffer buffer) {
-		super(buffer, TYPE);
+	/**
+	 * Allocates a new {@link PointerBufferShort}. The Contents are initialized to 0. If the {@link PointerBufferShort} is freed, it will free the memory.
+	 */
+	public static PointerBufferShort calloc(Allocator allocator, @NotNull Object[] parents) {
+		return new PointerBufferShort(allocator, allocator.calloc(TYPE.bytes), parents);
 	}
 	
-	//get / put
+	//create
+	
+	/**
+	 * Creates a new {@link PointerBufferShort} from the given address. If the {@link PointerBufferShort} is freed, it <b>WILL</b> free the memory.
+	 */
+	public static PointerBufferShort create(Allocator allocator, long address, @NotNull Object[] parents) {
+		return new PointerBufferShort(allocator, address, parents);
+	}
+	
+	/**
+	 * Creates a new {@link PointerBufferShort} from the given address. It will <b>NEVER</b> free the memory.
+	 */
+	public static PointerBufferShort wrap(long address, @NotNull Object[] parents) {
+		return create(allocatorNoop(), address, parents);
+	}
+	
+	//object
+	protected PointerBufferShort(Allocator allocator, long address, @NotNull Object[] parents) {
+		super(allocator, address, parents);
+	}
+	
+	@Override
+	public Primitive<?> type() {
+		return TYPE;
+	}
+	
+	@Override
+	public ShortBuffer nioBuffer() {
+		return NioBufferWrapper.wrapShort(this, 1);
+	}
+	
+	//single
 	public short getShort() {
-		return buffer.getShort(0);
+		return UNSAFE.getShort(address());
 	}
 	
 	public void putShort(short b) {
-		buffer.putShort(0, b);
+		UNSAFE.putShort(address(), b);
+	}
+	
+	//copy
+	@Override
+	public void copyInto(PointerBufferShort dest) {
+		dest.putShort(this.getShort());
+	}
+	
+	@Override
+	public void copyFrom(PointerBufferShort src) {
+		this.putShort(src.getShort());
 	}
 }

@@ -2,97 +2,56 @@ package space.engine.buffer.array;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.annotation.Self;
+import space.engine.buffer.AbstractBuffer;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.DelegatingBuffer;
-import space.engine.buffer.direct.DirectBuffer;
+import space.engine.buffer.Buffer;
 import space.engine.primitive.Primitive;
 
-public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> extends DelegatingBuffer<DirectBuffer> {
+public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> extends AbstractBuffer {
 	
-	public static long calculateLength(DirectBuffer buffer, Primitive<?> type) {
-		return type.isAligned ? buffer.capacity() >>> type.shift : buffer.capacity() / type.bytes;
-	}
+	protected final long length;
 	
-	public static class ArrayAllocator<T extends AbstractArrayBuffer<T>> implements Allocator<T> {
-		
-		public final Allocator<DirectBuffer> alloc;
-		public final Primitive<?> primitive;
-		public final ArrayCreator<T> creator;
-		
-		public ArrayAllocator(Allocator<DirectBuffer> alloc, Primitive<?> primitive, ArrayCreator<T> creator) {
-			this.alloc = alloc;
-			this.primitive = primitive;
-			this.creator = creator;
-		}
-		
-		@NotNull
-		@Override
-		public T create(long address, long length, @NotNull Object[] parents) {
-			return creator.create(alloc.create(address, length * primitive.bytes, parents), length);
-		}
-		
-		@NotNull
-		@Override
-		public T createNoFree(long address, long length, @NotNull Object[] parents) {
-			return creator.create(alloc.createNoFree(address, length * primitive.bytes, parents), length);
-		}
-		
-		@NotNull
-		@Override
-		public T malloc(long length, @NotNull Object[] parents) {
-			return creator.create(alloc.malloc(length * primitive.bytes, parents), length);
-		}
-		
-		@NotNull
-		@Override
-		public T calloc(long length, @NotNull Object[] parents) {
-			return creator.create(alloc.calloc(length * primitive.bytes, parents), length);
-		}
-	}
-	
-	@FunctionalInterface
-	public interface ArrayCreator<T extends AbstractArrayBuffer<T>> {
-		
-		T create(DirectBuffer buffer, long length);
-	}
-	
-	public final Primitive<?> type;
-	public final long length;
-	
-	protected AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type) {
-		this(buffer, type, calculateLength(buffer, type));
-	}
-	
-	protected AbstractArrayBuffer(DirectBuffer buffer, Primitive<?> type, long length) {
-		super(buffer);
-		this.type = type;
+	public AbstractArrayBuffer(Allocator allocator, long address, long length, @NotNull Object[] parents) {
+		super(allocator, address, parents);
 		this.length = length;
 	}
 	
-	//offset calc
+	public abstract Primitive<?> type();
+	
+	public abstract java.nio.Buffer nioBuffer();
+	
+	@Override
+	public long sizeOf() {
+		return type().multiply(length);
+	}
+	
 	public long length() {
 		return length;
 	}
 	
-	public long getOffset(long index) {
-		return index * type.bytes;
+	//access
+	
+	/**
+	 * src == this
+	 */
+	public void copyInto(long srcIndex, SELF dest, long destIndex, long length) {
+		Primitive<?> type = type();
+		Buffer.checkFromIndexSize(srcIndex, length, this.length());
+		Buffer.checkFromIndexSize(destIndex, length, dest.length());
+		UNSAFE.copyMemory(this.address() + type.multiply(srcIndex), dest.address() + type.multiply(destIndex), type.multiply(length));
 	}
 	
-	public long getOffset(long index, long offset) {
-		return index * type.bytes + offset;
+	/**
+	 * dest == this
+	 */
+	public void copyFrom(SELF src, long srcIndex, long destIndex, long length) {
+		Primitive<?> type = type();
+		Buffer.checkFromIndexSize(srcIndex, length, src.length());
+		Buffer.checkFromIndexSize(destIndex, length, this.length());
+		UNSAFE.copyMemory(src.address() + type.multiply(srcIndex), this.address() + type.multiply(destIndex), type.multiply(length));
 	}
 	
-	//buffer copy
-	public void copyInto(long offset, SELF dest, long destOffset, long length) {
-		buffer.copyInto(offset, dest.buffer, destOffset, length);
-	}
-	
-	public void copyFrom(SELF src, long srcOffset, long length, long offset) {
-		buffer.copyFrom(src.buffer, srcOffset, length, offset);
-	}
-	
-	//other
 	public void clear() {
-		buffer.clear();
+		UNSAFE.setMemory(address(), sizeOf(), (byte) 0);
 	}
 }

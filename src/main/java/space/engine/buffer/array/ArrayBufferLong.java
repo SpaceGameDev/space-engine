@@ -1,58 +1,97 @@
 package space.engine.buffer.array;
 
+import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.direct.DirectBuffer;
+import space.engine.buffer.Buffer;
+import space.engine.buffer.NioBufferWrapper;
+import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
 
-import static space.engine.primitive.Primitives.INT64;
+import java.nio.LongBuffer;
+
+import static space.engine.buffer.Allocator.allocatorNoop;
+import static sun.misc.Unsafe.*;
 
 public class ArrayBufferLong extends AbstractArrayBuffer<ArrayBufferLong> {
 	
-	public static final Primitive<?> TYPE = INT64;
+	public static final Primitive<?> TYPE = JavaPrimitives.LONG;
 	
-	public static ArrayAllocator<ArrayBufferLong> createAlloc(Allocator<DirectBuffer> alloc) {
-		return new ArrayAllocator<>(alloc, TYPE, ArrayBufferLong::new);
+	//alloc
+	
+	/**
+	 * Allocates a new {@link ArrayBufferLong} of length. The Contents are undefined. If the {@link ArrayBufferLong} is freed, it will free the memory.
+	 */
+	public static ArrayBufferLong malloc(Allocator allocator, long length, @NotNull Object[] parents) {
+		return new ArrayBufferLong(allocator, allocator.malloc(length * TYPE.bytes), length, parents);
 	}
 	
-	public ArrayBufferLong(DirectBuffer buffer) {
-		super(buffer, TYPE);
+	/**
+	 * Allocates a new {@link ArrayBufferLong} of length. The Contents are initialized to 0. If the {@link ArrayBufferLong} is freed, it will free the memory.
+	 */
+	public static ArrayBufferLong calloc(Allocator allocator, long length, @NotNull Object[] parents) {
+		return new ArrayBufferLong(allocator, allocator.calloc(length * TYPE.bytes), length, parents);
 	}
 	
-	protected ArrayBufferLong(DirectBuffer buffer, long length) {
-		super(buffer, TYPE, length);
+	//create
+	
+	/**
+	 * Creates a new {@link ArrayBufferLong} from the given address and length. If the {@link ArrayBufferLong} is freed, it <b>WILL</b> free the memory.
+	 */
+	public static ArrayBufferLong create(Allocator allocator, long address, long length, @NotNull Object[] parents) {
+		return new ArrayBufferLong(allocator, address, length, parents);
 	}
 	
-	//get / put
+	/**
+	 * Creates a new {@link ArrayBufferLong} from the given address and length. It will <b>NEVER</b> free the memory.
+	 */
+	public static ArrayBufferLong wrap(long address, long length, @NotNull Object[] parents) {
+		return create(allocatorNoop(), address, length, parents);
+	}
+	
+	//object
+	protected ArrayBufferLong(Allocator allocator, long address, long length, @NotNull Object[] parents) {
+		super(allocator, address, length, parents);
+	}
+	
+	@Override
+	public Primitive<?> type() {
+		return TYPE;
+	}
+	
+	@Override
+	public LongBuffer nioBuffer() {
+		return NioBufferWrapper.wrapLong(this, length);
+	}
+	
+	//single
 	public long getLong(long index) {
-		return buffer.getLong(getOffset(index));
+		Buffer.checkIndex(index, this.length);
+		return UNSAFE.getLong(address() + type().multiply(index));
 	}
 	
 	public void putLong(long index, long b) {
-		buffer.putLong(getOffset(index), b);
+		Buffer.checkIndex(index, this.length);
+		UNSAFE.putLong(address() + type().multiply(index), b);
 	}
 	
 	//array
 	public void copyInto(long[] dest) {
-		buffer.copyInto(dest);
+		copyInto(0, dest, 0, dest.length);
 	}
 	
-	public void copyInto(long index, long[] dest) {
-		buffer.copyInto(getOffset(index), dest);
-	}
-	
-	public void copyInto(long index, long[] dest, int destPos, int length) {
-		buffer.copyInto(getOffset(index), dest, destPos, length);
+	public void copyInto(long srcIndex, long[] dest, int destIndex, int length) {
+		Buffer.checkFromIndexSize(srcIndex, length, this.length);
+		Buffer.checkFromIndexSize(destIndex, length, dest.length);
+		UNSAFE.copyMemory(null, address() + type().multiply(srcIndex), dest, ARRAY_LONG_BASE_OFFSET + destIndex * ARRAY_LONG_INDEX_SCALE, type().multiply(length));
 	}
 	
 	public void copyFrom(long[] src) {
-		buffer.copyFrom(src);
+		copyFrom(src, 0, 0, src.length);
 	}
 	
-	public void copyFrom(long[] src, long index) {
-		buffer.copyFrom(src, getOffset(index));
-	}
-	
-	public void copyFrom(long[] src, int srcPos, int length, long index) {
-		buffer.copyFrom(src, srcPos, length, getOffset(index));
+	public void copyFrom(long[] src, int srcIndex, long destIndex, int length) {
+		Buffer.checkFromIndexSize(srcIndex, length, src.length);
+		Buffer.checkFromIndexSize(destIndex, length, this.length);
+		UNSAFE.copyMemory(src, ARRAY_LONG_BASE_OFFSET + srcIndex * ARRAY_LONG_INDEX_SCALE, null, address() + type().multiply(destIndex), type().multiply(length));
 	}
 }
