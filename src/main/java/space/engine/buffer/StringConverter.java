@@ -3,12 +3,17 @@ package space.engine.buffer;
 import space.engine.buffer.array.ArrayBufferByte;
 
 import static java.nio.charset.StandardCharsets.*;
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 
 public class StringConverter {
 	
 	public static final byte NULL_CHARACTER = 0;
 	
 	//string to buffer
+	public static ArrayBufferByte stringToUTF8(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+		return stringToUTF8(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
+	}
+	
 	public static ArrayBufferByte stringToUTF8(Allocator allocator, String str, boolean nullTerm, Object[] parents) {
 		byte[] bytes = str.getBytes(UTF_8);
 		ArrayBufferByte buffer = ArrayBufferByte.malloc(allocator, bytes.length + (nullTerm ? 1 : 0), parents);
@@ -16,6 +21,10 @@ public class StringConverter {
 		if (nullTerm)
 			buffer.putByte(bytes.length, (byte) 0);
 		return buffer;
+	}
+	
+	public static ArrayBufferByte stringToUTF16(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+		return stringToUTF16(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
 	public static ArrayBufferByte stringToUTF16(Allocator allocator, String str, boolean nullTerm, Object[] parents) {
@@ -27,6 +36,10 @@ public class StringConverter {
 			buffer.putByte(bytes.length + 1, (byte) 0);
 		}
 		return buffer;
+	}
+	
+	public static ArrayBufferByte stringToASCII(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+		return stringToASCII(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
 	public static ArrayBufferByte stringToASCII(Allocator allocator, String str, boolean nullTerm, Object[] parents) {

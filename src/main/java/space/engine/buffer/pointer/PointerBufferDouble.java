@@ -2,12 +2,14 @@ package space.engine.buffer.pointer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
 
 import java.nio.DoubleBuffer;
 
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
@@ -20,8 +22,22 @@ public class PointerBufferDouble extends AbstractPointerBuffer<PointerBufferDoub
 	/**
 	 * Allocates a new {@link PointerBufferDouble}. The Contents are undefined. If the {@link PointerBufferDouble} is freed, it will free the memory.
 	 */
+	public static PointerBufferDouble malloc(AllocatorStack.Frame allocator) {
+		return malloc(allocator, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferDouble}. The Contents are undefined. If the {@link PointerBufferDouble} is freed, it will free the memory.
+	 */
 	public static PointerBufferDouble malloc(Allocator allocator, @NotNull Object[] parents) {
 		return new PointerBufferDouble(allocator, allocator.malloc(TYPE.bytes), parents);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferDouble}. The Contents are initialized to 0. If the {@link PointerBufferDouble} is freed, it will free the memory.
+	 */
+	public static PointerBufferDouble calloc(AllocatorStack.Frame allocator) {
+		return calloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
 	/**
@@ -41,7 +57,14 @@ public class PointerBufferDouble extends AbstractPointerBuffer<PointerBufferDoub
 	}
 	
 	/**
-	 * Creates a new {@link PointerBufferDouble} from the given address. It will <b>NEVER</b> free the memory.
+	 * Creates a new {@link PointerBufferDouble} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
+	 */
+	public static PointerBufferDouble wrap(long address) {
+		return wrap(address, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Creates a new {@link PointerBufferDouble} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
 	 */
 	public static PointerBufferDouble wrap(long address, @NotNull Object[] parents) {
 		return create(allocatorNoop(), address, parents);

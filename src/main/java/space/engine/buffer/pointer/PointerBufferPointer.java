@@ -2,11 +2,13 @@ package space.engine.buffer.pointer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.Primitive;
 import space.engine.primitive.Primitives;
 
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
@@ -19,8 +21,22 @@ public class PointerBufferPointer extends AbstractPointerBuffer<PointerBufferPoi
 	/**
 	 * Allocates a new {@link PointerBufferPointer}. The Contents are undefined. If the {@link PointerBufferPointer} is freed, it will free the memory.
 	 */
+	public static PointerBufferPointer malloc(AllocatorStack.Frame allocator) {
+		return malloc(allocator, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are undefined. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
 	public static PointerBufferPointer malloc(Allocator allocator, @NotNull Object[] parents) {
 		return new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are initialized to 0. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer calloc(AllocatorStack.Frame allocator) {
+		return calloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
 	/**
@@ -40,7 +56,14 @@ public class PointerBufferPointer extends AbstractPointerBuffer<PointerBufferPoi
 	}
 	
 	/**
-	 * Creates a new {@link PointerBufferPointer} from the given address. It will <b>NEVER</b> free the memory.
+	 * Creates a new {@link PointerBufferPointer} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
+	 */
+	public static PointerBufferPointer wrap(long address) {
+		return wrap(address, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Creates a new {@link PointerBufferPointer} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
 	 */
 	public static PointerBufferPointer wrap(long address, @NotNull Object[] parents) {
 		return create(allocatorNoop(), address, parents);

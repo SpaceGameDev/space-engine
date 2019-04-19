@@ -1,7 +1,9 @@
 package space.engine.buffer.array;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.baseobject.exceptions.FreedException;
 import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
@@ -9,6 +11,7 @@ import space.engine.primitive.Primitive;
 
 import java.nio.IntBuffer;
 
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.buffer.Allocator.allocatorNoop;
 import static sun.misc.Unsafe.*;
 
@@ -21,8 +24,22 @@ public class ArrayBufferInt extends AbstractArrayBuffer<ArrayBufferInt> {
 	/**
 	 * Allocates a new {@link ArrayBufferInt} of length. The Contents are undefined. If the {@link ArrayBufferInt} is freed, it will free the memory.
 	 */
+	public static ArrayBufferInt malloc(AllocatorStack.Frame allocator, long length) {
+		return malloc(allocator, length, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferInt} of length. The Contents are undefined. If the {@link ArrayBufferInt} is freed, it will free the memory.
+	 */
 	public static ArrayBufferInt malloc(Allocator allocator, long length, @NotNull Object[] parents) {
 		return new ArrayBufferInt(allocator, allocator.malloc(length * TYPE.bytes), length, parents);
+	}
+	
+	/**
+	 * Allocates a new {@link ArrayBufferInt} of length. The Contents are initialized to 0. If the {@link ArrayBufferInt} is freed, it will free the memory.
+	 */
+	public static ArrayBufferInt calloc(AllocatorStack.Frame allocator, long length) {
+		return calloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
 	/**
@@ -42,7 +59,14 @@ public class ArrayBufferInt extends AbstractArrayBuffer<ArrayBufferInt> {
 	}
 	
 	/**
-	 * Creates a new {@link ArrayBufferInt} from the given address and length. It will <b>NEVER</b> free the memory.
+	 * Creates a new {@link ArrayBufferInt} from the given address and length. It will <b>NEVER</b> free the memory but will still throw {@link FreedException} if it is freed.
+	 */
+	public static ArrayBufferInt wrap(long address, long length) {
+		return wrap(address, length, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Creates a new {@link ArrayBufferInt} from the given address and length. It will <b>NEVER</b> free the memory but will still throw {@link FreedException} if it is freed.
 	 */
 	public static ArrayBufferInt wrap(long address, long length, @NotNull Object[] parents) {
 		return create(allocatorNoop(), address, length, parents);
