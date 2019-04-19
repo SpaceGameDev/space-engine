@@ -6,6 +6,9 @@ import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
 import static space.engine.primitive.Primitives.POINTER;
 
 public class PointerBufferWrapper {
@@ -31,5 +34,9 @@ public class PointerBufferWrapper {
 		PointerBuffer ret = PointerBuffer.create(buffer.address() + offset, lengthInt);
 		Attachment.setAttachment(ret, Freeable.createDummy(new Object[] {buffer}));
 		return ret;
+	}
+	
+	public static LongStream streamPointerBuffer(PointerBuffer pb) {
+		return IntStream.range(0, pb.capacity()).mapToLong(pb::get);
 	}
 }
