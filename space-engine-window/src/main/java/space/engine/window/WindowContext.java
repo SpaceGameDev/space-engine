@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 @SuppressWarnings("unused")
 public interface WindowContext extends Freeable, Executor {
 	
-	Future<? extends Window> createWindow(@NotNull AttributeList<Window> format);
+	Future<? extends Window> createWindow(@NotNull AttributeList<Window> format, Object[] parents);
 	
 	//attributes
 	AttributeListCreator<WindowContext> CREATOR = new AttributeListCreator<>();
