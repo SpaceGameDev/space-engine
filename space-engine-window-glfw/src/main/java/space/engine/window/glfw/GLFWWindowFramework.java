@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static space.engine.freeableStorage.Freeable.addIfNotContained;
 
 public class GLFWWindowFramework implements WindowFramework, FreeableWrapper {
 	
@@ -33,8 +34,8 @@ public class GLFWWindowFramework implements WindowFramework, FreeableWrapper {
 	//window
 	@NotNull
 	@Override
-	public Future<? extends WindowContext> createContext(@NotNull AttributeList<WindowContext> format) {
-		return GLFWContext.create(this, format, new Object[] {storage});
+	public Future<? extends GLFWContext> createContext(@NotNull AttributeList<WindowContext> format, Object[] parents) {
+		return GLFWContext.create(this, format, addIfNotContained(parents, this));
 	}
 	
 	@Override

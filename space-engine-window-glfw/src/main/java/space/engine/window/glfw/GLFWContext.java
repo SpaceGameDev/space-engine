@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.sync.Tasks.runnable;
 import static space.engine.window.WindowContext.FreeableWrapper;
 import static space.engine.window.glfw.GLFWUtil.*;
@@ -70,8 +71,8 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 	
 	//window creation
 	@Override
-	public @NotNull Future<GLFWWindow> createWindow(@NotNull AttributeList<Window> format) {
-		return GLFWWindow.create(this, format, new Object[] {storage});
+	public @NotNull Future<GLFWWindow> createWindow(@NotNull AttributeList<Window> format, Object[] parents) {
+		return GLFWWindow.create(this, format, addIfNotContained(parents, this));
 	}
 	
 	//input
