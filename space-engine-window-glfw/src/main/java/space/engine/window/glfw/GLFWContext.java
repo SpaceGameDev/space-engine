@@ -38,11 +38,11 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 	
 	public final @NotNull GLFWWindowFramework framework;
 	private final @NotNull Storage storage;
-	private @Nullable Object apiType;
+	@Nullable Object apiType;
 	
 	public static Future<GLFWContext> create(@NotNull GLFWWindowFramework framework, @NotNull AttributeList<WindowContext> format, Object[] parents) {
 		GLFWContext context = new GLFWContext(framework, parents);
-		return runnable(context.storage, () -> context.initializeNativeWindow(format)).submit().toFuture(() -> context);
+		return runnable(context.storage, () -> context.initNativeWindow(format)).submit().toFuture(() -> context);
 	}
 	
 	private GLFWContext(@NotNull GLFWWindowFramework framework, Object[] parents) {
@@ -173,7 +173,8 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 	
 	//windowThread init
 	@WindowThread
-	protected void initializeNativeWindow(AbstractAttributeList<WindowContext> newFormat) {
+	protected void initNativeWindow(AbstractAttributeList<WindowContext> newFormat) {
+		long windowPointer;
 		synchronized (GLFWInstance.GLFW_SYNC) {
 			//additional window settings
 			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -182,9 +183,8 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 			
 			//gl api settings
 			apiType = newFormat.get(API_TYPE);
-			// noinspection StatementWithEmptyBody
 			if (apiType == null) {
-				//no context via window api
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			} else if (apiType instanceof OpenGLApiType) {
 				OpenGLApiType apiTypeGL = (OpenGLApiType) apiType;
 				glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi(apiTypeGL));
@@ -204,19 +204,31 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 			}
 			
 			//create
-			storage.windowPointer = glfwCreateWindow(1, 1, "hidden_context_window", 0L, 0L);
+			windowPointer = glfwCreateWindow(1, 1, "hidden_context_window", 0L, 0L);
 		}
 		
-		glfwMakeContextCurrent(storage.getWindowPointer());
-		createCapabilities();
+		storage.windowPointer = windowPointer;
+		initCreateCapabilities(windowPointer);
 	}
 	
 	@WindowThread
-	public void createCapabilities() {
+	public void initSetGLFWClientApiWindowHint() {
+		if (apiType == null) {
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		} else if (apiType instanceof OpenGLApiType) {
+			glfwWindowHint(GLFW_CLIENT_API, covertGLApiTypeToGLFWApi((OpenGLApiType) apiType));
+		} else {
+			throw new WindowUnsupportedApiTypeException(apiType);
+		}
+	}
+	
+	@WindowThread
+	public void initCreateCapabilities(long windowPointer) {
 		// noinspection StatementWithEmptyBody
 		if (apiType == null) {
 			//no context via window api
 		} else if (apiType instanceof OpenGLApiType) {
+			glfwMakeContextCurrent(windowPointer);
 			switch ((OpenGLApiType) apiType) {
 				case GL:
 					GL.createCapabilities();
@@ -227,6 +239,17 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 				default:
 					throw new WindowUnsupportedApiTypeException(apiType);
 			}
+		} else {
+			throw new WindowUnsupportedApiTypeException(apiType);
+		}
+	}
+	
+	@WindowThread
+	public long initGetContextSharePointer() {
+		if (apiType == null) {
+			return 0;
+		} else if (apiType instanceof OpenGLApiType) {
+			return getWindowPointer();
 		} else {
 			throw new WindowUnsupportedApiTypeException(apiType);
 		}
