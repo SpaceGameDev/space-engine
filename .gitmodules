@@ -1,0 +1,3 @@
+[submodule "glslang-validator-gradle-plugin"]
+	path = glslang-validator-gradle-plugin
+	url = git@github.com:SpaceGameDev/glslang-validator-gradle-plugin.git

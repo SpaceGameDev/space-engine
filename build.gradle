@@ -1,5 +1,6 @@
 plugins {
 	id 'java-library'
+	id 'glslang-validator'
 }
 
 import org.gradle.internal.os.OperatingSystem
