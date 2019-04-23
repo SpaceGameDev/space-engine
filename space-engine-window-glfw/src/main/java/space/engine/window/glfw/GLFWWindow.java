@@ -327,7 +327,7 @@ public class GLFWWindow implements Window, FreeableWrapper {
 	}
 	
 	public Barrier pollEventsTask() {
-		return runnable(this::pollEvents).submit();
+		return runnable(this, this::pollEvents).submit();
 	}
 	
 	//events
