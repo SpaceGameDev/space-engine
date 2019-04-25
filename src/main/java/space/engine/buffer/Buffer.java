@@ -28,8 +28,21 @@ public abstract class Buffer implements Freeable, Dumpable {
 		return fromIndex;
 	}
 	
-	//object
+	//buffer properties
 	public abstract long address();
 	
 	public abstract long sizeOf();
+	
+	//container
+	private Object container;
+	
+	public static void setContainer(Buffer buffer, Object container) {
+		if (buffer.container != null)
+			throw new RuntimeException("container already set!");
+		buffer.container = container;
+	}
+	
+	public static Object getContainer(Buffer buffer) {
+		return buffer.container;
+	}
 }
