@@ -167,9 +167,9 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 		if (IS_64_BIT) {
 			UNSAFE.copyMemory(null, address() + type().multiply(srcIndex), dest, ARRAY_LONG_BASE_OFFSET + destIndex * ARRAY_LONG_INDEX_SCALE, type().multiply(length));
 		} else {
-			long srcAddress = address() + type().multiply(srcIndex);
+			long srcAddress = address();
 			for (int i = 0; i < length; i++)
-				dest[destIndex + i] = (long) UNSAFE.getInt(srcAddress + i) & 0xFFFF_FFFFL;
+				dest[destIndex + i] = (long) UNSAFE.getInt(srcAddress + type().multiply(srcIndex)) & 0xFFFF_FFFFL;
 		}
 	}
 	
@@ -181,9 +181,9 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 		Buffer.checkFromIndexSize(srcIndex, length, src.length);
 		Buffer.checkFromIndexSize(destIndex, length, this.length);
 		
-		long destAddress = address() + type().multiply(destIndex);
+		long destAddress = address();
 		for (int i = 0; i < length; i++)
-			UNSAFE.putAddress(destAddress + i, src[srcIndex + i].address());
+			UNSAFE.putAddress(destAddress + type().multiply(destIndex + i), src[srcIndex + i].address());
 	}
 	
 	public void copyFrom(java.nio.Buffer[] src) {
@@ -194,9 +194,9 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 		Buffer.checkFromIndexSize(srcIndex, length, src.length);
 		Buffer.checkFromIndexSize(destIndex, length, this.length);
 		
-		long destAddress = address() + type().multiply(destIndex);
+		long destAddress = address();
 		for (int i = 0; i < length; i++)
-			UNSAFE.putAddress(destAddress + i, NioBufferWrapper.getAddress(src[srcIndex + i]));
+			UNSAFE.putAddress(destAddress + type().multiply(destIndex + i), NioBufferWrapper.getAddress(src[srcIndex + i]));
 	}
 	
 	public void copyFrom(long[] src) {
@@ -210,9 +210,9 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 		if (IS_64_BIT) {
 			UNSAFE.copyMemory(src, ARRAY_LONG_BASE_OFFSET + srcIndex * ARRAY_LONG_INDEX_SCALE, null, address() + type().multiply(destIndex), type().multiply(length));
 		} else {
-			long destAddress = address() + type().multiply(destIndex);
+			long destAddress = address();
 			for (int i = 0; i < length; i++)
-				UNSAFE.putInt(destAddress + i, (int) src[srcIndex + i]);
+				UNSAFE.putInt(destAddress + type().multiply(destIndex + i), (int) src[srcIndex + i]);
 		}
 	}
 	
