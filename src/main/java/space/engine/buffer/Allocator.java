@@ -34,7 +34,7 @@ public abstract class Allocator {
 		return ALLOCATOR_HEAP;
 	}
 	
-	private static final ThreadLocal<AllocatorStack> ALLOCATOR_STACK = ThreadLocal.withInitial(() -> new AllocatorStackImpl(ALLOCATOR_HEAP, 64L * 1024, new Object[] {Freeable.ROOT_LIST}));
+	private static final ThreadLocal<AllocatorStack> ALLOCATOR_STACK = ThreadLocal.withInitial(() -> new AllocatorStackImpl(ALLOCATOR_HEAP, 1024L * 1024, new Object[] {Freeable.ROOT_LIST}));
 	
 	public static AllocatorStack allocatorStack() {
 		return ALLOCATOR_STACK.get();
