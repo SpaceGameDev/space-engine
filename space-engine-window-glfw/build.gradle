@@ -1,3 +1,7 @@
+plugins {
+	id 'java-library'
+}
+
 dependencies {
 	api parent
 	api parent.project(':space-engine-window')
@@ -10,4 +14,6 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-opengl:$parent.lwjglVersion:$parent.lwjglNatives"
 	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion"
 	implementation "org.lwjgl:lwjgl-opengles:$parent.lwjglVersion:$parent.lwjglNatives"
+	
+	testImplementation 'junit:junit:4.12'
 }
