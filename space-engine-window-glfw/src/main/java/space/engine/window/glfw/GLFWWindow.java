@@ -193,6 +193,7 @@ public class GLFWWindow implements Window, FreeableWrapper {
 			glfwWindowHint(GLFW_DOUBLEBUFFER, toGLFWBoolean(newFormat.get(DOUBLE_BUFFER)));
 			glfwWindowHint(GLFW_DEPTH_BITS, newFormat.get(DEPTH_BITS));
 			glfwWindowHint(GLFW_STENCIL_BITS, newFormat.get(STENCIL_BITS));
+			context.initSetGLFWClientApiWindowHint();
 			
 			@NotNull Class<? extends VideoModeExtension> videoMode = newFormat.get(VIDEO_MODE);
 			if (videoMode == VideoModeDesktopExtension.class) {
@@ -209,7 +210,7 @@ public class GLFWWindow implements Window, FreeableWrapper {
 				glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 				
 				//createWindow
-				windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.getWindowPointer());
+				windowPointer = glfwCreateWindow(newFormat.get(WIDTH), newFormat.get(HEIGHT), newFormat.get(TITLE), 0, context.initGetContextSharePointer());
 				if (prevPosition != null)
 					glfwSetWindowPos(windowPointer, prevPosition[0], prevPosition[1]);
 				
@@ -235,8 +236,7 @@ public class GLFWWindow implements Window, FreeableWrapper {
 		}
 		
 		storage.windowPointer = windowPointer;
-		glfwMakeContextCurrent(windowPointer);
-		context.createCapabilities();
+		context.initCreateCapabilities(windowPointer);
 		
 		//events
 		glfwSetWindowCloseCallback(windowPointer, eventGLFWWindowCloseCallback);
@@ -319,6 +319,15 @@ public class GLFWWindow implements Window, FreeableWrapper {
 	public void swapBuffers() {
 		glfwSwapBuffers(storage.getWindowPointer());
 		glfwPollEvents();
+	}
+	
+	@WindowThread
+	public void pollEvents() {
+		glfwPollEvents();
+	}
+	
+	public Barrier pollEventsTask() {
+		return runnable(this, this::pollEvents).submit();
 	}
 	
 	//events

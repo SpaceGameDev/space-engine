@@ -29,6 +29,7 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL30.*;
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.sync.Tasks.*;
 import static space.engine.window.Window.*;
 import static space.engine.window.WindowContext.*;
@@ -70,7 +71,7 @@ public class GLFWTest {
 		windowContextAttInitial.put(GL_VERSION_MAJOR, 3);
 		windowContextAttInitial.put(GL_VERSION_MINOR, 0);
 		windowContextAttInitial.put(GL_FORWARD_COMPATIBLE, false);
-		WindowContext context = windowfw.createContext(windowContextAttInitial.createNewAttributeList()).awaitGet();
+		WindowContext context = windowfw.createContext(windowContextAttInitial.createNewAttributeList(), EMPTY_OBJECT_ARRAY).awaitGet();
 		
 		context.getInputDevices().addHookAsStartedEmpty(change -> change.added().stream()
 																		.filter(Keyboard.class::isInstance).map(Keyboard.class::cast)
@@ -93,7 +94,7 @@ public class GLFWTest {
 		windowAttInitial.put(BORDERLESS, true);
 		windowAttInitial.put(TITLE, "GLFWTest Window");
 		AttributeList<Window> windowAtt = windowAttInitial.createNewAttributeList();
-		Set<? extends Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt)).map(window -> {
+		Set<? extends Window> windows = IntStream.range(0, WINDOW_CNT).mapToObj(i -> context.createWindow(windowAtt, EMPTY_OBJECT_ARRAY)).map(window -> {
 			try {
 				return window.awaitGet();
 			} catch (InterruptedException e) {

@@ -8,6 +8,10 @@ import space.engine.event.typehandler.TypeHandlerFirstFunction;
 import space.engine.sync.Tasks.FunctionWithDelay;
 import space.engine.sync.barrier.Barrier;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
+
 /**
  * {@link Freeable} is an advanced native or other resource free-ing system.
  * To use it you need a front-end Object and (mostly as a STATIC inner class) a Storage-Object (this class) for values required for eg. deallocation.
@@ -93,7 +97,7 @@ public interface Freeable {
 	 * Creates a new {@link FreeableStorage} which won't free anything by itself, but still frees it's Children. <br>
 	 * It can be used as an in between Layer to other {@link FreeableStorage} Objects.
 	 *
-	 * @param parents  the parents it should have
+	 * @param parents the parents it should have
 	 * @return a new dummy {@link Freeable}
 	 */
 	static @NotNull FreeableStorage createDummy(@NotNull Object[] parents) {
@@ -115,6 +119,59 @@ public interface Freeable {
 				return Barrier.ALWAYS_TRIGGERED_BARRIER;
 			}
 		};
+	}
+	
+	/**
+	 * If you don't want to add anything, why call this function?
+	 * (mostly here to prevent accidental calls forgetting to add arguments)
+	 */
+	@Deprecated
+	static Object[] addIfNotContained(Object[] parents) {
+		throw new UnsupportedOperationException();
+	}
+	
+	static Object[] addIfNotContained(Object[] parents, Object required) {
+		if (isContained(parents, required))
+			return parents;
+		
+		Object[] newParents = Arrays.copyOf(parents, parents.length + 1);
+		newParents[parents.length] = required;
+		return newParents;
+	}
+	
+	static Object[] addIfNotContained(Object[] parents, Object... required) {
+		Object[] toAdd = Arrays.stream(required)
+							   .filter(o -> isContained(parents, o))
+							   .toArray();
+		
+		if (toAdd.length == 0)
+			return parents;
+		Object[] newParents = Arrays.copyOf(parents, parents.length + toAdd.length);
+		System.arraycopy(toAdd, 0, newParents, parents.length, toAdd.length);
+		return newParents;
+	}
+	
+	static boolean isContained(Object[] parents, Object check) {
+		Builder<Object> b = Stream.builder();
+		b.add(check);
+		while (check instanceof FreeableWrapper) {
+			check = ((FreeableWrapper) check).getStorage();
+			b.add(check);
+		}
+		Object[] requiredArray = b.build().toArray();
+		
+		for (Object parent : parents)
+			for (Object o : requiredArray)
+				if (parent == o)
+					return true;
+		return false;
+	}
+	
+	class RequiredParentNotContainedException extends RuntimeException {
+		
+		public RequiredParentNotContainedException(Object[] parents, Object contain) {
+			super("required parent " + contain + " is not contained in parents " + Arrays.toString(parents));
+		}
 	}
 	
 	/**
