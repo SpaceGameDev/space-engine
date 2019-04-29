@@ -4,5 +4,6 @@ includeBuild 'glslang-validator-gradle-plugin'
 
 include 'space-engine-lwjgl'
 include 'space-engine-vulkan'
+include 'space-engine-vulkan-glfw'
 include 'space-engine-window'
 include 'space-engine-window-glfw'
