@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api parent
     api parent.project(':space-engine-lwjgl')
+    api parent.project(':space-engine-window')
 
     api "org.lwjgl:lwjgl:$parent.lwjglVersion"
     api "org.lwjgl:lwjgl:$parent.lwjglVersion:$parent.lwjglNatives"
