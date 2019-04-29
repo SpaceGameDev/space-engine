@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
 	api parent
+
+	testImplementation 'junit:junit:4.12'
 }
