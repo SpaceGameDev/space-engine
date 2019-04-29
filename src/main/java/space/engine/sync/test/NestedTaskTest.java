@@ -13,8 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static space.engine.Side.*;
-
 public class NestedTaskTest {
 	
 	public static final BarrierTimer TIMER = BarrierTimer.createUnmodifiable(-System.nanoTime(), 1);
@@ -22,7 +20,7 @@ public class NestedTaskTest {
 	
 	public static void main(String[] args) throws InterruptedException {
 		try {
-			TaskCreator<? extends Future<float[]>> future = Tasks.future(sideGet(EXECUTOR_POOL), () -> {
+			TaskCreator<? extends Future<float[]>> future = Tasks.future(() -> {
 				int i = COUNTER.getAndIncrement();
 				if (i % 2 == 0)
 					throw new DelayTask(TIMER.create(i * 500000000L).toFuture(() -> new float[] {i}));

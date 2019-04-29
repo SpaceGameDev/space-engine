@@ -8,12 +8,10 @@ import space.engine.sync.lock.SyncLock;
 import space.engine.sync.lock.SyncLockImpl;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static space.engine.Side.*;
 import static space.engine.sync.Tasks.*;
 
 /**
@@ -96,10 +94,9 @@ public class TransactionTest {
 	}
 	
 	public static TaskCreator<? extends Barrier> createTransaction(Entity from, Entity to) {
-		Executor exec = sideGet(EXECUTOR_POOL);
 		return sequential(new SyncLock[] {from.lock, to.lock}, Barrier.EMPTY_BARRIER_ARRAY, List.of(
-				runnable(exec, () -> from.count--),
-				runnable(exec, () -> to.count++)
+				runnable(() -> from.count--),
+				runnable(() -> to.count++)
 		));
 	}
 }

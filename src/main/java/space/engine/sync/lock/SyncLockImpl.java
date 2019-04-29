@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-import static space.engine.Side.*;
+import static space.engine.Side.pool;
 
 public class SyncLockImpl implements SyncLock {
 	
@@ -73,7 +73,7 @@ public class SyncLockImpl implements SyncLock {
 				if (i >= SYNCLOCK_CALLBACK_TRIES) {
 					//out of tries -> enqueue and try again later
 					locked = false;
-					sideGet(EXECUTOR_POOL).execute(() -> unlockFindNext(modId));
+					pool().execute(() -> unlockFindNext(modId));
 					return;
 				}
 				

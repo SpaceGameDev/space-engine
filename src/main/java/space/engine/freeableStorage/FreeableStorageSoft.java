@@ -20,7 +20,7 @@ public abstract class FreeableStorageSoft<T> extends SoftReference<T> implements
 	private @Nullable Barrier freeBarrier;
 	
 	public FreeableStorageSoft(@Nullable T referent, @NotNull Object[] parents) {
-		super(referent, FreeableStorageCleaner.QUEUE);
+		super(referent, parents.length == 0 ? null : FreeableStorageCleaner.QUEUE);
 		entries = Arrays.stream(parents).map(parent -> Freeable.getFreeable(parent).getSubList().insert(this)).toArray(Entry[]::new);
 	}
 	

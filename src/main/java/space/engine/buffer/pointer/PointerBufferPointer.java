@@ -1,30 +1,162 @@
 package space.engine.buffer.pointer;
 
+import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.direct.DirectBuffer;
+import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.Buffer;
+import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.Primitive;
+import space.engine.primitive.Primitives;
 
-import static space.engine.primitive.Primitives.POINTER;
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
+import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
 public class PointerBufferPointer extends AbstractPointerBuffer<PointerBufferPointer> {
 	
-	public static final Primitive<?> TYPE = POINTER;
+	public static final Primitive<?> TYPE = Primitives.POINTER;
 	
-	public static PointerAllocator<PointerBufferPointer> createAlloc(Allocator<DirectBuffer> alloc) {
-		return new PointerAllocator<>(alloc, TYPE, PointerBufferPointer::new);
+	//alloc
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, Buffer value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
 	}
 	
-	public PointerBufferPointer(DirectBuffer buffer) {
-		super(buffer, TYPE);
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, Buffer value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
 	}
 	
-	//get / put
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, java.nio.Buffer value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, java.nio.Buffer value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(AllocatorStack.Frame allocator, long value) {
+		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer} and fills it with the supplied value. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer alloc(Allocator allocator, long value, @NotNull Object[] parents) {
+		PointerBufferPointer buffer = new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+		buffer.putPointer(value);
+		return buffer;
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are undefined. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer malloc(AllocatorStack.Frame allocator) {
+		return malloc(allocator, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are undefined. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer malloc(Allocator allocator, @NotNull Object[] parents) {
+		return new PointerBufferPointer(allocator, allocator.malloc(TYPE.bytes), parents);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are initialized to 0. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer calloc(AllocatorStack.Frame allocator) {
+		return calloc(allocator, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Allocates a new {@link PointerBufferPointer}. The Contents are initialized to 0. If the {@link PointerBufferPointer} is freed, it will free the memory.
+	 */
+	public static PointerBufferPointer calloc(Allocator allocator, @NotNull Object[] parents) {
+		return new PointerBufferPointer(allocator, allocator.calloc(TYPE.bytes), parents);
+	}
+	
+	//create
+	
+	/**
+	 * Creates a new {@link PointerBufferPointer} from the given address. If the {@link PointerBufferPointer} is freed, it <b>WILL</b> free the memory.
+	 */
+	public static PointerBufferPointer create(Allocator allocator, long address, @NotNull Object[] parents) {
+		return new PointerBufferPointer(allocator, address, parents);
+	}
+	
+	/**
+	 * Creates a new {@link PointerBufferPointer} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
+	 */
+	public static PointerBufferPointer wrap(long address) {
+		return wrap(address, EMPTY_OBJECT_ARRAY);
+	}
+	
+	/**
+	 * Creates a new {@link PointerBufferPointer} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
+	 */
+	public static PointerBufferPointer wrap(long address, @NotNull Object[] parents) {
+		return create(allocatorNoop(), address, parents);
+	}
+	
+	//object
+	protected PointerBufferPointer(Allocator allocator, long address, @NotNull Object[] parents) {
+		super(allocator, address, parents);
+	}
+	
+	@Override
+	public Primitive<?> type() {
+		return TYPE;
+	}
+	
+	@Override
+	public java.nio.Buffer nioBuffer() {
+		return NioBufferWrapper.wrapByte(this, sizeOf());
+	}
+	
+	//single
 	public long getPointer() {
-		return buffer.getLong(0);
+		return UNSAFE.getAddress(address());
+	}
+	
+	public void putPointer(Buffer b) {
+		putPointer(b.address());
+	}
+	
+	public void putPointer(java.nio.Buffer b) {
+		putPointer(NioBufferWrapper.getAddress(b));
 	}
 	
 	public void putPointer(long b) {
-		buffer.putLong(0, b);
+		UNSAFE.putAddress(address(), b);
+	}
+	
+	//copy
+	@Override
+	public void copyInto(PointerBufferPointer dest) {
+		dest.putPointer(this.getPointer());
+	}
+	
+	@Override
+	public void copyFrom(PointerBufferPointer src) {
+		this.putPointer(src.getPointer());
 	}
 }
