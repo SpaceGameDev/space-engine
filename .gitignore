@@ -6,8 +6,8 @@
 .idea/gradle.xml
 .idea/modules.xml
 .idea/workspace.xml
-.idea/misc.xml
 .idea/uiDesigner.xml
+.idea/space-engine.iml
 
 .gradle/
 **/build/
