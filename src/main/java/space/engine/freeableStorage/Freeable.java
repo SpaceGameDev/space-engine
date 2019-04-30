@@ -5,6 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.event.typehandler.TypeHandlerFirstFunction;
+import space.engine.freeableStorage.stack.FreeableStack;
+import space.engine.freeableStorage.stack.FreeableStack.Frame;
+import space.engine.freeableStorage.stack.FreeableStackImpl;
 import space.engine.sync.Tasks.FunctionWithDelay;
 import space.engine.sync.barrier.Barrier;
 
@@ -91,6 +94,12 @@ public interface Freeable {
 		if (result != null)
 			return result;
 		throw new RuntimeException("Object " + object + " could not be resolved to a Freeable!");
+	}
+	
+	ThreadLocal<FreeableStack> freeableStack = ThreadLocal.withInitial(FreeableStackImpl::new);
+	
+	static Frame frame() {
+		return freeableStack.get().frame();
 	}
 	
 	/**
