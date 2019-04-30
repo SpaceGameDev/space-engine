@@ -5,7 +5,8 @@ import org.lwjgl.vulkan.VkImageSubresourceRange;
 import org.lwjgl.vulkan.VkImageViewCreateInfo;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.buffer.pointer.PointerBufferPointer;
@@ -23,7 +24,6 @@ import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
@@ -32,7 +32,7 @@ public class VkSwapchain implements FreeableWrapper {
 	
 	//alloc
 	public static VkSwapchain alloc(VkSwapchainCreateInfoKHR info, @NotNull VkDevice device, @NotNull VkSurfaceDetails swapChainDetails, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer swapChainPtr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateSwapchainKHR(device, info.address(), 0, swapChainPtr.address()));
 			return create(swapChainPtr.getPointer(), device, swapChainDetails, info.imageFormat(), parents);
@@ -56,12 +56,12 @@ public class VkSwapchain implements FreeableWrapper {
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 		
 		//images
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferInt count = PointerBufferInt.malloc(frame);
 			ArrayBufferPointer imagesBuffer;
 			while (true) {
 				assertVk(nvkGetSwapchainImagesKHR(device, address, count.address(), 0));
-				imagesBuffer = ArrayBufferPointer.malloc(allocatorHeap(), count.getInt(), new Object[] {frame});
+				imagesBuffer = ArrayBufferPointer.malloc(Allocator.heap(), count.getInt(), new Object[] {frame});
 				if (assertVk(nvkGetSwapchainImagesKHR(device, address, count.address(), imagesBuffer.address())) == VK_SUCCESS)
 					break;
 				Freeable.freeObject(imagesBuffer);

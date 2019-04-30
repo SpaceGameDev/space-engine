@@ -5,14 +5,14 @@ import org.lwjgl.system.Struct;
 import org.lwjgl.system.StructBuffer;
 import space.engine.buffer.AbstractBuffer.Storage;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 
 public class LwjglStructAllocator {
 	
 	//struct
-	public static <T extends Struct> T mallocStruct(AllocatorStack.Frame allocator, StructCreator<T> create, long sizeOf) {
+	public static <T extends Struct> T mallocStruct(AllocatorFrame allocator, StructCreator<T> create, long sizeOf) {
 		return mallocStruct(allocator, create, sizeOf, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -23,7 +23,7 @@ public class LwjglStructAllocator {
 		return t;
 	}
 	
-	public static <T extends Struct> T callocStruct(AllocatorStack.Frame allocator, StructCreator<T> create, long sizeOf) {
+	public static <T extends Struct> T callocStruct(AllocatorFrame allocator, StructCreator<T> create, long sizeOf) {
 		return callocStruct(allocator, create, sizeOf, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -45,7 +45,7 @@ public class LwjglStructAllocator {
 	}
 	
 	public static <T extends Struct> T wrapStruct(StructCreator<T> create, long address, Object[] parents) {
-		return createStruct(Allocator.allocatorNoop(), create, address, parents);
+		return createStruct(Allocator.noop(), create, address, parents);
 	}
 	
 	@FunctionalInterface
@@ -55,7 +55,7 @@ public class LwjglStructAllocator {
 	}
 	
 	//buffer
-	public static <T extends Struct, B extends StructBuffer<T, B>> B allocBuffer(AllocatorStack.Frame allocator, BufferCreator<B> create, long sizeOf, T[] array) {
+	public static <T extends Struct, B extends StructBuffer<T, B>> B allocBuffer(AllocatorFrame allocator, BufferCreator<B> create, long sizeOf, T[] array) {
 		return allocBuffer(allocator, create, sizeOf, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -66,7 +66,7 @@ public class LwjglStructAllocator {
 		return b;
 	}
 	
-	public static <B extends CustomBuffer<B>> B mallocBuffer(AllocatorStack.Frame allocator, BufferCreator<B> create, long sizeOf, int length) {
+	public static <B extends CustomBuffer<B>> B mallocBuffer(AllocatorFrame allocator, BufferCreator<B> create, long sizeOf, int length) {
 		return mallocBuffer(allocator, create, sizeOf, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -77,7 +77,7 @@ public class LwjglStructAllocator {
 		return b;
 	}
 	
-	public static <B extends CustomBuffer<B>> B callocBuffer(AllocatorStack.Frame allocator, BufferCreator<B> create, long sizeOf, int length) {
+	public static <B extends CustomBuffer<B>> B callocBuffer(AllocatorFrame allocator, BufferCreator<B> create, long sizeOf, int length) {
 		return callocBuffer(allocator, create, sizeOf, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -99,7 +99,7 @@ public class LwjglStructAllocator {
 	}
 	
 	public static <B extends CustomBuffer<B>> B wrapBuffer(BufferCreator<B> create, long address, int length, Object[] parents) {
-		return createBuffer(Allocator.allocatorNoop(), create, address, length, parents);
+		return createBuffer(Allocator.noop(), create, address, length, parents);
 	}
 	
 	@FunctionalInterface

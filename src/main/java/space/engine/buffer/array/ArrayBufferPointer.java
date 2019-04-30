@@ -3,7 +3,7 @@ package space.engine.buffer.array;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.Primitive;
@@ -12,7 +12,6 @@ import java.util.stream.LongStream;
 
 import static space.engine.Device.IS_64_BIT;
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorNoop;
 import static space.engine.primitive.Primitives.POINTER;
 import static sun.misc.Unsafe.*;
 
@@ -25,7 +24,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	/**
 	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
-	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, Buffer[] array) {
+	public static ArrayBufferPointer alloc(AllocatorFrame allocator, Buffer[] array) {
 		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -41,7 +40,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	/**
 	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
-	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, java.nio.Buffer[] array) {
+	public static ArrayBufferPointer alloc(AllocatorFrame allocator, java.nio.Buffer[] array) {
 		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -57,7 +56,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	/**
 	 * Allocates a new {@link ArrayBufferPointer} and fills it with the contents of the array. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
-	public static ArrayBufferPointer alloc(AllocatorStack.Frame allocator, long[] array) {
+	public static ArrayBufferPointer alloc(AllocatorFrame allocator, long[] array) {
 		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -73,7 +72,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	/**
 	 * Allocates a new {@link ArrayBufferPointer} of length. The Contents are undefined. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
-	public static ArrayBufferPointer malloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferPointer malloc(AllocatorFrame allocator, long length) {
 		return malloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -87,7 +86,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	/**
 	 * Allocates a new {@link ArrayBufferPointer} of length. The Contents are initialized to 0. If the {@link ArrayBufferPointer} is freed, it will free the memory.
 	 */
-	public static ArrayBufferPointer calloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferPointer calloc(AllocatorFrame allocator, long length) {
 		return calloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -118,7 +117,7 @@ public class ArrayBufferPointer extends AbstractArrayBuffer<ArrayBufferPointer> 
 	 * Creates a new {@link ArrayBufferPointer} from the given address and length. It will <b>NEVER</b> free the memory but will still throw {@link FreedException} if it is freed.
 	 */
 	public static ArrayBufferPointer wrap(long address, long length, @NotNull Object[] parents) {
-		return create(allocatorNoop(), address, length, parents);
+		return create(Allocator.noop(), address, length, parents);
 	}
 	
 	//object

@@ -3,7 +3,7 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferByte;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
@@ -14,7 +14,6 @@ import space.engine.sync.barrier.Barrier;
 import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.allocatorStack;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 
@@ -22,8 +21,8 @@ public class VkShaderModule implements FreeableWrapper {
 	
 	//alloc
 	public static VkShaderModule alloc(@NotNull VkDevice device, @NotNull byte[] src, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
-			ArrayBufferByte buffer = ArrayBufferByte.alloc(Allocator.allocatorHeap(), src, new Object[] {frame});
+		try (AllocatorFrame frame = Allocator.frame()) {
+			ArrayBufferByte buffer = ArrayBufferByte.alloc(Allocator.heap(), src, new Object[] {frame});
 			VkShaderModuleCreateInfo info = mallocStruct(frame, VkShaderModuleCreateInfo::create, VkShaderModuleCreateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 					0,

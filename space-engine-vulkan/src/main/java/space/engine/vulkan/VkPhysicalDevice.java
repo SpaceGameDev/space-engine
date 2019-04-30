@@ -3,7 +3,8 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkExtensionProperties;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.*;
 import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
 
@@ -30,16 +30,16 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 		this.vkInstance = instance;
 		this.storage = storageCreator.apply(this, parents);
 		
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			//properties
-			VkPhysicalDeviceProperties properties = mallocStruct(allocatorHeap(), VkPhysicalDeviceProperties::create, VkPhysicalDeviceProperties.SIZEOF, new Object[] {storage});
+			VkPhysicalDeviceProperties properties = mallocStruct(Allocator.heap(), VkPhysicalDeviceProperties::create, VkPhysicalDeviceProperties.SIZEOF, new Object[] {storage});
 			nvkGetPhysicalDeviceProperties(this, properties.address());
 			this.properties = properties;
 			
 			//queueProperties
 			PointerBufferInt count = PointerBufferInt.malloc(frame);
 			nvkGetPhysicalDeviceQueueFamilyProperties(this, count.address(), 0);
-			org.lwjgl.vulkan.VkQueueFamilyProperties.Buffer queuePropertiesBuffer = mallocBuffer(allocatorHeap(),
+			org.lwjgl.vulkan.VkQueueFamilyProperties.Buffer queuePropertiesBuffer = mallocBuffer(Allocator.heap(),
 																								 org.lwjgl.vulkan.VkQueueFamilyProperties::create,
 																								 org.lwjgl.vulkan.VkQueueFamilyProperties.SIZEOF,
 																								 count.getInt(),
@@ -52,7 +52,7 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 			VkExtensionProperties.Buffer extensionsBuffer;
 			while (true) {
 				assertVk(nvkEnumerateDeviceExtensionProperties(this, 0, count.address(), 0));
-				extensionsBuffer = mallocBuffer(allocatorHeap(), VkExtensionProperties::create, VkExtensionProperties.SIZEOF, count.getInt(), new Object[] {storage});
+				extensionsBuffer = mallocBuffer(Allocator.heap(), VkExtensionProperties::create, VkExtensionProperties.SIZEOF, count.getInt(), new Object[] {storage});
 				if (assertVk(nvkEnumerateDeviceExtensionProperties(this, 0, count.address(), extensionsBuffer.address())) == VK_SUCCESS)
 					break;
 				Freeable.freeObject(extensionsBuffer);

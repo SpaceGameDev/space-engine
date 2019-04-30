@@ -3,7 +3,8 @@ package space.engine.vulkan.surface;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkSurfaceCapabilitiesKHR;
 import org.lwjgl.vulkan.VkSurfaceFormatKHR;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferInt;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
@@ -39,10 +39,10 @@ public class VkSurfaceDetails implements FreeableWrapper {
 		//storage
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, physicalDevice, vkSurface));
 		
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			//capabilities
 			long surface = vkSurface.address();
-			VkSurfaceCapabilitiesKHR capabilities = mallocStruct(allocatorHeap(), VkSurfaceCapabilitiesKHR::create, VkSurfaceCapabilitiesKHR.SIZEOF, new Object[] {storage});
+			VkSurfaceCapabilitiesKHR capabilities = mallocStruct(Allocator.heap(), VkSurfaceCapabilitiesKHR::create, VkSurfaceCapabilitiesKHR.SIZEOF, new Object[] {storage});
 			assertVk(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, capabilities));
 			this.capabilities = capabilities;
 			
@@ -51,7 +51,7 @@ public class VkSurfaceDetails implements FreeableWrapper {
 			VkSurfaceFormatKHR.Buffer formatBuffer;
 			while (true) {
 				assertVk(nvkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count.address(), 0));
-				formatBuffer = mallocBuffer(allocatorHeap(), VkSurfaceFormatKHR::create, VkSurfaceFormatKHR.SIZEOF, count.getInt(), new Object[] {storage});
+				formatBuffer = mallocBuffer(Allocator.heap(), VkSurfaceFormatKHR::create, VkSurfaceFormatKHR.SIZEOF, count.getInt(), new Object[] {storage});
 				if (assertVk(nvkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count.address(), 0)) == VK_SUCCESS)
 					break;
 				Freeable.freeObject(formatBuffer);
@@ -64,7 +64,7 @@ public class VkSurfaceDetails implements FreeableWrapper {
 			ArrayBufferInt surfaceModeBuffer;
 			while (true) {
 				assertVk(nvkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count.address(), 0));
-				surfaceModeBuffer = ArrayBufferInt.malloc(allocatorHeap(), count.getInt(), new Object[] {frame});
+				surfaceModeBuffer = ArrayBufferInt.malloc(Allocator.heap(), count.getInt(), new Object[] {frame});
 				if (assertVk(nvkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count.address(), surfaceModeBuffer.address())) == VK_SUCCESS)
 					break;
 				Freeable.freeObject(surfaceModeBuffer);

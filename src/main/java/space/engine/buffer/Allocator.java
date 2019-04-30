@@ -1,70 +1,26 @@
 package space.engine.buffer;
 
-import space.engine.buffer.alloc.AllocatorStackImpl;
-import space.engine.freeableStorage.Freeable;
-import space.engine.unsafe.UnsafeInstance;
-import sun.misc.Unsafe;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 
-public abstract class Allocator {
-	
-	protected static final Unsafe UNSAFE = UnsafeInstance.getUnsafe();
+public interface Allocator {
 	
 	//default allocators
-	private static final Allocator ALLOCATOR_HEAP = new Allocator() {
-		@Override
-		public long malloc(long sizeOf) {
-			return UNSAFE.allocateMemory(sizeOf);
-		}
-		
-		@Override
-		public long calloc(long sizeOf) {
-			//calloc sadly not supported by Unsafe
-			long address = UNSAFE.allocateMemory(sizeOf);
-			UNSAFE.setMemory(address, sizeOf, (byte) 0);
-			return address;
-		}
-		
-		@Override
-		public void free(long address) {
-			UNSAFE.freeMemory(address);
-		}
-	};
-	
-	public static Allocator allocatorHeap() {
-		return ALLOCATOR_HEAP;
+	static Allocator heap() {
+		return DefaultAllocators.ALLOCATOR_HEAP;
 	}
 	
-	private static final ThreadLocal<AllocatorStack> ALLOCATOR_STACK = ThreadLocal.withInitial(() -> new AllocatorStackImpl(ALLOCATOR_HEAP, 64L * 1024, new Object[] {Freeable.ROOT_LIST}));
-	
-	public static AllocatorStack allocatorStack() {
-		return ALLOCATOR_STACK.get();
+	static AllocatorFrame frame() {
+		return DefaultAllocators.ALLOCATOR_STACK.get().frame();
 	}
 	
-	private static final Allocator ALLOCATOR_NOOP = new Allocator() {
-		@Override
-		public long malloc(long sizeOf) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		public long calloc(long sizeOf) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		public void free(long address) {
-		
-		}
-	};
-	
-	public static Allocator allocatorNoop() {
-		return ALLOCATOR_NOOP;
+	static Allocator noop() {
+		return DefaultAllocators.ALLOCATOR_NOOP;
 	}
 	
 	//object
-	public abstract long malloc(long sizeOf);
+	long malloc(long sizeOf);
 	
-	public abstract long calloc(long sizeOf);
+	long calloc(long sizeOf);
 	
-	public abstract void free(long address);
+	void free(long address);
 }

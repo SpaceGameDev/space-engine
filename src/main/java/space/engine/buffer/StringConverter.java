@@ -1,5 +1,6 @@
 package space.engine.buffer;
 
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferByte;
 import space.engine.buffer.array.ArrayBufferPointer;
 
@@ -11,7 +12,7 @@ public class StringConverter {
 	public static final byte NULL_CHARACTER = 0;
 	
 	//string[] to pointerbuffer
-	public static ArrayBufferPointer stringArrayToUTF8(AllocatorStack.Frame allocator, String[] strings, boolean nullTerm) {
+	public static ArrayBufferPointer stringArrayToUTF8(AllocatorFrame allocator, String[] strings, boolean nullTerm) {
 		return stringArrayToUTF8(allocator, strings, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -25,7 +26,7 @@ public class StringConverter {
 		return ptrBuffer;
 	}
 	
-	public static ArrayBufferPointer stringArrayToUTF16(AllocatorStack.Frame allocator, String[] strings, boolean nullTerm) {
+	public static ArrayBufferPointer stringArrayToUTF16(AllocatorFrame allocator, String[] strings, boolean nullTerm) {
 		return stringArrayToUTF8(allocator, strings, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -39,7 +40,7 @@ public class StringConverter {
 		return ptrBuffer;
 	}
 	
-	public static ArrayBufferPointer stringArrayToASCII(AllocatorStack.Frame allocator, String[] strings, boolean nullTerm) {
+	public static ArrayBufferPointer stringArrayToASCII(AllocatorFrame allocator, String[] strings, boolean nullTerm) {
 		return stringArrayToUTF8(allocator, strings, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -54,7 +55,7 @@ public class StringConverter {
 	}
 	
 	//string to buffer
-	public static ArrayBufferByte stringToUTF8(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+	public static ArrayBufferByte stringToUTF8(AllocatorFrame allocator, String str, boolean nullTerm) {
 		return stringToUTF8(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -67,7 +68,7 @@ public class StringConverter {
 		return buffer;
 	}
 	
-	public static ArrayBufferByte stringToUTF16(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+	public static ArrayBufferByte stringToUTF16(AllocatorFrame allocator, String str, boolean nullTerm) {
 		return stringToUTF16(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -82,7 +83,7 @@ public class StringConverter {
 		return buffer;
 	}
 	
-	public static ArrayBufferByte stringToASCII(AllocatorStack.Frame allocator, String str, boolean nullTerm) {
+	public static ArrayBufferByte stringToASCII(AllocatorFrame allocator, String str, boolean nullTerm) {
 		return stringToASCII(allocator, str, nullTerm, EMPTY_OBJECT_ARRAY);
 	}
 	

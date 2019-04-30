@@ -6,8 +6,7 @@ import org.lwjgl.vulkan.VkDeviceCreateInfo;
 import org.lwjgl.vulkan.VkDeviceQueueCreateInfo;
 import org.lwjgl.vulkan.VkDeviceQueueCreateInfo.Buffer;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferFloat;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
@@ -26,7 +25,6 @@ import java.util.function.Supplier;
 import static org.lwjgl.system.JNI.callPPV;
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorStack;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocBuffer;
 import static space.engine.vulkan.VkException.assertVk;
@@ -58,7 +56,7 @@ public class VkDevice extends org.lwjgl.vulkan.VkDevice implements FreeableWrapp
 			return request;
 		}
 		
-		public VkDeviceQueueCreateInfo.Buffer generateDeviceQueueRequestCreateInfoBuffer(AllocatorStack.Frame allocator) {
+		public VkDeviceQueueCreateInfo.Buffer generateDeviceQueueRequestCreateInfoBuffer(AllocatorFrame allocator) {
 			return generateDeviceQueueRequestCreateInfoBuffer(allocator, EMPTY_OBJECT_ARRAY);
 		}
 		
@@ -94,7 +92,7 @@ public class VkDevice extends org.lwjgl.vulkan.VkDevice implements FreeableWrapp
 			if (requestsFiltered == null)
 				throw new IllegalStateException("already filled out QueueRequests");
 			
-			try (Frame frame = allocatorStack().frame()) {
+			try (AllocatorFrame frame = Allocator.frame()) {
 				PointerBufferPointer queue = PointerBufferPointer.malloc(frame);
 				for (QueueRequest[] queueRequestByFamily : requestsFiltered) {
 					for (int j = 0; j < queueRequestByFamily.length; j++) {
@@ -129,7 +127,7 @@ public class VkDevice extends org.lwjgl.vulkan.VkDevice implements FreeableWrapp
 	
 	//alloc
 	public static VkDevice alloc(@NotNull VkDeviceCreateInfo info, @NotNull VkPhysicalDevice physicalDevice, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer device = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateDevice(physicalDevice, info.address(), 0, device.address()));
 			return create(device.getPointer(), physicalDevice, info, parents);

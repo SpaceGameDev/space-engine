@@ -6,23 +6,22 @@ import org.lwjgl.vulkan.VkInstanceCreateInfo.Buffer;
 import space.engine.buffer.AbstractBuffer;
 import space.engine.buffer.AbstractBuffer.Storage;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.freeableStorage.Freeable;
 
 import static org.junit.Assert.*;
-import static space.engine.buffer.Allocator.allocatorNoop;
 import static space.engine.lwjgl.LwjglStructAllocator.*;
 
 public class LwjglStructAllocatorTest {
 	
 	@Test
 	public void testStructAlloc() {
-		try (Frame frame = Allocator.allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			validateStruct(mallocStruct(frame, VkInstanceCreateInfo::create, VkInstanceCreateInfo.SIZEOF), frame);
 			VkInstanceCreateInfo calloc = validateStruct(callocStruct(frame, VkInstanceCreateInfo::create, VkInstanceCreateInfo.SIZEOF), frame);
 			assertEquals(calloc.enabledExtensionCount(), 0);
 			
-			VkInstanceCreateInfo wrap = validateStruct(wrapStruct(VkInstanceCreateInfo::create, calloc.address()), allocatorNoop());
+			VkInstanceCreateInfo wrap = validateStruct(wrapStruct(VkInstanceCreateInfo::create, calloc.address()), Allocator.noop());
 			calloc.flags(1);
 			assertEquals(wrap.flags(), 1);
 		}
@@ -39,12 +38,12 @@ public class LwjglStructAllocatorTest {
 	
 	@Test
 	public void testBufferAlloc() {
-		try (Frame frame = Allocator.allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			validateBuffer(mallocBuffer(frame, VkInstanceCreateInfo::create, VkInstanceCreateInfo.SIZEOF, 5), 5, frame);
 			Buffer calloc = validateBuffer(callocBuffer(frame, VkInstanceCreateInfo::create, VkInstanceCreateInfo.SIZEOF, 6), 6, frame);
 			assertEquals(calloc.enabledExtensionCount(), 0);
 			
-			Buffer wrap = validateBuffer(wrapBuffer(VkInstanceCreateInfo::create, calloc.address(), 3), 3, allocatorNoop());
+			Buffer wrap = validateBuffer(wrapBuffer(VkInstanceCreateInfo::create, calloc.address(), 3), 3, Allocator.noop());
 			calloc.get(2).flags(1);
 			assertEquals(wrap.get(2).flags(), 1);
 		}

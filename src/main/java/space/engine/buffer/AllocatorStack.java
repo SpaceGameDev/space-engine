@@ -1,16 +1,14 @@
 package space.engine.buffer;
 
-import space.engine.freeableStorage.Freeable;
+import org.jetbrains.annotations.NotNull;
+import space.engine.freeableStorage.stack.FreeableStack;
 
-public abstract class AllocatorStack {
+public interface AllocatorStack extends FreeableStack {
 	
-	public abstract Frame frame();
+	@Override
+	@NotNull AllocatorFrame frame();
 	
-	public abstract class Frame extends Allocator implements Freeable, AutoCloseable {
-		
-		@Override
-		public void close() {
-			free();
-		}
+	interface AllocatorFrame extends FreeableStack.Frame, Allocator {
+	
 	}
 }

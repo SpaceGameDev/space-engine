@@ -2,7 +2,7 @@ package space.engine.buffer.pointer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
@@ -10,7 +10,6 @@ import space.engine.primitive.Primitive;
 import java.nio.LongBuffer;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
 public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> {
@@ -22,7 +21,7 @@ public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> 
 	/**
 	 * Allocates a new {@link PointerBufferLong} and fills it with the supplied value. If the {@link PointerBufferLong} is freed, it will free the memory.
 	 */
-	public static PointerBufferLong alloc(AllocatorStack.Frame allocator, long value) {
+	public static PointerBufferLong alloc(AllocatorFrame allocator, long value) {
 		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -38,7 +37,7 @@ public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> 
 	/**
 	 * Allocates a new {@link PointerBufferLong}. The Contents are undefined. If the {@link PointerBufferLong} is freed, it will free the memory.
 	 */
-	public static PointerBufferLong malloc(AllocatorStack.Frame allocator) {
+	public static PointerBufferLong malloc(AllocatorFrame allocator) {
 		return malloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -52,7 +51,7 @@ public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> 
 	/**
 	 * Allocates a new {@link PointerBufferLong}. The Contents are initialized to 0. If the {@link PointerBufferLong} is freed, it will free the memory.
 	 */
-	public static PointerBufferLong calloc(AllocatorStack.Frame allocator) {
+	public static PointerBufferLong calloc(AllocatorFrame allocator) {
 		return calloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -83,7 +82,7 @@ public class PointerBufferLong extends AbstractPointerBuffer<PointerBufferLong> 
 	 * Creates a new {@link PointerBufferLong} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
 	 */
 	public static PointerBufferLong wrap(long address, @NotNull Object[] parents) {
-		return create(allocatorNoop(), address, parents);
+		return create(Allocator.noop(), address, parents);
 	}
 	
 	//object

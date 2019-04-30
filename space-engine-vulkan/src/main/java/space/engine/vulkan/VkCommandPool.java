@@ -3,7 +3,8 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
@@ -15,7 +16,6 @@ import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.allocatorStack;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
@@ -24,7 +24,7 @@ public class VkCommandPool implements FreeableWrapper {
 	
 	//alloc
 	public static @NotNull VkCommandPool alloc(VkCommandPoolCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateCommandPool(device, info.address(), 0, ptr.address()));
 			return create(ptr.getPointer(), device, parents);
@@ -93,7 +93,7 @@ public class VkCommandPool implements FreeableWrapper {
 	
 	//allocCmdBuffer
 	public VkCommandBuffer allocCmdBuffer(int level, Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 					0,
@@ -109,7 +109,7 @@ public class VkCommandPool implements FreeableWrapper {
 	}
 	
 	public VkCommandBuffer[] allocCmdBuffers(int level, int count, Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 					0,

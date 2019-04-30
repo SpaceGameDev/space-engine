@@ -3,7 +3,7 @@ package space.engine.buffer.array;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
@@ -14,7 +14,6 @@ import java.util.stream.DoubleStream;
 import java.util.stream.LongStream;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorNoop;
 import static sun.misc.Unsafe.*;
 
 public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
@@ -26,7 +25,7 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	/**
 	 * Allocates a new {@link ArrayBufferDouble} and fills it with the contents of the array. If the {@link ArrayBufferDouble} is freed, it will free the memory.
 	 */
-	public static ArrayBufferDouble alloc(AllocatorStack.Frame allocator, double[] array) {
+	public static ArrayBufferDouble alloc(AllocatorFrame allocator, double[] array) {
 		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -42,7 +41,7 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	/**
 	 * Allocates a new {@link ArrayBufferDouble} of length. The Contents are undefined. If the {@link ArrayBufferDouble} is freed, it will free the memory.
 	 */
-	public static ArrayBufferDouble malloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferDouble malloc(AllocatorFrame allocator, long length) {
 		return malloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -56,7 +55,7 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	/**
 	 * Allocates a new {@link ArrayBufferDouble} of length. The Contents are initialized to 0. If the {@link ArrayBufferDouble} is freed, it will free the memory.
 	 */
-	public static ArrayBufferDouble calloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferDouble calloc(AllocatorFrame allocator, long length) {
 		return calloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -87,7 +86,7 @@ public class ArrayBufferDouble extends AbstractArrayBuffer<ArrayBufferDouble> {
 	 * Creates a new {@link ArrayBufferDouble} from the given address and length. It will <b>NEVER</b> free the memory but will still throw {@link FreedException} if it is freed.
 	 */
 	public static ArrayBufferDouble wrap(long address, long length, @NotNull Object[] parents) {
-		return create(allocatorNoop(), address, length, parents);
+		return create(Allocator.noop(), address, length, parents);
 	}
 	
 	//object
