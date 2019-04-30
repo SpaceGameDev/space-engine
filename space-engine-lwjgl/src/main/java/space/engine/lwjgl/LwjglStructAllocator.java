@@ -7,6 +7,8 @@ import space.engine.buffer.AbstractBuffer.Storage;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 
+import java.util.function.Consumer;
+
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 
 public class LwjglStructAllocator {
@@ -52,6 +54,27 @@ public class LwjglStructAllocator {
 	public interface StructCreator<T extends Struct> {
 		
 		T create(long address);
+	}
+	
+	//buffer generator
+	@SafeVarargs
+	public static <T extends Struct, B extends StructBuffer<T, B>> B allocBuffer(AllocatorFrame allocator, BufferCreator<B> create, long sizeOf, Consumer<T>... generator) {
+		return allocBuffer(allocator, create, sizeOf, EMPTY_OBJECT_ARRAY, generator);
+	}
+	
+	@SafeVarargs
+	public static <T extends Struct, B extends StructBuffer<T, B>> B allocBuffer(Allocator allocator, BufferCreator<B> create, long sizeOf, Object[] parents, Consumer<T>... generator) {
+		B b = mallocBuffer(allocator, create, sizeOf, generator.length, parents);
+		for (int i = 0; i < generator.length; i++)
+			generator[i].accept(b.get(i));
+		return b;
+	}
+	
+	//buffer wrap
+	public static <T extends Struct, B extends StructBuffer<T, B>> B wrapBuffer(BufferCreator<B> create, T struct) {
+		B buffer = create.create(struct.address(), 1);
+		Attachment.setAttachment(buffer, Attachment.getAttachment(struct));
+		return buffer;
 	}
 	
 	//buffer

@@ -54,4 +54,12 @@ class Attachment {
 	public static void setAttachment(@NotNull CustomBuffer<?> struct, Object att) {
 		UNSAFE.putObject(struct, OFFSET_CUSTOM_BUFFER_CONTAINER, att);
 	}
+	
+	public static Object getAttachment(@NotNull Struct struct) {
+		return UNSAFE.getObject(struct, OFFSET_STRUCT_CONTAINER);
+	}
+	
+	public static Object getAttachment(@NotNull CustomBuffer<?> struct) {
+		return UNSAFE.getObject(struct, OFFSET_CUSTOM_BUFFER_CONTAINER);
+	}
 }
