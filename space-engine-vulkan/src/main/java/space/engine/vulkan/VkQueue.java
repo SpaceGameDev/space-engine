@@ -1,15 +1,12 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.vulkan.VkSubmitInfo;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 
 import java.util.function.BiFunction;
 
-import static org.lwjgl.vulkan.VK10.vkQueueSubmit;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
-import static space.engine.vulkan.VkException.assertVk;
 
 public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper {
 	
@@ -63,14 +60,5 @@ public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper
 	@Override
 	public @NotNull Freeable getStorage() {
 		return storage;
-	}
-	
-	//methods
-	public void submit(VkSubmitInfo info) {
-		assertVk(vkQueueSubmit(this, info, 0));
-	}
-	
-	public void submit(VkSubmitInfo.Buffer info) {
-		assertVk(vkQueueSubmit(this, info, 0));
 	}
 }
