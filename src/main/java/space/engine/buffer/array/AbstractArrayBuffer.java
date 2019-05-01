@@ -1,13 +1,12 @@
 package space.engine.buffer.array;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.annotation.Self;
 import space.engine.buffer.AbstractBuffer;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.Buffer;
 import space.engine.primitive.Primitive;
 
-public abstract class AbstractArrayBuffer<@Self SELF extends AbstractArrayBuffer<SELF>> extends AbstractBuffer {
+public abstract class AbstractArrayBuffer<SELF extends AbstractArrayBuffer<SELF>> extends AbstractBuffer {
 	
 	protected final long length;
 	

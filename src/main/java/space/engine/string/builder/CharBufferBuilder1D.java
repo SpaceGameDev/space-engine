@@ -2,11 +2,10 @@ package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.ArrayUtils;
-import space.engine.annotation.Self;
 
 import java.util.Arrays;
 
-public class CharBufferBuilder1D<@Self SELF extends CharBufferBuilder1D<SELF>> implements IStringBuilder1D<SELF> {
+public class CharBufferBuilder1D<SELF extends CharBufferBuilder1D<SELF>> implements IStringBuilder1D<SELF> {
 	
 	public static final int defaultCapacity = 16;
 	public static final int expandShift = 1;
