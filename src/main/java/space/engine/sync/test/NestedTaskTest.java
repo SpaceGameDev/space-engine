@@ -35,7 +35,7 @@ public class NestedTaskTest {
 							 .collect(Collectors.toList())
 			).await();
 		} finally {
-			Side.exit();
+			Side.exit().awaitUninterrupted();
 		}
 	}
 }
