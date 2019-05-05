@@ -30,7 +30,7 @@ public class LotsOfObjectsTest {
 										   + " " + ((double) (count * (count - 1)) / (timeNeeded / 1E9d)) + "tr/s");
 			}
 		} finally {
-			Side.exit();
+			Side.exit().awaitUninterrupted();
 		}
 	}
 	

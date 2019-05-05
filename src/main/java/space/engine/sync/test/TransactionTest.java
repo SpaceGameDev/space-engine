@@ -50,7 +50,7 @@ public class TransactionTest {
 				run(i);
 			}
 		} finally {
-			Side.exit();
+			Side.exit().awaitUninterrupted();
 		}
 	}
 	

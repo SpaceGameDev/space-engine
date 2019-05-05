@@ -1,10 +1,13 @@
 package space.engine.freeableStorage;
 
 import org.jetbrains.annotations.Nullable;
+import space.engine.Side;
+import space.engine.event.EventEntry;
 import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.logger.NullLogger;
 import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.sync.Tasks.RunnableWithDelay;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -17,12 +20,10 @@ public final class FreeableStorageCleaner {
 	//the QUEUE
 	public static final ReferenceQueue<Object> QUEUE = new ReferenceQueue<>();
 	
-	static {
-		initialize();
-	}
+	//exit event entry
+	public static final EventEntry<RunnableWithDelay> EXIT_EVENT_ENTRY_FREEABLE_ROOT_LIST_FREE;
 	
 	//instance management
-	private static boolean initWasCalled = false;
 	@Nullable
 	private static ThreadInfo cleanupThreadInfo;
 	
@@ -43,6 +44,38 @@ public final class FreeableStorageCleaner {
 	public static void setCleanupLogger(Logger baseLogger, boolean debug) {
 		FreeableStorageCleaner.cleanupLogger = baseLogger.subLogger("Cleanup");
 		FreeableStorageCleaner.cleanupLoggerDebug = debug;
+	}
+	
+	//static init
+	static {
+		startCleanupThread();
+		
+		Side.EVENT_EXIT.addHook(EXIT_EVENT_ENTRY_FREEABLE_ROOT_LIST_FREE = new EventEntry<>(() -> {
+			Logger logger = cleanupLogger.subLogger("final");
+			logger.log(INFO, "Final cleanup...");
+			logger.log(INFO, "1. Stopping cleanup thread");
+			try {
+				stopAndJoinCleanupThread();
+			} catch (InterruptedException ignore) {
+			
+			}
+			
+			logger.log(INFO, "2. ROOT_LIST free");
+			Freeable.ROOT_LIST.free().awaitUninterrupted();
+			
+			logger.log(INFO, "3. gc free");
+			System.gc();
+			System.runFinalization();
+			while (true) {
+				try {
+					handle(100);
+					break;
+				} catch (InterruptedException ignored) {
+				}
+			}
+			
+			logger.log(INFO, "Final cleanup complete!");
+		}, new EventEntry<?>[] {Side.EXIT_EVENT_ENTRY_POOL_EXIT}, new EventEntry<?>[] {Side.EXIT_EVENT_ENTRY_BEFORE_APPLICATION_SHUTDOWN}));
 	}
 	
 	//start
@@ -123,47 +156,5 @@ public final class FreeableStorageCleaner {
 	//isRunning
 	public static synchronized boolean hasCleanupThread() {
 		return cleanupThreadInfo != null;
-	}
-	
-	//finalCleanup
-	static void initialize() {
-		synchronized (FreeableStorageCleaner.class) {
-			if (initWasCalled)
-				return;
-			initWasCalled = true;
-		}
-		
-		startCleanupThread();
-		
-		Thread thread = new Thread(() -> {
-			Logger logger = cleanupLogger.subLogger("final");
-			logger.log(INFO, "Final cleanup...");
-			logger.log(INFO, "1. Stopping cleanup thread");
-			try {
-				stopAndJoinCleanupThread();
-			} catch (InterruptedException ignore) {
-				
-			}
-			
-			logger.log(INFO, "2. ROOT_LIST free");
-			Freeable.ROOT_LIST.free().awaitUninterrupted();
-			
-			logger.log(INFO, "3. gc free");
-			System.gc();
-			System.runFinalization();
-			while (true) {
-				try {
-					handle(100);
-					break;
-				} catch (InterruptedException ignored) {
-				}
-			}
-			
-			logger.log(INFO, "Final cleanup complete!");
-		});
-		thread.setName("FreeableStorageShutdown");
-		thread.setPriority(8);
-		thread.setDaemon(false);
-		Runtime.getRuntime().addShutdownHook(thread);
 	}
 }

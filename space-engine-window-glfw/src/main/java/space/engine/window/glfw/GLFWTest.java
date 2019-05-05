@@ -1,6 +1,7 @@
 package space.engine.window.glfw;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.Side;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.FreeableStorageCleaner;
 import space.engine.key.attribute.AttributeList;
@@ -155,7 +156,7 @@ public class GLFWTest {
 			windowfw.free();
 		}
 		logger.log(LogLevel.INFO, "Exit!");
-		System.exit(0);
+		Side.exit().awaitUninterrupted();
 	}
 	
 	public static class FboInfo {
