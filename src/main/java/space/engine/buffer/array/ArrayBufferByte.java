@@ -3,7 +3,7 @@ package space.engine.buffer.array;
 import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.exceptions.FreedException;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
@@ -12,7 +12,6 @@ import space.engine.primitive.Primitive;
 import java.nio.ByteBuffer;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorNoop;
 import static sun.misc.Unsafe.*;
 
 public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
@@ -24,7 +23,7 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	/**
 	 * Allocates a new {@link ArrayBufferByte} and fills it with the contents of the array. If the {@link ArrayBufferByte} is freed, it will free the memory.
 	 */
-	public static ArrayBufferByte alloc(AllocatorStack.Frame allocator, byte[] array) {
+	public static ArrayBufferByte alloc(AllocatorFrame allocator, byte[] array) {
 		return alloc(allocator, array, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -40,7 +39,7 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	/**
 	 * Allocates a new {@link ArrayBufferByte} of length. The Contents are undefined. If the {@link ArrayBufferByte} is freed, it will free the memory.
 	 */
-	public static ArrayBufferByte malloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferByte malloc(AllocatorFrame allocator, long length) {
 		return malloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -54,7 +53,7 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	/**
 	 * Allocates a new {@link ArrayBufferByte} of length. The Contents are initialized to 0. If the {@link ArrayBufferByte} is freed, it will free the memory.
 	 */
-	public static ArrayBufferByte calloc(AllocatorStack.Frame allocator, long length) {
+	public static ArrayBufferByte calloc(AllocatorFrame allocator, long length) {
 		return calloc(allocator, length, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -85,7 +84,7 @@ public class ArrayBufferByte extends AbstractArrayBuffer<ArrayBufferByte> {
 	 * Creates a new {@link ArrayBufferByte} from the given address and length. It will <b>NEVER</b> free the memory but will still throw {@link FreedException} if it is freed.
 	 */
 	public static ArrayBufferByte wrap(long address, long length, @NotNull Object[] parents) {
-		return create(allocatorNoop(), address, length, parents);
+		return create(Allocator.noop(), address, length, parents);
 	}
 	
 	//object

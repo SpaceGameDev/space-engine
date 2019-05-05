@@ -2,10 +2,9 @@ package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.engine.annotation.Self;
 import space.engine.string.toStringHelper.ToStringHelper;
 
-public interface IStringBuilder<@Self SELF extends IStringBuilder<SELF>> {
+public interface IStringBuilder<SELF extends IStringBuilder<SELF>> {
 	
 	//capacity
 	default boolean ensureCapacityIndex(int index) {

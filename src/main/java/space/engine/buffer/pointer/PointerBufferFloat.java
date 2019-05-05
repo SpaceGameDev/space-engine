@@ -2,7 +2,7 @@ package space.engine.buffer.pointer;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.NioBufferWrapper;
 import space.engine.primitive.JavaPrimitives;
 import space.engine.primitive.Primitive;
@@ -10,7 +10,6 @@ import space.engine.primitive.Primitive;
 import java.nio.FloatBuffer;
 
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
-import static space.engine.buffer.Allocator.allocatorNoop;
 
 //single
 public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat> {
@@ -22,7 +21,7 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	/**
 	 * Allocates a new {@link PointerBufferFloat} and fills it with the supplied value. If the {@link PointerBufferFloat} is freed, it will free the memory.
 	 */
-	public static PointerBufferFloat alloc(AllocatorStack.Frame allocator, float value) {
+	public static PointerBufferFloat alloc(AllocatorFrame allocator, float value) {
 		return alloc(allocator, value, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -38,7 +37,7 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	/**
 	 * Allocates a new {@link PointerBufferFloat}. The Contents are undefined. If the {@link PointerBufferFloat} is freed, it will free the memory.
 	 */
-	public static PointerBufferFloat malloc(AllocatorStack.Frame allocator) {
+	public static PointerBufferFloat malloc(AllocatorFrame allocator) {
 		return malloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -52,7 +51,7 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	/**
 	 * Allocates a new {@link PointerBufferFloat}. The Contents are initialized to 0. If the {@link PointerBufferFloat} is freed, it will free the memory.
 	 */
-	public static PointerBufferFloat calloc(AllocatorStack.Frame allocator) {
+	public static PointerBufferFloat calloc(AllocatorFrame allocator) {
 		return calloc(allocator, EMPTY_OBJECT_ARRAY);
 	}
 	
@@ -83,7 +82,7 @@ public class PointerBufferFloat extends AbstractPointerBuffer<PointerBufferFloat
 	 * Creates a new {@link PointerBufferFloat} from the given address. It will <b>NEVER</b> free the memory but will still throw {@link space.engine.baseobject.exceptions.FreedException} if it is freed.
 	 */
 	public static PointerBufferFloat wrap(long address, @NotNull Object[] parents) {
-		return create(allocatorNoop(), address, parents);
+		return create(Allocator.noop(), address, parents);
 	}
 	
 	//object

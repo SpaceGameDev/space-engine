@@ -3,7 +3,8 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkComponentMapping;
 import org.lwjgl.vulkan.VkImageViewCreateInfo;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
@@ -13,13 +14,12 @@ import space.engine.sync.barrier.Barrier;
 import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.*;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkImageView implements FreeableWrapper {
 	
-	public static final VkComponentMapping SWIZZLE_MASK_IDENTITY = mallocStruct(allocatorHeap(), VkComponentMapping::create, VkComponentMapping.SIZEOF, new Object[] {ROOT_LIST}).set(
+	public static final VkComponentMapping SWIZZLE_MASK_IDENTITY = mallocStruct(Allocator.heap(), VkComponentMapping::create, VkComponentMapping.SIZEOF, new Object[] {ROOT_LIST}).set(
 			VK_COMPONENT_SWIZZLE_IDENTITY,
 			VK_COMPONENT_SWIZZLE_IDENTITY,
 			VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -28,7 +28,7 @@ public class VkImageView implements FreeableWrapper {
 	
 	//alloc
 	public static @NotNull VkImageView alloc(@NotNull VkImageViewCreateInfo info, @NotNull VkImage image, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer imageViewPtr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateImageView(image.device(), info.address(), 0, imageViewPtr.address()));
 			return create(imageViewPtr.getPointer(), image, parents);

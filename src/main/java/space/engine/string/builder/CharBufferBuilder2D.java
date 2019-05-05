@@ -2,12 +2,11 @@ package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.ArrayUtils;
-import space.engine.annotation.Self;
 import space.engine.string.String2D;
 
 import java.util.Arrays;
 
-public class CharBufferBuilder2D<@Self SELF extends CharBufferBuilder2D<SELF>> implements IStringBuilder2D<SELF> {
+public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> implements IStringBuilder2D<SELF> {
 	
 	public static int defaultCapacity = 16;
 	public static int defaultHeight = 1;

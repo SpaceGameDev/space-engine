@@ -1,7 +1,6 @@
 package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.annotation.Self;
 import space.engine.delegate.specific.CharArrayStringIterable;
 import space.engine.string.CharSequence2D;
 import space.engine.string.ToString2D;
@@ -9,7 +8,7 @@ import space.engine.string.toStringHelper.ToStringHelper;
 
 import java.util.Iterator;
 
-public interface IStringBuilder2D<@Self SELF extends IStringBuilder2D<SELF>> extends IStringBuilder<SELF>, Iterable<String>, CharSequence2D {
+public interface IStringBuilder2D<SELF extends IStringBuilder2D<SELF>> extends IStringBuilder<SELF>, Iterable<String>, CharSequence2D {
 	
 	//capacity height
 	default boolean ensureHeightIndex(int index) {

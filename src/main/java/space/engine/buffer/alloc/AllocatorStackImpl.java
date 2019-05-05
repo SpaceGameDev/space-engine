@@ -5,47 +5,48 @@ import org.jetbrains.annotations.Nullable;
 import space.engine.buffer.AbstractBuffer.Storage;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack;
-import space.engine.freeableStorage.FreeableList;
-import space.engine.sync.barrier.Barrier;
+import space.engine.buffer.alloc.AllocatorStackImpl.AllocatorFrame;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
+import space.engine.freeableStorage.stack.AbstractFreeableStack;
+import space.engine.unsafe.UnsafeInstance;
+import sun.misc.Unsafe;
 
-public class AllocatorStackImpl extends AllocatorStack {
+public class AllocatorStackImpl extends AbstractFreeableStack<AllocatorFrame> implements AllocatorStack, FreeableWrapper {
 	
-	protected final @NotNull Allocator allocator;
+	private static Unsafe UNSAFE = UnsafeInstance.getUnsafe();
+	
 	protected final @NotNull Storage storage;
 	protected final long capacity;
 	
-	protected @Nullable Frame current;
-	
 	public AllocatorStackImpl(@NotNull Allocator allocator, long capacity, @NotNull Object[] parents) {
-		this.allocator = allocator;
 		this.capacity = capacity;
 		storage = new Storage(this, allocator, allocator.malloc(capacity), parents);
 	}
 	
 	@Override
-	public Frame frame() {
-		return current = new Frame(current);
+	public @NotNull Freeable getStorage() {
+		return storage;
 	}
 	
-	public class Frame extends AllocatorStack.Frame {
+	@Override
+	protected @NotNull AllocatorStackImpl.AllocatorFrame createFrame(@Nullable AllocatorStackImpl.AllocatorFrame prev) {
+		return new AllocatorFrame(prev);
+	}
+	
+	public class AllocatorFrame extends AbstractFreeableStack<AllocatorFrame>.Frame implements AllocatorStack.AllocatorFrame {
 		
-		protected @Nullable Frame prev;
 		protected long pointerStack;
-		private @Nullable FreeableList subList;
 		
-		public Frame(@Nullable Frame prev) {
-			this.prev = prev;
+		public AllocatorFrame(@Nullable AllocatorStackImpl.AllocatorFrame prev) {
+			super(prev);
 			this.pointerStack = prev != null ? prev.pointerStack : 0;
 		}
 		
-		public void checkThisIsTopFrame() {
-			if (current != this)
-				throw new RuntimeException("this frame is not the current frame");
-		}
-		
+		//allocator
 		@Override
 		public long malloc(long sizeOf) {
-			checkThisIsTopFrame();
+			assertTopFrame();
 			long oldPointerStack = pointerStack;
 			//align to 8
 			pointerStack += (sizeOf + 0x7) & ~0x7;
@@ -64,28 +65,6 @@ public class AllocatorStackImpl extends AllocatorStack {
 		@Override
 		public void free(long address) {
 		
-		}
-		
-		@Override
-		public @NotNull Barrier free() {
-			if (current != this)
-				throw new RuntimeException("popped frame is not current frame!");
-			current = prev;
-			prev = null;
-			return subList != null ? subList.free() : Barrier.ALWAYS_TRIGGERED_BARRIER;
-		}
-		
-		@Override
-		public boolean isFreed() {
-			return current == this;
-		}
-		
-		@Override
-		public @NotNull FreeableList getSubList() {
-			FreeableList subList = this.subList;
-			if (subList != null)
-				return subList;
-			return this.subList = new FreeableList();
 		}
 	}
 }

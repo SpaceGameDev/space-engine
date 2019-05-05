@@ -2,7 +2,8 @@ package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkGraphicsPipelineCreateInfo;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
@@ -12,7 +13,6 @@ import space.engine.sync.barrier.Barrier;
 import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.allocatorStack;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.vulkan.VkException.assertVk;
 
@@ -20,7 +20,7 @@ public class VkGraphicsPipeline implements FreeableWrapper {
 	
 	//alloc
 	public static @NotNull VkGraphicsPipeline alloc(VkGraphicsPipelineCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateGraphicsPipelines(device, 0, 1, info.address(), 0, ptr.address()));
 			return create(ptr.getPointer(), device, parents);

@@ -7,7 +7,8 @@ import org.lwjgl.vulkan.VkDebugUtilsMessengerCallbackDataEXT;
 import org.lwjgl.vulkan.VkDebugUtilsMessengerCallbackEXTI;
 import org.lwjgl.vulkan.VkDebugUtilsMessengerCreateInfoEXT;
 import org.lwjgl.vulkan.VkInstanceCreateInfo;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.buffer.pointer.PointerBufferPointer;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 import static org.lwjgl.system.JNI.callPJPV;
 import static org.lwjgl.vulkan.EXTDebugUtils.*;
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.buffer.Allocator.*;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
@@ -35,7 +35,7 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 	
 	//alloc
 	public static VkInstance alloc(@NotNull VkInstanceCreateInfo info, @NotNull Logger logger, boolean initDebugCallback, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer instance = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateInstance(info.address(), 0, instance.address()));
 			return create(instance.getPointer(), info, logger, initDebugCallback, parents);
@@ -60,7 +60,7 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 		
 		//debugMessenger
 		if (initDebugCallback) {
-			try (Frame frame = allocatorStack().frame()) {
+			try (AllocatorFrame frame = Allocator.frame()) {
 				VkDebugUtilsMessengerCreateInfoEXT debugInfo = mallocStruct(frame, VkDebugUtilsMessengerCreateInfoEXT::create, VkDebugUtilsMessengerCreateInfoEXT.SIZEOF).set(
 						VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
 						0,
@@ -83,10 +83,10 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 		
 		//physical devices
 		while (true) {
-			try (Frame frame = allocatorStack().frame()) {
+			try (AllocatorFrame frame = Allocator.frame()) {
 				PointerBufferInt count = PointerBufferInt.malloc(frame);
 				assertVk(nvkEnumeratePhysicalDevices(this, count.address(), 0));
-				ArrayBufferPointer devices = ArrayBufferPointer.malloc(allocatorHeap(), Integer.toUnsignedLong(count.getInt()), new Object[] {frame});
+				ArrayBufferPointer devices = ArrayBufferPointer.malloc(Allocator.heap(), Integer.toUnsignedLong(count.getInt()), new Object[] {frame});
 				if (assertVk(nvkEnumeratePhysicalDevices(this, count.address(), devices.address())) == VK_SUCCESS) {
 					this.physicalDevices = devices.stream()
 												  .mapToObj(phyPtr -> VkPhysicalDevice.wrap(phyPtr, this, new Object[] {this}))

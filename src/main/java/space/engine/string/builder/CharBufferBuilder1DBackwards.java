@@ -2,11 +2,10 @@ package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.ArrayUtils;
-import space.engine.annotation.Self;
 
 import java.util.Arrays;
 
-public class CharBufferBuilder1DBackwards<@Self SELF extends CharBufferBuilder1D<SELF>> extends CharBufferBuilder1D<SELF> {
+public class CharBufferBuilder1DBackwards<SELF extends CharBufferBuilder1D<SELF>> extends CharBufferBuilder1D<SELF> {
 	
 	public CharBufferBuilder1DBackwards() {
 		pos = buffer.length;

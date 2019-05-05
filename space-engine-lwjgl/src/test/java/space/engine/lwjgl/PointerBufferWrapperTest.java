@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.lwjgl.PointerBuffer;
 import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
@@ -16,7 +16,7 @@ public class PointerBufferWrapperTest {
 	
 	@Test
 	public void testWrapPointerBufferPointer() {
-		try (Frame frame = Allocator.allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer calloc = PointerBufferPointer.calloc(frame, EMPTY_OBJECT_ARRAY);
 			calloc.putPointer(42);
 			PointerBuffer wrap = PointerBufferWrapper.wrapPointer(calloc);
@@ -28,7 +28,7 @@ public class PointerBufferWrapperTest {
 	
 	@Test
 	public void testWrapArrayBufferPointer() {
-		try (Frame frame = Allocator.allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			ArrayBufferPointer calloc = ArrayBufferPointer.calloc(frame, 5, EMPTY_OBJECT_ARRAY);
 			calloc.putPointer(2, 42);
 			assertEquals(0, calloc.getPointer(0));

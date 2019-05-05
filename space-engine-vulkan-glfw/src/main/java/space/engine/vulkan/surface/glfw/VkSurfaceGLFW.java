@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.vulkan.VkExtensionProperties;
-import space.engine.buffer.AllocatorStack.Frame;
+import space.engine.buffer.Allocator;
+import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.StringConverter;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.vulkan.VkExtensions;
@@ -17,7 +18,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static space.engine.buffer.Allocator.allocatorStack;
 import static space.engine.lwjgl.PointerBufferWrapper.streamPointerBuffer;
 import static space.engine.vulkan.VkException.assertVk;
 
@@ -54,7 +54,7 @@ public class VkSurfaceGLFW {
 	
 	//surface creation
 	public static @NotNull VkSurface<GLFWWindow> createSurfaceFromGlfwWindow(@NotNull VkInstance instance, @NotNull GLFWWindow window, @NotNull Object[] parents) {
-		try (Frame frame = allocatorStack().frame()) {
+		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer surfacePtr = PointerBufferPointer.malloc(frame);
 			assertVk(GLFWVulkan.nglfwCreateWindowSurface(instance.address(), window.getWindowPointer(), 0, surfacePtr.address()));
 			return VkSurface.create(surfacePtr.getPointer(), instance, window, parents);

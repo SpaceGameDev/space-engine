@@ -2,22 +2,8 @@ plugins {
 	id 'java-library'
 }
 
-import org.gradle.internal.os.OperatingSystem
-
 ext {
 	lwjglVersion = '3.2.1'
-
-	switch (OperatingSystem.current()) {
-		case OperatingSystem.WINDOWS:
-			lwjglNatives = "natives-windows"
-			break
-		case OperatingSystem.LINUX:
-			lwjglNatives = "natives-linux"
-			break
-		case OperatingSystem.MAC_OS:
-			lwjglNatives = "natives-macos"
-			break
-	}
 }
 
 allprojects {

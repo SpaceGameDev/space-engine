@@ -1,9 +1,8 @@
 package space.engine.string.builder;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.annotation.Self;
 
-public interface IStringBuilder1D<@Self SELF extends IStringBuilder1D<SELF>> extends IStringBuilder<SELF>, CharSequence {
+public interface IStringBuilder1D<SELF extends IStringBuilder1D<SELF>> extends IStringBuilder<SELF>, CharSequence {
 	
 	//pos
 	@NotNull SELF setLength(int length);

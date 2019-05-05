@@ -26,27 +26,33 @@ public abstract class FreeableStorage extends PhantomReference<Object> implement
 	
 	//free
 	@Override
-	public synchronized final @NotNull Barrier free() {
-		if (isFreed)
-			return Objects.requireNonNull(freeBarrier);
-		isFreed = true;
-		
-		FreeableList subList = this.subList;
-		if (subList != null) {
-			Barrier subListFree = subList.free();
-			if (subListFree != Barrier.ALWAYS_TRIGGERED_BARRIER) {
-				
-				//we need to wait for subList to free
-				freeBarrier = Tasks.runnable(() -> {
-					throw new DelayTask(handleFree());
-				}).submit(subListFree);
-				freeBarrier.addHook(this::removeEntries);
-				return freeBarrier;
+	public final @NotNull Barrier free() {
+		synchronized (this) {
+			if (isFreed)
+				return Objects.requireNonNull(freeBarrier);
+			isFreed = true;
+			
+			FreeableList subList = this.subList;
+			if (subList != null) {
+				Barrier subListFree = subList.free();
+				if (subListFree != Barrier.ALWAYS_TRIGGERED_BARRIER) {
+					
+					//we need to wait for subList to free
+					freeBarrier = Tasks.runnable(() -> {
+						Barrier barrier = handleFree();
+						if (barrier != Barrier.ALWAYS_TRIGGERED_BARRIER)
+							throw new DelayTask(barrier);
+					}).submit(subListFree);
+					freeBarrier.addHook(this::removeEntries);
+					return freeBarrier;
+				}
 			}
+			
+			//no waiting for subList
+			freeBarrier = handleFree();
 		}
 		
-		//no waiting for subList
-		freeBarrier = handleFree();
+		//DON'T sync when calling removeEntries() as it will go UP the Freeable-tree (instead of the always down) and cause deadlocks
 		freeBarrier.addHook(this::removeEntries);
 		return freeBarrier;
 	}
