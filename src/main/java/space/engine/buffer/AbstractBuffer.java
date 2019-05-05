@@ -5,9 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import space.engine.baseobject.ToString;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
-import space.engine.math.MathUtils;
-import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder2D;
 import space.engine.string.toStringHelper.ToStringHelper;
 import space.engine.string.toStringHelper.ToStringHelper.ToStringHelperObjectsInstance;
 import space.engine.sync.barrier.Barrier;
@@ -55,26 +52,6 @@ public abstract class AbstractBuffer extends Buffer implements FreeableWrapper, 
 	}
 	
 	//toString
-	@Override
-	public @NotNull String2D dump() {
-		long capacityLong = sizeOf();
-		if (capacityLong > (1 << 30))
-			return new String2D("Buffer too big!");
-		int capacity = (int) capacityLong;
-		long address = address();
-		
-		CharBufferBuilder2D<?> b = new CharBufferBuilder2D<>(2, capacity * 3);
-		for (int i = 0; i < capacity; i++) {
-			int pos = i * 3;
-			byte d = UNSAFE.getByte(address + i);
-			
-			if (i % 8 == 0)
-				b.setY(0).setX(pos).append(Integer.toHexString(i));
-			b.setY(1).setX(pos).append(MathUtils.DIGITS[(d >>> 4) & 0xF]).append(MathUtils.DIGITS[d & 0xF]);
-		}
-		return b.toString2D();
-	}
-	
 	@Override
 	@NotNull
 	public <TSHTYPE> TSHTYPE toTSH(@NotNull ToStringHelper<TSHTYPE> api) {

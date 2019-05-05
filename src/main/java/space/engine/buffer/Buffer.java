@@ -1,7 +1,11 @@
 package space.engine.buffer;
 
+import org.jetbrains.annotations.NotNull;
 import space.engine.baseobject.Dumpable;
 import space.engine.freeableStorage.Freeable;
+import space.engine.math.MathUtils;
+import space.engine.string.String2D;
+import space.engine.string.builder.CharBufferBuilder2D;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
@@ -32,6 +36,29 @@ public abstract class Buffer implements Freeable, Dumpable {
 	public abstract long address();
 	
 	public abstract long sizeOf();
+	
+	//dump
+	@Override
+	public @NotNull String2D dump() {
+		return dumpBuffer(address(), sizeOf());
+	}
+	
+	public static String2D dumpBuffer(long address, long length) {
+		if (length > (1 << 30))
+			return new String2D("Buffer too big!");
+		int lengthInt = (int) length;
+		
+		CharBufferBuilder2D<?> b = new CharBufferBuilder2D<>(2, lengthInt * 3);
+		for (int i = 0; i < lengthInt; i++) {
+			int pos = i * 3;
+			byte d = UNSAFE.getByte(address + i);
+			
+			if (i % 8 == 0)
+				b.setY(0).setX(pos).append(Integer.toHexString(i));
+			b.setY(1).setX(pos).append(MathUtils.DIGITS[(d >>> 4) & 0xF]).append(MathUtils.DIGITS[d & 0xF]);
+		}
+		return b.toString2D();
+	}
 	
 	//container
 	private Object container;
