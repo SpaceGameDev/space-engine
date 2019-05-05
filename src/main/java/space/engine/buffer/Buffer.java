@@ -60,6 +60,13 @@ public abstract class Buffer implements Freeable, Dumpable {
 		return b.toString2D();
 	}
 	
+	//copy
+	public static void copyMemory(Buffer src, long srcOffset, Buffer dest, long destOffset, long length) {
+		Buffer.checkFromIndexSize(srcOffset, length, src.sizeOf());
+		Buffer.checkFromIndexSize(destOffset, length, dest.sizeOf());
+		UNSAFE.copyMemory(src.address() + srcOffset, dest.address() + destOffset, length);
+	}
+	
 	//container
 	private Object container;
 	
