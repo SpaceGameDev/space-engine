@@ -11,6 +11,7 @@ import space.engine.freeableStorage.Freeable.FreeableWrapper;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -97,6 +98,26 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 	
 	public @NotNull Collection<VkQueueFamilyProperties> queueProperties() {
 		return queueProperties;
+	}
+	
+	public Collection<VkQueueFamilyProperties> findQueueFamily(int queueFlags) {
+		return findQueueFamily(queueFlags, 0);
+	}
+	
+	public Collection<VkQueueFamilyProperties> findQueueFamily(int queueFlags, int withoutFlags) {
+		return queueProperties.stream()
+							  .filter(family -> (family.queueFlags() & queueFlags) == queueFlags && (family.queueFlags() & withoutFlags) == 0)
+							  .collect(Collectors.toUnmodifiableList());
+	}
+	
+	public Optional<VkQueueFamilyProperties> findQueueFamilySingle(int queueFlags) {
+		return findQueueFamilySingle(queueFlags, 0);
+	}
+	
+	public Optional<VkQueueFamilyProperties> findQueueFamilySingle(int queueFlags, int withoutFlags) {
+		return queueProperties.stream()
+							  .filter(family -> (family.queueFlags() & queueFlags) == queueFlags && (family.queueFlags() & withoutFlags) == 0)
+							  .findFirst();
 	}
 	
 	//extensions
