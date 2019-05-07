@@ -7,7 +7,7 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.StringConverter;
 import space.engine.buffer.pointer.PointerBufferPointer;
-import space.engine.vulkan.VkInstance;
+import space.engine.vulkan.VkPhysicalDevice;
 import space.engine.vulkan.surface.VkSurface;
 import space.engine.window.glfw.GLFWWindow;
 import space.engine.window.glfw.GLFWWindowFramework;
@@ -49,11 +49,11 @@ public class VkSurfaceGLFW {
 	}
 	
 	//surface creation
-	public static @NotNull VkSurface<GLFWWindow> createSurfaceFromGlfwWindow(@NotNull VkInstance instance, @NotNull GLFWWindow window, @NotNull Object[] parents) {
+	public static @NotNull VkSurface<GLFWWindow> createSurfaceFromGlfwWindow(@NotNull VkPhysicalDevice physicalDevice, @NotNull GLFWWindow window, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer surfacePtr = PointerBufferPointer.malloc(frame);
-			assertVk(GLFWVulkan.nglfwCreateWindowSurface(instance.address(), window.getWindowPointer(), 0, surfacePtr.address()));
-			return VkSurface.create(surfacePtr.getPointer(), instance, window, parents);
+			assertVk(GLFWVulkan.nglfwCreateWindowSurface(physicalDevice.instance().address(), window.getWindowPointer(), 0, surfacePtr.address()));
+			return VkSurface.create(surfacePtr.getPointer(), physicalDevice, window, parents);
 		}
 	}
 }

@@ -32,27 +32,27 @@ import static space.engine.vulkan.VkException.assertVk;
 public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 	
 	//alloc
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> alloc(VkSwapchainCreateInfoKHR info, @NotNull VkDevice device, @NotNull VkSurfaceDetails<WINDOW> swapChainDetails, @NotNull Object[] parents) {
+	public static <WINDOW extends Window> VkSwapchain<WINDOW> alloc(VkSwapchainCreateInfoKHR info, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer swapChainPtr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateSwapchainKHR(device, info.address(), 0, swapChainPtr.address()));
-			return create(swapChainPtr.getPointer(), device, swapChainDetails, info.imageFormat(), parents);
+			return create(swapChainPtr.getPointer(), device, surface, info.imageFormat(), parents);
 		}
 	}
 	
 	//create
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> create(long address, @NotNull VkDevice device, @NotNull VkSurfaceDetails<WINDOW> swapChainDetails, int imageFormat, @NotNull Object[] parents) {
-		return new VkSwapchain<>(address, device, swapChainDetails, imageFormat, Storage::new, parents);
+	public static <WINDOW extends Window> VkSwapchain<WINDOW> create(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull Object[] parents) {
+		return new VkSwapchain<>(address, device, surface, imageFormat, Storage::new, parents);
 	}
 	
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> wrap(long address, @NotNull VkDevice device, @NotNull VkSurfaceDetails<WINDOW> swapChainDetails, int imageFormat, @NotNull Object[] parents) {
-		return new VkSwapchain<>(address, device, swapChainDetails, imageFormat, Freeable::createDummy, parents);
+	public static <WINDOW extends Window> VkSwapchain<WINDOW> wrap(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull Object[] parents) {
+		return new VkSwapchain<>(address, device, surface, imageFormat, Freeable::createDummy, parents);
 	}
 	
 	//const
-	public VkSwapchain(long address, @NotNull VkDevice device, @NotNull VkSurfaceDetails<WINDOW> swapChainDetails, int imageFormat, @NotNull BiFunction<VkSwapchain, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkSwapchain(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull BiFunction<VkSwapchain, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.device = device;
-		this.swapChainDetails = swapChainDetails;
+		this.surface = surface;
 		this.address = address;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 		
@@ -92,18 +92,14 @@ public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 	
 	//parents
 	private final @NotNull VkDevice device;
-	private final @NotNull VkSurfaceDetails<WINDOW> swapChainDetails;
+	private final @NotNull VkSurface<WINDOW> surface;
 	
 	public @NotNull VkDevice device() {
 		return device;
 	}
 	
-	public @NotNull VkSurfaceDetails<WINDOW> swapChainDetails() {
-		return swapChainDetails;
-	}
-	
-	public VkSurface<?> surface() {
-		return swapChainDetails.surface();
+	public @NotNull VkSurface<WINDOW> surface() {
+		return surface;
 	}
 	
 	//storage
