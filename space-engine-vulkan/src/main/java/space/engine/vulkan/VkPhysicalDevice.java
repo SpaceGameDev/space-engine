@@ -8,7 +8,7 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
-import space.engine.vulkan.exception.UnsupportedDeviceException;
+import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
 import java.util.Collection;
 import java.util.List;
@@ -137,12 +137,12 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 		return extensions.values();
 	}
 	
-	public @NotNull Collection<VkExtensionProperties> makeExtensionList(Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedDeviceException {
+	public @NotNull Collection<VkExtensionProperties> makeExtensionList(Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedConfigurationException {
 		List<VkExtensionProperties> required = requiredExtensions.stream()
 																 .map(extensions::get)
 																 .collect(Collectors.toUnmodifiableList());
 		if (required.stream().anyMatch(Objects::isNull))
-			throw new UnsupportedDeviceException(this);
+			throw new UnsupportedConfigurationException("Required Extensions [" + requiredExtensions.stream().filter(str -> !extensions.containsKey(str)).collect(Collectors.joining(", ")) + "] unavailable!");
 		
 		return Stream.concat(
 				required.stream(),

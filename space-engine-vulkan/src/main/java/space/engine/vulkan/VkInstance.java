@@ -21,7 +21,7 @@ import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.lwjgl.LwjglStructAllocator;
 import space.engine.sync.barrier.Barrier;
-import space.engine.vulkan.exception.UnsupportedDeviceException;
+import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +194,14 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 		return physicalDevices;
 	}
 	
-	public @Nullable VkPhysicalDevice getBestPhysicalDevice(int[][] types, Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedDeviceException {
+	public static final int[][] DEFAULT_BEST_PHYSICAL_DEVICE_TYPES = {
+			{VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU},
+			{VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU},
+			{VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU},
+			{} //whatever the system has
+	};
+	
+	public @Nullable VkPhysicalDevice getBestPhysicalDevice(int[][] types, Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedConfigurationException {
 		for (int[] iterationType : types) {
 			VkPhysicalDevice[] possibleDevices = physicalDevices.stream()
 																.filter(dev -> Arrays.stream(iterationType).anyMatch(t -> dev.properties().deviceType() == t)
@@ -213,6 +220,6 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 			if (index.isPresent())
 				return possibleDevices[index.getAsInt()];
 		}
-		throw new UnsupportedDeviceException("No suitable device found!");
+		throw new UnsupportedConfigurationException("No suitable device found! Devices available: " + physicalDevices);
 	}
 }

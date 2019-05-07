@@ -6,17 +6,21 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
+import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.ROOT_LIST;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocBuffer;
 import static space.engine.vulkan.VkException.assertVk;
 
-public class VkLayers {
+public class VkInstanceValidationLayers {
 	
 	@SuppressWarnings("FieldCanBeLocal")
 	private static final @NotNull VkLayerProperties.Buffer buffer;
@@ -46,5 +50,20 @@ public class VkLayers {
 	
 	public static @NotNull Collection<VkLayerProperties> layers() {
 		return map.values();
+	}
+	
+	public static @NotNull Collection<VkLayerProperties> makeLayerList(Collection<String> requiredLayers, Collection<String> optionalLayers) throws UnsupportedConfigurationException {
+		VkLayerProperties[] required = requiredLayers.stream()
+													 .map(map::get)
+													 .toArray(VkLayerProperties[]::new);
+		if (Arrays.stream(required).anyMatch(Objects::isNull))
+			throw new UnsupportedConfigurationException("Required Extensions [" + requiredLayers.stream().filter(str -> !map.containsKey(str)).collect(Collectors.joining(", ")) + "] unavailable!");
+		
+		return Stream.concat(
+				Arrays.stream(required),
+				optionalLayers.stream()
+							  .map(map::get)
+							  .filter(Objects::nonNull)
+		).collect(Collectors.toUnmodifiableList());
 	}
 }
