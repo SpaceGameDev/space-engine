@@ -11,6 +11,7 @@ import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.vulkan.VkInstance;
 import space.engine.vulkan.VkPhysicalDevice;
+import space.engine.window.Window;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
@@ -22,13 +23,13 @@ import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
 
-public class VkSurfaceDetails implements FreeableWrapper {
+public class VkSurfaceDetails<WINDOW extends Window> implements FreeableWrapper {
 	
-	public static @NotNull VkSurfaceDetails wrap(@NotNull VkPhysicalDevice physicalDevice, @NotNull VkSurface<?> vkSurface, @NotNull Object[] parents) {
-		return new VkSurfaceDetails(physicalDevice, vkSurface, Freeable::createDummy, parents);
+	public static <WINDOW extends Window> @NotNull VkSurfaceDetails<WINDOW> wrap(@NotNull VkPhysicalDevice physicalDevice, @NotNull VkSurface<WINDOW> vkSurface, @NotNull Object[] parents) {
+		return new VkSurfaceDetails<>(physicalDevice, vkSurface, Freeable::createDummy, parents);
 	}
 	
-	public VkSurfaceDetails(@NotNull VkPhysicalDevice physicalDevice, @NotNull VkSurface<?> vkSurface, @NotNull BiFunction<VkSurfaceDetails, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkSurfaceDetails(@NotNull VkPhysicalDevice physicalDevice, @NotNull VkSurface<WINDOW> vkSurface, @NotNull BiFunction<VkSurfaceDetails, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		if (physicalDevice.instance() != vkSurface.instance())
 			throw new IllegalArgumentException("physicalDevice and surface are required to have the same VkInstance");
 		
@@ -75,7 +76,7 @@ public class VkSurfaceDetails implements FreeableWrapper {
 	
 	//parents
 	private final @NotNull VkPhysicalDevice physicalDevice;
-	private final @NotNull VkSurface<?> surface;
+	private final @NotNull VkSurface<WINDOW> surface;
 	
 	public @NotNull VkInstance instance() {
 		return physicalDevice.instance();
@@ -85,7 +86,7 @@ public class VkSurfaceDetails implements FreeableWrapper {
 		return physicalDevice;
 	}
 	
-	public VkSurface<?> surface() {
+	public VkSurface<WINDOW> surface() {
 		return surface;
 	}
 	
