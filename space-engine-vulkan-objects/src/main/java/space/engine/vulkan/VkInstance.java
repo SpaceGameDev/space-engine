@@ -20,6 +20,8 @@ import space.engine.freeableStorage.FreeableStorage;
 import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.lwjgl.LwjglStructAllocator;
+import space.engine.string.String2D;
+import space.engine.string.builder.CharBufferBuilder2D;
 import space.engine.sync.barrier.Barrier;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
@@ -28,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.OptionalInt;
 import java.util.function.BiFunction;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -192,6 +195,13 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 	
 	public @NotNull ObservableCollection<VkPhysicalDevice> physicalDevices() {
 		return physicalDevices;
+	}
+	
+	public String2D physicalDevicesGenerateInfoString() {
+		return physicalDevices
+				.stream()
+				.map(VkPhysicalDevice::generateInfoString)
+				.collect(Collector.<String2D, CharBufferBuilder2D<?>, String2D>of(CharBufferBuilder2D::new, CharBufferBuilder2D::append, CharBufferBuilder2D::append, CharBufferBuilder2D::toString2D));
 	}
 	
 	public static final int[][] DEFAULT_BEST_PHYSICAL_DEVICE_TYPES = {

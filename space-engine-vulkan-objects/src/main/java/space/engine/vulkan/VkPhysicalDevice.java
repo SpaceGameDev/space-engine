@@ -8,6 +8,7 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
+import space.engine.string.String2D;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
 import java.util.Collection;
@@ -93,6 +94,33 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 	
 	public @NotNull VkPhysicalDeviceProperties properties() {
 		return properties;
+	}
+	
+	public @NotNull String identification() {
+		return properties.deviceNameString() + " (" + properties.deviceID() + ")";
+	}
+	
+	public String2D generateInfoString() {
+		return new String2D(new String[] {
+				identification() + " type:" + deviceTypeToString(properties.deviceType()),
+				"    vendor ID: " + properties.vendorID() + "api: v" + properties.apiVersion() + " Driver: v" + properties.driverVersion()
+		});
+	}
+	
+	public static String deviceTypeToString(int type) {
+		switch (type) {
+			case VK_PHYSICAL_DEVICE_TYPE_OTHER:
+				return "other";
+			case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+				return "integrated GPU";
+			case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+				return "discrete GPU";
+			case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+				return "virtual GPU";
+			case VK_PHYSICAL_DEVICE_TYPE_CPU:
+				return "CPU";
+		}
+		return "unknown";
 	}
 	
 	//queueProperties
