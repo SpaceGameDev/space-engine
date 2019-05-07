@@ -8,13 +8,17 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
+import space.engine.vulkan.exception.UnsupportedDeviceException;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.lwjgl.LwjglStructAllocator.*;
@@ -131,5 +135,20 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 	
 	public @NotNull Collection<VkExtensionProperties> extensions() {
 		return extensions.values();
+	}
+	
+	public @NotNull Collection<VkExtensionProperties> makeExtensionList(Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedDeviceException {
+		List<VkExtensionProperties> required = requiredExtensions.stream()
+																 .map(extensions::get)
+																 .collect(Collectors.toUnmodifiableList());
+		if (required.stream().anyMatch(Objects::isNull))
+			throw new UnsupportedDeviceException(this);
+		
+		return Stream.concat(
+				required.stream(),
+				optionalExtensions.stream()
+								  .map(extensions::get)
+								  .filter(Objects::nonNull)
+		).collect(Collectors.toUnmodifiableList());
 	}
 }

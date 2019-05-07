@@ -1,6 +1,7 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.JNI;
 import org.lwjgl.vulkan.VKCapabilitiesInstance;
 import org.lwjgl.vulkan.VkDebugUtilsMessengerCallbackDataEXT;
@@ -20,10 +21,15 @@ import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.lwjgl.LwjglStructAllocator;
 import space.engine.sync.barrier.Barrier;
+import space.engine.vulkan.exception.UnsupportedDeviceException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.lwjgl.system.JNI.callPJPV;
 import static org.lwjgl.vulkan.EXTDebugUtils.*;
@@ -186,5 +192,27 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 	
 	public @NotNull ObservableCollection<VkPhysicalDevice> physicalDevices() {
 		return physicalDevices;
+	}
+	
+	public @Nullable VkPhysicalDevice getBestPhysicalDevice(int[][] types, Collection<String> requiredExtensions, Collection<String> optionalExtensions) throws UnsupportedDeviceException {
+		for (int[] iterationType : types) {
+			VkPhysicalDevice[] possibleDevices = physicalDevices.stream()
+																.filter(dev -> Arrays.stream(iterationType).anyMatch(t -> dev.properties().deviceType() == t)
+																		&& dev.extensionNameMap().keySet().containsAll(requiredExtensions))
+																.toArray(VkPhysicalDevice[]::new);
+			
+			if (possibleDevices.length == 0)
+				continue;
+			if (possibleDevices.length == 1)
+				return possibleDevices[0];
+			
+			//determine best device by optional extensions
+			long[] score = Arrays.stream(possibleDevices).mapToLong(dev -> optionalExtensions.stream().filter(ex -> dev.extensionNameMap().keySet().contains(ex)).count()).toArray();
+			OptionalInt index = IntStream.range(0, possibleDevices.length)
+										 .reduce((left, right) -> score[left] >= score[right] ? left : right);
+			if (index.isPresent())
+				return possibleDevices[index.getAsInt()];
+		}
+		throw new UnsupportedDeviceException("No suitable device found!");
 	}
 }
