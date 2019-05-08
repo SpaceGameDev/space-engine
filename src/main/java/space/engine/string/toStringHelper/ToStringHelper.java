@@ -137,7 +137,7 @@ public interface ToStringHelper<T> {
 		if (o instanceof String)
 			return toString((String) o);
 		if (o instanceof CharSequence)
-			return toString((CharSequence2D) o);
+			return toString((CharSequence) o);
 		if (o instanceof String2D)
 			return toString((String2D) o);
 		if (o instanceof CharSequence2D)

@@ -6,7 +6,6 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
-import space.engine.string.String2D;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
 import java.util.Arrays;
@@ -68,11 +67,10 @@ public class VkInstanceExtensions {
 		).collect(Collectors.toUnmodifiableList());
 	}
 	
-	public static @NotNull String2D generateInfoString() {
-		return new String2D(
-				VkInstanceExtensions.extensions().stream()
-									.map(ex -> ex.extensionNameString() + " v" + ex.specVersion())
-									.toArray(String[]::new)
-		);
+	public static @NotNull String generateInfoString() {
+		return VkInstanceExtensions.extensions()
+								   .stream()
+								   .map(ex -> ex.extensionNameString() + " v" + ex.specVersion())
+								   .collect(Collectors.joining("\n"));
 	}
 }

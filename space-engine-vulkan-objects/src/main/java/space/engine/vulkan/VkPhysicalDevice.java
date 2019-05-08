@@ -8,7 +8,6 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
-import space.engine.string.String2D;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 
 import java.util.Collection;
@@ -100,11 +99,9 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 		return properties.deviceNameString() + " (" + properties.deviceID() + ")";
 	}
 	
-	public String2D generateInfoString() {
-		return new String2D(new String[] {
-				identification() + " type:" + deviceTypeToString(properties.deviceType()),
-				"    vendor ID: " + properties.vendorID() + "api: v" + properties.apiVersion() + " Driver: v" + properties.driverVersion()
-		});
+	public String generateInfoString() {
+		return identification() + " type:" + deviceTypeToString(properties.deviceType()) + "\n" +
+				"    vendor ID: " + properties.vendorID() + "api: v" + properties.apiVersion() + " Driver: v" + properties.driverVersion();
 	}
 	
 	public static String deviceTypeToString(int type) {
