@@ -1,7 +1,6 @@
 package space.engine.logger;
 
 import space.engine.string.CharSequence2D;
-import space.engine.string.builder.CharBufferBuilder1D;
 
 public class LogMessage {
 	
@@ -10,7 +9,7 @@ public class LogMessage {
 	public LogLevel level;
 	public CharSequence2D msg;
 	
-	public CharBufferBuilder1D<?> prefix = new CharBufferBuilder1D<>();
+	public StringBuilder prefix = new StringBuilder();
 	
 	public LogMessage(Thread thread, Logger logger, LogLevel level, CharSequence2D msg) {
 		this.thread = thread;

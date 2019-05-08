@@ -5,7 +5,7 @@ import space.engine.baseobject.Dumpable;
 import space.engine.freeableStorage.Freeable;
 import space.engine.math.MathUtils;
 import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
 
@@ -48,7 +48,7 @@ public abstract class Buffer implements Freeable, Dumpable {
 			return new String2D("Buffer too big!");
 		int lengthInt = (int) length;
 		
-		CharBufferBuilder2D<?> b = new CharBufferBuilder2D<>(2, lengthInt * 3);
+		StringBuilder2D b = new StringBuilder2D(2, lengthInt * 3);
 		for (int i = 0; i < lengthInt; i++) {
 			int pos = i * 3;
 			byte d = UNSAFE.getByte(address + i);

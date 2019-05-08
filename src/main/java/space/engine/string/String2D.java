@@ -90,7 +90,7 @@ public class String2D implements CharSequence2D {
 	}
 	
 	//modification
-	public String2D append(String2D append) {
+	public String2D concat(String2D append) {
 		char[][] b = new char[this.buffer.length + append.buffer.length][];
 		System.arraycopy(this.buffer, 0, b, 0, this.buffer.length);
 		System.arraycopy(append.buffer, 0, b, this.buffer.length, append.buffer.length);

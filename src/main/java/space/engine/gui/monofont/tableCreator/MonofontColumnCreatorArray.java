@@ -6,7 +6,7 @@ import space.engine.indexmap.IndexMap.Entry;
 import space.engine.indexmap.axis.IndexAxisMapInt;
 import space.engine.math.MathUtils;
 import space.engine.string.CharSequence2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 import java.util.Collection;
 
@@ -55,7 +55,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 		int maxX = MathUtils.max(maxXEntry, className.length() + 1);
 		
 		//buffer creation
-		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
+		StringBuilder2D buffer = new StringBuilder2D().setNoFillMissingSpaces();
 		buffer.startEdit();
 		
 		//first line
@@ -91,7 +91,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	
 	//fillDown
 	@SuppressWarnings("SameParameterValue")
-	protected static void fillDown(CharBufferBuilder2D<?> buffer, int x, int fromy, int toy, char c) {
+	protected static void fillDown(StringBuilder2D buffer, int x, int fromy, int toy, char c) {
 		for (int y = fromy; y < toy; y++) {
 			buffer.setY(y);
 			buffer.setX(x);
@@ -100,7 +100,7 @@ public class MonofontColumnCreatorArray implements MonofontColumnCreator {
 	}
 	
 	@SuppressWarnings("SameParameterValue")
-	protected static void fillDown(CharBufferBuilder2D<?> buffer, int x, int fromy, int toy, String c) {
+	protected static void fillDown(StringBuilder2D buffer, int x, int fromy, int toy, String c) {
 		for (int y = fromy; y < toy; y++) {
 			buffer.setY(y);
 			buffer.setX(x);

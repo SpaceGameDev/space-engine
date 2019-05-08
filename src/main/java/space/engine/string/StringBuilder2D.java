@@ -1,12 +1,15 @@
-package space.engine.string.builder;
+package space.engine.string;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.ArrayUtils;
-import space.engine.string.String2D;
+import space.engine.delegate.specific.CharArrayStringIterable;
+import space.engine.string.toStringHelper.ToStringHelper;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> implements IStringBuilder2D<SELF> {
+public class StringBuilder2D implements Iterable<String>, CharSequence2D {
 	
 	public static int defaultCapacity = 16;
 	public static int defaultHeight = 1;
@@ -30,23 +33,23 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 	 */
 	public int beingEdited = 0;
 	
-	public CharBufferBuilder2D() {
+	public StringBuilder2D() {
 		this(defaultHeight, defaultCapacity);
 	}
 	
-	public CharBufferBuilder2D(int sizeHeight, int sizeCapacity) {
+	public StringBuilder2D(int sizeHeight, int sizeCapacity) {
 		this(new char[sizeHeight][sizeCapacity], false);
 	}
 	
-	public CharBufferBuilder2D(char[][] buffer) {
+	public StringBuilder2D(char[][] buffer) {
 		this(buffer, true);
 	}
 	
-	public CharBufferBuilder2D(char[][] buffer, boolean isFilled) {
+	public StringBuilder2D(char[][] buffer, boolean isFilled) {
 		this(buffer, isFilled ? calcLengths(buffer) : new int[buffer.length], isFilled ? buffer.length : 0);
 	}
 	
-	public CharBufferBuilder2D(char[][] buffer, int[] length, int height) {
+	public StringBuilder2D(char[][] buffer, int[] length, int height) {
 		if (buffer.length != length.length)
 			throw new IllegalArgumentException();
 		
@@ -64,12 +67,12 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 	}
 	
 	//fillMissingSpaces
-	public CharBufferBuilder2D setFillMissingSpaces(char fillMissingSpaces) {
+	public StringBuilder2D setFillMissingSpaces(char fillMissingSpaces) {
 		this.fillMissingSpaces = fillMissingSpaces;
 		return this;
 	}
 	
-	public CharBufferBuilder2D setNoFillMissingSpaces() {
+	public StringBuilder2D setNoFillMissingSpaces() {
 		this.fillMissingSpaces = 0;
 		return this;
 	}
@@ -85,7 +88,10 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 	}
 	
 	//ensure height
-	@Override
+	public boolean ensureHeightIndex(int index) {
+		return ensureHeight(index + 1);
+	}
+	
 	public boolean ensureHeight(int capa) {
 		int l = buffer.length;
 		if (l < capa) {
@@ -107,7 +113,10 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 	}
 	
 	//ensureCapacity
-	@Override
+	public boolean ensureCapacityIndex(int index) {
+		return ensureCapacity(posY, index + 1);
+	}
+	
 	public boolean ensureCapacity(int capa) {
 		return ensureCapacity(posY, capa);
 	}
@@ -150,62 +159,98 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 		return length[h];
 	}
 	
-	//append
+	//append native
+	public StringBuilder2D append(byte v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	public StringBuilder2D append(short v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	public StringBuilder2D append(int v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	public StringBuilder2D append(long v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	public StringBuilder2D append(float v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	public StringBuilder2D append(double v) {
+		return append(ToStringHelper.getDefault().toString(v));
+	}
+	
+	//append objects
 	@NotNull
-	@Override
-	public SELF append(char v) {
+	public StringBuilder2D append(@Nullable Object obj) {
+		if (obj == null)
+			return append("null");
+		
+		Object o = ToStringHelper.getDefault().toString(obj);
+		if (o instanceof ToString2D)
+			return append(((ToString2D) o).toString2D());
+		return append(o.toString());
+	}
+	
+	//append strings
+	@NotNull
+	public StringBuilder2D append(char v) {
 		int start = posX;
-		setX(posX + 1);
+		posX = posX + 1;
 		notifyYX();
 		buffer[posY][start] = v;
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	@NotNull
-	@Override
-	public SELF append(@NotNull String str) {
-		startEdit();
-		int l = str.length();
-		int start = posX;
-		setX(posX + l);
-		notifyYX();
-		str.getChars(0, l, buffer[posY], start);
-		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
-	}
-	
-	@NotNull
-	@Override
-	public SELF append(@NotNull char[] str) {
+	public StringBuilder2D append(@NotNull char[] str) {
 		startEdit();
 		int l = str.length;
 		int start = posX;
-		setX(posX + l);
+		posX += l;
 		notifyYX();
 		System.arraycopy(str, 0, buffer[posY], start, l);
 		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	@NotNull
-	@Override
-	public SELF append(@NotNull char[][] chars) {
+	public StringBuilder2D append(@NotNull CharSequence2D b) {
+		return append(b.getChars());
+	}
+	
+	@NotNull
+	public StringBuilder2D append(@NotNull String str) {
+		startEdit();
+		int l = str.length();
+		int start = posX;
+		posX = posX + l;
+		notifyYX();
+		str.getChars(0, l, buffer[posY], start);
+		endEdit();
+		return this;
+	}
+	
+	//append string2Ds
+	@NotNull
+	public StringBuilder2D append(@NotNull char[][] chars) {
 		startEdit();
 		int absStartX = posX;
 		int absCurrY = posY;
 		
-		setY(posY + height - 1);
+		posY = posY + height - 1;
 		notifyY();
 		
 		for (int i = 0; i < chars.length; ) {
 			char[] from = chars[i];
 			int froml = from.length;
 			
-			setY(absCurrY);
-			setX(absStartX + froml);
+			posY = absCurrY;
+			posX = absStartX + froml;
 			notifyYX();
 			char[] to = buffer[absCurrY];
 			
@@ -216,26 +261,28 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 		}
 		
 		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
+	}
+	
+	public StringBuilder2D append(@NotNull CharSequence2D b, int untily, int untilx, char fillup) {
+		return append(b.getChars(), untily, untilx, fillup);
 	}
 	
 	@NotNull
-	@Override
-	public SELF append(@NotNull char[][] chars, int untily, int untilx, char fillup) {
+	public StringBuilder2D append(@NotNull char[][] chars, int untily, int untilx, char fillup) {
 		startEdit();
 		int absCurrY = posY;
 		int absStartX = posX;
 		
-		setY(untily - 1);
+		posY = untily - 1;
 		notifyY();
 		
 		for (int i = 0; i < chars.length; ) {
 			char[] from = chars[i];
 			int froml = Math.min(from.length, untilx - absStartX);
 			
-			setY(absCurrY);
-			setX(untilx);
+			posY = absCurrY;
+			posX = untilx;
 			notifyYX();
 			char[] to = buffer[absCurrY];
 			
@@ -249,8 +296,8 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 		
 		if (absCurrY < untily) {
 			for (int i = absCurrY; i < untily; i++) {
-				setY(i);
-				setX(untilx);
+				posY = i;
+				posX = untilx;
 				notifyYX();
 				
 				Arrays.fill(buffer[i], absStartX, untilx, fillup);
@@ -258,22 +305,18 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 		}
 		
 		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	//pos
-	@Override
 	public int getX() {
 		return posX;
 	}
 	
 	@NotNull
-	@Override
-	public SELF setX(int pos) {
+	public StringBuilder2D setX(int pos) {
 		posX = pos;
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	public void notifyX() {
@@ -289,17 +332,14 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 		endEdit();
 	}
 	
-	@Override
 	public int getY() {
 		return posY;
 	}
 	
 	@NotNull
-	@Override
-	public SELF setY(int pos) {
+	public StringBuilder2D setY(int pos) {
 		posY = pos;
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	public void notifyY() {
@@ -325,30 +365,27 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 	
 	//fill
 	@NotNull
-	@Override
-	public SELF fill(int l, char c) {
+	public StringBuilder2D fill(int l, char c) {
 		startEdit();
 		int start = posX;
-		setX(posX + l - 1);
+		posX = posX + l - 1;
 		notifyYX();
 		Arrays.fill(buffer[posY], start, posX, c);
 		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
 	//nextLine
 	@NotNull
-	@Override
-	public SELF nextLine() {
+	public StringBuilder2D nextLine() {
 		startEdit();
-		setY(posY + 1);
-		setX(0);
+		posY = posY + 1;
+		posX = 0;
 		endEdit();
-		//noinspection unchecked
-		return (SELF) this;
+		return this;
 	}
 	
+	//getters
 	@NotNull
 	@Override
 	public char[][] getChars() {
@@ -359,6 +396,12 @@ public class CharBufferBuilder2D<SELF extends CharBufferBuilder2D<SELF>> impleme
 			isBuild = true;
 		}
 		return buffer;
+	}
+	
+	@NotNull
+	@Override
+	public Iterator<String> iterator() {
+		return new CharArrayStringIterable(getChars()).iterator();
 	}
 	
 	public void trimAll() {

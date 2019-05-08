@@ -5,7 +5,6 @@ import space.engine.delegate.iterator.Iteratorable;
 import space.engine.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder1D;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,7 +69,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(byte[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -86,7 +85,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(short[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -102,7 +101,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(int[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -118,7 +117,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(long[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -134,7 +133,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(float[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -150,7 +149,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(double[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -166,7 +165,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(boolean[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -182,7 +181,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(char[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -198,7 +197,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 	public String toString(Object[] obj, int from, int to) {
 		if (obj == null)
 			return toStringNull();
-		CharBufferBuilder1D b = new CharBufferBuilder1D();
+		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = from; i < to; i++) {
 			b.append(toString(obj[i]));
@@ -255,7 +254,7 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 		return new AbstractToStringHelperObjectsInstance<>(obj, this) {
 			@Override
 			public String build() {
-				CharBufferBuilder1D b = new CharBufferBuilder1D();
+				StringBuilder b = new StringBuilder();
 				b.append(obj.getClass().getName()).append("{ ");
 				
 				ListIterator<Entry<String>> iter = list.listIterator();
@@ -278,13 +277,14 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 		return new AbstractToStringHelperTable<>(dimensions) {
 			@Override
 			public String build() {
-				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
+				StringBuilder b = new StringBuilder();
 				Collection<IndexMultiMapEntry<String>> coll = map.table();
 				
 				b.append(name).append("{ ");
 				for (IndexMultiMapEntry<String> entry : coll)
 					b.append(Arrays.toString(entry.getIndex())).append(": ").append((Object) entry.getValue()).append(", ");
-				b.reduceLength(2).append('}');
+				b.setLength(b.length() - 2);
+				b.append('}');
 				return b.toString();
 			}
 		};
@@ -297,12 +297,12 @@ public class ToStringHelperDefault implements ToStringHelper<String> {
 		return new AbstractToStringHelperMapper<>() {
 			@Override
 			public String build() {
-				CharBufferBuilder1D<?> b = new CharBufferBuilder1D<>();
+				StringBuilder b = new StringBuilder();
 				
 				b.append(name).append("{ ");
 				int size = map.size();
 				for (int i = 0; i < size; i++) {
-					b.append((Object) map.get(new int[] {i, 0})).append(separator).append(new int[] {i, 1});
+					b.append((Object) map.get(new int[] {i, 0})).append(separator).append(Arrays.toString(new int[] {i, 1}));
 					if (i + 1 < size)
 						b.append(", ");
 				}

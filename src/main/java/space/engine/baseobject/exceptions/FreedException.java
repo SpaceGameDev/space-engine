@@ -1,7 +1,7 @@
 package space.engine.baseobject.exceptions;
 
 import space.engine.freeableStorage.Freeable;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 /**
  * thrown if some data was requested but it was already {@link Freeable#free() freed}.
@@ -11,7 +11,7 @@ public class FreedException extends RuntimeException {
 	public Freeable ref;
 	
 	public FreedException(Freeable ref) {
-		super(new CharBufferBuilder2D<>().append("Reference already released: ").append(ref).toString());
+		super(new StringBuilder2D().append("Reference already released: ").append(ref).toString());
 		this.ref = ref;
 	}
 	

@@ -7,7 +7,7 @@ import space.engine.gui.monofont.MonofontGuiElement;
 import space.engine.gui.tsh.elements.GuiToStringHelperModifierCreator;
 import space.engine.gui.tsh.elements.GuiToStringHelperModifierCreator.GuiToStringHelperModifier;
 import space.engine.string.CharSequence2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 import static space.engine.math.MathUtils.max;
 
@@ -42,7 +42,7 @@ public class MonofontTSHModifier extends MonofontGuiElement implements GuiToStri
 	
 	@Override
 	public CharSequence2D buildSequence2D() {
-		CharBufferBuilder2D<?> b = new CharBufferBuilder2D();
+		StringBuilder2D b = new StringBuilder2D();
 		b.append(modifier).append(value.buildSequence2D());
 		return b;
 	}

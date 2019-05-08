@@ -6,7 +6,7 @@ import space.engine.event.EventEntry;
 import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.logger.NullLogger;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 import space.engine.sync.Tasks.RunnableWithDelay;
 
 import java.lang.ref.Reference;
@@ -118,7 +118,7 @@ public final class FreeableStorageCleaner {
 		}
 		
 		//log object count
-		cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(count).append(" Objects via GC").toString());
+		cleanupLogger.log(INFO, new StringBuilder2D().append("Cleaning up ").append(count).append(" Objects via GC").toString());
 	}
 	
 	private static void handle(Reference<?> ref) {
