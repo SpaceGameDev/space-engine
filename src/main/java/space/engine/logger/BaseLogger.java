@@ -62,9 +62,9 @@ public class BaseLogger extends AbstractLogger {
 	//log
 	@Override
 	public void logDirect0(LogMessage msg) {
-		handler.runImmediately(consumer -> consumer.accept(msg));
+		handler.runImmediatelyThrowIfWait(consumer -> consumer.accept(msg));
 		String2D str = new StringBuilder2D().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
-		printer.runImmediately(new TypeBiConsumer<>(msg, str));
+		printer.runImmediatelyThrowIfWait(new TypeBiConsumer<>(msg, str));
 	}
 	
 	//utility

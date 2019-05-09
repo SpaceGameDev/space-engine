@@ -8,10 +8,14 @@ import space.engine.sync.TaskCreator;
 import space.engine.sync.Tasks;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.lock.SyncLock;
+import space.engine.sync.taskImpl.RunnableTask;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static space.engine.Side.pool;
 
 /**
  * This implementation of {@link Event} will call it's hooks sequentially in a single thread
@@ -37,6 +41,10 @@ public class SequentialEventBuilder<FUNCTION> extends AbstractEventBuilder<FUNCT
 		return runnableWithDelay[0].submit(locks, barriers);
 	}
 	
+	/**
+	 * use {@link #runImmediatelyThrowIfWait(TypeHandler)} or {@link #runImmediatelyIfPossible(TypeHandler)}.{@link Barrier#addHook(Runnable) addHook(Runnable)} instead
+	 */
+	@Deprecated
 	public void runImmediately(@NotNull TypeHandler<FUNCTION> typeHandler) {
 		for (FUNCTION function : getBuild()) {
 			try {
@@ -47,6 +55,61 @@ public class SequentialEventBuilder<FUNCTION> extends AbstractEventBuilder<FUNCT
 				e.barrier.awaitUninterrupted();
 			}
 		}
+	}
+	
+	/**
+	 * throws an {@link UnsupportedOperationException} if any Task wants to wait / throws {@link DelayTask}
+	 */
+	public void runImmediatelyThrowIfWait(@NotNull TypeHandler<FUNCTION> typeHandler) {
+		for (FUNCTION function : getBuild()) {
+			try {
+				typeHandler.accept(function);
+			} catch (DelayTask e) {
+				throw new UnsupportedOperationException("Waiting with runImmediatelyThrowIfWait() is not allowed! Barrier: " + e.barrier);
+			}
+		}
+	}
+	
+	public Barrier runImmediatelyIfPossible(@NotNull TypeHandler<FUNCTION> typeHandler) {
+		return runImmediatelyIfPossible(typeHandler, Barrier.EMPTY_BARRIER_ARRAY);
+	}
+	
+	public Barrier runImmediatelyIfPossible(@NotNull TypeHandler<FUNCTION> typeHandler, Barrier... barriers) {
+		if (barriers.length == 0 || Arrays.stream(barriers).allMatch(Barrier::isFinished)) {
+			//all barriers already finished
+			
+			Iterator<FUNCTION> iterator = getBuild().iterator();
+			boolean[] firstRun = new boolean[] {true};
+			//noinspection unchecked
+			TaskCreator<? extends RunnableTask>[] runnableWithDelay = new TaskCreator[1];
+			runnableWithDelay[0] = (locks, barriers1) -> new RunnableTask(locks, barriers1) {
+				
+				@Override
+				protected void submit1(Runnable toRun) {
+					if (firstRun[0]) {
+						firstRun[0] = false;
+						toRun.run();
+					} else {
+						pool().execute(toRun);
+					}
+				}
+				
+				@Override
+				protected void execute() throws DelayTask {
+					try {
+						while (iterator.hasNext()) {
+							typeHandler.accept(iterator.next());
+						}
+					} catch (DelayTask e) {
+						throw new DelayTask(runnableWithDelay[0].submit(e.barrier));
+					}
+				}
+			};
+			return runnableWithDelay[0].submit();
+		}
+		
+		//if not go the normal route
+		return submit(typeHandler, barriers);
 	}
 	
 	//build

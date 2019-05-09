@@ -7,11 +7,11 @@ import space.engine.sync.Tasks.ConsumerWithDelay;
 /**
  * Sequential only.
  */
-public class TypeConsumerWithDelay<T> implements TypeHandler<ConsumerWithDelay<T>> {
+public class TypeConsumerDelay<T> implements TypeHandler<ConsumerWithDelay<T>> {
 	
 	public T obj;
 	
-	public TypeConsumerWithDelay(T obj) {
+	public TypeConsumerDelay(T obj) {
 		this.obj = obj;
 	}
 	

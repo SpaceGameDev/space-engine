@@ -1,20 +1,19 @@
 package space.engine.event.typehandler;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.sync.DelayTask;
 import space.engine.sync.Tasks.SupplierWithDelay;
-
-import java.util.function.Supplier;
 
 /**
  * The {@link #result()} will be the first {@link SupplierWithDelay} returning something != null.
  * Sequential only.
  */
-public class TypeHandlerFirstSupplier<T> implements TypeHandler<Supplier<T>> {
+public class TypeHandlerFirstSupplierDelay<T> implements TypeHandler<SupplierWithDelay<T>> {
 	
 	private T result;
 	
 	@Override
-	public void accept(@NotNull Supplier<T> task) {
+	public void accept(@NotNull SupplierWithDelay<T> task) throws DelayTask {
 		if (result == null)
 			result = task.get();
 	}
