@@ -7,12 +7,15 @@ import space.engine.delegate.set.ObservableSet;
 import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
+import space.engine.sync.barrier.Barrier;
+import space.engine.sync.barrier.BarrierImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,12 +28,13 @@ import java.util.stream.Stream.Builder;
  * An {@link ObservableMap} allows you to be notified when a key is changed form the {@link Map}.
  * Add a Callback to the {@link #getChangeEvent()} to get notified with a {@link Change} happening to this {@link Map}.
  * <p>
- * The implementation is threadsafe if the {@link #delegate} {@link Map} given to the constructor is threadsafe.
+ * The implementation is threadsafe if the {@link #delegate} {@link Map} given to the constructor is threadsafe. It also guarantees that Event callbacks are called in order.
  */
 public class ObservableMap<K, V> implements Map<K, V> {
 	
 	private final Map<K, V> delegate;
-	private final Event<Consumer<Change<K, V>>> changeEvent = new SequentialEventBuilder<>();
+	private final SequentialEventBuilder<Consumer<Change<K, V>>> changeEvent = new SequentialEventBuilder<>();
+	private AtomicReference<Barrier> lastBarrier = new AtomicReference<>(Barrier.ALWAYS_TRIGGERED_BARRIER);
 	
 	public ObservableMap(Map<K, V> delegate) {
 		this.delegate = delegate;
@@ -325,7 +329,10 @@ public class ObservableMap<K, V> implements Map<K, V> {
 				return !keysChanged.isEmpty();
 			}
 		};
-		changeEvent.submit(changeConsumer -> changeConsumer.accept(change));
+		
+		BarrierImpl newBarrier = new BarrierImpl();
+		Barrier prevBarrier = lastBarrier.getAndSet(newBarrier);
+		changeEvent.runImmediatelyIfPossible(changeConsumer -> changeConsumer.accept(change), prevBarrier).addHook(newBarrier::triggerNow);
 	}
 	
 	public interface Change<K, V> {

@@ -6,6 +6,8 @@ import space.engine.delegate.collection.UnmodifiableCollection;
 import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
+import space.engine.sync.barrier.Barrier;
+import space.engine.sync.barrier.BarrierImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -22,12 +25,13 @@ import java.util.stream.Stream;
  * An {@link ObservableSet} allows you to be notified when something got added or removed form the {@link Collection}.
  * Add a Callback to the {@link #getChangeEvent()} to get notified with a {@link Change} happening to this {@link Collection}.
  * <p>
- * The implementation is threadsafe if the {@link #delegate} {@link Collection} given to the constructor is threadsafe.
+ * The implementation is threadsafe if the {@link #delegate} {@link Collection} given to the constructor is threadsafe. It also guarantees that Event callbacks are called in order.
  */
 public class ObservableSet<E> implements Set<E> {
 	
 	private final Set<E> delegate;
-	private final Event<Consumer<Change<E>>> changeEvent = new SequentialEventBuilder<>();
+	private final SequentialEventBuilder<Consumer<Change<E>>> changeEvent = new SequentialEventBuilder<>();
+	private AtomicReference<Barrier> lastBarrier = new AtomicReference<>(Barrier.ALWAYS_TRIGGERED_BARRIER);
 	
 	public ObservableSet(Set<E> delegate) {
 		this.delegate = delegate;
@@ -329,7 +333,10 @@ public class ObservableSet<E> implements Set<E> {
 				return !added.isEmpty() || !removed.isEmpty();
 			}
 		};
-		changeEvent.submit(changeConsumer -> changeConsumer.accept(change));
+		
+		BarrierImpl newBarrier = new BarrierImpl();
+		Barrier prevBarrier = lastBarrier.getAndSet(newBarrier);
+		changeEvent.runImmediatelyIfPossible(changeConsumer -> changeConsumer.accept(change), prevBarrier).addHook(newBarrier::triggerNow);
 	}
 	
 	public interface Change<E> {
