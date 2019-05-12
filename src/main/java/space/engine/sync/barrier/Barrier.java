@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * An Object which can be {@link #await() awaited} upon. You can also {@link #addHook(Runnable) add a Hook} to be called when the Barrier {@link #isFinished() is finished}. <br>
@@ -40,6 +41,11 @@ public interface Barrier {
 		@Override
 		public void await(long time, TimeUnit unit) {
 		
+		}
+		
+		@Override
+		public Barrier dereference() {
+			return ALWAYS_TRIGGERED_BARRIER;
 		}
 	};
 	Barrier[] EMPTY_BARRIER_ARRAY = new Barrier[0];
@@ -179,6 +185,16 @@ public interface Barrier {
 		};
 	}
 	
+	/**
+	 * Creates a new Barrier which can be used just like this but does not hold a reference to this.
+	 * Should be used when holding a Barrier for a very long time (eg. lifetime of an object) to prevent eg. a RunnableTask to stay referenced
+	 */
+	default Barrier dereference() {
+		BarrierImpl barrier = new BarrierImpl();
+		this.addHook(barrier::triggerNow);
+		return barrier;
+	}
+	
 	//static
 	
 	/**
@@ -190,6 +206,17 @@ public interface Barrier {
 	 */
 	static Barrier awaitAll(@NotNull Collection<? extends Barrier> barriers) {
 		return awaitAll(barriers.toArray(new Barrier[0]));
+	}
+	
+	/**
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then triggers the returned {@link Barrier}. This Operation is non-blocking.
+	 * If no Barriers are given, the Barrier is returned triggered.
+	 *
+	 * @param barriers the {@link Barrier Barriers} to await upon
+	 * @return A {@link Barrier} which is triggered when all supplied {@link Barrier Barriers} have.
+	 */
+	static Barrier awaitAll(@NotNull Stream<? extends Barrier> barriers) {
+		return awaitAll(barriers.toArray(Barrier[]::new));
 	}
 	
 	/**
@@ -217,6 +244,17 @@ public interface Barrier {
 	 */
 	static void awaitAll(@NotNull Runnable toRun, @NotNull Collection<@NotNull ? extends Barrier> barriers) {
 		awaitAll(toRun, barriers.toArray(new Barrier[0]));
+	}
+	
+	/**
+	 * Awaits for all {@link Barrier Barriers} to be triggered, then executes toRun. This Operation is non-blocking.
+	 * If no Barriers are given, the Runnable is executed immediately.
+	 *
+	 * @param toRun    something to be executed when all {@link Barrier Barriers} are triggered
+	 * @param barriers the {@link Barrier Barriers} to await upon
+	 */
+	static void awaitAll(@NotNull Runnable toRun, @NotNull Stream<@NotNull ? extends Barrier> barriers) {
+		awaitAll(toRun, barriers.toArray(Barrier[]::new));
 	}
 	
 	/**

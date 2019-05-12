@@ -38,5 +38,10 @@ public interface CancelableBarrier extends Barrier, Cancelable {
 		public void cancel() {
 		
 		}
+		
+		@Override
+		public Barrier dereference() {
+			return ALWAYS_TRIGGERED_CANCELABLE_BARRIER;
+		}
 	};
 }
