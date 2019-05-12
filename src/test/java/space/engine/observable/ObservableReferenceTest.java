@@ -15,13 +15,13 @@ public class ObservableReferenceTest {
 	
 	@Test
 	public void testBasics() {
-		assertNull(reference.get());
+		assertNull(reference.assertGet());
 		
 		reference.set(1).awaitUninterrupted();
-		assertEquals((Integer) 1, reference.get());
+		assertEquals((Integer) 1, reference.assertGet());
 		
 		reference.set(2).awaitUninterrupted();
-		assertEquals((Integer) 2, reference.get());
+		assertEquals((Integer) 2, reference.assertGet());
 	}
 	
 	@Test
@@ -29,7 +29,7 @@ public class ObservableReferenceTest {
 		Integer[] lastCallback = new Integer[1];
 		reference.addHook(i -> lastCallback[0] = i);
 		
-		assertNull(reference.get());
+		assertNull(reference.assertGet());
 		
 		reference.set(1).awaitUninterrupted();
 		assertEquals((Integer) 1, lastCallback[0]);
@@ -48,21 +48,21 @@ public class ObservableReferenceTest {
 				callbackWait[0].awaitUninterrupted();
 		});
 		
-		assertNull(reference.get());
+		assertNull(reference.assertGet());
 		
 		callbackWait[0] = new BarrierImpl();
 		Barrier setTo1 = reference.set(1);
 		assertFalse(setTo1.isFinished());
 		callbackWait[0].triggerNow();
 		setTo1.awaitUninterrupted();
-		assertEquals((Integer) 1, reference.get());
+		assertEquals((Integer) 1, reference.assertGet());
 		
 		callbackWait[0] = new BarrierImpl();
 		Barrier setTo2 = reference.set(2);
 		assertFalse(setTo2.isFinished());
 		callbackWait[0].triggerNow();
 		setTo2.awaitUninterrupted();
-		assertEquals((Integer) 2, reference.get());
+		assertEquals((Integer) 2, reference.assertGet());
 	}
 	
 	@Test
@@ -117,16 +117,16 @@ public class ObservableReferenceTest {
 	public void testGeneratingReference() {
 		ObservableReference<Integer> a = new ObservableReference<>(1);
 		ObservableReference<Integer> b = new ObservableReference<>(2);
-		ObservableReference<Integer> res = ObservableReference.generatingReference(() -> a.get() + b.get(), a, b);
+		ObservableReference<Integer> res = ObservableReference.generatingReference(() -> a.assertGet() + b.assertGet(), a, b);
 		
 		a.set(2).awaitUninterrupted();
 		res.getLatestBarrier().awaitUninterrupted();
-		assertEquals((Integer) 4, res.get());
+		assertEquals((Integer) 4, res.assertGet());
 		a.set(3).awaitUninterrupted();
 		res.getLatestBarrier().awaitUninterrupted();
-		assertEquals((Integer) 5, res.get());
+		assertEquals((Integer) 5, res.assertGet());
 		b.set(3).awaitUninterrupted();
 		res.getLatestBarrier().awaitUninterrupted();
-		assertEquals((Integer) 6, res.get());
+		assertEquals((Integer) 6, res.assertGet());
 	}
 }
