@@ -16,8 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static space.engine.sync.Tasks.*;
@@ -29,15 +27,16 @@ import static space.engine.sync.barrier.Barrier.ALWAYS_TRIGGERED_BARRIER;
  */
 public class ObservableReference<T> {
 	
-	public static <T> ObservableReference<T> generatingReference(Supplier<T> generate, ObservableReference<?>... parents) {
+	//generatingReference Generator
+	public static <T> ObservableReference<T> generatingReference(Generator<T> generate, ObservableReference<?>... parents) {
 		return generatingReference(generate, Arrays.stream(parents));
 	}
 	
-	public static <T> ObservableReference<T> generatingReference(Supplier<T> generate, Collection<ObservableReference<?>> parents) {
+	public static <T> ObservableReference<T> generatingReference(Generator<T> generate, Collection<ObservableReference<?>> parents) {
 		return generatingReference(generate, parents.stream());
 	}
 	
-	public static <T> ObservableReference<T> generatingReference(Supplier<T> generate, Stream<ObservableReference<?>> parents) {
+	public static <T> ObservableReference<T> generatingReference(Generator<T> generate, Stream<ObservableReference<?>> parents) {
 		BarrierImpl initialBarrier = new BarrierImpl();
 		ObservableReference<T> reference = new ObservableReference<>(initialBarrier);
 		
@@ -53,7 +52,48 @@ public class ObservableReference<T> {
 		Barrier initialBarrier2 = reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
 			//activate has to be true BEFORE we get the initial values otherwise we may miss updates
 			activate.set(true);
-			reference.t = generate.get();
+			try {
+				reference.t = generate.get();
+			} catch (NoUpdate ignored) {
+				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
+			}
+		}).submit(prev));
+		//initialBarrier.triggerNow() has to be added as a hook to ensure t is written
+		initialBarrier2.addHook(initialBarrier::triggerNow);
+		
+		return reference;
+	}
+	
+	//generatingReference GeneratorWithCancelCheck
+	public static <T> ObservableReference<T> generatingReference(GeneratorWithCancelCheck<T> generate, ObservableReference<?>... parents) {
+		return generatingReference(generate, Arrays.stream(parents));
+	}
+	
+	public static <T> ObservableReference<T> generatingReference(GeneratorWithCancelCheck<T> generate, Collection<ObservableReference<?>> parents) {
+		return generatingReference(generate, parents.stream());
+	}
+	
+	public static <T> ObservableReference<T> generatingReference(GeneratorWithCancelCheck<T> generate, Stream<ObservableReference<?>> parents) {
+		BarrierImpl initialBarrier = new BarrierImpl();
+		ObservableReference<T> reference = new ObservableReference<>(initialBarrier);
+		
+		//activate makes sure no callbacks get processed before we calculated the initial value
+		AtomicBoolean activate = new AtomicBoolean();
+		EventEntry<Consumer<? super Object>> onChange = new EventEntry<>(o -> {
+			if (activate.get())
+				reference.set(generate);
+		});
+		Barrier[] hooksAdded = parents.map(parent -> parent.addHookNoInitialCallback(onChange)).toArray(Barrier[]::new);
+		
+		//only the initial value has additional barriers; usually you shouldn't use them as they block #ordering but here it's fine
+		Barrier initialBarrier2 = reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
+			//activate has to be true BEFORE we get the initial values otherwise we may miss updates
+			activate.set(true);
+			try {
+				reference.t = generate.get(() -> false);
+			} catch (NoUpdate ignored) {
+				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
+			}
 		}).submit(prev));
 		//initialBarrier.triggerNow() has to be added as a hook to ensure t is written
 		initialBarrier2.addHook(initialBarrier::triggerNow);
@@ -127,34 +167,42 @@ public class ObservableReference<T> {
 		}).submit(prev));
 	}
 	
-	public Barrier set(Supplier<T> supplier) {
+	public Barrier set(Generator<T> supplier) {
 		return ordering.next(prev -> runnableCancelable(canceledCheck -> {
-			if (canceledCheck.isCanceled())
-				return;
-			T t = supplier.get();
+			try {
+				if (canceledCheck.isCanceled())
+					return;
+				T t = supplier.get();
+				
+				if (canceledCheck.isCanceled())
+					return;
+				this.t = t;
+				Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
+				if (barrier != ALWAYS_TRIGGERED_BARRIER)
+					throw new DelayTask(barrier);
+			} catch (NoUpdate ignored) {
 			
-			if (canceledCheck.isCanceled())
-				return;
-			this.t = t;
-			Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
-			if (barrier != ALWAYS_TRIGGERED_BARRIER)
-				throw new DelayTask(barrier);
+			}
 		}).submit(prev));
 	}
 	
 	/**
 	 * The supplier of this and only this method will always be executed; the result however will not be stored if canceled.
 	 */
-	public Barrier set(Function<CanceledCheck, T> supplier) {
+	public Barrier set(GeneratorWithCancelCheck<T> supplier) {
 		return ordering.next(prev -> runnableCancelable(canceledCheck -> {
-			T t = supplier.apply(canceledCheck);
+			try {
+				T t = supplier.get(canceledCheck);
+				
+				if (canceledCheck.isCanceled())
+					return;
+				this.t = t;
+				Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
+				if (barrier != ALWAYS_TRIGGERED_BARRIER)
+					throw new DelayTask(barrier);
+			} catch (NoUpdate ignored) {
 			
-			if (canceledCheck.isCanceled())
-				return;
-			this.t = t;
-			Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
-			if (barrier != ALWAYS_TRIGGERED_BARRIER)
-				throw new DelayTask(barrier);
+			}
 		}).submit(prev));
 	}
 	
@@ -213,5 +261,18 @@ public class ObservableReference<T> {
 		EventEntry<Consumer<? super T>> entry = new EventEntry<>(changeConsumer, requiredBy, requires);
 		addHookNoInitialCallback(entry);
 		return entry;
+	}
+	
+	//generator
+	@FunctionalInterface
+	public interface Generator<T> {
+		
+		T get() throws NoUpdate;
+	}
+	
+	@FunctionalInterface
+	public interface GeneratorWithCancelCheck<T> {
+		
+		T get(CanceledCheck canceledCheck) throws NoUpdate;
 	}
 }
