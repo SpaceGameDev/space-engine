@@ -76,4 +76,9 @@ public class BarrierImpl implements Barrier {
 				throw new TimeoutException();
 		}
 	}
+	
+	@Override
+	public synchronized String toString() {
+		return hookList == null ? "finished" : "waiting";
+	}
 }

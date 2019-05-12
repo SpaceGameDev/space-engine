@@ -5,6 +5,13 @@ import space.engine.sync.DelayTask;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.lock.SyncLock;
 
+/**
+ * The most basic task with 2 abstract Methods:
+ * <ul>
+ * <li>submit1(Runnable): for submitting this Task to an executor</li>
+ * <li>execute(): to do your work</li>
+ * </ul>
+ */
 public abstract class RunnableTask extends AbstractTask implements Runnable {
 	
 	public RunnableTask(@NotNull SyncLock[] locks, @NotNull Barrier[] barriers) {
