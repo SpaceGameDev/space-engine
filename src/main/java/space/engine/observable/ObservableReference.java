@@ -110,7 +110,7 @@ public class ObservableReference<T> {
 	}
 	
 	//addHook
-	public Barrier addHook(@NotNull EventEntry<Consumer<? super T>> hook) {
+	public Barrier addHook(@NotNull EventEntry<? extends Consumer<? super T>> hook) {
 		return ordering.nextInbetween(prev -> runnable(() -> {
 			hook.function.accept(t);
 			changeEvent.addHook(hook);
