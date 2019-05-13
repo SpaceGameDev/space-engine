@@ -3,16 +3,17 @@ package space.engine.vulkan.managed.surface;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.vulkan.VkExtent2D;
+import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.vulkan.VkException;
-import space.engine.vulkan.VkQueue;
 import space.engine.vulkan.VkQueueFamilyProperties;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 import space.engine.vulkan.managed.device.ManagedDevice;
+import space.engine.vulkan.managed.device.ManagedQueue;
 import space.engine.vulkan.surface.VkSurface;
 import space.engine.vulkan.surface.VkSwapchain;
 import space.engine.window.Window;
@@ -101,7 +102,7 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 		if (oldSwapchain == null)
 			oldSwapchain = 0L;
 		
-		VkQueue queue = device.getQueue(bestSwapchainQueue(device, surface), QUEUE_FLAG_REALTIME_BIT);
+		ManagedQueue queue = device.getQueue(bestSwapchainQueue(device, surface), QUEUE_FLAG_REALTIME_BIT);
 		
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkSwapchainCreateInfoKHR info = mallocStruct(frame, VkSwapchainCreateInfoKHR::create, VkSwapchainCreateInfoKHR.SIZEOF).set(
@@ -129,7 +130,7 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 		}
 	}
 	
-	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull VkQueue queue, @NotNull int[] imageFormat, @NotNull Object[] parents) throws UnsupportedConfigurationException {
+	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull ManagedQueue queue, @NotNull int[] imageFormat, @NotNull Object[] parents) throws UnsupportedConfigurationException {
 		super(address, device, surface, imageFormat[0], VkSwapchain.Storage::new, parents);
 		this.imageFormat = imageFormat;
 		this.queue = queue;
@@ -149,9 +150,14 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 	}
 	
 	//queue
-	private final @NotNull VkQueue queue;
+	private final @NotNull ManagedQueue queue;
 	
-	public VkQueue queue() {
+	public ManagedQueue queue() {
 		return queue;
+	}
+	
+	//methods
+	public void present(VkPresentInfoKHR info) {
+		queue.submit(queue1 -> vkQueuePresentKHR(queue1, info));
 	}
 }

@@ -13,7 +13,6 @@ import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.lwjgl.LwjglStructAllocator;
 import space.engine.vulkan.VkPhysicalDevice;
-import space.engine.vulkan.VkQueue;
 import space.engine.vulkan.VkQueueFamilyProperties;
 
 import java.util.Arrays;
@@ -126,36 +125,36 @@ public class ManagedDeviceQuadQueues extends ManagedDevice {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateDevice(physicalDevice, info.address(), 0, ptr.address()));
 			return new ManagedDeviceQuadQueues(ptr.getPointer(), physicalDevice, info, queueFamilies, device1 -> {
-				VkQueue[][] queues = new VkQueue[QUEUE_TYPE_MAX][QUEUE_FLAGS_MAX];
+				ManagedQueue[][] queues = new ManagedQueue[QUEUE_TYPE_MAX][QUEUE_FLAGS_MAX];
 				
 				//graphics
 				queues[QUEUE_TYPE_GRAPHICS][0] = familyGraphics != null
-						? VkQueue.alloc(device1, familyGraphics, offsetGraphics, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyGraphics, offsetGraphics, EMPTY_OBJECT_ARRAY)
 						: null;
 				queues[QUEUE_TYPE_GRAPHICS][QUEUE_FLAG_REALTIME_BIT] = familyGraphics != null && queueCountGraphics >= 2
-						? VkQueue.alloc(device1, familyGraphics, offsetGraphics + 1, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyGraphics, offsetGraphics + 1, EMPTY_OBJECT_ARRAY)
 						: queues[QUEUE_TYPE_GRAPHICS][0];
 				
 				//compute
 				queues[QUEUE_TYPE_COMPUTE][0] = familyCompute != null && queueCountCompute >= 1
-						? VkQueue.alloc(device1, familyCompute, offsetCompute, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyCompute, offsetCompute, EMPTY_OBJECT_ARRAY)
 						: (familyGraphics != null && (familyGraphics.queueFlags() & VK_QUEUE_COMPUTE_BIT) == VK_QUEUE_COMPUTE_BIT ? queues[QUEUE_TYPE_GRAPHICS][0] : null);
 				queues[QUEUE_TYPE_COMPUTE][QUEUE_FLAG_REALTIME_BIT] = familyCompute != null && queueCountCompute >= 2
-						? VkQueue.alloc(device1, familyCompute, offsetCompute + 1, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyCompute, offsetCompute + 1, EMPTY_OBJECT_ARRAY)
 						: queues[QUEUE_TYPE_COMPUTE][0];
 				
 				//transfer
 				queues[QUEUE_TYPE_TRANSFER][0] = familyTransfer != null && queueCountTransfer >= 1
-						? VkQueue.alloc(device1, familyTransfer, offsetTransfer, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyTransfer, offsetTransfer, EMPTY_OBJECT_ARRAY)
 						: (queues[QUEUE_TYPE_COMPUTE][0] != null ? queues[QUEUE_TYPE_COMPUTE][0] : queues[QUEUE_TYPE_GRAPHICS][0]);
 				queues[QUEUE_TYPE_TRANSFER][QUEUE_FLAG_TRANSFER_HOST_TO_DEVICE_BIT] = familyTransfer != null && queueCountTransfer >= 2
-						? VkQueue.alloc(device1, familyTransfer, offsetTransfer + 1, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyTransfer, offsetTransfer + 1, EMPTY_OBJECT_ARRAY)
 						: queues[QUEUE_TYPE_TRANSFER][0];
 				queues[QUEUE_TYPE_TRANSFER][QUEUE_FLAG_REALTIME_BIT] = familyTransfer != null && queueCountTransfer >= 4
-						? VkQueue.alloc(device1, familyTransfer, offsetTransfer + 2, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyTransfer, offsetTransfer + 2, EMPTY_OBJECT_ARRAY)
 						: queues[QUEUE_TYPE_TRANSFER][0];
 				queues[QUEUE_TYPE_TRANSFER][QUEUE_FLAG_TRANSFER_HOST_TO_DEVICE_BIT | QUEUE_FLAG_REALTIME_BIT] = familyTransfer != null && queueCountTransfer >= 4
-						? VkQueue.alloc(device1, familyTransfer, offsetTransfer + 3, EMPTY_OBJECT_ARRAY)
+						? ManagedQueue.alloc(device1, familyTransfer, offsetTransfer + 3, EMPTY_OBJECT_ARRAY)
 						: queues[QUEUE_TYPE_TRANSFER][QUEUE_FLAG_TRANSFER_HOST_TO_DEVICE_BIT];
 				
 				return queues;
@@ -182,9 +181,9 @@ public class ManagedDeviceQuadQueues extends ManagedDevice {
 	}
 	
 	private final VkQueueFamilyProperties[] queueFamilies;
-	private final VkQueue[][] queues;
+	private final ManagedQueue[][] queues;
 	
-	protected ManagedDeviceQuadQueues(long handle, @NotNull VkPhysicalDevice physicalDevice, @NotNull VkDeviceCreateInfo ci, VkQueueFamilyProperties[] queueFamilies, Function<ManagedDeviceQuadQueues, VkQueue[][]> queues, @NotNull Object[] parents) {
+	protected ManagedDeviceQuadQueues(long handle, @NotNull VkPhysicalDevice physicalDevice, @NotNull VkDeviceCreateInfo ci, VkQueueFamilyProperties[] queueFamilies, Function<ManagedDeviceQuadQueues, ManagedQueue[][]> queues, @NotNull Object[] parents) {
 		super(handle, physicalDevice, ci, parents);
 		this.queueFamilies = queueFamilies;
 		this.queues = queues.apply(this);
@@ -201,9 +200,9 @@ public class ManagedDeviceQuadQueues extends ManagedDevice {
 	}
 	
 	@Override
-	public @NotNull VkQueue getQueue(int type, int flags) throws QueueNotAvailableException {
+	public @NotNull ManagedQueue getQueue(int type, int flags) throws QueueNotAvailableException {
 		if (type <= QUEUE_TYPE_MAX && flags <= QUEUE_FLAGS_MAX) {
-			VkQueue vkQueue = queues[type][flags];
+			ManagedQueue vkQueue = queues[type][flags];
 			if (vkQueue != null)
 				return vkQueue;
 		}

@@ -3,7 +3,6 @@ package space.engine.vulkan.surface;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkImageSubresourceRange;
 import org.lwjgl.vulkan.VkImageViewCreateInfo;
-import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
@@ -17,7 +16,6 @@ import space.engine.sync.barrier.Barrier;
 import space.engine.vulkan.VkDevice;
 import space.engine.vulkan.VkImage;
 import space.engine.vulkan.VkImageView;
-import space.engine.vulkan.VkQueue;
 import space.engine.window.Window;
 
 import java.util.Arrays;
@@ -145,10 +143,5 @@ public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 	
 	public @NotNull VkImageView[] imageViews() {
 		return imageViews;
-	}
-	
-	//methods
-	public void present(VkPresentInfoKHR info, VkQueue queue) {
-		assertVk(vkQueuePresentKHR(queue, info));
 	}
 }

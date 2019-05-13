@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkDeviceCreateInfo;
 import space.engine.vulkan.VkDevice;
 import space.engine.vulkan.VkPhysicalDevice;
-import space.engine.vulkan.VkQueue;
 import space.engine.vulkan.VkQueueFamilyProperties;
 
 /**
@@ -28,7 +27,7 @@ public abstract class ManagedDevice extends VkDevice {
 	
 	public abstract @NotNull VkQueueFamilyProperties getQueueFamily(int type) throws QueueNotAvailableException;
 	
-	public abstract @NotNull VkQueue getQueue(int type, int flags) throws QueueNotAvailableException;
+	public abstract @NotNull ManagedQueue getQueue(int type, int flags) throws QueueNotAvailableException;
 	
 	public static class QueueNotAvailableException extends IllegalArgumentException {
 		
