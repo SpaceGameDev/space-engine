@@ -49,7 +49,7 @@ public class ObservableReference<T> {
 		Barrier[] hooksAdded = parents.map(parent -> parent.addHookNoInitialCallback(onChange)).toArray(Barrier[]::new);
 		
 		//only the initial value has additional barriers; usually you shouldn't use them as they block #ordering but here it's fine
-		Barrier initialBarrier2 = reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
+		reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
 			//activate has to be true BEFORE we get the initial values otherwise we may miss updates
 			activate.set(true);
 			try {
@@ -57,9 +57,8 @@ public class ObservableReference<T> {
 			} catch (NoUpdate ignored) {
 				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
 			}
+			initialBarrier.triggerNow();
 		}).submit(prev));
-		//initialBarrier.triggerNow() has to be added as a hook to ensure t is written
-		initialBarrier2.addHook(initialBarrier::triggerNow);
 		
 		return reference;
 	}
@@ -86,7 +85,7 @@ public class ObservableReference<T> {
 		Barrier[] hooksAdded = parents.map(parent -> parent.addHookNoInitialCallback(onChange)).toArray(Barrier[]::new);
 		
 		//only the initial value has additional barriers; usually you shouldn't use them as they block #ordering but here it's fine
-		Barrier initialBarrier2 = reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
+		reference.ordering.nextInbetween(prev -> runnable(hooksAdded, () -> {
 			//activate has to be true BEFORE we get the initial values otherwise we may miss updates
 			activate.set(true);
 			try {
@@ -94,9 +93,8 @@ public class ObservableReference<T> {
 			} catch (NoUpdate ignored) {
 				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
 			}
+			initialBarrier.triggerNow();
 		}).submit(prev));
-		//initialBarrier.triggerNow() has to be added as a hook to ensure t is written
-		initialBarrier2.addHook(initialBarrier::triggerNow);
 		
 		return reference;
 	}
@@ -132,7 +130,6 @@ public class ObservableReference<T> {
 	 * When using this method query the value once and use it over your entire lifespan so it won't change on the fly.
 	 * <p>
 	 * Calling this is the same as calling {@link #getFuture()}.{@link Future#assertGet() assertGet()}
-	 * <p>
 	 *
 	 * @return the current T
 	 * @throws FutureNotFinishedException if the initial calculation of t has not yet completed
