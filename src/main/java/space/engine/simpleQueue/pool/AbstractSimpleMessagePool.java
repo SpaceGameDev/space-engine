@@ -1,6 +1,8 @@
 package space.engine.simpleQueue.pool;
 
 import org.jetbrains.annotations.NotNull;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.FreeableStorage;
 import space.engine.simpleQueue.SimpleQueue;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
@@ -20,7 +22,7 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 	
 	private volatile boolean isRunning = true;
 	private final AtomicInteger exitCountdown;
-	private final BarrierImpl exitBarrier;
+	private final BarrierImpl stopBarrier;
 	
 	public AbstractSimpleMessagePool(int threadCnt, @NotNull SimpleQueue<MSG> queue) {
 		this(threadCnt, queue, Executors.defaultThreadFactory());
@@ -29,7 +31,7 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 	public AbstractSimpleMessagePool(int threadCnt, @NotNull SimpleQueue<MSG> queue, ThreadFactory threadFactory) {
 		this.queue = queue;
 		this.exitCountdown = new AtomicInteger(threadCnt);
-		this.exitBarrier = new BarrierImpl();
+		this.stopBarrier = new BarrierImpl();
 		
 		Runnable poolMain = () -> {
 			while (true) {
@@ -58,7 +60,7 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 			}
 			
 			if (exitCountdown.decrementAndGet() == 0)
-				exitBarrier.triggerNow();
+				stopBarrier.triggerNow();
 		};
 		
 		this.threads = IntStream.range(0, threadCnt)
@@ -125,10 +127,20 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 	public Barrier stop() {
 		isRunning = false;
 		unparkThreads();
-		return exitBarrier;
+		return stopBarrier;
 	}
 	
-	public Barrier exitBarrier() {
-		return exitBarrier;
+	public Barrier stopBarrier() {
+		return stopBarrier;
+	}
+	
+	public Freeable createStopFreeable(Object[] parents) {
+		//will be strongly referenced by out thread anyway
+		return new FreeableStorage(null, parents) {
+			@Override
+			protected @NotNull Barrier handleFree() {
+				return stop();
+			}
+		};
 	}
 }
