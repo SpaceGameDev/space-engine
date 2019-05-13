@@ -1,6 +1,6 @@
 package space.engine.vulkan.exception;
 
-public class UnsupportedConfigurationException extends Exception {
+public class UnsupportedConfigurationException extends RuntimeException {
 	
 	public UnsupportedConfigurationException() {
 	}

@@ -28,7 +28,7 @@ public class ManagedDeviceSingleQueue extends ManagedDevice {
 	
 	private static final int QUEUE_REQUIRED_FLAGS = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT;
 	
-	public static ManagedDeviceSingleQueue alloc(@NotNull VkPhysicalDevice physicalDevice, @NotNull Collection<VkExtensionProperties> extensions, @NotNull VkPhysicalDeviceFeatures features, @NotNull Object[] parents) {
+	public static ManagedDeviceSingleQueue alloc(@NotNull VkPhysicalDevice physicalDevice, @NotNull Collection<VkExtensionProperties> extensions, @Nullable VkPhysicalDeviceFeatures features, @NotNull Object[] parents) {
 		@Nullable VkQueueFamilyProperties queueFamily = physicalDevice.queueProperties()
 																	  .stream()
 																	  .filter(family -> (family.queueFlags() & QUEUE_REQUIRED_FLAGS) == QUEUE_REQUIRED_FLAGS)
