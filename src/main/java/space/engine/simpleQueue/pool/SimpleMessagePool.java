@@ -5,18 +5,35 @@ import space.engine.simpleQueue.SimpleQueue;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class SimpleMessagePool<MSG> {
 	
 	public static final long DEFAULT_SLEEP_TIME_WHEN_DRY = 10L;
+	private static final VarHandle THREADISSLEEPING;
+	
+	static {
+		try {
+			Lookup lookup = MethodHandles.lookup();
+			THREADISSLEEPING = lookup.findVarHandle(SimpleMessagePool.class, "threadIsSleeping", boolean.class);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 	
 	private final @NotNull SimpleQueue<MSG> queue;
+	private final Thread[] threads;
+	private volatile boolean threadIsSleeping = false;
 	
 	private volatile boolean isRunning = true;
 	private final AtomicInteger exitCountdown;
@@ -47,15 +64,13 @@ public abstract class SimpleMessagePool<MSG> {
 						thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
 					}
 				} else {
-					yield();
 					//wait a little and retry
+					yield();
 					if (!isRunning)
 						break;
-					try {
-						Thread.sleep(sleepTimeWhenDry);
-					} catch (InterruptedException ignored) {
 					
-					}
+					THREADISSLEEPING.set(this, true);
+					LockSupport.park();
 				}
 			}
 			
@@ -63,8 +78,10 @@ public abstract class SimpleMessagePool<MSG> {
 				exitBarrier.triggerNow();
 		};
 		
-		for (int i = 0; i < threadCnt; i++)
-			threadFactory.newThread(poolMain).start();
+		this.threads = IntStream.range(0, threadCnt)
+								.mapToObj(i -> threadFactory.newThread(poolMain))
+								.peek(Thread::start)
+								.toArray(Thread[]::new);
 	}
 	
 	//handle
@@ -84,27 +101,37 @@ public abstract class SimpleMessagePool<MSG> {
 	public void add(MSG msg) {
 		assertRunning();
 		queue.add(msg);
+		wakeUpThreads();
 	}
 	
 	public void addAll(Collection<MSG> collection) {
 		assertRunning();
 		queue.addAll(collection);
+		wakeUpThreads();
 	}
 	
 	public void addAll(MSG[] collection) {
 		assertRunning();
 		queue.addAll(collection);
+		wakeUpThreads();
 	}
 	
 	public void addAll(Stream<MSG> collection) {
 		assertRunning();
 		queue.addAll(collection);
+		wakeUpThreads();
 	}
 	
 	//execute
 	public void assertRunning() throws RejectedExecutionException {
 		if (!isRunning)
 			throw new RejectedExecutionException("SimpleThreadPool no longer running");
+	}
+	
+	protected void wakeUpThreads() {
+		if (THREADISSLEEPING.compareAndSet(this, true, false))
+			for (Thread thread : threads)
+				LockSupport.unpark(thread);
 	}
 	
 	//getter
@@ -115,6 +142,7 @@ public abstract class SimpleMessagePool<MSG> {
 	//stop
 	public Barrier stop() {
 		isRunning = false;
+		wakeUpThreads();
 		return exitBarrier;
 	}
 	
