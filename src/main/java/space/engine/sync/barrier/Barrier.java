@@ -100,16 +100,19 @@ public interface Barrier {
 	 */
 	default void awaitUninterrupted() {
 		boolean interrupted = false;
-		while (true) {
-			try {
-				await();
-				break;
-			} catch (InterruptedException e) {
-				interrupted = true;
+		try {
+			while (true) {
+				try {
+					await();
+					return;
+				} catch (InterruptedException e) {
+					interrupted = true;
+				}
 			}
+		} finally {
+			if (interrupted)
+				Thread.currentThread().interrupt();
 		}
-		if (interrupted)
-			Thread.currentThread().interrupt();
 	}
 	
 	/**
@@ -120,16 +123,19 @@ public interface Barrier {
 	 */
 	default void awaitUninterrupted(long time, TimeUnit unit) throws TimeoutException {
 		boolean interrupted = false;
-		while (true) {
-			try {
-				await(time, unit);
-				break;
-			} catch (InterruptedException e) {
-				interrupted = true;
+		try {
+			while (true) {
+				try {
+					await(time, unit);
+					return;
+				} catch (InterruptedException e) {
+					interrupted = true;
+				}
 			}
+		} finally {
+			if (interrupted)
+				Thread.currentThread().interrupt();
 		}
-		if (interrupted)
-			Thread.currentThread().interrupt();
 	}
 	
 	//default methods
