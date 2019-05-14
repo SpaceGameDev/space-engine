@@ -24,8 +24,8 @@ public class SubLoggerPrefix extends AbstractPrefix {
 			logger = logger.parentLogger();
 			if (logger == null)
 				break;
-			b.append(endChar).append(name).append(startChar);
+			b.insert(0, endChar).insert(0, name).insert(0, startChar);
 		}
-		logMessage.prefix.append(b.reverse());
+		logMessage.prefix.append(b);
 	}
 }
