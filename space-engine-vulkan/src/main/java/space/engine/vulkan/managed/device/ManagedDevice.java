@@ -2,6 +2,7 @@ package space.engine.vulkan.managed.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkDeviceCreateInfo;
+import space.engine.simpleQueue.ConcurrentLinkedSimpleQueue;
 import space.engine.vulkan.VkDevice;
 import space.engine.vulkan.VkPhysicalDevice;
 import space.engine.vulkan.VkQueueFamilyProperties;
@@ -15,6 +16,7 @@ public abstract class ManagedDevice extends VkDevice {
 	
 	protected ManagedDevice(long handle, @NotNull VkPhysicalDevice physicalDevice, @NotNull VkDeviceCreateInfo ci, @NotNull Object[] parents) {
 		super(handle, physicalDevice, ci, VkDevice.Storage::new, parents);
+		eventAwaiter = new EventAwaiter(this, new ConcurrentLinkedSimpleQueue<>(), new Object[] {this});
 	}
 	
 	//queue
@@ -53,5 +55,12 @@ public abstract class ManagedDevice extends VkDevice {
 		public QueueNotAvailableException(Throwable cause) {
 			super(cause);
 		}
+	}
+	
+	//EventAwaiter
+	private final EventAwaiter eventAwaiter;
+	
+	public EventAwaiter eventAwaiter() {
+		return eventAwaiter;
 	}
 }

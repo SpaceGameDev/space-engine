@@ -9,11 +9,15 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.buffer.pointer.PointerBufferPointer;
+import space.engine.sync.TaskCreator;
+import space.engine.sync.barrier.Barrier;
+import space.engine.sync.future.Future;
 import space.engine.vulkan.VkException;
 import space.engine.vulkan.VkQueueFamilyProperties;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 import space.engine.vulkan.managed.device.ManagedDevice;
 import space.engine.vulkan.managed.device.ManagedQueue;
+import space.engine.vulkan.managed.device.ManagedQueue.Entry;
 import space.engine.vulkan.surface.VkSurface;
 import space.engine.vulkan.surface.VkSwapchain;
 import space.engine.window.Window;
@@ -22,6 +26,7 @@ import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
+import static space.engine.sync.barrier.Barrier.ALWAYS_TRIGGERED_BARRIER;
 import static space.engine.vulkan.VkException.assertVk;
 import static space.engine.vulkan.managed.device.ManagedDevice.*;
 
@@ -157,7 +162,22 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 	}
 	
 	//methods
-	public void present(VkPresentInfoKHR info) {
-		queue.submit(queue1 -> vkQueuePresentKHR(queue1, info));
+	public TaskCreator<Future<Barrier>> present(VkPresentInfoKHR info) {
+		return queue.submit(new ManagedQueue_PresentEntry(info));
+	}
+	
+	public static class ManagedQueue_PresentEntry implements Entry {
+		
+		private final VkPresentInfoKHR info;
+		
+		public ManagedQueue_PresentEntry(VkPresentInfoKHR info) {
+			this.info = info;
+		}
+		
+		@Override
+		public Barrier run(ManagedQueue queue) {
+			vkQueuePresentKHR(queue, info);
+			return ALWAYS_TRIGGERED_BARRIER;
+		}
 	}
 }

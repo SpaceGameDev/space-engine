@@ -29,11 +29,19 @@ public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper
 	}
 	
 	//const
-	public VkQueue(long address, @NotNull VkDevice device, @NotNull VkQueueFamilyProperties queueFamily, @NotNull BiFunction<VkQueue, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	protected VkQueue(long address, @NotNull VkDevice device, @NotNull VkQueueFamilyProperties queueFamily, @NotNull BiFunction<VkQueue, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+		this(address, device, queueFamily);
+		init(storageCreator, parents);
+	}
+	
+	protected VkQueue(long address, @NotNull VkDevice device, @NotNull VkQueueFamilyProperties queueFamily) {
 		super(address, device);
 		this.address = address;
 		this.device = device;
 		this.queueFamily = queueFamily;
+	}
+	
+	protected void init(@NotNull BiFunction<VkQueue, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 	}
 	
@@ -68,7 +76,8 @@ public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper
 	}
 	
 	//storage
-	private final @NotNull Freeable storage;
+	@SuppressWarnings("NullableProblems")
+	private @NotNull Freeable storage;
 	
 	@Override
 	public @NotNull Freeable getStorage() {
