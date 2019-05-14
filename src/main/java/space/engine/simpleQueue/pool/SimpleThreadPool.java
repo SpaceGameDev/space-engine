@@ -17,10 +17,6 @@ public class SimpleThreadPool extends SimpleMessagePool<Runnable> implements Exe
 		super(threadCnt, queue, threadFactory);
 	}
 	
-	public SimpleThreadPool(int threadCnt, @NotNull SimpleQueue<Runnable> queue, ThreadFactory threadFactory, long sleepTimeWhenDry) {
-		super(threadCnt, queue, threadFactory, sleepTimeWhenDry);
-	}
-	
 	//handle
 	@Override
 	protected void handle(Runnable runnable) {
