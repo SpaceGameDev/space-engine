@@ -79,6 +79,23 @@ public class Vector3f {
 		return this;
 	}
 	
+	public Vector3f multiply(Matrix3f mat) {
+		return set(
+				mat.m11 * x + mat.m12 * y + mat.m13 * z,
+				mat.m21 * x + mat.m22 * y + mat.m23 * z,
+				mat.m31 * x + mat.m32 * y + mat.m33 * z
+		);
+	}
+	
+	public Vector3f multiply(Matrix4f mat) {
+		float w = mat.m41 * x + mat.m42 * y + mat.m43 * z + mat.m44;
+		return set(
+				(mat.m11 * x + mat.m12 * y + mat.m13 * z + mat.m14) / w,
+				(mat.m21 * x + mat.m22 * y + mat.m23 * z + mat.m24) / w,
+				(mat.m31 * x + mat.m32 * y + mat.m33 * z + mat.m34) / w
+		);
+	}
+	
 	public Vector3f divide(float scalar) {
 		this.x /= scalar;
 		this.y /= scalar;
