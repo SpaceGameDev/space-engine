@@ -80,7 +80,7 @@ public class Quaternionf {
 		return mat.set(
 				1 - yy - zz, xy - zw, xz + yw,
 				xy + zw, 1 - xx - zz, yz - xw,
-				xz - yw, yz - xw, 1 - xx - yy
+				xz - yw, yz + xw, 1 - xx - yy
 		);
 	}
 	
