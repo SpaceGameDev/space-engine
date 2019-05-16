@@ -100,7 +100,7 @@ public class VkPhysicalDevice extends org.lwjgl.vulkan.VkPhysicalDevice implemen
 	}
 	
 	public String generateInfoString() {
-		return identification() + " type:" + deviceTypeToString(properties.deviceType()) + "\n" +
+		return identification() + " type: " + deviceTypeToString(properties.deviceType()) + "\n" +
 				"    vendor ID: " + properties.vendorID() + "api: v" + properties.apiVersion() + " Driver: v" + properties.driverVersion();
 	}
 	
