@@ -67,6 +67,26 @@ public class Matrix4f {
 		);
 	}
 	
+	public Matrix4f modelOffset(Vector3f vector) {
+		this.m14 = vector.x;
+		this.m24 = vector.y;
+		this.m34 = vector.z;
+		return this;
+	}
+	
+	public Matrix4f modelScale(Vector3f vector) {
+		this.m11 *= vector.x;
+		this.m12 *= vector.x;
+		this.m13 *= vector.x;
+		this.m21 *= vector.y;
+		this.m22 *= vector.y;
+		this.m23 *= vector.y;
+		this.m31 *= vector.z;
+		this.m32 *= vector.z;
+		this.m33 *= vector.z;
+		return this;
+	}
+	
 	public Matrix4f multiply(Matrix4f mat) {
 		return multiply(this, mat);
 	}
