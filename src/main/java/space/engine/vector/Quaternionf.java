@@ -84,6 +84,25 @@ public class Quaternionf {
 		);
 	}
 	
+	public Matrix4f toMatrix4(Matrix4f mat) {
+		float xx = x * x * 2;
+		float xy = x * y * 2;
+		float xz = x * z * 2;
+		float xw = x * w * 2;
+		float yy = y * y * 2;
+		float yz = y * z * 2;
+		float yw = y * w * 2;
+		float zz = z * z * 2;
+		float zw = z * w * 2;
+		
+		return mat.set(
+				1 - yy - zz, xy - zw, xz + yw, 0,
+				xy + zw, 1 - xx - zz, yz - xw, 0,
+				xz - yw, yz + xw, 1 - xx - yy, 0,
+				0, 0, 0, 1
+		);
+	}
+	
 	public static float dot(Quaternionf q1, Quaternionf q2) {
 		return q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z;
 	}

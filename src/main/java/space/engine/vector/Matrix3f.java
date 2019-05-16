@@ -57,6 +57,10 @@ public class Matrix3f {
 		);
 	}
 	
+	public Matrix3f multiply(Matrix3f mat) {
+		return multiply(this, mat);
+	}
+	
 	public Matrix3f multiply(Matrix3f mat1, Matrix3f mat2) {
 		return set(
 				mat1.m11 * mat2.m11 + mat1.m12 * mat2.m21 + mat1.m13 * mat2.m31,

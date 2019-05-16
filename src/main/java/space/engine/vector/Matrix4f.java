@@ -68,23 +68,27 @@ public class Matrix4f {
 	}
 	
 	public Matrix4f multiply(Matrix4f mat) {
-		return this.set(
-				this.m11 * mat.m11 + this.m12 * mat.m21 + this.m13 * mat.m31 + this.m14 * mat.m41,
-				this.m11 * mat.m12 + this.m12 * mat.m22 + this.m13 * mat.m32 + this.m14 * mat.m42,
-				this.m11 * mat.m13 + this.m12 * mat.m23 + this.m13 * mat.m33 + this.m14 * mat.m43,
-				this.m11 * mat.m14 + this.m12 * mat.m24 + this.m13 * mat.m34 + this.m14 * mat.m44,
-				this.m21 * mat.m11 + this.m22 * mat.m21 + this.m23 * mat.m31 + this.m24 * mat.m41,
-				this.m21 * mat.m12 + this.m22 * mat.m22 + this.m23 * mat.m32 + this.m24 * mat.m42,
-				this.m21 * mat.m13 + this.m22 * mat.m23 + this.m23 * mat.m33 + this.m24 * mat.m43,
-				this.m21 * mat.m14 + this.m22 * mat.m24 + this.m23 * mat.m34 + this.m24 * mat.m44,
-				this.m31 * mat.m11 + this.m32 * mat.m21 + this.m33 * mat.m31 + this.m34 * mat.m41,
-				this.m31 * mat.m12 + this.m32 * mat.m22 + this.m33 * mat.m32 + this.m34 * mat.m42,
-				this.m31 * mat.m13 + this.m32 * mat.m23 + this.m33 * mat.m33 + this.m34 * mat.m43,
-				this.m31 * mat.m14 + this.m32 * mat.m24 + this.m33 * mat.m34 + this.m34 * mat.m44,
-				this.m41 * mat.m11 + this.m42 * mat.m21 + this.m43 * mat.m31 + this.m44 * mat.m41,
-				this.m41 * mat.m12 + this.m42 * mat.m22 + this.m43 * mat.m32 + this.m44 * mat.m42,
-				this.m41 * mat.m13 + this.m42 * mat.m23 + this.m43 * mat.m33 + this.m44 * mat.m43,
-				this.m41 * mat.m14 + this.m42 * mat.m24 + this.m43 * mat.m34 + this.m44 * mat.m44
+		return multiply(this, mat);
+	}
+	
+	public Matrix4f multiply(Matrix4f mat1, Matrix4f mat2) {
+		return set(
+				mat1.m11 * mat2.m11 + mat1.m12 * mat2.m21 + mat1.m13 * mat2.m31 + mat1.m14 * mat2.m41,
+				mat1.m11 * mat2.m12 + mat1.m12 * mat2.m22 + mat1.m13 * mat2.m32 + mat1.m14 * mat2.m42,
+				mat1.m11 * mat2.m13 + mat1.m12 * mat2.m23 + mat1.m13 * mat2.m33 + mat1.m14 * mat2.m43,
+				mat1.m11 * mat2.m14 + mat1.m12 * mat2.m24 + mat1.m13 * mat2.m34 + mat1.m14 * mat2.m44,
+				mat1.m21 * mat2.m11 + mat1.m22 * mat2.m21 + mat1.m23 * mat2.m31 + mat1.m24 * mat2.m41,
+				mat1.m21 * mat2.m12 + mat1.m22 * mat2.m22 + mat1.m23 * mat2.m32 + mat1.m24 * mat2.m42,
+				mat1.m21 * mat2.m13 + mat1.m22 * mat2.m23 + mat1.m23 * mat2.m33 + mat1.m24 * mat2.m43,
+				mat1.m21 * mat2.m14 + mat1.m22 * mat2.m24 + mat1.m23 * mat2.m34 + mat1.m24 * mat2.m44,
+				mat1.m31 * mat2.m11 + mat1.m32 * mat2.m21 + mat1.m33 * mat2.m31 + mat1.m34 * mat2.m41,
+				mat1.m31 * mat2.m12 + mat1.m32 * mat2.m22 + mat1.m33 * mat2.m32 + mat1.m34 * mat2.m42,
+				mat1.m31 * mat2.m13 + mat1.m32 * mat2.m23 + mat1.m33 * mat2.m33 + mat1.m34 * mat2.m43,
+				mat1.m31 * mat2.m14 + mat1.m32 * mat2.m24 + mat1.m33 * mat2.m34 + mat1.m34 * mat2.m44,
+				mat1.m41 * mat2.m11 + mat1.m42 * mat2.m21 + mat1.m43 * mat2.m31 + mat1.m44 * mat2.m41,
+				mat1.m41 * mat2.m12 + mat1.m42 * mat2.m22 + mat1.m43 * mat2.m32 + mat1.m44 * mat2.m42,
+				mat1.m41 * mat2.m13 + mat1.m42 * mat2.m23 + mat1.m43 * mat2.m33 + mat1.m44 * mat2.m43,
+				mat1.m41 * mat2.m14 + mat1.m42 * mat2.m24 + mat1.m43 * mat2.m34 + mat1.m44 * mat2.m44
 		);
 	}
 	

@@ -75,6 +75,30 @@ public class AxisAndAnglef {
 		);
 	}
 	
+	public Matrix4f toMatrix4(Matrix4f mat) {
+		float s = (float) sin(angle);
+		float c = (float) cos(angle);
+		float c1 = 1 - c;
+		
+		float xx = axis.x * axis.x * c1;
+		float xy = axis.x * axis.y * c1;
+		float xz = axis.x * axis.z * c1;
+		float yy = axis.y * axis.y * c1;
+		float yz = axis.y * axis.z * c1;
+		float zz = axis.z * axis.z * c1;
+		
+		float xs = axis.x * s;
+		float ys = axis.y * s;
+		float zs = axis.z * s;
+		
+		return mat.set(
+				xx + c, xy - zs, xz + ys, 0,
+				xy + zs, yy + c, yz - xs, 0,
+				xz - ys, yz + xs, zz + c, 0,
+				0, 0, 0, 1
+		);
+	}
+	
 	public Quaternionf toQuaternion(Quaternionf quaternion) {
 		float s = (float) sin(angle / 2) / axis.length();
 		return quaternion.set(axis.x * s, axis.y * s, axis.z * s, (float) cos(angle / 2));
