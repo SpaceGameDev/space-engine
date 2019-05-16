@@ -55,7 +55,7 @@ public class VkSurface<WINDOW extends Window> implements FreeableWrapper {
 			while (true) {
 				assertVk(nvkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, address, count.address(), 0));
 				formatBuffer = mallocBuffer(Allocator.heap(), VkSurfaceFormatKHR::create, VkSurfaceFormatKHR.SIZEOF, count.getInt(), new Object[] {storage});
-				if (assertVk(nvkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, address, count.address(), 0)) == VK_SUCCESS)
+				if (assertVk(nvkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, address, count.address(), formatBuffer.address())) == VK_SUCCESS)
 					break;
 				Freeable.freeObject(formatBuffer);
 			}
