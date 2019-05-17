@@ -81,18 +81,19 @@ public class Vector3f {
 	
 	public Vector3f multiply(Matrix3f mat) {
 		return set(
-				mat.m11 * x + mat.m12 * y + mat.m13 * z,
-				mat.m21 * x + mat.m22 * y + mat.m23 * z,
-				mat.m31 * x + mat.m32 * y + mat.m33 * z
+				mat.m00 * x + mat.m01 * y + mat.m02 * z,
+				mat.m10 * x + mat.m11 * y + mat.m12 * z,
+				mat.m20 * x + mat.m21 * y + mat.m22 * z
 		);
 	}
 	
 	public Vector3f multiply(Matrix4f mat) {
-		float w = mat.m41 * x + mat.m42 * y + mat.m43 * z + mat.m44;
+		//w = 1
+		float mag = mat.m30 * x + mat.m31 * y + mat.m32 * z + mat.m33;
 		return set(
-				(mat.m11 * x + mat.m12 * y + mat.m13 * z + mat.m14) / w,
-				(mat.m21 * x + mat.m22 * y + mat.m23 * z + mat.m24) / w,
-				(mat.m31 * x + mat.m32 * y + mat.m33 * z + mat.m34) / w
+				(mat.m00 * x + mat.m01 * y + mat.m02 * z + mat.m03) / mag,
+				(mat.m10 * x + mat.m11 * y + mat.m12 * z + mat.m13) / mag,
+				(mat.m20 * x + mat.m21 * y + mat.m22 * z + mat.m23) / mag
 		);
 	}
 	
