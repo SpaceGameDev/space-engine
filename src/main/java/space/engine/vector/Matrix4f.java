@@ -68,9 +68,9 @@ public class Matrix4f {
 	}
 	
 	public Matrix4f modelOffset(Vector3f vector) {
-		this.m03 = vector.x;
-		this.m13 = vector.y;
-		this.m23 = vector.z;
+		this.m03 += vector.x;
+		this.m13 += vector.y;
+		this.m23 += vector.z;
 		return this;
 	}
 	
@@ -186,6 +186,6 @@ public class Matrix4f {
 	
 	@Override
 	public String toString() {
-		return "{" + m00 + " " + m01 + " " + m02 + " " + m03 + "} {" + m10 + " " + m11 + " " + m12 + " " + m23 + "} {" + m20 + " " + m21 + " " + m22 + " " + m23 + "} {" + m30 + " " + m31 + " " + m32 + " " + m33 + "}";
+		return "{" + m00 + " " + m01 + " " + m02 + " " + m03 + "} {" + m10 + " " + m11 + " " + m12 + " " + m13 + "} {" + m20 + " " + m21 + " " + m22 + " " + m23 + "} {" + m30 + " " + m31 + " " + m32 + " " + m33 + "}";
 	}
 }
