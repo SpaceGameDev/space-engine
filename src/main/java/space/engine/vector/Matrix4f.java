@@ -112,6 +112,18 @@ public class Matrix4f {
 		);
 	}
 	
+	/**
+	 * Onyl works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Matrix4f inversePure() {
+		return set(
+				m00, m10, m20, -m03,
+				m01, m11, m21, -m13,
+				m02, m12, m22, -m23,
+				0, 0, 0, 1
+		);
+	}
+	
 	public Matrix4f multiply(float scalar) {
 		this.m00 *= scalar;
 		this.m01 *= scalar;
