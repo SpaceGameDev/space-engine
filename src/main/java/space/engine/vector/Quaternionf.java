@@ -27,7 +27,7 @@ public class Quaternionf {
 	}
 	
 	public Quaternionf set(Quaternionf q) {
-		return set(x, y, z, w);
+		return set(q.x, q.y, q.z, q.w);
 	}
 	
 	public Quaternionf set(float[] array, int offset) {
@@ -66,6 +66,91 @@ public class Quaternionf {
 		);
 	}
 	
+	public Quaternionf rotate(Matrix3f mat) {
+		return set(
+				mat.m00 * x + mat.m01 * y + mat.m02 * z,
+				mat.m10 * x + mat.m11 * y + mat.m12 * z,
+				mat.m20 * x + mat.m21 * y + mat.m22 * z,
+				w
+		);
+	}
+	
+	/**
+	 * Only works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Quaternionf rotateInversePure(Matrix3f mat) {
+		return set(
+				mat.m00 * x + mat.m10 * y + mat.m20 * z,
+				mat.m01 * x + mat.m11 * y + mat.m21 * z,
+				mat.m02 * x + mat.m12 * y + mat.m22 * z,
+				w
+		);
+	}
+	
+	public Quaternionf rotate(Matrix4f mat) {
+		//w = 1
+		float mag = mat.m30 * x + mat.m31 * y + mat.m32 * z + mat.m33;
+		return set(
+				(mat.m00 * x + mat.m01 * y + mat.m02 * z + mat.m03) / mag,
+				(mat.m10 * x + mat.m11 * y + mat.m12 * z + mat.m13) / mag,
+				(mat.m20 * x + mat.m21 * y + mat.m22 * z + mat.m23) / mag,
+				w
+		);
+	}
+	
+	/**
+	 * Only works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Quaternionf rotateInversePure(Matrix4f mat) {
+		//w = 1
+		float mag = mat.m03 * x + mat.m13 * y + mat.m23 * z + mat.m33;
+		return set(
+				(mat.m00 * x + mat.m10 * y + mat.m20 * z + mat.m30) / mag,
+				(mat.m01 * x + mat.m11 * y + mat.m21 * z + mat.m31) / mag,
+				(mat.m02 * x + mat.m12 * y + mat.m22 * z + mat.m32) / mag,
+				w
+		);
+	}
+	
+	/**
+	 * Only use this fast-path if you're only doing one rotation. Otherwise use {@link Quaternionf#toMatrix3(Matrix3f)} and rotate with that {@link Matrix3f}.
+	 * <p>
+	 * faster Algorithm from: https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	 */
+	public Quaternionf rotate(Quaternionf q) {
+		Vector3f vec = new Vector3f(
+				(q.y * z - y * q.z) * 2,
+				(q.z * x - z * q.x) * 2,
+				(q.x * y - x * q.y) * 2
+		);
+		return set(
+				x + (vec.x * q.w) + (q.y * vec.z - vec.y * q.z),
+				y + (vec.y * q.w) + (q.z * vec.x - vec.z * q.x),
+				z + (vec.z * q.w) + (q.x * vec.y - vec.x * q.y),
+				w
+		);
+	}
+	
+	/**
+	 * Only use this fast-path if you're only doing one rotation. Otherwise use {@link Quaternionf#toMatrix3(Matrix3f)} and rotate with that {@link Matrix3f}.
+	 * <p>
+	 * faster Algorithm from: https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	 */
+	public Quaternionf rotateInverse(Quaternionf q) {
+		//inverse: q.w is negated
+		Vector3f vec = new Vector3f(
+				(q.y * z - y * q.z) * 2,
+				(q.z * x - z * q.x) * 2,
+				(q.x * y - x * q.y) * 2
+		);
+		return set(
+				x + (vec.x * -q.w) + (q.y * vec.z - vec.y * q.z),
+				y + (vec.y * -q.w) + (q.z * vec.x - vec.z * q.x),
+				z + (vec.z * -q.w) + (q.x * vec.y - vec.x * q.y),
+				w
+		);
+	}
+	
 	public Matrix3f toMatrix3(Matrix3f mat) {
 		float xx = x * x * 2;
 		float xy = x * y * 2;
@@ -81,6 +166,24 @@ public class Quaternionf {
 				1 - yy - zz, xy - zw, xz + yw,
 				xy + zw, 1 - xx - zz, yz - xw,
 				xz - yw, yz + xw, 1 - xx - yy
+		);
+	}
+	
+	public Matrix3f toMatrix3Inverse(Matrix3f mat) {
+		float xx = x * x * 2;
+		float xy = x * y * 2;
+		float xz = x * z * 2;
+		float xw = x * w * 2;
+		float yy = y * y * 2;
+		float yz = y * z * 2;
+		float yw = y * w * 2;
+		float zz = z * z * 2;
+		float zw = z * w * 2;
+		
+		return mat.set(
+				1 - yy - zz, xy + zw, xz - yw,
+				xy - zw, 1 - xx - zz, yz + xw,
+				xz + yw, yz - xw, 1 - xx - yy
 		);
 	}
 	
@@ -101,6 +204,38 @@ public class Quaternionf {
 				xz - yw, yz + xw, 1 - xx - yy, 0,
 				0, 0, 0, 1
 		);
+	}
+	
+	public Matrix4f toMatrix4Inverse(Matrix4f mat) {
+		float xx = x * x * 2;
+		float xy = x * y * 2;
+		float xz = x * z * 2;
+		float xw = x * w * 2;
+		float yy = y * y * 2;
+		float yz = y * z * 2;
+		float yw = y * w * 2;
+		float zz = z * z * 2;
+		float zw = z * w * 2;
+		
+		return mat.set(
+				1 - yy - zz, xy + zw, xz - yw, 0,
+				xy - zw, 1 - xx - zz, yz + xw, 0,
+				xz + yw, yz - xw, 1 - xx - yy, 0,
+				0, 0, 0, 1
+		);
+	}
+	
+	public float length() {
+		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
+	}
+	
+	public Quaternionf normalize() {
+		float length = length();
+		x /= length;
+		y /= length;
+		z /= length;
+		w /= length;
+		return this;
 	}
 	
 	public static float dot(Quaternionf q1, Quaternionf q2) {

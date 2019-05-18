@@ -75,6 +75,17 @@ public class Matrix3f {
 		);
 	}
 	
+	/**
+	 * Only works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Matrix3f inversePure() {
+		return set(
+				m00, m10, m20,
+				m01, m11, m21,
+				m02, m12, m22
+		);
+	}
+	
 	public Matrix3f multiply(float scalar) {
 		this.m00 *= scalar;
 		this.m01 *= scalar;

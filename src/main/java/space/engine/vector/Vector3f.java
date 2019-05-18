@@ -79,24 +79,6 @@ public class Vector3f {
 		return this;
 	}
 	
-	public Vector3f multiply(Matrix3f mat) {
-		return set(
-				mat.m00 * x + mat.m01 * y + mat.m02 * z,
-				mat.m10 * x + mat.m11 * y + mat.m12 * z,
-				mat.m20 * x + mat.m21 * y + mat.m22 * z
-		);
-	}
-	
-	public Vector3f multiply(Matrix4f mat) {
-		//w = 1
-		float mag = mat.m30 * x + mat.m31 * y + mat.m32 * z + mat.m33;
-		return set(
-				(mat.m00 * x + mat.m01 * y + mat.m02 * z + mat.m03) / mag,
-				(mat.m10 * x + mat.m11 * y + mat.m12 * z + mat.m13) / mag,
-				(mat.m20 * x + mat.m21 * y + mat.m22 * z + mat.m23) / mag
-		);
-	}
-	
 	public Vector3f divide(float scalar) {
 		this.x /= scalar;
 		this.y /= scalar;
@@ -116,6 +98,85 @@ public class Vector3f {
 		y = Math.abs(y);
 		z = Math.abs(z);
 		return this;
+	}
+	
+	public Vector3f rotate(Matrix3f mat) {
+		return set(
+				mat.m00 * x + mat.m01 * y + mat.m02 * z,
+				mat.m10 * x + mat.m11 * y + mat.m12 * z,
+				mat.m20 * x + mat.m21 * y + mat.m22 * z
+		);
+	}
+	
+	/**
+	 * Only works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Vector3f rotateInversePure(Matrix3f mat) {
+		return set(
+				mat.m00 * x + mat.m10 * y + mat.m20 * z,
+				mat.m01 * x + mat.m11 * y + mat.m21 * z,
+				mat.m02 * x + mat.m12 * y + mat.m22 * z
+		);
+	}
+	
+	public Vector3f rotate(Matrix4f mat) {
+		//w = 1
+		float mag = mat.m30 * x + mat.m31 * y + mat.m32 * z + mat.m33;
+		return set(
+				(mat.m00 * x + mat.m01 * y + mat.m02 * z + mat.m03) / mag,
+				(mat.m10 * x + mat.m11 * y + mat.m12 * z + mat.m13) / mag,
+				(mat.m20 * x + mat.m21 * y + mat.m22 * z + mat.m23) / mag
+		);
+	}
+	
+	/**
+	 * Only works if the Matrix is "pure", aka only used for rotation and translation
+	 */
+	public Vector3f rotateInversePure(Matrix4f mat) {
+		//w = 1
+		float mag = mat.m03 * x + mat.m13 * y + mat.m23 * z + mat.m33;
+		return set(
+				(mat.m00 * x + mat.m10 * y + mat.m20 * z + mat.m30) / mag,
+				(mat.m01 * x + mat.m11 * y + mat.m21 * z + mat.m31) / mag,
+				(mat.m02 * x + mat.m12 * y + mat.m22 * z + mat.m32) / mag
+		);
+	}
+	
+	/**
+	 * Only use this fast-path if you're only doing one rotation. Otherwise use {@link Quaternionf#toMatrix3(Matrix3f)} and rotate with that {@link Matrix3f}.
+	 * <p>
+	 * faster Algorithm from: https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	 */
+	public Vector3f rotate(Quaternionf q) {
+		Vector3f vec = new Vector3f(
+				(q.y * z - y * q.z) * 2,
+				(q.z * x - z * q.x) * 2,
+				(q.x * y - x * q.y) * 2
+		);
+		return set(
+				x + (vec.x * q.w) + (q.y * vec.z - vec.y * q.z),
+				y + (vec.y * q.w) + (q.z * vec.x - vec.z * q.x),
+				z + (vec.z * q.w) + (q.x * vec.y - vec.x * q.y)
+		);
+	}
+	
+	/**
+	 * Only use this fast-path if you're only doing one rotation. Otherwise use {@link Quaternionf#toMatrix3(Matrix3f)} and rotate with that {@link Matrix3f}.
+	 * <p>
+	 * faster Algorithm from: https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	 */
+	public Vector3f rotateInverse(Quaternionf q) {
+		//inverse: q.w is negated
+		Vector3f vec = new Vector3f(
+				(q.y * z - y * q.z) * 2,
+				(q.z * x - z * q.x) * 2,
+				(q.x * y - x * q.y) * 2
+		);
+		return set(
+				x + (vec.x * -q.w) + (q.y * vec.z - vec.y * q.z),
+				y + (vec.y * -q.w) + (q.z * vec.x - vec.z * q.x),
+				z + (vec.z * -q.w) + (q.x * vec.y - vec.x * q.y)
+		);
 	}
 	
 	public float length() {
