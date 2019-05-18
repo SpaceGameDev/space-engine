@@ -41,6 +41,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static space.engine.sync.Tasks.runnable;
 import static space.engine.window.extensions.BorderlessExtension.BORDERLESS;
+import static space.engine.window.extensions.MouseInputMode.MOUSE_MODE;
 import static space.engine.window.extensions.ResizeableExtension.*;
 import static space.engine.window.extensions.VideoModeDesktopExtension.*;
 import static space.engine.window.extensions.VideoModeFullscreenExtension.FULLSCREEN_VIDEO_MODE;
@@ -167,6 +168,23 @@ public class GLFWWindow implements Window, FreeableWrapper {
 				}
 				if (modify.hasChanged(MINX) || modify.hasChanged(MINY) || modify.hasChanged(MAXX) || modify.hasChanged(MAXY))
 					glfwSetWindowSizeLimits(oldWindowPointer, modify.get(MINX), modify.get(MINY), modify.get(MAXX), modify.get(MAXY));
+				if (modify.hasChanged(MOUSE_MODE)) {
+					int cursorValue;
+					switch (modify.get(MOUSE_MODE)) {
+						case CURSOR_NORMAL:
+							cursorValue = GLFW_CURSOR_NORMAL;
+							break;
+						case CURSOR_HIDDEN:
+							cursorValue = GLFW_CURSOR_HIDDEN;
+							break;
+						case CURSOR_DISABLED:
+							cursorValue = GLFW_CURSOR_DISABLED;
+							break;
+						default:
+							throw new IllegalArgumentException();
+					}
+					glfwSetInputMode(oldWindowPointer, GLFW_CURSOR, cursorValue);
+				}
 				return;
 			}
 		}
@@ -233,6 +251,22 @@ public class GLFWWindow implements Window, FreeableWrapper {
 			} else {
 				throw new IllegalStateException("format[VIDEO_MODE] was unsupported type: " + videoMode.getName());
 			}
+			
+			int cursorValue;
+			switch (newFormat.get(MOUSE_MODE)) {
+				case CURSOR_NORMAL:
+					cursorValue = GLFW_CURSOR_NORMAL;
+					break;
+				case CURSOR_HIDDEN:
+					cursorValue = GLFW_CURSOR_HIDDEN;
+					break;
+				case CURSOR_DISABLED:
+					cursorValue = GLFW_CURSOR_DISABLED;
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
+			glfwSetInputMode(windowPointer, GLFW_CURSOR, cursorValue);
 		}
 		
 		storage.windowPointer = windowPointer;
@@ -260,6 +294,9 @@ public class GLFWWindow implements Window, FreeableWrapper {
 			}
 		});
 		glfwSetCharCallback(windowPointer, (window, codepoint) -> context.triggerCharacterInputEventKeyboard(new String(Character.toChars(codepoint))));
+		glfwSetCursorPosCallback(windowPointer, (window, xpos, ypos) -> {
+			context.triggerMouseMovement(new double[] {xpos, ypos});
+		});
 		
 		if (newFormat.get(VISIBLE)) {
 			glfwShowWindow(windowPointer);

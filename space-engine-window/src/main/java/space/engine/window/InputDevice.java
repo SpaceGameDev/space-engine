@@ -49,10 +49,24 @@ public interface InputDevice {
 		/**
 		 * gets the position of the mouse
 		 *
-		 * @return a double[2] array with x and y coordinates as double[0] and double[1]
+		 * @return a double[2] array with x and y coordinates, if available
 		 */
 		@WindowThread
-		double[] getPosition();
+		@Nullable double[] getCursorPosition();
+		
+		Event<@WindowThread MouseMovementEvent> getMouseMovementEvent();
+		
+		@FunctionalInterface
+		interface MouseMovementEvent {
+			
+			/**
+			 * callback for mouse movement
+			 *
+			 * @param absolute the current absolute position of the cursor, if available
+			 * @param relative the relative movement compared to the last call, if available
+			 */
+			void onMouseMovement(@Nullable double[] absolute, @Nullable double[] relative);
+		}
 	}
 	
 	//specific
