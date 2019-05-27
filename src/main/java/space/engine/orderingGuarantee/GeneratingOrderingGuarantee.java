@@ -30,17 +30,17 @@ public class GeneratingOrderingGuarantee {
 	/**
 	 * Cancels the previous one and executes the new one. Can be canceled by further calls to this function.
 	 *
-	 * @param function a function generating a new task which will start execution when supplied {@link Barrier} is triggered and returns a {@link Barrier} triggered when execution has finished
-	 * @return the Barrier returned by the function parameter; triggered when this and only this reference is updated
+	 * @param function a function generating a new task which will start execution when supplied 'prev' {@link Barrier} is triggered and returns a {@link Barrier} triggered when execution has finished
+	 * @return the Barrier returned by the function parameter
 	 */
-	public Barrier next(Function<@NotNull ? super Barrier, @NotNull ? extends CancelableBarrier> function) {
+	public <B extends @NotNull CancelableBarrier> B next(Function<@NotNull ? super Barrier, B> function) {
 		IntermediateCancelableBarrier next = new IntermediateCancelableBarrier();
 		CancelableBarrier prev = (CancelableBarrier) LASTBARRIER.getAndSet(this, next);
 		prev.cancel();
 		
-		CancelableBarrier apply = function.apply(prev);
-		apply.addHook(next::triggerNow);
+		B apply = function.apply(prev);
 		next.setCancel(apply);
+		apply.addHook(next::triggerNow);
 		return apply;
 	}
 	
@@ -49,16 +49,16 @@ public class GeneratingOrderingGuarantee {
 	 * In other words: Sets in between the usual {@link CancelableBarrier} and redirects the cancel to it's previous one, making it unaffected by cancels but still guarantees ordering.
 	 *
 	 * @param function a function generating a new task which will start execution when supplied {@link Barrier} is triggered and returns a {@link Barrier} triggered when execution has finished
-	 * @return the Barrier returned by the function parameter; triggered when this and only this reference is updated
+	 * @return the Barrier returned by the function parameter
 	 */
-	public Barrier nextInbetween(Function<@NotNull ? super Barrier, @NotNull ? extends Barrier> function) {
+	public <B extends @NotNull Barrier> B nextInbetween(Function<@NotNull ? super Barrier, B> function) {
 		IntermediateCancelableBarrier next = new IntermediateCancelableBarrier();
 		CancelableBarrier prev = (CancelableBarrier) LASTBARRIER.getAndSet(this, next);
 		//no prev.cancel()
 		
-		Barrier apply = function.apply(prev);
-		apply.addHook(next::triggerNow);
+		B apply = function.apply(prev);
 		next.setCancel(prev); //prev instead of apply
+		apply.addHook(next::triggerNow);
 		return apply;
 	}
 	
