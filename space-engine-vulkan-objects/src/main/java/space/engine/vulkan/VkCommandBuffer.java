@@ -1,7 +1,9 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
+import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.freeableStorage.Freeable;
@@ -13,6 +15,7 @@ import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
+import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements FreeableWrapper {
@@ -90,11 +93,30 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	}
 	
 	//methods
+	public void beginCommandBuffer(int flags) {
+		beginCommandBuffer(flags, null);
+	}
+	
+	public void beginCommandBuffer(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			beginCommandBuffer(mallocStruct(frame, VkCommandBufferBeginInfo::create, VkCommandBufferBeginInfo.SIZEOF).set(
+					VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+					0,
+					flags,
+					inheritanceInfo
+			));
+		}
+	}
+	
 	public void beginCommandBuffer(VkCommandBufferBeginInfo info) {
 		assertVk(vkBeginCommandBuffer(this, info));
 	}
 	
 	public void endCommandBuffer() {
 		assertVk(vkEndCommandBuffer(this));
+	}
+	
+	public void resetCommandBuffer(int flags) {
+		assertVk(vkResetCommandBuffer(this, flags));
 	}
 }

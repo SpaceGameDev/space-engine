@@ -7,13 +7,16 @@ import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.buffer.pointer.PointerBufferInt;
+import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
-import space.engine.sync.future.Future;
 import space.engine.vulkan.VkException;
+import space.engine.vulkan.VkFence;
 import space.engine.vulkan.VkQueueFamilyProperties;
+import space.engine.vulkan.VkSemaphore;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 import space.engine.vulkan.managed.device.ManagedDevice;
 import space.engine.vulkan.managed.device.ManagedQueue;
@@ -21,6 +24,8 @@ import space.engine.vulkan.managed.device.ManagedQueue.Entry;
 import space.engine.vulkan.surface.VkSurface;
 import space.engine.vulkan.surface.VkSwapchain;
 import space.engine.window.Window;
+
+import java.util.Arrays;
 
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
@@ -163,9 +168,32 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 		return queue;
 	}
 	
-	//methods
-	public TaskCreator<? extends Future<Barrier>> present(VkPresentInfoKHR info) {
+	//acquire
+	public int acquire(long timeout, @Nullable VkSemaphore semaphore, @Nullable VkFence fence) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			PointerBufferInt imageIndexPtr = PointerBufferInt.malloc(frame);
+			nvkAcquireNextImageKHR(device(), this.address(), timeout, semaphore != null ? semaphore.address() : 0, fence != null ? fence.address() : 0, imageIndexPtr.address());
+			return imageIndexPtr.getInt();
+		}
+	}
+	
+	//present
+	public TaskCreator<? extends Barrier> present(VkPresentInfoKHR info) {
 		return queue.submit(new ManagedQueue_PresentEntry(info));
+	}
+	
+	public TaskCreator<? extends Barrier> present(VkSemaphore[] waitSemaphores, int imageIndex) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			return present(mallocStruct(frame, VkPresentInfoKHR::create, VkPresentInfoKHR.SIZEOF).set(
+					VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+					0,
+					ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer(),
+					1,
+					PointerBufferLong.alloc(frame, this.address()).nioBuffer(),
+					PointerBufferInt.alloc(frame, imageIndex).nioBuffer(),
+					null
+			));
+		}
 	}
 	
 	public static class ManagedQueue_PresentEntry implements Entry {
@@ -178,7 +206,7 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 		
 		@Override
 		public Barrier run(ManagedQueue queue) {
-			vkQueuePresentKHR(queue, info);
+			assertVk(vkQueuePresentKHR(queue, info));
 			return ALWAYS_TRIGGERED_BARRIER;
 		}
 	}

@@ -1,6 +1,7 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkGraphicsPipelineCreateInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
@@ -85,5 +86,10 @@ public class VkGraphicsPipeline implements FreeableWrapper {
 			vkDestroyPipeline(device, address, null);
 			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
+	}
+	
+	//methods
+	public void vkCmdBindPipeline(VkCommandBuffer cmdBuffer) {
+		VK10.vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, address);
 	}
 }
