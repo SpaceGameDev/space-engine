@@ -15,7 +15,6 @@ import space.engine.simpleQueue.pool.SimpleThreadPool;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
-import space.engine.sync.taskImpl.FutureTask;
 import space.engine.vulkan.VkFence;
 import space.engine.vulkan.VkQueue;
 import space.engine.vulkan.VkQueueFamilyProperties;
@@ -25,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
+import static space.engine.sync.Tasks.future;
 
 public class ManagedQueue extends VkQueue {
 	
@@ -91,18 +91,8 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(Entry cmd) {
-		return (locks, barriers) -> new FutureTask<>(locks, barriers) {
-			@Override
-			protected Barrier execute0() {
-				return cmd.run(ManagedQueue.this);
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				pool.add(toRun);
-			}
-		};
+	public TaskCreator<? extends Future<Barrier>> submit(Entry cmd) {
+		return future(pool, () -> cmd.run(ManagedQueue.this));
 	}
 	
 	/**
@@ -110,7 +100,7 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(VkSubmitInfo cmd) {
+	public TaskCreator<? extends Future<Barrier>> submit(VkSubmitInfo cmd) {
 		return submit(new SubmitQueueEntry(cmd));
 	}
 	
@@ -119,7 +109,7 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(VkSubmitInfo.Buffer cmd) {
+	public TaskCreator<? extends Future<Barrier>> submit(VkSubmitInfo.Buffer cmd) {
 		return submit(new SubmitQueueEntry(cmd));
 	}
 	

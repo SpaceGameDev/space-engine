@@ -164,7 +164,7 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 	}
 	
 	//methods
-	public TaskCreator<Future<Barrier>> present(VkPresentInfoKHR info) {
+	public TaskCreator<? extends Future<Barrier>> present(VkPresentInfoKHR info) {
 		return queue.submit(new ManagedQueue_PresentEntry(info));
 	}
 	
