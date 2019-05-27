@@ -129,4 +129,26 @@ public interface Future<R> extends BaseFuture<R>, Barrier {
 			}
 		};
 	}
+	
+	/**
+	 * Returns a new {@link Future} which triggers when the 'inner' {@link Future} of the supplied {@link Future} is triggered.
+	 * The value of the returned {@link Future} is the same as the 'inner' {@link Future}.
+	 *
+	 * @param future the Future containing the Barrier to await for
+	 * @return see description
+	 */
+	static <T> Future<T> innerFuture(Future<? extends Future<T>> future) {
+		return Barrier.innerBarrier(future).toFuture(future.assertGet());
+	}
+	
+	/**
+	 * Returns a new {@link Future} which triggers when the 'inner' {@link Future} of the supplied {@link Future} is triggered.
+	 * The value of the returned {@link Future} is the same as the 'inner' {@link Future}.
+	 *
+	 * @param future the Future containing the Barrier to await for
+	 * @return see description
+	 */
+	static <T> Future<T> innerInnerBarrier(Future<? extends Future<? extends Future<T>>> future) {
+		return Barrier.innerInnerBarrier(future).toFuture(future.assertGet().assertGet());
+	}
 }

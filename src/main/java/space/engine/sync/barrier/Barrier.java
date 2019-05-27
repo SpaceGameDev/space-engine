@@ -284,4 +284,31 @@ public interface Barrier {
 			});
 		}
 	}
+	
+	/**
+	 * Returns a new {@link Barrier} which triggers when the 'inner' {@link Barrier} of the supplied {@link Future} is triggered.
+	 *
+	 * @param future the Future containing the Barrier to await for
+	 * @return see description
+	 */
+	static Barrier innerBarrier(@NotNull Future<? extends @NotNull Barrier> future) {
+		BarrierImpl ret = new BarrierImpl();
+		future.addHook(() -> future.assertGet().addHook(ret::triggerNow));
+		return ret;
+	}
+	
+	/**
+	 * Returns a new {@link Barrier} which triggers when the 'inner' {@link Barrier} of the supplied {@link Future} is triggered.
+	 *
+	 * @param future the Future containing the Barrier to await for
+	 * @return see description
+	 */
+	static Barrier innerInnerBarrier(@NotNull Future<? extends @NotNull Future<? extends @NotNull Barrier>> future) {
+		BarrierImpl ret = new BarrierImpl();
+		future.addHook(() -> {
+			Future<? extends Barrier> inner1 = future.assertGet();
+			inner1.addHook(() -> inner1.assertGet().addHook(ret::triggerNow));
+		});
+		return ret;
+	}
 }
