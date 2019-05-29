@@ -19,32 +19,34 @@ import static space.engine.vulkan.VkException.assertVk;
 public class VkPipelineLayout implements FreeableWrapper {
 	
 	//alloc
-	public static @NotNull VkPipelineLayout alloc(VkPipelineLayoutCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
+	public static @NotNull VkPipelineLayout alloc(VkPipelineLayoutCreateInfo info, @NotNull VkDescriptorSetLayout[] descriptorSetLayouts, @NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreatePipelineLayout(device, info.address(), 0, ptr.address()));
-			return create(ptr.getPointer(), device, parents);
+			return create(ptr.getPointer(), device, descriptorSetLayouts, parents);
 		}
 	}
 	
 	//create
-	public static @NotNull VkPipelineLayout create(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkPipelineLayout(address, device, Storage::new, parents);
+	public static @NotNull VkPipelineLayout create(long address, @NotNull VkDevice device, @NotNull VkDescriptorSetLayout[] descriptorSetLayouts, @NotNull Object[] parents) {
+		return new VkPipelineLayout(address, device, descriptorSetLayouts, Storage::new, parents);
 	}
 	
-	public static @NotNull VkPipelineLayout wrap(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkPipelineLayout(address, device, Freeable::createDummy, parents);
+	public static @NotNull VkPipelineLayout wrap(long address, @NotNull VkDevice device, @NotNull VkDescriptorSetLayout[] descriptorSetLayouts, @NotNull Object[] parents) {
+		return new VkPipelineLayout(address, device, descriptorSetLayouts, Freeable::createDummy, parents);
 	}
 	
 	//const
-	public VkPipelineLayout(long address, @NotNull VkDevice device, @NotNull BiFunction<VkPipelineLayout, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkPipelineLayout(long address, @NotNull VkDevice device, @NotNull VkDescriptorSetLayout[] descriptorSetLayouts, @NotNull BiFunction<VkPipelineLayout, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.address = address;
 		this.device = device;
+		this.descriptorSetLayouts = descriptorSetLayouts;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 	}
 	
 	//parents
 	private final @NotNull VkDevice device;
+	private final @NotNull VkDescriptorSetLayout[] descriptorSetLayouts;
 	
 	public VkDevice device() {
 		return device;
@@ -52,6 +54,10 @@ public class VkPipelineLayout implements FreeableWrapper {
 	
 	public VkInstance instance() {
 		return device.instance();
+	}
+	
+	public VkDescriptorSetLayout[] descriptorSetLayouts() {
+		return descriptorSetLayouts;
 	}
 	
 	//address
