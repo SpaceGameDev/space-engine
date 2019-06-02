@@ -26,7 +26,7 @@ public class ManagedInstance extends VkInstance {
 	public static final String ENGINE_NAME = "space-engine";
 	public static final int ENGINE_VERSION = 1;
 	
-	public static VkInstance alloc(@NotNull String applicationName, int applicationVersion, @NotNull Logger logger, Collection<VkLayerProperties> validationLayers, Collection<VkExtensionProperties> extensions, Object[] parents) {
+	public static ManagedInstance alloc(@NotNull String applicationName, int applicationVersion, @NotNull Logger logger, Collection<VkLayerProperties> validationLayers, Collection<VkExtensionProperties> extensions, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			boolean initDebugCallback = extensions.stream().anyMatch(ex -> EXTDebugUtils.VK_EXT_DEBUG_UTILS_EXTENSION_NAME.equals(ex.extensionNameString()));
 			VkInstanceCreateInfo info = mallocStruct(frame, VkInstanceCreateInfo::create, VkInstanceCreateInfo.SIZEOF).set(
