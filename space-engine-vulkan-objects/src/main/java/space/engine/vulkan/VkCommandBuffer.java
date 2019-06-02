@@ -92,7 +92,10 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		}
 	}
 	
-	//methods
+	//recording
+	@SuppressWarnings({"FieldCanBeLocal", "unused"})
+	private @Nullable Object recordingDependencies;
+	
 	public void beginCommandBuffer(int flags) {
 		beginCommandBuffer(flags, null);
 	}
@@ -113,6 +116,11 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	}
 	
 	public void endCommandBuffer() {
+		endCommandBuffer(null);
+	}
+	
+	public void endCommandBuffer(@Nullable Object recordingDependencies) {
+		this.recordingDependencies = recordingDependencies;
 		assertVk(vkEndCommandBuffer(this));
 	}
 	

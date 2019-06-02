@@ -8,9 +8,7 @@ import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.simpleQueue.ConcurrentLinkedSimpleQueue;
-import space.engine.simpleQueue.pool.SimpleMessagePool;
 import space.engine.simpleQueue.pool.SimpleThreadPool;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
@@ -65,22 +63,6 @@ public class ManagedQueue extends VkQueue {
 	@Override
 	public ManagedDevice device() {
 		return device;
-	}
-	
-	//storage
-	protected static class PoolStorage extends FreeableStorage {
-		
-		private final SimpleMessagePool<?> pool;
-		
-		public PoolStorage(SimpleMessagePool<?> pool, Object[] parents) {
-			super(null, parents);
-			this.pool = pool;
-		}
-		
-		@Override
-		protected @NotNull Barrier handleFree() {
-			return pool.stop();
-		}
 	}
 	
 	//submit
