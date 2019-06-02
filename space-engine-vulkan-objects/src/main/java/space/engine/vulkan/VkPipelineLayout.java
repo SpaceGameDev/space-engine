@@ -10,6 +10,7 @@ import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
+import space.engine.vulkan.descriptors.VkDescriptorSetLayout;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
