@@ -6,6 +6,7 @@ import space.engine.simpleQueue.ConcurrentLinkedSimpleQueue;
 import space.engine.vulkan.VkDevice;
 import space.engine.vulkan.VkPhysicalDevice;
 import space.engine.vulkan.VkQueueFamilyProperties;
+import space.engine.vulkan.vma.VmaAllocator;
 
 /**
  * Manages Device with it's queues.
@@ -16,7 +17,8 @@ public abstract class ManagedDevice extends VkDevice {
 	
 	protected ManagedDevice(long handle, @NotNull VkPhysicalDevice physicalDevice, @NotNull VkDeviceCreateInfo ci, @NotNull Object[] parents) {
 		super(handle, physicalDevice, ci, VkDevice.Storage::new, parents);
-		eventAwaiter = new EventAwaiter(this, new ConcurrentLinkedSimpleQueue<>(), new Object[] {this});
+		this.eventAwaiter = new EventAwaiter(this, new ConcurrentLinkedSimpleQueue<>(), new Object[] {this});
+		this.vmaAllocator = VmaAllocator.alloc(this, new Object[] {this});
 	}
 	
 	//queue
@@ -57,10 +59,17 @@ public abstract class ManagedDevice extends VkDevice {
 		}
 	}
 	
-	//EventAwaiter
+	//eventAwaiter
 	private final EventAwaiter eventAwaiter;
 	
 	public EventAwaiter eventAwaiter() {
 		return eventAwaiter;
+	}
+	
+	//vmaAllocator
+	private final VmaAllocator vmaAllocator;
+	
+	public VmaAllocator vmaAllocator() {
+		return vmaAllocator;
 	}
 }
