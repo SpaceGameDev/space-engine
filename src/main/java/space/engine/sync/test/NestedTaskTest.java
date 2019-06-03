@@ -1,6 +1,8 @@
 package space.engine.sync.test;
 
 import space.engine.Side;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.stack.FreeableStack.Frame;
 import space.engine.sync.DelayTask;
 import space.engine.sync.TaskCreator;
 import space.engine.sync.Tasks;
@@ -15,11 +17,11 @@ import java.util.stream.IntStream;
 
 public class NestedTaskTest {
 	
-	public static final BarrierTimer TIMER = BarrierTimer.createUnmodifiable(-System.nanoTime(), 1);
-	public static final AtomicInteger COUNTER = new AtomicInteger();
-	
 	public static void main(String[] args) throws InterruptedException {
-		try {
+		try (Frame frame = Freeable.frame()) {
+			BarrierTimer TIMER = BarrierTimer.createUnmodifiable(-System.nanoTime(), 1, new Object[] {frame});
+			AtomicInteger COUNTER = new AtomicInteger();
+			
 			TaskCreator<? extends Future<float[]>> future = Tasks.future(() -> {
 				int i = COUNTER.getAndIncrement();
 				if (i % 2 == 0)
