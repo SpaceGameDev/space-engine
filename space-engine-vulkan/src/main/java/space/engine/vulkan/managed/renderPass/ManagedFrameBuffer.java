@@ -121,7 +121,7 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 					queue.queueFamily().index()
 			), queue.device(), new Object[] {this});
-			this.mainBuffer = mainBufferPool.allocCmdBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, new Object[] {this});
+			this.mainBuffer = mainBufferPool.allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, new Object[] {this});
 		}
 	}
 	
@@ -214,7 +214,7 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 			throw new DelayTask(Tasks.<Barrier>future(() -> {
 				Future<Barrier> ret;
 				try (AllocatorFrame frame = Allocator.frame()) {
-					mainBuffer.beginCommandBuffer(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+					mainBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 					vkCmdBeginRenderPass(mainBuffer, mallocStruct(frame, VkRenderPassBeginInfo::create, VkRenderPassBeginInfo.SIZEOF).set(
 							VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 							0,
@@ -243,7 +243,7 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					}
 					
 					vkCmdEndRenderPass(mainBuffer);
-					mainBuffer.endCommandBuffer();
+					mainBuffer.end();
 					
 					ret = queue.submit(
 							waitSemaphores,

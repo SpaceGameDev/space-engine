@@ -12,6 +12,7 @@ import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
@@ -96,13 +97,14 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	@SuppressWarnings({"FieldCanBeLocal", "unused"})
 	private @Nullable Object recordingDependencies;
 	
-	public void beginCommandBuffer(int flags) {
-		beginCommandBuffer(flags, null);
+	//begin
+	public void begin(int flags) {
+		begin(flags, null);
 	}
 	
-	public void beginCommandBuffer(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo) {
+	public void begin(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo) {
 		try (AllocatorFrame frame = Allocator.frame()) {
-			beginCommandBuffer(mallocStruct(frame, VkCommandBufferBeginInfo::create, VkCommandBufferBeginInfo.SIZEOF).set(
+			begin(mallocStruct(frame, VkCommandBufferBeginInfo::create, VkCommandBufferBeginInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 					0,
 					flags,
@@ -111,20 +113,44 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		}
 	}
 	
-	public void beginCommandBuffer(VkCommandBufferBeginInfo info) {
+	public void begin(VkCommandBufferBeginInfo info) {
 		assertVk(vkBeginCommandBuffer(this, info));
 	}
 	
-	public void endCommandBuffer() {
-		endCommandBuffer(null);
+	//end
+	public void end() {
+		end(null);
 	}
 	
-	public void endCommandBuffer(@Nullable Object recordingDependencies) {
+	public void end(@Nullable Object recordingDependencies) {
 		this.recordingDependencies = recordingDependencies;
 		assertVk(vkEndCommandBuffer(this));
 	}
 	
-	public void resetCommandBuffer(int flags) {
+	//record
+	public void record(int flags, Runnable function) {
+		record(flags, null, function);
+	}
+	
+	public void record(int flags, Supplier<Object> function) {
+		record(flags, null, function);
+	}
+	
+	public void record(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo, Runnable function) {
+		record(flags, inheritanceInfo, () -> {
+			function.run();
+			return null;
+		});
+	}
+	
+	public void record(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo, Supplier<Object> function) {
+		begin(flags, inheritanceInfo);
+		Object recordingDependencies = function.get();
+		end(recordingDependencies);
+	}
+	
+	//reset
+	public void reset(int flags) {
 		assertVk(vkResetCommandBuffer(this, flags));
 	}
 }

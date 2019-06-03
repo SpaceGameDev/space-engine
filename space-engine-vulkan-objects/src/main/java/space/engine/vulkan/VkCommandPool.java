@@ -23,6 +23,21 @@ import static space.engine.vulkan.VkException.assertVk;
 public class VkCommandPool implements FreeableWrapper {
 	
 	//alloc
+	public static @NotNull VkCommandPool alloc(VkQueueFamilyProperties queueFamily, @NotNull VkDevice device, @NotNull Object[] parents) {
+		return alloc(0, queueFamily, device, parents);
+	}
+	
+	public static @NotNull VkCommandPool alloc(int flags, VkQueueFamilyProperties queueFamily, @NotNull VkDevice device, @NotNull Object[] parents) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			return alloc(mallocStruct(frame, VkCommandPoolCreateInfo::create, VkCommandPoolCreateInfo.SIZEOF).set(
+					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+					0,
+					flags,
+					queueFamily.index()
+			), device, parents);
+		}
+	}
+	
 	public static @NotNull VkCommandPool alloc(VkCommandPoolCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
@@ -91,8 +106,8 @@ public class VkCommandPool implements FreeableWrapper {
 		}
 	}
 	
-	//allocCmdBuffer
-	public VkCommandBuffer allocCmdBuffer(int level, Object[] parents) {
+	//allocCommandBuffer
+	public VkCommandBuffer allocCommandBuffer(int level, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -108,7 +123,7 @@ public class VkCommandPool implements FreeableWrapper {
 		}
 	}
 	
-	public VkCommandBuffer[] allocCmdBuffers(int level, int count, Object[] parents) {
+	public VkCommandBuffer[] allocCommandBuffers(int level, int count, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,

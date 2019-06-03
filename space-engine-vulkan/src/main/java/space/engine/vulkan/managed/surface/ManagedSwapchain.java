@@ -177,16 +177,20 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 	}
 	
 	//present
-	public Barrier present(VkSemaphore[] waitSemaphores, int imageIndex) {
+	public Barrier present(int imageIndex) {
+		return present(null, imageIndex);
+	}
+	
+	public Barrier present(@Nullable VkSemaphore[] waitSemaphores, int imageIndex) {
 		return queue.submit(new ManagedQueue_PresentEntry(waitSemaphores, imageIndex));
 	}
 	
 	public class ManagedQueue_PresentEntry implements Entry {
 		
-		private final VkSemaphore[] waitSemaphores;
+		private final @Nullable VkSemaphore[] waitSemaphores;
 		private final int imageIndex;
 		
-		public ManagedQueue_PresentEntry(VkSemaphore[] waitSemaphores, int imageIndex) {
+		public ManagedQueue_PresentEntry(@Nullable VkSemaphore[] waitSemaphores, int imageIndex) {
 			this.waitSemaphores = waitSemaphores;
 			this.imageIndex = imageIndex;
 		}
@@ -197,7 +201,7 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 				assertVk(vkQueuePresentKHR(queue, mallocStruct(frame, VkPresentInfoKHR::create, VkPresentInfoKHR.SIZEOF).set(
 						VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 						0,
-						ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer(),
+						waitSemaphores != null ? ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer() : null,
 						1,
 						PointerBufferLong.alloc(frame, ManagedSwapchain.this.address()).nioBuffer(),
 						PointerBufferInt.alloc(frame, imageIndex).nioBuffer(),

@@ -19,6 +19,8 @@ import static space.engine.vulkan.VkException.assertVk;
 
 public class VkSemaphore implements FreeableWrapper {
 	
+	public static final VkSemaphore[] EMPTY_SEMAPHORE_ARRAY = new VkSemaphore[0];
+	
 	//alloc
 	public static @NotNull VkSemaphore alloc(@NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
