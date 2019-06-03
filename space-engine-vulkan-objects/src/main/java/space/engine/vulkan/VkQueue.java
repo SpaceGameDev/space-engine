@@ -36,7 +36,6 @@ public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper
 	
 	protected VkQueue(long address, @NotNull VkDevice device, @NotNull VkQueueFamilyProperties queueFamily) {
 		super(address, device);
-		this.address = address;
 		this.device = device;
 		this.queueFamily = queueFamily;
 	}
@@ -66,13 +65,6 @@ public class VkQueue extends org.lwjgl.vulkan.VkQueue implements FreeableWrapper
 	
 	public VkQueueFamilyProperties queueFamily() {
 		return queueFamily;
-	}
-	
-	//address
-	private final long address;
-	
-	public long address() {
-		return address;
 	}
 	
 	//storage

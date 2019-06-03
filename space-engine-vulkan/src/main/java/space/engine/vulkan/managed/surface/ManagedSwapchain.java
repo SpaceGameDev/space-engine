@@ -137,27 +137,20 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 			);
 			PointerBufferPointer swapChainPtr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateSwapchainKHR(device, info.address(), 0, swapChainPtr.address()));
-			return new ManagedSwapchain<>(swapChainPtr.getPointer(), device, surface, queue, imageFormat, parents);
+			return new ManagedSwapchain<>(swapChainPtr.getPointer(), device, surface, queue, imageFormat[0], swapExtend.width(), swapExtend.height(), imageArrayLayers, parents);
 		}
 	}
 	
-	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull ManagedQueue queue, @NotNull int[] imageFormat, @NotNull Object[] parents) throws UnsupportedConfigurationException {
-		super(address, device, surface, imageFormat[0], VkSwapchain.Storage::new, parents);
-		this.imageFormat = imageFormat;
+	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull ManagedQueue queue, int imageFormat, int width, int height, int layers, @NotNull Object[] parents) throws UnsupportedConfigurationException {
+		super(address, device, surface, imageFormat, width, height, layers, VkSwapchain.Storage::new, parents);
 		this.queue = queue;
 	}
 	
 	//parents
-	private final int[] imageFormat;
-	
 	@NotNull
 	@Override
 	public ManagedDevice device() {
 		return (ManagedDevice) super.device();
-	}
-	
-	public int[] imageFormat() {
-		return imageFormat;
 	}
 	
 	//queue

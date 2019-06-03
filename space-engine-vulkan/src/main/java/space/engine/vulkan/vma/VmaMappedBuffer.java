@@ -15,7 +15,6 @@ import space.engine.vulkan.VkMappedBuffer;
 import space.engine.vulkan.managed.device.ManagedDevice;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static org.lwjgl.util.vma.Vma.*;
 import static org.lwjgl.vulkan.VK10.*;
@@ -77,10 +76,15 @@ public class VmaMappedBuffer extends VmaBuffer implements VkMappedBuffer {
 	}
 	
 	//uploadData
+	
+	/**
+	 * Upload will be completed as soon as this method returns. Always returns {@link Barrier#ALWAYS_TRIGGERED_BARRIER}.
+	 */
 	@Override
-	public Barrier uploadData(Consumer<? super Buffer> uploader) {
+	public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
 		try (Frame frame = Freeable.frame()) {
-			uploader.accept(mapMemory(new Object[] {frame}));
+			MappedBuffer dst = mapMemory(new Object[] {frame});
+			Buffer.copyMemory(src, srcOffset, dst, dstOffset, length);
 			return ALWAYS_TRIGGERED_BARRIER;
 		}
 	}

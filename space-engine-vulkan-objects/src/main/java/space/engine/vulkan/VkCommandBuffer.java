@@ -33,7 +33,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	//const
 	public VkCommandBuffer(long address, @NotNull VkDevice device, @NotNull VkCommandPool commandPool, @NotNull BiFunction<VkCommandBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		super(address, device);
-		this.address = address;
 		this.device = device;
 		this.commandPool = commandPool;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device, commandPool));
@@ -54,13 +53,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	
 	public VkCommandPool commandPool() {
 		return commandPool;
-	}
-	
-	//address
-	private final long address;
-	
-	public long address() {
-		return address;
 	}
 	
 	//storage

@@ -16,7 +16,6 @@ import space.engine.vulkan.managed.device.ManagedDevice;
 import space.engine.vulkan.managed.device.ManagedQueue;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static org.lwjgl.util.vma.Vma.*;
 import static org.lwjgl.vulkan.VK10.*;
@@ -86,6 +85,7 @@ public class VmaBuffer implements VkBuffer {
 		return allocator;
 	}
 	
+	@Override
 	public ManagedDevice device() {
 		return allocator.device();
 	}
@@ -95,6 +95,7 @@ public class VmaBuffer implements VkBuffer {
 	protected final long vmaAllocation;
 	protected final long sizeOf;
 	
+	@Override
 	public long address() {
 		return address;
 	}
@@ -103,6 +104,7 @@ public class VmaBuffer implements VkBuffer {
 		return vmaAllocation;
 	}
 	
+	@Override
 	public long sizeOf() {
 		return sizeOf;
 	}
@@ -136,12 +138,13 @@ public class VmaBuffer implements VkBuffer {
 	}
 	
 	//uploadData
-	public Barrier uploadData(Consumer<? super Buffer> uploader) {
+	@Override
+	public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
 		ManagedDevice device = device();
 		ManagedQueue transferQueue = device.getQueue(QUEUE_TYPE_TRANSFER, 0);
 		
 		VmaMappedBuffer mappedBuffer = VmaMappedBuffer.alloc(0, sizeOf, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 0, VMA_MEMORY_USAGE_CPU_TO_GPU, device, EMPTY_OBJECT_ARRAY);
-		mappedBuffer.uploadData(uploader);
+		mappedBuffer.uploadData(src, srcOffset, dstOffset, length);
 		
 		Barrier barrierCopyCompleted = transferQueue.recordAndSubmit(cmd -> {
 			try (AllocatorFrame frame = Allocator.frame()) {

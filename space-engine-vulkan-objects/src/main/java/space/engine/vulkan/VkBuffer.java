@@ -7,7 +7,6 @@ import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 
@@ -31,11 +30,7 @@ public interface VkBuffer extends FreeableWrapper {
 		return uploadData(src, 0, 0, src.sizeOf());
 	}
 	
-	default Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
-		return uploadData(dst -> Buffer.copyMemory(src, srcOffset, dst, dstOffset, length));
-	}
-	
-	Barrier uploadData(Consumer<? super Buffer> uploader);
+	Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length);
 	
 	class Default implements VkBuffer {
 		
@@ -50,6 +45,7 @@ public interface VkBuffer extends FreeableWrapper {
 		//parents
 		private final VkDevice device;
 		
+		@Override
 		public VkDevice device() {
 			return device;
 		}
@@ -58,10 +54,12 @@ public interface VkBuffer extends FreeableWrapper {
 		private final long address;
 		private final long sizeOf;
 		
+		@Override
 		public long address() {
 			return address;
 		}
 		
+		@Override
 		public long sizeOf() {
 			return sizeOf;
 		}
@@ -76,8 +74,8 @@ public interface VkBuffer extends FreeableWrapper {
 		
 		//uploadData
 		@Override
-		public Barrier uploadData(Consumer<? super Buffer> uploader) {
-			//we cannot resolve the memory (and offset) of a random buffer
+		public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
+			//we cannot resolve the memory (and offset) of a random buffer or image
 			throw new UnsupportedOperationException();
 		}
 	}
