@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.lwjgl.vulkan.VK10.*;
-import static space.engine.Empties.*;
+import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.lwjgl.PointerBufferWrapper.wrapPointer;
 import static space.engine.sync.Tasks.future;
@@ -57,7 +57,8 @@ public class ManagedQueue extends VkQueue {
 		super(address, device, queueFamily);
 		this.device = device;
 		init(Freeable::createDummy, parents);
-		this.globalCommandPool = ThreadLocal.withInitial(() -> VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueFamily, device, new Object[] {this}));
+		this.commandPool = ThreadLocal.withInitial(() -> VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueFamily, device, new Object[] {this}));
+		this.commandPoolShortLived = ThreadLocal.withInitial(() -> VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueFamily, device, new Object[] {this}));
 		
 		//submit
 		this.pool = new SimpleThreadPool(
@@ -147,11 +148,22 @@ public class ManagedQueue extends VkQueue {
 		}
 	}
 	
-	//globalCommandPool
-	private final ThreadLocal<VkCommandPool> globalCommandPool;
+	//commandPool
+	private final ThreadLocal<VkCommandPool> commandPool;
+	private final ThreadLocal<VkCommandPool> commandPoolShortLived;
 	
-	public VkCommandPool globalCommandPool() {
-		return globalCommandPool.get();
+	/**
+	 * {@link VkCommandPool} for long holding allocations
+	 */
+	public VkCommandPool commandPool() {
+		return commandPool.get();
+	}
+	
+	/**
+	 * {@link VkCommandPool} for short-lived allocations
+	 */
+	public VkCommandPool commandPoolShortLived() {
+		return commandPoolShortLived.get();
 	}
 	
 	//recordAndSubmit
@@ -163,7 +175,7 @@ public class ManagedQueue extends VkQueue {
 	}
 	
 	public Barrier recordAndSubmit(Function<VkCommandBuffer, Object> function) {
-		VkCommandBuffer cmd = globalCommandPool().allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, EMPTY_OBJECT_ARRAY);
+		VkCommandBuffer cmd = commandPoolShortLived().allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, EMPTY_OBJECT_ARRAY);
 		
 		cmd.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 		Object recordingDependencies = function.apply(cmd);
