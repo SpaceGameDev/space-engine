@@ -11,7 +11,6 @@ import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.buffer.pointer.PointerBufferInt;
 import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.buffer.pointer.PointerBufferPointer;
-import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.vulkan.VkException;
 import space.engine.vulkan.VkFence;
@@ -172,42 +171,40 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 	public int acquire(long timeout, @Nullable VkSemaphore semaphore, @Nullable VkFence fence) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferInt imageIndexPtr = PointerBufferInt.malloc(frame);
-			nvkAcquireNextImageKHR(device(), this.address(), timeout, semaphore != null ? semaphore.address() : 0, fence != null ? fence.address() : 0, imageIndexPtr.address());
+			assertVk(nvkAcquireNextImageKHR(device(), this.address(), timeout, semaphore != null ? semaphore.address() : 0, fence != null ? fence.address() : 0, imageIndexPtr.address()));
 			return imageIndexPtr.getInt();
 		}
 	}
 	
 	//present
-	public TaskCreator<? extends Barrier> present(VkPresentInfoKHR info) {
-		return queue.submit(new ManagedQueue_PresentEntry(info));
+	public Barrier present(VkSemaphore[] waitSemaphores, int imageIndex) {
+		return queue.submit(new ManagedQueue_PresentEntry(waitSemaphores, imageIndex));
 	}
 	
-	public TaskCreator<? extends Barrier> present(VkSemaphore[] waitSemaphores, int imageIndex) {
-		try (AllocatorFrame frame = Allocator.frame()) {
-			return present(mallocStruct(frame, VkPresentInfoKHR::create, VkPresentInfoKHR.SIZEOF).set(
-					VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-					0,
-					ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer(),
-					1,
-					PointerBufferLong.alloc(frame, this.address()).nioBuffer(),
-					PointerBufferInt.alloc(frame, imageIndex).nioBuffer(),
-					null
-			));
-		}
-	}
-	
-	public static class ManagedQueue_PresentEntry implements Entry {
+	public class ManagedQueue_PresentEntry implements Entry {
 		
-		private final VkPresentInfoKHR info;
+		private final VkSemaphore[] waitSemaphores;
+		private final int imageIndex;
 		
-		public ManagedQueue_PresentEntry(VkPresentInfoKHR info) {
-			this.info = info;
+		public ManagedQueue_PresentEntry(VkSemaphore[] waitSemaphores, int imageIndex) {
+			this.waitSemaphores = waitSemaphores;
+			this.imageIndex = imageIndex;
 		}
 		
 		@Override
 		public Barrier run(ManagedQueue queue) {
-			assertVk(vkQueuePresentKHR(queue, info));
-			return ALWAYS_TRIGGERED_BARRIER;
+			try (AllocatorFrame frame = Allocator.frame()) {
+				assertVk(vkQueuePresentKHR(queue, mallocStruct(frame, VkPresentInfoKHR::create, VkPresentInfoKHR.SIZEOF).set(
+						VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+						0,
+						ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer(),
+						1,
+						PointerBufferLong.alloc(frame, ManagedSwapchain.this.address()).nioBuffer(),
+						PointerBufferInt.alloc(frame, imageIndex).nioBuffer(),
+						null
+				)));
+				return ALWAYS_TRIGGERED_BARRIER;
+			}
 		}
 	}
 }

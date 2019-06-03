@@ -8,12 +8,9 @@ import org.lwjgl.vulkan.VkFramebufferCreateInfo;
 import org.lwjgl.vulkan.VkOffset2D;
 import org.lwjgl.vulkan.VkRect2D;
 import org.lwjgl.vulkan.VkRenderPassBeginInfo;
-import org.lwjgl.vulkan.VkSubmitInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
-import space.engine.buffer.array.ArrayBufferInt;
 import space.engine.buffer.array.ArrayBufferLong;
-import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.indexmap.IndexMap;
@@ -44,7 +41,6 @@ import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.buffer.Allocator.heap;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
-import static space.engine.lwjgl.PointerBufferWrapper.wrapPointer;
 import static space.engine.sync.Tasks.future;
 import static space.engine.sync.barrier.Barrier.EMPTY_BARRIER_ARRAY;
 
@@ -249,15 +245,12 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					vkCmdEndRenderPass(mainBuffer);
 					mainBuffer.endCommandBuffer();
 					
-					ret = queue.submit(mallocStruct(frame, VkSubmitInfo::create, VkSubmitInfo.SIZEOF).set(
-							VK_STRUCTURE_TYPE_SUBMIT_INFO,
-							0,
-							waitSemaphores.length,
-							ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer(),
-							ArrayBufferInt.alloc(frame, waitDstStageMasks).nioBuffer(),
-							wrapPointer(PointerBufferPointer.alloc(frame, mainBuffer.address())),
-							ArrayBufferLong.alloc(frame, Arrays.stream(signalSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer()
-					)).submit();
+					ret = queue.submit(
+							waitSemaphores,
+							waitDstStageMasks,
+							new VkCommandBuffer[] {mainBuffer},
+							signalSemaphores
+					);
 				}
 				
 				renderPass.callbacks.runImmediatelyThrowIfWait(callback -> callback.endRenderpass(this, infos, ret));
