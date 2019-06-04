@@ -23,6 +23,7 @@ import space.engine.vulkan.VkDevice;
 import space.engine.vulkan.VkRenderPass;
 import space.engine.vulkan.managed.renderPass.ManagedRenderPass.Attachment.Reference;
 
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -33,10 +34,6 @@ import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
-	
-	public static final Attachment[] EMPTY_ATTACHMENT_ARRAY = new Attachment[0];
-	public static final Reference[] EMPTY_REFERENCE_ARRAY = new Reference[0];
-	public static final SubpassDependency[] EMPTY_SUBPASS_DEPENDENCY_ARRAY = new SubpassDependency[0];
 	
 	//alloc
 	public static class Attachment {
@@ -135,18 +132,18 @@ public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
 		public final int
 				flags,
 				pipelineBindPoint;
-		public final @NotNull Reference[]
+		public final @Nullable Reference[]
 				inputAttachments,
 				colorAttachments,
 				resolveAttachments;
 		public final @Nullable Reference depthStencilAttachment;
-		public final @NotNull Attachment[] preserveAttachments;
+		public final @Nullable Attachment[] preserveAttachments;
 		
 		private @Nullable ManagedRenderPass renderPass;
 		private int id = -1;
 		private @Nullable VkCommandBufferInheritanceInfo inheritanceInfo;
 		
-		public Subpass(int flags, int pipelineBindPoint, @NotNull Reference[] inputAttachments, @NotNull Reference[] colorAttachments, @NotNull Reference[] resolveAttachments, @Nullable Reference depthStencilAttachment, @NotNull Attachment[] preserveAttachments) {
+		public Subpass(int flags, int pipelineBindPoint, @Nullable Reference[] inputAttachments, @Nullable Reference[] colorAttachments, @Nullable Reference[] resolveAttachments, @Nullable Reference depthStencilAttachment, @Nullable Attachment[] preserveAttachments) {
 			this.flags = flags;
 			this.pipelineBindPoint = pipelineBindPoint;
 			this.inputAttachments = inputAttachments;
@@ -257,7 +254,7 @@ public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
 											  subpass.flags,
 											  subpass.pipelineBindPoint,
 											  createAttachmentReferenceBuffer(frame, subpass.inputAttachments),
-											  subpass.colorAttachments.length,
+											  subpass.colorAttachments != null ? subpass.colorAttachments.length : 0,
 											  createAttachmentReferenceBuffer(frame, subpass.colorAttachments),
 											  createAttachmentReferenceBuffer(frame, subpass.resolveAttachments),
 											  subpass.depthStencilAttachment == null ? null :
@@ -265,11 +262,7 @@ public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
 															  subpass.depthStencilAttachment.attachment().id,
 															  subpass.depthStencilAttachment.layout
 													  ),
-											  ArrayBufferInt.alloc(frame,
-																   Arrays.stream(subpass.preserveAttachments)
-																		 .mapToInt(att -> att.id)
-																		 .toArray()
-											  ).nioBuffer()
+											  createAttachmentBuffer(frame, subpass.preserveAttachments)
 									  ))
 									  .collect(Collectors.toUnmodifiableList())
 					),
@@ -314,7 +307,19 @@ public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
 		return renderPass;
 	}
 	
-	private static VkAttachmentReference.Buffer createAttachmentReferenceBuffer(AllocatorFrame frame, Reference[] references) {
+	private static @Nullable IntBuffer createAttachmentBuffer(AllocatorFrame frame, @Nullable Attachment[] attachments) {
+		if (attachments == null || attachments.length == 0)
+			return null;
+		return ArrayBufferInt.alloc(frame,
+									Arrays.stream(attachments)
+										  .mapToInt(att -> att.id)
+										  .toArray()
+		).nioBuffer();
+	}
+	
+	private static @Nullable VkAttachmentReference.Buffer createAttachmentReferenceBuffer(AllocatorFrame frame, @Nullable Reference[] references) {
+		if (references == null || references.length == 0)
+			return null;
 		return allocBuffer(frame, VkAttachmentReference::create, VkAttachmentReference.SIZEOF,
 						   Arrays.stream(references)
 								 .map(ref -> (Consumer<VkAttachmentReference>) attachmentReference -> attachmentReference.set(
