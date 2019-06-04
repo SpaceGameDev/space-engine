@@ -193,7 +193,7 @@ public class VmaImage implements VkImage {
 		
 		@Override
 		protected @NotNull Barrier handleFree() {
-			vmaDestroyBuffer(allocator.address(), address, allocationAddress);
+			vmaDestroyImage(allocator.address(), address, allocationAddress);
 			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
