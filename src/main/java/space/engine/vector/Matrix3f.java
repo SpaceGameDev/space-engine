@@ -125,6 +125,22 @@ public class Matrix3f {
 		return array;
 	}
 	
+	public float[] write4Aligned(float[] array, int offset) {
+		array[offset] = m00;
+		array[offset + 1] = m01;
+		array[offset + 2] = m02;
+		array[offset + 3] = 0;
+		array[offset + 4] = m10;
+		array[offset + 5] = m11;
+		array[offset + 6] = m12;
+		array[offset + 7] = 0;
+		array[offset + 8] = m20;
+		array[offset + 9] = m21;
+		array[offset + 10] = m22;
+		array[offset + 11] = 0;
+		return array;
+	}
+	
 	public Matrix4f toMatrix4f(Matrix4f mat) {
 		return mat.set(
 				m00, m01, m02, 0,

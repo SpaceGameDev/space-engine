@@ -217,6 +217,14 @@ public class Vector3f {
 		return array;
 	}
 	
+	public float[] write4Aligned(float[] array, int offset) {
+		array[offset] = x;
+		array[offset + 1] = y;
+		array[offset + 2] = z;
+		array[offset + 3] = 0;
+		return array;
+	}
+	
 	@Override
 	public String toString() {
 		return "{" + x + " " + y + " " + z + "}";
