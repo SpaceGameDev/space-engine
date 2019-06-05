@@ -1,7 +1,6 @@
 package space.engine.vulkan.managed.renderPass;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import org.lwjgl.vulkan.VkExtent2D;
 import org.lwjgl.vulkan.VkFramebufferCreateInfo;
@@ -13,8 +12,6 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
-import space.engine.indexmap.IndexMap;
-import space.engine.indexmap.IndexMapArray;
 import space.engine.orderingGuarantee.SequentialOrderingGuarantee;
 import space.engine.sync.DelayTask;
 import space.engine.sync.Tasks;
@@ -33,7 +30,7 @@ import space.engine.vulkan.managed.renderPass.ManagedRenderPass.Subpass;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -197,19 +194,26 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 	public Future<Barrier> render(INFOS infos, VkSemaphore[] waitSemaphores, int[] waitDstStageMasks, VkSemaphore[] signalSemaphores) {
 		return orderingGuarantee.next(prev -> Tasks.<Barrier>future(() -> {
 			@NotNull Subpass[] subpasses = renderPass.subpasses();
-			renderPass.callbacks.runImmediatelyThrowIfWait(callback -> callback.beginRenderpass(this, infos));
 			
-			IndexMap<Future<VkCommandBuffer[]>> cmdBuffers = new IndexMapArray<>();
-			for (Subpass subpass : subpasses) {
-				List<@Nullable Future<VkCommandBuffer[]>> subpassCmdBuffers = new ArrayList<>();
-				renderPass.callbacks.runImmediatelyThrowIfWait(callback -> subpassCmdBuffers.add(callback.subpassCmdBuffers(this, infos, subpass)));
-				cmdBuffers.put(subpass.id(), future(() -> subpassCmdBuffers
-						.stream()
-						.filter(Objects::nonNull)
-						.flatMap(future -> Arrays.stream(future.assertGet()))
-						.toArray(VkCommandBuffer[]::new)
-				).submit(subpassCmdBuffers.toArray(EMPTY_BARRIER_ARRAY)));
-			}
+			List<List<Future<VkCommandBuffer[]>>> cmdBuffersInput = new ArrayList<>();
+			renderPass.callbacks.runImmediatelyThrowIfWait(callback -> cmdBuffersInput.add(callback.getCmdBuffers(this, infos)));
+			
+			List<Future<VkCommandBuffer[]>> cmdBuffersSorted = Arrays
+					.stream(renderPass.subpasses())
+					.map(subpass -> {
+							 List<Future<VkCommandBuffer[]>> futures = cmdBuffersInput
+									 .stream()
+									 .map(list -> list.get(subpass.id()))
+									 .collect(Collectors.toUnmodifiableList());
+							 return future(() -> futures
+									 .stream()
+									 .map(Future::assertGet)
+									 .flatMap(Arrays::stream)
+									 .toArray(VkCommandBuffer[]::new)
+							 ).submit(futures.toArray(EMPTY_BARRIER_ARRAY));
+						 }
+					)
+					.collect(Collectors.toUnmodifiableList());
 			
 			throw new DelayTask(Tasks.<Barrier>future(() -> {
 				Future<Barrier> ret;
@@ -232,7 +236,7 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 					
 					for (int i = 0; i < subpasses.length; i++) {
-						VkCommandBuffer[] vkCommandBuffers = cmdBuffers.get(i).assertGet();
+						VkCommandBuffer[] vkCommandBuffers = cmdBuffersSorted.get(i).assertGet();
 						if (vkCommandBuffers.length > 0) {
 							ArrayBufferLong vkCommandBufferPtrs = ArrayBufferLong.alloc(heap(), Arrays.stream(vkCommandBuffers).mapToLong(VkCommandBuffer::address).toArray(), new Object[] {frame});
 							nvkCmdExecuteCommands(mainBuffer, (int) vkCommandBufferPtrs.length(), vkCommandBufferPtrs.address());
@@ -253,9 +257,9 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					);
 				}
 				
-				renderPass.callbacks.runImmediatelyThrowIfWait(callback -> callback.endRenderpass(this, infos, ret));
+				infos.frameDone.triggerNow();
 				throw new DelayTask(ret);
-			}).submit(cmdBuffers.values().toArray(EMPTY_BARRIER_ARRAY)));
+			}).submit(cmdBuffersSorted.toArray(EMPTY_BARRIER_ARRAY)));
 		}).submit(prev));
 	}
 }
