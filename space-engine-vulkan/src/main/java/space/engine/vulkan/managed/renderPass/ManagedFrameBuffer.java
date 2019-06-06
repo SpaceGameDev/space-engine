@@ -1,6 +1,7 @@
 package space.engine.vulkan.managed.renderPass;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import org.lwjgl.vulkan.VkExtent2D;
 import org.lwjgl.vulkan.VkFramebufferCreateInfo;
@@ -120,6 +121,23 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 			), queue.device(), new Object[] {this});
 			this.mainBuffer = mainBufferPool.allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, new Object[] {this});
 		}
+		
+		this.inheritanceInfos = Arrays
+				.stream(framebuffers)
+				.map(framebuffer -> Arrays
+						.stream(renderPass.subpasses())
+						.map(subpass -> mallocStruct(heap(), VkCommandBufferInheritanceInfo::create, VkCommandBufferInheritanceInfo.SIZEOF, new Object[] {this}).set(
+								VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,
+								0,
+								renderPass.address(),
+								subpass.id(),
+								framebuffer.address(),
+								false,
+								0,
+								0
+						))
+						.toArray(VkCommandBufferInheritanceInfo[]::new))
+				.toArray(VkCommandBufferInheritanceInfo[][]::new);
 	}
 	
 	//parents
@@ -261,5 +279,14 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 				throw new DelayTask(ret);
 			}).submit(cmdBuffersSorted.toArray(EMPTY_BARRIER_ARRAY)));
 		}).submit(prev));
+	}
+	
+	//inheritanceInfo
+	private final VkCommandBufferInheritanceInfo[][] inheritanceInfos;
+	
+	public VkCommandBufferInheritanceInfo inheritanceInfo(INFOS infos, Subpass subpass) {
+		if (subpass.renderPass() != renderPass)
+			throw new IllegalArgumentException("Renderpass don't match!");
+		return inheritanceInfos[infos.frameBufferIndex][subpass.id()];
 	}
 }

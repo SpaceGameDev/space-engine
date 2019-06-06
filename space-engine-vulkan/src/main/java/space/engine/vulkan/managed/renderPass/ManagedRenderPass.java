@@ -165,6 +165,11 @@ public class ManagedRenderPass<INFOS extends Infos> extends VkRenderPass {
 			return id;
 		}
 		
+		/**
+		 * @deprecated because RADV driver bug requiring inheritanceInfo.framebuffer to be set. see https://bugs.freedesktop.org/show_bug.cgi?id=110810
+		 * Use {@link ManagedFrameBuffer#inheritanceInfo(Infos, Subpass)}  instead
+		 */
+		@Deprecated
 		public @NotNull VkCommandBufferInheritanceInfo inheritanceInfo() {
 			if (inheritanceInfo == null)
 				throw new IllegalStateException("Renderpass not yet allocated!");
