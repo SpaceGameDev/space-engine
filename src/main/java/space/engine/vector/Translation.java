@@ -84,10 +84,10 @@ public class Translation {
 	
 	//applyTranslation
 	public Vector3f applyTranslationForward(Vector3f vec) {
-		return vec.add(offset).rotate(rotation);
+		return vec.rotate(rotation).add(offset);
 	}
 	
 	public Vector3f applyTranslationBackward(Vector3f vec) {
-		return vec.rotate(rotation).add(offset);
+		return vec.sub(offset).rotateInversePure(rotation);
 	}
 }
