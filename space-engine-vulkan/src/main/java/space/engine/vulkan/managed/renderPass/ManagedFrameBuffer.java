@@ -275,7 +275,10 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					);
 				}
 				
-				innerBarrier(ret).addHook(infos.frameDone::triggerNow);
+				innerBarrier(ret).addHook(() -> {
+					mainBuffer.reset(0);
+					infos.frameDone.triggerNow();
+				});
 				throw new DelayTask(ret);
 			}).submit(cmdBuffersSorted.toArray(EMPTY_BARRIER_ARRAY)));
 		}).submit(prev));
