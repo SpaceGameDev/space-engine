@@ -18,6 +18,7 @@ import space.engine.window.InputDevice.KeyInputDevice.CharacterInputEvent;
 import space.engine.window.InputDevice.KeyInputDevice.KeyInputEvent;
 import space.engine.window.InputDevice.Keyboard;
 import space.engine.window.InputDevice.Mouse;
+import space.engine.window.InputDevice.Mouse.ScrollEvent;
 import space.engine.window.InputDevice.PointerInputDevice.MouseMovementEvent;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
@@ -81,6 +82,7 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 	private final @NotNull Event<CharacterInputEvent> eventCharacterInputKeyboard = new SequentialEventBuilder<>();
 	private final @NotNull Event<KeyInputEvent> eventKeyInputMouse = new SequentialEventBuilder<>();
 	private final @NotNull Event<MouseMovementEvent> eventMouseMovement = new SequentialEventBuilder<>();
+	private final @NotNull Event<ScrollEvent> eventMouseScroll = new SequentialEventBuilder<>();
 	private final @NotNull Set<Integer> pressedKeysKeyboard = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
 	private final @NotNull Set<Integer> pressedKeysMouse = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
 	private @Nullable double[] mousePosition = null;
@@ -145,6 +147,11 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 		public Event<@WindowThread MouseMovementEvent> getMouseMovementEvent() {
 			return eventMouseMovement;
 		}
+		
+		@Override
+		public @NotNull Event<ScrollEvent> getScrollEvent() {
+			return eventMouseScroll;
+		}
 	}));
 	
 	@Override
@@ -176,7 +183,7 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 		eventKeyInputMouse.submit((TypeHandlerParallel<KeyInputEvent>) callback -> callback.onKeyInput(key, pressed));
 	}
 	
-	public void triggerMouseMovement(double[] absolute) {
+	public void triggerMouseMovement(@NotNull double[] absolute) {
 		double[] relative = new double[2];
 		if (mousePosition != null) {
 			relative[0] = absolute[0] - mousePosition[0];
@@ -184,6 +191,10 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 		}
 		mousePosition = absolute;
 		eventMouseMovement.submit((TypeHandlerParallel<MouseMovementEvent>) callback -> callback.onMouseMovement(absolute, relative));
+	}
+	
+	public void triggerScroll(@NotNull double[] relative) {
+		eventMouseScroll.submit(((TypeHandlerParallel<ScrollEvent>) callback -> callback.onScroll(relative)));
 	}
 	
 	//windowThread init
