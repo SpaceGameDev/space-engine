@@ -23,10 +23,6 @@ import static space.engine.vulkan.VkException.assertVk;
 public class VkCommandPool implements FreeableWrapper {
 	
 	//alloc
-	public static @NotNull VkCommandPool alloc(VkQueueFamilyProperties queueFamily, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return alloc(0, queueFamily, device, parents);
-	}
-	
 	public static @NotNull VkCommandPool alloc(int flags, VkQueueFamilyProperties queueFamily, @NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			return alloc(mallocStruct(frame, VkCommandPoolCreateInfo::create, VkCommandPoolCreateInfo.SIZEOF).set(
@@ -42,23 +38,24 @@ public class VkCommandPool implements FreeableWrapper {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateCommandPool(device, info.address(), 0, ptr.address()));
-			return create(ptr.getPointer(), device, parents);
+			return create(ptr.getPointer(), device, (info.flags() & VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) != 0, parents);
 		}
 	}
 	
 	//create
-	public static @NotNull VkCommandPool create(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkCommandPool(address, device, Storage::new, parents);
+	public static @NotNull VkCommandPool create(long address, @NotNull VkDevice device, boolean allowReset, @NotNull Object[] parents) {
+		return new VkCommandPool(address, device, allowReset, Storage::new, parents);
 	}
 	
-	public static @NotNull VkCommandPool wrap(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkCommandPool(address, device, Freeable::createDummy, parents);
+	public static @NotNull VkCommandPool wrap(long address, @NotNull VkDevice device, boolean allowReset, @NotNull Object[] parents) {
+		return new VkCommandPool(address, device, allowReset, Freeable::createDummy, parents);
 	}
 	
 	//const
-	public VkCommandPool(long address, @NotNull VkDevice device, @NotNull BiFunction<VkCommandPool, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkCommandPool(long address, @NotNull VkDevice device, boolean allowReset, @NotNull BiFunction<VkCommandPool, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.address = address;
 		this.device = device;
+		this.allowReset = allowReset;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 	}
 	
@@ -107,7 +104,9 @@ public class VkCommandPool implements FreeableWrapper {
 	}
 	
 	//allocCommandBuffer
-	public VkCommandBuffer allocCommandBuffer(int level, Object[] parents) {
+	private final boolean allowReset;
+	
+	public synchronized VkCommandBuffer allocCommandBuffer(int level, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -119,11 +118,11 @@ public class VkCommandPool implements FreeableWrapper {
 			
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
 			nvkAllocateCommandBuffers(device, info.address(), ptr.address());
-			return VkCommandBuffer.wrap(ptr.getPointer(), device, this, parents);
+			return allowReset ? VkCommandBuffer.create(ptr.getPointer(), device, this, parents) : VkCommandBuffer.wrap(ptr.getPointer(), device, this, parents);
 		}
 	}
 	
-	public VkCommandBuffer[] allocCommandBuffers(int level, int count, Object[] parents) {
+	public synchronized VkCommandBuffer[] allocCommandBuffers(int level, int count, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -136,7 +135,7 @@ public class VkCommandPool implements FreeableWrapper {
 			ArrayBufferPointer ptr = ArrayBufferPointer.malloc(frame, count);
 			nvkAllocateCommandBuffers(device, info.address(), ptr.address());
 			return IntStream.range(0, count)
-							.mapToObj(i -> VkCommandBuffer.wrap(ptr.getPointer(i), device, this, parents))
+							.mapToObj(i -> allowReset ? VkCommandBuffer.create(ptr.getPointer(i), device, this, parents) : VkCommandBuffer.wrap(ptr.getPointer(i), device, this, parents))
 							.toArray(VkCommandBuffer[]::new);
 		}
 	}

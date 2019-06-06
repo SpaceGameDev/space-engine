@@ -6,6 +6,7 @@ import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
 import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
@@ -78,10 +79,14 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		
 		@Override
 		protected @NotNull Barrier handleFree() {
-			try (AllocatorFrame frame = Allocator.frame()) {
-				nvkFreeCommandBuffers(device, commandPool.address(), 1, address);
+			synchronized (commandPool) {
+				try (AllocatorFrame frame = Allocator.frame()) {
+					PointerBufferLong ptr = PointerBufferLong.alloc(frame, address);
+					nvkFreeCommandBuffers(device, commandPool.address(), 1, ptr.address());
+					assertVk();
+					return Barrier.ALWAYS_TRIGGERED_BARRIER;
+				}
 			}
-			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
 	
@@ -144,5 +149,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	//reset
 	public void reset(int flags) {
 		assertVk(vkResetCommandBuffer(this, flags));
+		recordingDependencies = null;
 	}
 }
