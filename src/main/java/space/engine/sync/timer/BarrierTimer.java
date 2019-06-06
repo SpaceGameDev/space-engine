@@ -35,6 +35,11 @@ public abstract class BarrierTimer implements FreeableWrapper {
 			}
 			
 			@Override
+			public double currTimeFraction() {
+				return (System.nanoTime() + offsetNanos) * speedNanos;
+			}
+			
+			@Override
 			public double currSpeed() {
 				return speedNanos;
 			}
@@ -67,11 +72,18 @@ public abstract class BarrierTimer implements FreeableWrapper {
 	public abstract long timeFunction(long input);
 	
 	/**
-	 * The current time this Timer has (in nanos)
+	 * The current time this Timer has
 	 *
-	 * @return the time (in nanos)
+	 * @return the time
 	 */
 	public abstract long currTime();
+	
+	/**
+	 * The current time this Timer has with fraction
+	 *
+	 * @return the time with fraction
+	 */
+	public abstract double currTimeFraction();
 	
 	/**
 	 * @return The current speed of the timer (as a multiplier, normal speed is 1.0)

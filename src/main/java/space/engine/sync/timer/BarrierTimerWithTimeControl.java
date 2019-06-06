@@ -43,6 +43,11 @@ public class BarrierTimerWithTimeControl extends BarrierTimer {
 	}
 	
 	@Override
+	public double currTimeFraction() {
+		return (System.nanoTime() + offsetNanos) * speedNanos;
+	}
+	
+	@Override
 	public double currSpeed() {
 		return speedNanos;
 	}
