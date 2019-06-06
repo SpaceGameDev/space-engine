@@ -35,7 +35,16 @@ public class VkException extends RuntimeException {
 		ERROR_MAP.put(VK_ERROR_FRAGMENTED_POOL, "VK_ERROR_FRAGMENTED_POOL");
 	}
 	
+	public static void assertVk() {
+		assertVk("Vk error: no return value", false);
+	}
+	
 	public static int assertVk(int error) {
+		assertVk("Vk error: " + ERROR_MAP.get(error) + " (" + error + ")", error < 0);
+		return error;
+	}
+	
+	public static void assertVk(String error, boolean alwaysThrow) {
 		List<RuntimeException> errors = ERROR_ACCUMULATOR.get();
 		if (errors.size() > 0) {
 			VkException vkException = new VkException(error);
@@ -44,9 +53,8 @@ public class VkException extends RuntimeException {
 			throw vkException;
 		}
 		
-		if (error < 0)
+		if (alwaysThrow)
 			throw new VkException(error);
-		return error;
 	}
 	
 	public static void addError(RuntimeException e) {
