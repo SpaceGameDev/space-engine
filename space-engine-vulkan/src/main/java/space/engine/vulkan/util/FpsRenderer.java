@@ -140,6 +140,6 @@ public class FpsRenderer<INFOS extends Infos> implements FreeableWrapper {
 	@FunctionalInterface
 	public interface InfoCreator<INFOS extends Infos> {
 		
-		Future<INFOS> apply(int imageIndex, long timeMillis);
+		Future<INFOS> apply(int imageIndex, long frameEventTime);
 	}
 }
