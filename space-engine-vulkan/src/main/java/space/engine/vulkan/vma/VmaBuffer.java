@@ -133,6 +133,7 @@ public class VmaBuffer implements VkBuffer {
 		@Override
 		protected @NotNull Barrier handleFree() {
 			vmaDestroyBuffer(allocator.address(), address, allocationAddress);
+			assertVk();
 			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}

@@ -39,7 +39,7 @@ import static space.engine.buffer.Allocator.heap;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.sync.Tasks.future;
-import static space.engine.sync.barrier.Barrier.EMPTY_BARRIER_ARRAY;
+import static space.engine.sync.barrier.Barrier.*;
 
 public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper {
 	
@@ -257,7 +257,7 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 					);
 				}
 				
-				infos.frameDone.triggerNow();
+				innerBarrier(ret).addHook(infos.frameDone::triggerNow);
 				throw new DelayTask(ret);
 			}).submit(cmdBuffersSorted.toArray(EMPTY_BARRIER_ARRAY)));
 		}).submit(prev));
