@@ -28,6 +28,12 @@ public class Translation {
 		return this;
 	}
 	
+	public Translation zero() {
+		rotation.identity();
+		offset.zero();
+		return this;
+	}
+	
 	//rotate move apply
 	public Translation rotateForwards(Matrix3f mat) {
 		rotation.multiply(mat);

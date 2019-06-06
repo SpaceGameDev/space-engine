@@ -244,6 +244,10 @@ public class Quaternionf {
 	
 	public static final float SLERP_THRESHOLD = 0.001f;
 	
+	public Quaternionf slerp(Quaternionf q2, float t) {
+		return slerp(this, q2, t);
+	}
+	
 	public Quaternionf slerp(Quaternionf q1, Quaternionf q2, float t) {
 		float cosHalfAngle = dot(q1, q2);
 		if (abs(cosHalfAngle) >= 1) {
