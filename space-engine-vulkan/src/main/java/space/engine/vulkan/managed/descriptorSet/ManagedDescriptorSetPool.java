@@ -44,7 +44,7 @@ public class ManagedDescriptorSetPool implements FreeableWrapper {
 					LwjglStructAllocator.allocBuffer(frame, VkDescriptorPoolSize::create, VkDescriptorPoolSize.SIZEOF, IntStream
 							.range(0, descriptorTypes.length)
 							.mapToObj(i -> (Consumer<VkDescriptorPoolSize>) vkDescriptorPoolSize -> vkDescriptorPoolSize.set(
-									descriptorTypes[i], descriptorTypesCount[i]
+									descriptorTypes[i], descriptorTypesCount[i] * setCount
 							))
 							.collect(Collectors.toUnmodifiableList())
 					)
