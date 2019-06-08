@@ -16,14 +16,13 @@ import space.engine.vulkan.VkFence;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.LockSupport;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class EventAwaiter implements FreeableWrapper {
 	
-	public static final long TIMEOUT_NANOS = 100_000L;
+	public static final long TIMEOUT_NANOS = 20_000_000L;
 	
 	public static final ThreadFactory DEFAULT_THREAD_FACTORY = new ThreadFactory() {
 		private AtomicInteger COUNTER = new AtomicInteger();
@@ -48,14 +47,20 @@ public class EventAwaiter implements FreeableWrapper {
 			private ArrayList<Entry> accumulator = new ArrayList<>();
 			
 			@Override
-			protected void handle(Entry vkDevice) {
-				accumulator.add(vkDevice);
+			protected void handle(Entry entry) {
+				accumulator.add(entry);
 			}
 			
 			@Override
 			protected void park() {
 				if (accumulator.size() == 0) {
-					LockSupport.parkNanos(TIMEOUT_NANOS);
+					synchronized (this) {
+						try {
+							this.wait();
+						} catch (InterruptedException ignored) {
+						
+						}
+					}
 				} else {
 					try (AllocatorFrame frame = Allocator.frame()) {
 						ArrayBufferLong fenceBuffer = ArrayBufferLong.alloc(frame, accumulator.stream().mapToLong(e -> e.fence.address()).toArray());
@@ -75,8 +80,8 @@ public class EventAwaiter implements FreeableWrapper {
 			}
 			
 			@Override
-			protected void unparkThreads() {
-				//noop
+			protected synchronized void unparkThreads() {
+				this.notifyAll();
 			}
 		};
 		this.pool.createStopFreeable(new Object[] {this});
