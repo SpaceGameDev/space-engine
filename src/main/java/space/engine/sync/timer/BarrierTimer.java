@@ -9,6 +9,7 @@ import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * A {@link BarrierTimer} allows you to {@link #create(long)} a Barrier triggering when this reached the supplied point in time.
@@ -231,11 +232,9 @@ public abstract class BarrierTimer implements FreeableWrapper {
 					}
 				}
 				
-				try {
-					Thread.sleep(Integer.MAX_VALUE);
-				} catch (InterruptedException ignored) {
-				
-				}
+				LockSupport.park();
+				//noinspection ResultOfMethodCallIgnored
+				Thread.interrupted();
 			}
 			threadExitBarrier.triggerNow();
 		}
