@@ -5,13 +5,16 @@ import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.buffer.array.ArrayBufferPointer;
+import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
@@ -137,6 +140,30 @@ public class VkCommandPool implements FreeableWrapper {
 			return IntStream.range(0, count)
 							.mapToObj(i -> allowReset ? VkCommandBuffer.create(ptr.getPointer(i), device, this, parents) : VkCommandBuffer.wrap(ptr.getPointer(i), device, this, parents))
 							.toArray(VkCommandBuffer[]::new);
+		}
+	}
+	
+	public void releaseCommandBuffer(VkCommandBuffer commandBuffer) {
+		releaseCommandBuffer(commandBuffer.address());
+	}
+	
+	public synchronized void releaseCommandBuffer(long commandBuffer) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			PointerBufferLong ptr = PointerBufferLong.alloc(frame, commandBuffer);
+			nvkFreeCommandBuffers(device, this.address(), 1, ptr.address());
+			assertVk();
+		}
+	}
+	
+	public synchronized void releaseCommandBuffers(VkCommandBuffer[] commandBuffers) {
+		releaseCommandBuffers(Arrays.stream(commandBuffers).mapToLong(VkCommandBuffer::address).toArray());
+	}
+	
+	public synchronized void releaseCommandBuffers(long[] commandBuffers) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			ArrayBufferLong ptrs = ArrayBufferLong.alloc(frame, commandBuffers);
+			nvkFreeCommandBuffers(device, this.address(), commandBuffers.length, ptrs.address());
+			assertVk();
 		}
 	}
 }

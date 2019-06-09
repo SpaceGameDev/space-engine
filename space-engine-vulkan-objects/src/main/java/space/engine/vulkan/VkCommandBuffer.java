@@ -6,7 +6,6 @@ import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
 import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
-import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
@@ -18,6 +17,7 @@ import java.util.function.Supplier;
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
+import static space.engine.sync.barrier.Barrier.ALWAYS_TRIGGERED_BARRIER;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements FreeableWrapper {
@@ -66,27 +66,19 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	
 	public static class Storage extends FreeableStorage {
 		
-		private final @NotNull VkDevice device;
 		private final @NotNull VkCommandPool commandPool;
 		private final long address;
 		
 		public Storage(@NotNull VkCommandBuffer o, @NotNull Object[] parents) {
 			super(o, parents);
-			this.device = o.device;
 			this.commandPool = o.commandPool;
 			this.address = o.address;
 		}
 		
 		@Override
 		protected @NotNull Barrier handleFree() {
-			synchronized (commandPool) {
-				try (AllocatorFrame frame = Allocator.frame()) {
-					PointerBufferLong ptr = PointerBufferLong.alloc(frame, address);
-					nvkFreeCommandBuffers(device, commandPool.address(), 1, ptr.address());
-					assertVk();
-					return Barrier.ALWAYS_TRIGGERED_BARRIER;
-				}
-			}
+			commandPool.releaseCommandBuffer(address);
+			return ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
 	
