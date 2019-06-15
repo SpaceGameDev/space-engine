@@ -5,6 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * A concurrent threadsafe linking based FILO queue.
+ */
 public class ConcurrentLinkedSimpleQueue<E> implements SimpleQueue<E> {
 	
 	private AtomicReference<@NotNull Node<E>> headRef;
@@ -18,10 +21,11 @@ public class ConcurrentLinkedSimpleQueue<E> implements SimpleQueue<E> {
 	}
 	
 	@Override
-	public void add(E e) {
+	public boolean add(E e) {
 		Node<E> node = new Node<>(e);
 		Node<E> oldTail = tailRef.getAndSet(node);
 		oldTail.next = node;
+		return true;
 	}
 	
 	@Nullable

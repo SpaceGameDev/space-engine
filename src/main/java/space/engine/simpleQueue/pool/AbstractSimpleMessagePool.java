@@ -14,7 +14,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public abstract class AbstractSimpleMessagePool<MSG> {
 	
@@ -107,19 +106,13 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 	
 	public void addAll(Collection<MSG> collection) {
 		assertRunning();
-		queue.addAll(collection);
+		queue.addCollection(collection);
 		unparkThreads();
 	}
 	
 	public void addAll(MSG[] collection) {
 		assertRunning();
-		queue.addAll(collection);
-		unparkThreads();
-	}
-	
-	public void addAll(Stream<MSG> collection) {
-		assertRunning();
-		queue.addAll(collection);
+		queue.addArray(collection);
 		unparkThreads();
 	}
 	

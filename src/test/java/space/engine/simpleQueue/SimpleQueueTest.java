@@ -9,16 +9,17 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class SimpleQueueTest {
 	
 	@Parameters
 	public static Collection<Supplier<? extends SimpleQueue<Integer>>> parameters() {
-		return List.of(LinkedSimpleQueue::new, ConcurrentLinkedSimpleQueue::new);
+		return List.of(() -> new ArraySimpleQueue<>(16), LinkedSimpleQueue::new, ConcurrentLinkedSimpleQueue::new);
 	}
 	
 	private final SimpleQueue<Integer> queue;
@@ -34,10 +35,10 @@ public class SimpleQueueTest {
 		queue.add(2);
 		queue.add(3);
 		
-		Assert.assertEquals((Integer) 0, queue.remove());
-		Assert.assertEquals((Integer) 1, queue.remove());
-		Assert.assertEquals((Integer) 2, queue.remove());
-		//no remove for 3 as it will dry up the queue
+		int[] slots = new int[4];
+		for (int i = 0; i < 3; i++)
+			slots[Objects.requireNonNull(queue.remove())] = 1;
+		assertEquals(3, Arrays.stream(slots).sum());
 	}
 	
 	@Test
@@ -52,22 +53,18 @@ public class SimpleQueueTest {
 	@Test
 	public void testAddAll() {
 		Runnable remove4Numbers = () -> {
-			Assert.assertEquals((Integer) 0, queue.remove());
-			Assert.assertEquals((Integer) 1, queue.remove());
-			Assert.assertEquals((Integer) 2, queue.remove());
-			Assert.assertEquals((Integer) 3, queue.remove());
+			int[] slots = new int[4];
+			for (int i = 0; i < 4; i++)
+				slots[Objects.requireNonNull(queue.remove())] = 1;
+			assertEquals(4, Arrays.stream(slots).sum());
 		};
 		
 		//collection
-		queue.addAll(List.of(0, 1, 2, 3));
+		queue.addCollection(List.of(0, 1, 2, 3));
 		remove4Numbers.run();
 		
 		//array
-		queue.addAll(new Integer[] {0, 1, 2, 3});
-		remove4Numbers.run();
-		
-		//stream
-		queue.addAll(Arrays.stream(new Integer[] {0, 1, 2, 3}));
+		queue.addArray(new Integer[] {0, 1, 2, 3});
 		remove4Numbers.run();
 	}
 }
