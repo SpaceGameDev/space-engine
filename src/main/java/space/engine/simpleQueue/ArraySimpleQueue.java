@@ -65,4 +65,11 @@ public class ArraySimpleQueue<E> implements SimpleQueue<E> {
 		System.arraycopy(this.array, index, array, 0, removeCnt);
 		return List.of(ret);
 	}
+	
+	/**
+	 * current size of the SimpleQueue, for testing purposes
+	 */
+	public int size() {
+		return index;
+	}
 }

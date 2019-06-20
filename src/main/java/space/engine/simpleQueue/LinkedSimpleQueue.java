@@ -32,6 +32,18 @@ public class LinkedSimpleQueue<E> implements SimpleQueue<E> {
 		return removed.item;
 	}
 	
+	/**
+	 * current size of the SimpleQueue, for testing purposes
+	 */
+	public int size() {
+		Node<E> n = head;
+		for (int i = 0; true; i++) {
+			if (n == null)
+				return i;
+			n = n.next;
+		}
+	}
+	
 	public static class Node<E> {
 		
 		private final E item;
