@@ -1,6 +1,7 @@
 package space.engine.indexmap;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.engine.Empties;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ public interface IndexMap<VALUE> {
 	int[] EMPTYINT = Empties.EMPTY_INT_ARRAY;
 	
 	//capacity
+	
 	/**
 	 * Gets the current estimated size of the {@link IndexMap}.
 	 */
@@ -132,7 +134,7 @@ public interface IndexMap<VALUE> {
 	/**
 	 * Returns a {@link Collection} containing all non-null values. The {@link Collection} is unmodifiable.
 	 */
-	@NotNull Collection<VALUE> values();
+	@NotNull Collection<@Nullable VALUE> values();
 	
 	/**
 	 * Returns a {@link Collection} of {@link Entry Entries}. Entries contain an int index and the mapped value. The mapped value may be null.
@@ -145,7 +147,7 @@ public interface IndexMap<VALUE> {
 		
 		int getIndex();
 		
-		VALUE getValue();
+		@Nullable VALUE getValue();
 		
 		void setValue(VALUE v);
 		
