@@ -3,14 +3,13 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Buffer;
 import space.engine.freeableStorage.Freeable;
-import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
 
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
 
-public interface VkBuffer extends FreeableWrapper {
+public interface VkBuffer extends Freeable {
 	
 	//wrap
 	static @NotNull VkBuffer wrap(long address, long sizeOf, @NotNull VkDevice device, @NotNull Object[] parents) {
@@ -18,7 +17,7 @@ public interface VkBuffer extends FreeableWrapper {
 	}
 	
 	//parents
-	VkDevice device();
+	@NotNull VkDevice device();
 	
 	//address
 	long address();
@@ -26,16 +25,16 @@ public interface VkBuffer extends FreeableWrapper {
 	long sizeOf();
 	
 	//uploadData
-	default Barrier uploadData(Buffer src) {
+	default @NotNull Barrier uploadData(Buffer src) {
 		return uploadData(src, 0, 0, src.sizeOf());
 	}
 	
-	Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length);
+	@NotNull Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length);
 	
-	class Default implements VkBuffer {
+	class Default implements VkBuffer, FreeableWrapper {
 		
 		//const
-		public Default(long address, long sizeOf, @NotNull VkDevice device, @NotNull BiFunction<VkBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+		public Default(long address, long sizeOf, @NotNull VkDevice device, @NotNull BiFunction<? super Default, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 			this.device = device;
 			this.address = address;
 			this.sizeOf = sizeOf;
@@ -43,10 +42,10 @@ public interface VkBuffer extends FreeableWrapper {
 		}
 		
 		//parents
-		private final VkDevice device;
+		private final @NotNull VkDevice device;
 		
 		@Override
-		public VkDevice device() {
+		public @NotNull VkDevice device() {
 			return device;
 		}
 		
@@ -74,7 +73,7 @@ public interface VkBuffer extends FreeableWrapper {
 		
 		//uploadData
 		@Override
-		public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
+		public @NotNull Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
 			//we cannot resolve the memory (and offset) of a random buffer or image
 			throw new UnsupportedOperationException();
 		}

@@ -12,6 +12,7 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 import space.engine.vulkan.VkImage;
@@ -28,7 +29,7 @@ import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
 import static space.engine.vulkan.managed.device.ManagedDevice.QUEUE_TYPE_TRANSFER;
 
-public class VmaImage implements VkImage {
+public class VmaImage implements VkImage, FreeableWrapper {
 	
 	//alloc
 	public static @NotNull VmaImage alloc(int flags, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, int usage, int initialLayout, int memFlags, int memUsage, @NotNull ManagedDevice device, @NotNull Object[] parents) {
@@ -83,7 +84,7 @@ public class VmaImage implements VkImage {
 	}
 	
 	//const
-	protected VmaImage(long address, long vmaAllocation, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull ManagedDevice device, @NotNull BiFunction<VmaImage, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	protected VmaImage(long address, long vmaAllocation, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull ManagedDevice device, @NotNull BiFunction<? super VmaImage, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.address = address;
 		this.vmaAllocation = vmaAllocation;
 		this.imageType = imageType;
@@ -107,7 +108,7 @@ public class VmaImage implements VkImage {
 	}
 	
 	@Override
-	public ManagedDevice device() {
+	public @NotNull ManagedDevice device() {
 		return allocator.device();
 	}
 	
@@ -200,7 +201,7 @@ public class VmaImage implements VkImage {
 	
 	//uploadData
 	@Override
-	public Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount) {
+	public @NotNull Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount) {
 		ManagedDevice device = device();
 		ManagedQueue transferQueue = device.getQueue(QUEUE_TYPE_TRANSFER, 0);
 		

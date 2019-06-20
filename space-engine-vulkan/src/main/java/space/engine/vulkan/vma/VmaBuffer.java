@@ -9,6 +9,7 @@ import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.Buffer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 import space.engine.vulkan.VkBuffer;
@@ -25,7 +26,7 @@ import static space.engine.lwjgl.LwjglStructAllocator.*;
 import static space.engine.vulkan.VkException.assertVk;
 import static space.engine.vulkan.managed.device.ManagedDevice.QUEUE_TYPE_TRANSFER;
 
-public class VmaBuffer implements VkBuffer {
+public class VmaBuffer implements VkBuffer, FreeableWrapper {
 	
 	//alloc
 	public static @NotNull VmaBuffer alloc(int flags, long sizeOf, int usage, int memFlags, int memUsage, @NotNull ManagedDevice device, @NotNull Object[] parents) {
@@ -70,7 +71,7 @@ public class VmaBuffer implements VkBuffer {
 	}
 	
 	//const
-	protected VmaBuffer(long address, long vmaAllocation, long sizeOf, @NotNull ManagedDevice device, @NotNull BiFunction<VmaBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	protected VmaBuffer(long address, long vmaAllocation, long sizeOf, @NotNull ManagedDevice device, @NotNull BiFunction<? super VmaBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.address = address;
 		this.vmaAllocation = vmaAllocation;
 		this.sizeOf = sizeOf;
@@ -86,7 +87,7 @@ public class VmaBuffer implements VkBuffer {
 	}
 	
 	@Override
-	public ManagedDevice device() {
+	public @NotNull ManagedDevice device() {
 		return allocator.device();
 	}
 	
@@ -140,7 +141,7 @@ public class VmaBuffer implements VkBuffer {
 	
 	//uploadData
 	@Override
-	public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
+	public @NotNull Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
 		ManagedDevice device = device();
 		ManagedQueue transferQueue = device.getQueue(QUEUE_TYPE_TRANSFER, 0);
 		
@@ -153,10 +154,11 @@ public class VmaBuffer implements VkBuffer {
 						cmd,
 						mappedBuffer.address,
 						this.address,
-						allocBuffer(frame, VkBufferCopy::create, VkBufferCopy.SIZEOF, vkBufferCopy -> {
-							vkBufferCopy.clear();
-							vkBufferCopy.size(sizeOf);
-						})
+						allocBuffer(frame, VkBufferCopy::create, VkBufferCopy.SIZEOF, vkBufferCopy -> vkBufferCopy
+								.srcOffset(0)
+								.dstOffset(0)
+								.size(sizeOf)
+						)
 				);
 			}
 		});
