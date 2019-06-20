@@ -7,7 +7,6 @@ import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.freeableStorage.Freeable;
-import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 
@@ -20,73 +19,43 @@ import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.sync.barrier.Barrier.ALWAYS_TRIGGERED_BARRIER;
 import static space.engine.vulkan.VkException.assertVk;
 
-public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements FreeableWrapper {
+public abstract class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements Freeable {
 	
-	//create
-	public static @NotNull VkCommandBuffer create(long address, @NotNull VkDevice device, @NotNull VkCommandPool commandPool, @NotNull Object[] parents) {
-		return new VkCommandBuffer(address, device, commandPool, Storage::new, parents);
+	@SuppressWarnings("unused")
+	public static final VkCommandBuffer[] EMPTY_COMMAND_BUFFER_ARRAY = new VkCommandBuffer[0];
+	
+	//allocateDirect
+	public static @NotNull VkCommandBuffer[] allocateDirect(@NotNull VkCommandPool commandPool, int level, int count, @NotNull Object[] parents) {
+		return commandPool.allocCommandBuffers(level, count, parents);
 	}
 	
-	public static @NotNull VkCommandBuffer wrap(long address, @NotNull VkDevice device, @NotNull VkCommandPool commandPool, @NotNull Object[] parents) {
-		return new VkCommandBuffer(address, device, commandPool, Freeable::createDummy, parents);
+	public static @NotNull VkCommandBuffer allocateDirect(@NotNull VkCommandPool commandPool, int level, @NotNull Object[] parents) {
+		return commandPool.allocCommandBuffer(level, parents);
 	}
 	
-	//const
-	public VkCommandBuffer(long address, @NotNull VkDevice device, @NotNull VkCommandPool commandPool, @NotNull BiFunction<VkCommandBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
-		super(address, device);
-		this.device = device;
-		this.commandPool = commandPool;
-		this.storage = storageCreator.apply(this, addIfNotContained(parents, device, commandPool));
+	protected VkCommandBuffer(long handle, VkDevice device) {
+		super(handle, device);
+	}
+	
+	//wrap
+	public static @NotNull VkCommandBuffer wrap(long address, @NotNull VkCommandPool commandPool, @NotNull Object[] parents) {
+		return new VkCommandBuffer.Default(address, commandPool, Freeable::createDummy, parents);
 	}
 	
 	//parents
-	private final @NotNull VkDevice device;
+	public abstract @NotNull VkCommandPool commandPool();
 	
-	public VkDevice device() {
-		return device;
+	public @NotNull VkDevice device() {
+		return commandPool().device();
 	}
 	
-	public VkInstance instance() {
-		return device.instance();
-	}
-	
-	private final @NotNull VkCommandPool commandPool;
-	
-	public VkCommandPool commandPool() {
-		return commandPool;
-	}
-	
-	//storage
-	private final @NotNull Freeable storage;
-	
-	@Override
-	public @NotNull Freeable getStorage() {
-		return storage;
-	}
-	
-	public static class Storage extends FreeableStorage {
-		
-		private final @NotNull VkCommandPool commandPool;
-		private final long address;
-		
-		public Storage(@NotNull VkCommandBuffer o, @NotNull Object[] parents) {
-			super(o, parents);
-			this.commandPool = o.commandPool;
-			this.address = o.address;
-		}
-		
-		@Override
-		protected @NotNull Barrier handleFree() {
-			commandPool.releaseCommandBuffer(address);
-			return ALWAYS_TRIGGERED_BARRIER;
-		}
-	}
+	//address
+	public abstract long address();
 	
 	//recording
 	@SuppressWarnings({"FieldCanBeLocal", "unused"})
 	private @Nullable Object recordingDependencies;
 	
-	//begin
 	public void begin(int flags) {
 		begin(flags, null);
 	}
@@ -106,7 +75,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		assertVk(vkBeginCommandBuffer(this, info));
 	}
 	
-	//end
 	public void end() {
 		end(null);
 	}
@@ -116,7 +84,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		assertVk(vkEndCommandBuffer(this));
 	}
 	
-	//record
 	public void record(int flags, Runnable function) {
 		record(flags, null, function);
 	}
@@ -138,9 +105,65 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		end(recordingDependencies);
 	}
 	
-	//reset
+	public void reset() {
+		reset(0);
+	}
+	
 	public void reset(int flags) {
 		assertVk(vkResetCommandBuffer(this, flags));
 		recordingDependencies = null;
+	}
+	
+	public static class Default extends VkCommandBuffer implements FreeableWrapper {
+		
+		//const
+		public Default(long address, @NotNull VkCommandPool commandPool, @NotNull BiFunction<? super Default, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+			super(address, commandPool.device());
+			this.commandPool = commandPool;
+			this.address = address;
+			this.storage = storageCreator.apply(this, addIfNotContained(parents, commandPool));
+		}
+		
+		//parents
+		private final @NotNull VkCommandPool commandPool;
+		
+		@Override
+		public @NotNull VkCommandPool commandPool() {
+			return commandPool;
+		}
+		
+		//address
+		private final long address;
+		
+		@Override
+		public long address() {
+			return address;
+		}
+		
+		//storage
+		private final @NotNull Freeable storage;
+		
+		@Override
+		public @NotNull Freeable getStorage() {
+			return storage;
+		}
+	}
+	
+	public static class DestroyStorage extends FreeableStorage {
+		
+		private final @NotNull VkCommandPool commandPool;
+		private final long address;
+		
+		public DestroyStorage(@NotNull VkCommandBuffer event, @NotNull Object[] parents) {
+			super(event, parents);
+			this.commandPool = event.commandPool();
+			this.address = event.address();
+		}
+		
+		@Override
+		protected @NotNull Barrier handleFree() {
+			commandPool.releaseCommandBuffer(address);
+			return ALWAYS_TRIGGERED_BARRIER;
+		}
 	}
 }

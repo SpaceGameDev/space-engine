@@ -62,6 +62,7 @@ public class ManagedDeviceSingleQueue extends ManagedDevice {
 	protected ManagedDeviceSingleQueue(long handle, @NotNull VkPhysicalDevice physicalDevice, @NotNull VkDeviceCreateInfo ci, Function<ManagedDeviceSingleQueue, ManagedQueue> queue, @NotNull Object[] parents) {
 		super(handle, physicalDevice, ci, parents);
 		this.queue = queue.apply(this);
+		init();
 	}
 	
 	//getter

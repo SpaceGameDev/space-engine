@@ -13,10 +13,11 @@ import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
+import space.engine.vulkan.VkCommandBuffer.Default;
+import space.engine.vulkan.VkCommandBuffer.DestroyStorage;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
-import java.util.stream.IntStream;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
@@ -109,37 +110,45 @@ public class VkCommandPool implements FreeableWrapper {
 	//allocCommandBuffer
 	private final boolean allowReset;
 	
+	public boolean allowReset() {
+		return allowReset;
+	}
+	
 	public synchronized VkCommandBuffer allocCommandBuffer(int level, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 					0,
-					this.address,
+					this.address(),
 					level,
 					1
 			);
-			
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
-			nvkAllocateCommandBuffers(device, info.address(), ptr.address());
-			return allowReset ? VkCommandBuffer.create(ptr.getPointer(), device, this, parents) : VkCommandBuffer.wrap(ptr.getPointer(), device, this, parents);
+			synchronized (this) {
+				assertVk(nvkAllocateCommandBuffers(device(), info.address(), ptr.address()));
+			}
+			return new Default(ptr.getPointer(), this, allowReset ? DestroyStorage::new : Freeable::createDummy, parents);
 		}
 	}
 	
 	public synchronized VkCommandBuffer[] allocCommandBuffers(int level, int count, Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
+			VkCommandBuffer[] ret = new VkCommandBuffer[count];
+			
 			VkCommandBufferAllocateInfo info = mallocStruct(frame, VkCommandBufferAllocateInfo::create, VkCommandBufferAllocateInfo.SIZEOF).set(
 					VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 					0,
-					this.address,
+					this.address(),
 					level,
 					count
 			);
-			
 			ArrayBufferPointer ptr = ArrayBufferPointer.malloc(frame, count);
-			nvkAllocateCommandBuffers(device, info.address(), ptr.address());
-			return IntStream.range(0, count)
-							.mapToObj(i -> allowReset ? VkCommandBuffer.create(ptr.getPointer(i), device, this, parents) : VkCommandBuffer.wrap(ptr.getPointer(i), device, this, parents))
-							.toArray(VkCommandBuffer[]::new);
+			synchronized (this) {
+				assertVk(nvkAllocateCommandBuffers(device(), info.address(), ptr.address()));
+			}
+			for (int i = 0; i < count; i++)
+				ret[i] = new Default(ptr.getPointer(i), this, allowReset ? DestroyStorage::new : Freeable::createDummy, parents);
+			return ret;
 		}
 	}
 	
@@ -147,23 +156,27 @@ public class VkCommandPool implements FreeableWrapper {
 		releaseCommandBuffer(commandBuffer.address());
 	}
 	
-	public synchronized void releaseCommandBuffer(long commandBuffer) {
+	public void releaseCommandBuffer(long commandBuffer) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferLong ptr = PointerBufferLong.alloc(frame, commandBuffer);
-			nvkFreeCommandBuffers(device, this.address(), 1, ptr.address());
-			assertVk();
+			synchronized (this) {
+				nvkFreeCommandBuffers(device, this.address(), 1, ptr.address());
+				assertVk();
+			}
 		}
 	}
 	
-	public synchronized void releaseCommandBuffers(VkCommandBuffer[] commandBuffers) {
+	public void releaseCommandBuffers(VkCommandBuffer[] commandBuffers) {
 		releaseCommandBuffers(Arrays.stream(commandBuffers).mapToLong(VkCommandBuffer::address).toArray());
 	}
 	
-	public synchronized void releaseCommandBuffers(long[] commandBuffers) {
+	public void releaseCommandBuffers(long[] commandBuffers) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			ArrayBufferLong ptrs = ArrayBufferLong.alloc(frame, commandBuffers);
-			nvkFreeCommandBuffers(device, this.address(), commandBuffers.length, ptrs.address());
-			assertVk();
+			synchronized (this) {
+				nvkFreeCommandBuffers(device, this.address(), commandBuffers.length, ptrs.address());
+				assertVk();
+			}
 		}
 	}
 }

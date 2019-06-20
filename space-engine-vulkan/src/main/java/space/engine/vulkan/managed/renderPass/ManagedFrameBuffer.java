@@ -2,7 +2,6 @@ package space.engine.vulkan.managed.renderPass;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
-import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import org.lwjgl.vulkan.VkExtent2D;
 import org.lwjgl.vulkan.VkFramebufferCreateInfo;
 import org.lwjgl.vulkan.VkOffset2D;
@@ -112,15 +111,8 @@ public class ManagedFrameBuffer<INFOS extends Infos> implements FreeableWrapper 
 				})
 				.toArray(VkFramebuffer[]::new);
 		
-		try (AllocatorFrame frame = Allocator.frame()) {
-			VkCommandPool mainBufferPool = VkCommandPool.alloc(mallocStruct(frame, VkCommandPoolCreateInfo::create, VkCommandPoolCreateInfo.SIZEOF).set(
-					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-					0,
-					VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-					queue.queueFamily().index()
-			), queue.device(), new Object[] {this});
-			this.mainBuffer = mainBufferPool.allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, new Object[] {this});
-		}
+		VkCommandPool mainBufferPool = VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queue.queueFamily(), queue.device(), new Object[] {this});
+		this.mainBuffer = mainBufferPool.allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, new Object[] {this});
 		
 		this.inheritanceInfos = Arrays
 				.stream(framebuffers)

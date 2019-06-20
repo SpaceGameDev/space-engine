@@ -11,6 +11,7 @@ import space.engine.sync.barrier.BarrierImpl;
 import space.engine.sync.future.Future;
 import space.engine.sync.timer.BarrierTimerWithTimeControl;
 import space.engine.vulkan.VkSemaphore;
+import space.engine.vulkan.managed.device.ManagedDevice;
 import space.engine.vulkan.managed.renderPass.Infos;
 import space.engine.vulkan.managed.renderPass.ManagedFrameBuffer;
 import space.engine.vulkan.managed.surface.ManagedSwapchain;
@@ -25,23 +26,29 @@ import static space.engine.sync.barrier.Barrier.innerBarrier;
 
 public class FpsRenderer<INFOS extends Infos> implements FreeableWrapper {
 	
-	public FpsRenderer(@NotNull ManagedSwapchain<?> swapchain, @NotNull ManagedFrameBuffer<INFOS> frameBuffer, @NotNull InfoCreator<INFOS> infoCreator, float fps, Object[] parents) {
+	public FpsRenderer(@NotNull ManagedDevice device, @NotNull ManagedSwapchain<?> swapchain, @NotNull ManagedFrameBuffer<INFOS> frameBuffer, @NotNull InfoCreator<INFOS> infoCreator, float fps, Object[] parents) {
+		this.device = device;
 		this.swapchain = swapchain;
 		this.frameBuffer = frameBuffer;
 		this.infoCreator = infoCreator;
 		
 		//all explicitly freed in Storage
 		this.timer = new BarrierTimerWithTimeControl(fps / 1_000_000_000f, -System.nanoTime(), EMPTY_OBJECT_ARRAY);
-		this.semaphoreImageReady = VkSemaphore.alloc(swapchain.device(), EMPTY_OBJECT_ARRAY);
-		this.semaphoreRenderDone = VkSemaphore.alloc(swapchain.device(), EMPTY_OBJECT_ARRAY);
+		this.semaphoreImageReady = device.vkSemaphorePool().allocate(EMPTY_OBJECT_ARRAY);
+		this.semaphoreRenderDone = device.vkSemaphorePool().allocate(EMPTY_OBJECT_ARRAY);
 		this.storage = new Storage(this, Freeable.addIfNotContained(parents, swapchain, frameBuffer));
 		
 		start();
 	}
 	
 	//parents
+	private final ManagedDevice device;
 	private final @NotNull ManagedSwapchain<?> swapchain;
 	private final @NotNull ManagedFrameBuffer<INFOS> frameBuffer;
+	
+	public ManagedDevice device() {
+		return device;
+	}
 	
 	public @NotNull ManagedSwapchain<?> swapchain() {
 		return swapchain;
