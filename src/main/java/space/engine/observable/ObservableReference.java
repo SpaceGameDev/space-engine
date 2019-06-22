@@ -54,10 +54,18 @@ public class ObservableReference<T> {
 			activate.set(true);
 			try {
 				reference.t = generate.get();
+				initialBarrier.triggerNow();
+			} catch (DelayTask e) {
+				throw new DelayTask(
+						runnable(() -> {
+							//noinspection unchecked
+							reference.t = ((Future<T>) e.barrier).assertGet();
+							initialBarrier.triggerNow();
+						}).submit(e.barrier)
+				);
 			} catch (NoUpdate ignored) {
 				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
 			}
-			initialBarrier.triggerNow();
 		}).submit(prev));
 		
 		return reference;
@@ -90,10 +98,18 @@ public class ObservableReference<T> {
 			activate.set(true);
 			try {
 				reference.t = generate.get(() -> false);
+				initialBarrier.triggerNow();
+			} catch (DelayTask e) {
+				throw new DelayTask(
+						runnable(() -> {
+							//noinspection unchecked
+							reference.t = ((Future<T>) e.barrier).assertGet();
+							initialBarrier.triggerNow();
+						}).submit(e.barrier)
+				);
 			} catch (NoUpdate ignored) {
 				throw new UnsupportedOperationException("Generator threw NoUpdate on initial value calculation!");
 			}
-			initialBarrier.triggerNow();
 		}).submit(prev));
 		
 		return reference;
@@ -157,10 +173,7 @@ public class ObservableReference<T> {
 		return ordering.next(prev -> runnableCancelable(canceledCheck -> {
 			if (canceledCheck.isCanceled())
 				return;
-			this.t = t;
-			Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
-			if (barrier != ALWAYS_TRIGGERED_BARRIER)
-				throw new DelayTask(barrier);
+			setInternal(t);
 		}).submit(prev));
 	}
 	
@@ -169,14 +182,25 @@ public class ObservableReference<T> {
 			try {
 				if (canceledCheck.isCanceled())
 					return;
-				T t = supplier.get();
 				
+				T t;
+				try {
+					t = supplier.get();
+				} catch (DelayTask e) {
+					if (canceledCheck.isCanceled())
+						return;
+					throw new DelayTask(
+							runnable(() -> {
+								if (canceledCheck.isCanceled())
+									return;
+								//noinspection unchecked
+								setInternal(((Future<T>) e.barrier).assertGet());
+							}).submit(e.barrier)
+					);
+				}
 				if (canceledCheck.isCanceled())
 					return;
-				this.t = t;
-				Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
-				if (barrier != ALWAYS_TRIGGERED_BARRIER)
-					throw new DelayTask(barrier);
+				setInternal(t);
 			} catch (NoUpdate ignored) {
 			
 			}
@@ -189,18 +213,29 @@ public class ObservableReference<T> {
 	public Barrier set(GeneratorWithCancelCheck<T> supplier) {
 		return ordering.next(prev -> runnableCancelable(canceledCheck -> {
 			try {
-				T t = supplier.get(canceledCheck);
-				
-				if (canceledCheck.isCanceled())
-					return;
-				this.t = t;
-				Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
-				if (barrier != ALWAYS_TRIGGERED_BARRIER)
-					throw new DelayTask(barrier);
+				T t;
+				try {
+					t = supplier.get(canceledCheck);
+				} catch (DelayTask e) {
+					throw new DelayTask(
+							runnable(() -> {
+								//noinspection unchecked
+								setInternal(((Future<T>) e.barrier).assertGet());
+							}).submit(e.barrier)
+					);
+				}
+				setInternal(t);
 			} catch (NoUpdate ignored) {
 			
 			}
 		}).submit(prev));
+	}
+	
+	private void setInternal(T t) throws DelayTask {
+		this.t = t;
+		Barrier barrier = changeEvent.runImmediatelyIfPossible(tConsumer -> tConsumer.accept(t));
+		if (barrier != ALWAYS_TRIGGERED_BARRIER)
+			throw new DelayTask(barrier);
 	}
 	
 	/**
@@ -264,12 +299,12 @@ public class ObservableReference<T> {
 	@FunctionalInterface
 	public interface Generator<T> {
 		
-		T get() throws NoUpdate;
+		T get() throws NoUpdate, DelayTask;
 	}
 	
 	@FunctionalInterface
 	public interface GeneratorWithCancelCheck<T> {
 		
-		T get(CanceledCheck canceledCheck) throws NoUpdate;
+		T get(CanceledCheck canceledCheck) throws NoUpdate, DelayTask;
 	}
 }

@@ -2,6 +2,8 @@ package space.engine.sync.timer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.engine.freeableStorage.Freeable;
+import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorageWeak;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
@@ -11,17 +13,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A {@link BarrierTimer} allows you to {@link #create(long)} a Barrier triggering when this reached the supplied point in time.
  * When it actually triggers depends on the implementation.
- * Some standard Implementations include the {@link #createUnmodifiable(long)} Methods and {@link BarrierTimerWithTimeControl}.
+ * Some standard Implementations include the {@link #createUnmodifiable(long, Object[])} Methods and {@link BarrierTimerWithTimeControl}.
  */
-public abstract class BarrierTimer {
+public abstract class BarrierTimer implements FreeableWrapper {
 	
 	//static
-	public static BarrierTimer createUnmodifiable(final long offsetNanos) {
-		return createUnmodifiable(offsetNanos, 1);
+	public static BarrierTimer createUnmodifiable(final long offsetNanos, Object[] parents) {
+		return createUnmodifiable(offsetNanos, 1, parents);
 	}
 	
-	public static BarrierTimer createUnmodifiable(final long offsetNanos, final double speedNanos) {
-		return new BarrierTimer() {
+	public static BarrierTimer createUnmodifiable(final long offsetNanos, final double speedNanos, Object[] parents) {
+		return new BarrierTimer(parents) {
 			@Override
 			public long timeFunction(long input) {
 				return (long) (input / speedNanos) - (System.nanoTime() + offsetNanos);
@@ -29,7 +31,7 @@ public abstract class BarrierTimer {
 			
 			@Override
 			public long currTime() {
-				return (long) ((System.nanoTime() + offsetNanos) / speedNanos);
+				return (long) ((System.nanoTime() + offsetNanos) * speedNanos);
 			}
 			
 			@Override
@@ -39,19 +41,28 @@ public abstract class BarrierTimer {
 		};
 	}
 	
+	//storage
+	private final @NotNull Freeable storage;
+	
+	@Override
+	public @NotNull Freeable getStorage() {
+		return storage;
+	}
+	
 	//object
 	private @Nullable Node first;
 	private Runner runner;
 	
-	public BarrierTimer() {
+	public BarrierTimer(Object[] parents) {
+		storage = Freeable.createDummy(this, parents);
 		runner = new Runner(this);
 	}
 	
 	/**
-	 * Converts input time (in nanos) to the time the Thread should sleep (in nanos)
+	 * Converts timer time to the exact moment in system nanoTime
 	 *
-	 * @param input the input time (in nanos)
-	 * @return the time (in nanos) the Thread should sleep before execution
+	 * @param input the input time
+	 * @return the exact moment in system nanoTime
 	 */
 	public abstract long timeFunction(long input);
 	
@@ -171,6 +182,10 @@ public abstract class BarrierTimer {
 		
 		private Thread th;
 		
+		//stop
+		private volatile boolean isRunning = true;
+		private final BarrierImpl threadExitBarrier = new BarrierImpl();
+		
 		public Runner(BarrierTimer timer) {
 			super(timer, new Object[] {ROOT_LIST});
 			
@@ -181,16 +196,16 @@ public abstract class BarrierTimer {
 		
 		@Override
 		public void run() {
-			while (true) {
+			while (isRunning) {
 				//DON'T keep the timer reference while waiting
 				{
 					BarrierTimer timer = this.get();
 					if (timer == null)
-						return;
+						break;
 					
 					Node node;
 					while ((node = timer.poll()) != null) {
-						long sleepTime = timer.timeFunction(node.time);
+						long sleepTime = timer.timeFunction(node.time) - System.nanoTime();
 						if (sleepTime > 0) {
 							try {
 								Thread.sleep(sleepTime / 1000000, (int) (sleepTime % 1000000));
@@ -210,6 +225,7 @@ public abstract class BarrierTimer {
 				
 				}
 			}
+			threadExitBarrier.triggerNow();
 		}
 		
 		private void interrupt() {
@@ -219,9 +235,9 @@ public abstract class BarrierTimer {
 		
 		@Override
 		protected @NotNull Barrier handleFree() {
+			isRunning = false;
 			interrupt();
-			//don't care about the Thread still being alive
-			return Barrier.ALWAYS_TRIGGERED_BARRIER;
+			return threadExitBarrier;
 		}
 	}
 }

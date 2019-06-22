@@ -98,7 +98,8 @@ public final class FreeableStorageCleaner {
 				} catch (InterruptedException ignore) {
 				
 				} catch (Throwable e) {
-					cleanupLogger.log(LogLevel.ERROR, e.getMessage());
+					Thread th = Thread.currentThread();
+					th.getUncaughtExceptionHandler().uncaughtException(th, e);
 				}
 			}
 		});

@@ -1,10 +1,12 @@
-package space.engine.vulkan;
+package space.engine.vulkan.descriptors;
 
 import org.jetbrains.annotations.NotNull;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
+import space.engine.vulkan.VkDevice;
+import space.engine.vulkan.VkInstance;
 
 import java.util.function.BiFunction;
 

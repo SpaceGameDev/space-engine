@@ -1,5 +1,6 @@
 package space.engine.window;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.engine.event.Event;
 
@@ -75,6 +76,13 @@ public interface InputDevice {
 	}
 	
 	interface Mouse extends PointerInputDevice, KeyInputDevice {
-	
+		
+		@NotNull Event<ScrollEvent> getScrollEvent();
+		
+		@FunctionalInterface
+		interface ScrollEvent {
+			
+			void onScroll(@NotNull double[] relative);
+		}
 	}
 }

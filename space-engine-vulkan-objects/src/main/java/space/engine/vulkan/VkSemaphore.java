@@ -14,11 +14,24 @@ import java.util.function.BiFunction;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
+import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkSemaphore implements FreeableWrapper {
 	
+	public static final VkSemaphore[] EMPTY_SEMAPHORE_ARRAY = new VkSemaphore[0];
+	
 	//alloc
+	public static @NotNull VkSemaphore alloc(@NotNull VkDevice device, @NotNull Object[] parents) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			return alloc(mallocStruct(frame, VkSemaphoreCreateInfo::create, VkSemaphoreCreateInfo.SIZEOF).set(
+					VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+					0,
+					0
+			), device, parents);
+		}
+	}
+	
 	public static @NotNull VkSemaphore alloc(VkSemaphoreCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);

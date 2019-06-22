@@ -7,13 +7,15 @@ import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.buffer.pointer.PointerBufferInt;
+import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.buffer.pointer.PointerBufferPointer;
-import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
-import space.engine.sync.future.Future;
 import space.engine.vulkan.VkException;
+import space.engine.vulkan.VkFence;
 import space.engine.vulkan.VkQueueFamilyProperties;
+import space.engine.vulkan.VkSemaphore;
 import space.engine.vulkan.exception.UnsupportedConfigurationException;
 import space.engine.vulkan.managed.device.ManagedDevice;
 import space.engine.vulkan.managed.device.ManagedQueue;
@@ -21,6 +23,8 @@ import space.engine.vulkan.managed.device.ManagedQueue.Entry;
 import space.engine.vulkan.surface.VkSurface;
 import space.engine.vulkan.surface.VkSwapchain;
 import space.engine.window.Window;
+
+import java.util.Arrays;
 
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
@@ -133,27 +137,20 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 			);
 			PointerBufferPointer swapChainPtr = PointerBufferPointer.malloc(frame);
 			assertVk(nvkCreateSwapchainKHR(device, info.address(), 0, swapChainPtr.address()));
-			return new ManagedSwapchain<>(swapChainPtr.getPointer(), device, surface, queue, imageFormat, parents);
+			return new ManagedSwapchain<>(swapChainPtr.getPointer(), device, surface, queue, imageFormat[0], swapExtend.width(), swapExtend.height(), imageArrayLayers, parents);
 		}
 	}
 	
-	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull ManagedQueue queue, @NotNull int[] imageFormat, @NotNull Object[] parents) throws UnsupportedConfigurationException {
-		super(address, device, surface, imageFormat[0], VkSwapchain.Storage::new, parents);
-		this.imageFormat = imageFormat;
+	protected ManagedSwapchain(long address, @NotNull ManagedDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull ManagedQueue queue, int imageFormat, int width, int height, int layers, @NotNull Object[] parents) throws UnsupportedConfigurationException {
+		super(address, device, surface, imageFormat, width, height, layers, VkSwapchain.Storage::new, parents);
 		this.queue = queue;
 	}
 	
 	//parents
-	private final int[] imageFormat;
-	
 	@NotNull
 	@Override
 	public ManagedDevice device() {
 		return (ManagedDevice) super.device();
-	}
-	
-	public int[] imageFormat() {
-		return imageFormat;
 	}
 	
 	//queue
@@ -163,23 +160,48 @@ public class ManagedSwapchain<WINDOW extends Window> extends VkSwapchain<WINDOW>
 		return queue;
 	}
 	
-	//methods
-	public TaskCreator<Future<Barrier>> present(VkPresentInfoKHR info) {
-		return queue.submit(new ManagedQueue_PresentEntry(info));
+	//acquire
+	public int acquire(long timeout, @Nullable VkSemaphore semaphore, @Nullable VkFence fence) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			PointerBufferInt imageIndexPtr = PointerBufferInt.malloc(frame);
+			assertVk(nvkAcquireNextImageKHR(device(), this.address(), timeout, semaphore != null ? semaphore.address() : 0, fence != null ? fence.address() : 0, imageIndexPtr.address()));
+			return imageIndexPtr.getInt();
+		}
 	}
 	
-	public static class ManagedQueue_PresentEntry implements Entry {
+	//present
+	public Barrier present(int imageIndex) {
+		return present(null, imageIndex);
+	}
+	
+	public Barrier present(@Nullable VkSemaphore[] waitSemaphores, int imageIndex) {
+		return queue.submit(new ManagedQueue_PresentEntry(waitSemaphores, imageIndex));
+	}
+	
+	public class ManagedQueue_PresentEntry implements Entry {
 		
-		private final VkPresentInfoKHR info;
+		private final @Nullable VkSemaphore[] waitSemaphores;
+		private final int imageIndex;
 		
-		public ManagedQueue_PresentEntry(VkPresentInfoKHR info) {
-			this.info = info;
+		public ManagedQueue_PresentEntry(@Nullable VkSemaphore[] waitSemaphores, int imageIndex) {
+			this.waitSemaphores = waitSemaphores;
+			this.imageIndex = imageIndex;
 		}
 		
 		@Override
 		public Barrier run(ManagedQueue queue) {
-			vkQueuePresentKHR(queue, info);
-			return ALWAYS_TRIGGERED_BARRIER;
+			try (AllocatorFrame frame = Allocator.frame()) {
+				assertVk(vkQueuePresentKHR(queue, mallocStruct(frame, VkPresentInfoKHR::create, VkPresentInfoKHR.SIZEOF).set(
+						VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+						0,
+						waitSemaphores != null ? ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer() : null,
+						1,
+						PointerBufferLong.alloc(frame, ManagedSwapchain.this.address()).nioBuffer(),
+						PointerBufferInt.alloc(frame, imageIndex).nioBuffer(),
+						null
+				)));
+				return ALWAYS_TRIGGERED_BARRIER;
+			}
 		}
 	}
 }

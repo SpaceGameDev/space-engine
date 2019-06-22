@@ -18,6 +18,8 @@ import static space.engine.vulkan.VkException.assertVk;
 
 public class VkFence implements FreeableWrapper {
 	
+	public static final VkFence[] EMPTY_FENCE_ARRAY = new VkFence[0];
+	
 	//alloc
 	public static @NotNull VkFence alloc(VkFenceCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {

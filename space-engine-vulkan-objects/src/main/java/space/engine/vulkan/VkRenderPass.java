@@ -50,6 +50,10 @@ public class VkRenderPass implements FreeableWrapper {
 		return device;
 	}
 	
+	public VkInstance instance() {
+		return device.instance();
+	}
+	
 	//address
 	private final long address;
 	

@@ -1,18 +1,23 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
+import org.lwjgl.vulkan.VkCommandBufferInheritanceInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.pointer.PointerBufferLong;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
+import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements FreeableWrapper {
@@ -29,7 +34,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	//const
 	public VkCommandBuffer(long address, @NotNull VkDevice device, @NotNull VkCommandPool commandPool, @NotNull BiFunction<VkCommandBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		super(address, device);
-		this.address = address;
 		this.device = device;
 		this.commandPool = commandPool;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device, commandPool));
@@ -50,13 +54,6 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 	
 	public VkCommandPool commandPool() {
 		return commandPool;
-	}
-	
-	//address
-	private final long address;
-	
-	public long address() {
-		return address;
 	}
 	
 	//storage
@@ -82,19 +79,76 @@ public class VkCommandBuffer extends org.lwjgl.vulkan.VkCommandBuffer implements
 		
 		@Override
 		protected @NotNull Barrier handleFree() {
-			try (AllocatorFrame frame = Allocator.frame()) {
-				nvkFreeCommandBuffers(device, commandPool.address(), 1, address);
+			synchronized (commandPool) {
+				try (AllocatorFrame frame = Allocator.frame()) {
+					PointerBufferLong ptr = PointerBufferLong.alloc(frame, address);
+					nvkFreeCommandBuffers(device, commandPool.address(), 1, ptr.address());
+					assertVk();
+					return Barrier.ALWAYS_TRIGGERED_BARRIER;
+				}
 			}
-			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
 	}
 	
-	//methods
-	public void beginCommandBuffer(VkCommandBufferBeginInfo info) {
+	//recording
+	@SuppressWarnings({"FieldCanBeLocal", "unused"})
+	private @Nullable Object recordingDependencies;
+	
+	//begin
+	public void begin(int flags) {
+		begin(flags, null);
+	}
+	
+	public void begin(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo) {
+		try (AllocatorFrame frame = Allocator.frame()) {
+			begin(mallocStruct(frame, VkCommandBufferBeginInfo::create, VkCommandBufferBeginInfo.SIZEOF).set(
+					VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+					0,
+					flags,
+					inheritanceInfo
+			));
+		}
+	}
+	
+	public void begin(VkCommandBufferBeginInfo info) {
 		assertVk(vkBeginCommandBuffer(this, info));
 	}
 	
-	public void endCommandBuffer() {
+	//end
+	public void end() {
+		end(null);
+	}
+	
+	public void end(@Nullable Object recordingDependencies) {
+		this.recordingDependencies = recordingDependencies;
 		assertVk(vkEndCommandBuffer(this));
+	}
+	
+	//record
+	public void record(int flags, Runnable function) {
+		record(flags, null, function);
+	}
+	
+	public void record(int flags, Supplier<Object> function) {
+		record(flags, null, function);
+	}
+	
+	public void record(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo, Runnable function) {
+		record(flags, inheritanceInfo, () -> {
+			function.run();
+			return null;
+		});
+	}
+	
+	public void record(int flags, @Nullable VkCommandBufferInheritanceInfo inheritanceInfo, Supplier<Object> function) {
+		begin(flags, inheritanceInfo);
+		Object recordingDependencies = function.get();
+		end(recordingDependencies);
+	}
+	
+	//reset
+	public void reset(int flags) {
+		assertVk(vkResetCommandBuffer(this, flags));
+		recordingDependencies = null;
 	}
 }

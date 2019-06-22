@@ -1,30 +1,38 @@
 package space.engine.vulkan.managed.device;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.system.Pointer;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.vulkan.VkFenceCreateInfo;
 import org.lwjgl.vulkan.VkSubmitInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
+import space.engine.buffer.array.ArrayBufferInt;
+import space.engine.buffer.array.ArrayBufferLong;
+import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.simpleQueue.ConcurrentLinkedSimpleQueue;
-import space.engine.simpleQueue.pool.SimpleMessagePool;
 import space.engine.simpleQueue.pool.SimpleThreadPool;
-import space.engine.sync.TaskCreator;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.future.Future;
-import space.engine.sync.taskImpl.FutureTask;
+import space.engine.vulkan.VkCommandBuffer;
+import space.engine.vulkan.VkCommandPool;
 import space.engine.vulkan.VkFence;
 import space.engine.vulkan.VkQueue;
 import space.engine.vulkan.VkQueueFamilyProperties;
+import space.engine.vulkan.VkSemaphore;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.Empties.EMPTY_OBJECT_ARRAY;
 import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
+import static space.engine.lwjgl.PointerBufferWrapper.wrapPointer;
+import static space.engine.sync.Tasks.future;
+import static space.engine.sync.barrier.Barrier.innerBarrier;
 
 public class ManagedQueue extends VkQueue {
 	
@@ -49,6 +57,8 @@ public class ManagedQueue extends VkQueue {
 		super(address, device, queueFamily);
 		this.device = device;
 		init(Freeable::createDummy, parents);
+		this.commandPool = ThreadLocal.withInitial(() -> VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueFamily, device, new Object[] {this}));
+		this.commandPoolShortLived = ThreadLocal.withInitial(() -> VkCommandPool.alloc(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueFamily, device, new Object[] {this}));
 		
 		//submit
 		this.pool = new SimpleThreadPool(
@@ -67,22 +77,6 @@ public class ManagedQueue extends VkQueue {
 		return device;
 	}
 	
-	//storage
-	protected static class PoolStorage extends FreeableStorage {
-		
-		private final SimpleMessagePool<?> pool;
-		
-		public PoolStorage(SimpleMessagePool<?> pool, Object[] parents) {
-			super(null, parents);
-			this.pool = pool;
-		}
-		
-		@Override
-		protected @NotNull Barrier handleFree() {
-			return pool.stop();
-		}
-	}
-	
 	//submit
 	private final SimpleThreadPool pool;
 	
@@ -91,18 +85,8 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(Entry cmd) {
-		return (locks, barriers) -> new FutureTask<>(locks, barriers) {
-			@Override
-			protected Barrier execute0() {
-				return cmd.run(ManagedQueue.this);
-			}
-			
-			@Override
-			protected void submit1(Runnable toRun) {
-				pool.add(toRun);
-			}
-		};
+	public Future<Barrier> submit(Entry cmd) {
+		return future(pool, () -> cmd.run(ManagedQueue.this)).submit();
 	}
 	
 	/**
@@ -110,8 +94,8 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(VkSubmitInfo cmd) {
-		return submit(new SubmitQueueEntry(cmd));
+	public Future<Barrier> submit(@NotNull VkCommandBuffer... commandBuffers) {
+		return submit(null, null, commandBuffers, null);
 	}
 	
 	/**
@@ -119,8 +103,8 @@ public class ManagedQueue extends VkQueue {
 	 *
 	 * @return a {@link Future}, triggered when cmd is submitted, containing a {@link Barrier}, triggered when execution of cmd finished
 	 */
-	public TaskCreator<Future<Barrier>> submit(VkSubmitInfo.Buffer cmd) {
-		return submit(new SubmitQueueEntry(cmd));
+	public Future<Barrier> submit(@Nullable VkSemaphore[] waitSemaphores, @Nullable int[] waitDstStageMask, @NotNull VkCommandBuffer[] commandBuffers, @Nullable VkSemaphore[] signalSemaphores) {
+		return submit(new SubmitQueueEntry(waitSemaphores, waitDstStageMask, commandBuffers, signalSemaphores));
 	}
 	
 	//Entry
@@ -132,29 +116,73 @@ public class ManagedQueue extends VkQueue {
 	
 	public static class SubmitQueueEntry implements Entry {
 		
-		private final int infoCount;
-		private final Pointer infoAddress;
+		private final @Nullable VkSemaphore[] waitSemaphores;
+		private final @Nullable int[] waitDstStageMask;
+		private final @NotNull VkCommandBuffer[] commandBuffers;
+		private final @Nullable VkSemaphore[] signalSemaphores;
 		
-		private SubmitQueueEntry(VkSubmitInfo info) {
-			this(1, info);
-		}
-		
-		private SubmitQueueEntry(VkSubmitInfo.Buffer infoBuffer) {
-			this(infoBuffer.capacity(), infoBuffer);
-		}
-		
-		private SubmitQueueEntry(int infoCount, Pointer infoAddress) {
-			this.infoCount = infoCount;
-			this.infoAddress = infoAddress;
+		public SubmitQueueEntry(@Nullable VkSemaphore[] waitSemaphores, @Nullable int[] waitDstStageMask, @NotNull VkCommandBuffer[] commandBuffers, @Nullable VkSemaphore[] signalSemaphores) {
+			this.waitSemaphores = waitSemaphores;
+			this.waitDstStageMask = waitDstStageMask;
+			this.commandBuffers = commandBuffers;
+			this.signalSemaphores = signalSemaphores;
 		}
 		
 		@Override
 		public Barrier run(ManagedQueue queue) {
-			VkFence fence = VkFence.alloc(VK_FENCE_CREATE_INFO, queue.device(), EMPTY_OBJECT_ARRAY);
-			nvkQueueSubmit(queue, infoCount, infoAddress.address(), fence.address());
-			Barrier doneBarrier = queue.device().eventAwaiter().add(fence);
-			doneBarrier.addHook(fence::free);
-			return doneBarrier;
+			try (AllocatorFrame frame = Allocator.frame()) {
+				VkFence fence = VkFence.alloc(VK_FENCE_CREATE_INFO, queue.device(), EMPTY_OBJECT_ARRAY);
+				nvkQueueSubmit(queue, 1, mallocStruct(frame, VkSubmitInfo::create, VkSubmitInfo.SIZEOF).set(
+						VK_STRUCTURE_TYPE_SUBMIT_INFO,
+						0,
+						waitSemaphores != null ? waitSemaphores.length : 0,
+						waitSemaphores != null ? ArrayBufferLong.alloc(frame, Arrays.stream(waitSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer() : null,
+						waitDstStageMask != null ? ArrayBufferInt.alloc(frame, waitDstStageMask).nioBuffer() : null,
+						wrapPointer(ArrayBufferPointer.alloc(frame, Arrays.stream(commandBuffers).mapToLong(VkCommandBuffer::address).toArray())),
+						signalSemaphores != null ? ArrayBufferLong.alloc(frame, Arrays.stream(signalSemaphores).mapToLong(VkSemaphore::address).toArray()).nioBuffer() : null
+				).address(), fence.address());
+				Barrier doneBarrier = queue.device().eventAwaiter().add(fence);
+				doneBarrier.addHook(fence::free);
+				return doneBarrier;
+			}
 		}
+	}
+	
+	//commandPool
+	private final ThreadLocal<VkCommandPool> commandPool;
+	private final ThreadLocal<VkCommandPool> commandPoolShortLived;
+	
+	/**
+	 * {@link VkCommandPool} for long holding allocations
+	 */
+	public VkCommandPool commandPool() {
+		return commandPool.get();
+	}
+	
+	/**
+	 * {@link VkCommandPool} for short-lived allocations
+	 */
+	public VkCommandPool commandPoolShortLived() {
+		return commandPoolShortLived.get();
+	}
+	
+	//recordAndSubmit
+	public Barrier recordAndSubmit(Consumer<VkCommandBuffer> function) {
+		return recordAndSubmit(cmd -> {
+			function.accept(cmd);
+			return null;
+		});
+	}
+	
+	public Barrier recordAndSubmit(Function<VkCommandBuffer, Object> function) {
+		VkCommandBuffer cmd = commandPoolShortLived().allocCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, EMPTY_OBJECT_ARRAY);
+		
+		cmd.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		Object recordingDependencies = function.apply(cmd);
+		cmd.end(recordingDependencies);
+		
+		Barrier executionDone = innerBarrier(submit(cmd));
+		executionDone.addHook(cmd::free);
+		return executionDone;
 	}
 }

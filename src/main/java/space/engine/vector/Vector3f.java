@@ -37,7 +37,7 @@ public class Vector3f {
 		return this;
 	}
 	
-	public Vector3f clear() {
+	public Vector3f zero() {
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
@@ -214,6 +214,14 @@ public class Vector3f {
 		array[offset] = x;
 		array[offset + 1] = y;
 		array[offset + 2] = z;
+		return array;
+	}
+	
+	public float[] write4Aligned(float[] array, int offset) {
+		array[offset] = x;
+		array[offset + 1] = y;
+		array[offset + 2] = z;
+		array[offset + 3] = 0;
 		return array;
 	}
 	

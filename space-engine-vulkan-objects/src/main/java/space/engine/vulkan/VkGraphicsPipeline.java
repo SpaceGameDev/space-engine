@@ -1,6 +1,7 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkGraphicsPipelineCreateInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
@@ -19,39 +20,43 @@ import static space.engine.vulkan.VkException.assertVk;
 public class VkGraphicsPipeline implements FreeableWrapper {
 	
 	//alloc
-	public static @NotNull VkGraphicsPipeline alloc(VkGraphicsPipelineCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
+	public static @NotNull VkGraphicsPipeline alloc(VkGraphicsPipelineCreateInfo info, @NotNull VkRenderPass renderPass, @NotNull Object[] parents) {
 		try (AllocatorFrame frame = Allocator.frame()) {
 			PointerBufferPointer ptr = PointerBufferPointer.malloc(frame);
-			assertVk(nvkCreateGraphicsPipelines(device, 0, 1, info.address(), 0, ptr.address()));
-			return create(ptr.getPointer(), device, parents);
+			assertVk(nvkCreateGraphicsPipelines(renderPass.device(), 0, 1, info.address(), 0, ptr.address()));
+			return create(ptr.getPointer(), renderPass, parents);
 		}
 	}
 	
 	//create
-	public static @NotNull VkGraphicsPipeline create(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkGraphicsPipeline(address, device, Storage::new, parents);
+	public static @NotNull VkGraphicsPipeline create(long address, @NotNull VkRenderPass renderPass, @NotNull Object[] parents) {
+		return new VkGraphicsPipeline(address, renderPass, Storage::new, parents);
 	}
 	
-	public static @NotNull VkGraphicsPipeline wrap(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkGraphicsPipeline(address, device, Freeable::createDummy, parents);
+	public static @NotNull VkGraphicsPipeline wrap(long address, @NotNull VkRenderPass renderPass, @NotNull Object[] parents) {
+		return new VkGraphicsPipeline(address, renderPass, Freeable::createDummy, parents);
 	}
 	
 	//const
-	public VkGraphicsPipeline(long address, @NotNull VkDevice device, @NotNull BiFunction<VkGraphicsPipeline, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkGraphicsPipeline(long address, @NotNull VkRenderPass renderPass, @NotNull BiFunction<VkGraphicsPipeline, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.address = address;
-		this.device = device;
-		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
+		this.renderPass = renderPass;
+		this.storage = storageCreator.apply(this, addIfNotContained(parents, renderPass));
 	}
 	
 	//parents
-	private final @NotNull VkDevice device;
+	private final @NotNull VkRenderPass renderPass;
+	
+	public VkRenderPass renderPass() {
+		return renderPass;
+	}
 	
 	public VkDevice device() {
-		return device;
+		return renderPass.device();
 	}
 	
 	public VkInstance instance() {
-		return device.instance();
+		return renderPass.instance();
 	}
 	
 	//address
@@ -76,7 +81,7 @@ public class VkGraphicsPipeline implements FreeableWrapper {
 		
 		public Storage(@NotNull VkGraphicsPipeline o, @NotNull Object[] parents) {
 			super(o, parents);
-			this.device = o.device;
+			this.device = o.device();
 			this.address = o.address;
 		}
 		
@@ -85,5 +90,10 @@ public class VkGraphicsPipeline implements FreeableWrapper {
 			vkDestroyPipeline(device, address, null);
 			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
+	}
+	
+	//methods
+	public void vkCmdBindPipeline(VkCommandBuffer cmdBuffer) {
+		VK10.vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, address);
 	}
 }

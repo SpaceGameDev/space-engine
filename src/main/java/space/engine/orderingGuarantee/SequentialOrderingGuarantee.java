@@ -25,10 +25,19 @@ public class SequentialOrderingGuarantee {
 	
 	private Barrier lastBarrier = ALWAYS_TRIGGERED_BARRIER;
 	
-	public void next(Function<@NotNull ? super Barrier, @NotNull ? extends Barrier> function) {
+	/**
+	 * Enqueues a new function to be executed in the sequence.
+	 *
+	 * @param function a function generating a new task which will start execution when supplied {@link Barrier} is triggered and returns a {@link Barrier} triggered when execution has finished
+	 * @return the Barrier returned by the function parameter
+	 */
+	public <B extends @NotNull Barrier> B next(Function<@NotNull ? super Barrier, B> function) {
 		BarrierImpl next = new BarrierImpl();
 		Barrier prev = (Barrier) LASTBARRIER.getAndSet(this, next);
-		function.apply(prev).addHook(next::triggerNow);
+		
+		B apply = function.apply(prev);
+		apply.addHook(next::triggerNow);
+		return apply;
 	}
 	
 	/**

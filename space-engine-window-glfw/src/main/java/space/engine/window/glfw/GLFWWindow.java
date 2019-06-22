@@ -294,9 +294,8 @@ public class GLFWWindow implements Window, FreeableWrapper {
 			}
 		});
 		glfwSetCharCallback(windowPointer, (window, codepoint) -> context.triggerCharacterInputEventKeyboard(new String(Character.toChars(codepoint))));
-		glfwSetCursorPosCallback(windowPointer, (window, xpos, ypos) -> {
-			context.triggerMouseMovement(new double[] {xpos, ypos});
-		});
+		glfwSetCursorPosCallback(windowPointer, (window, xpos, ypos) -> context.triggerMouseMovement(new double[] {xpos, ypos}));
+		glfwSetScrollCallback(windowPointer, (window, xoffset, yoffset) -> context.triggerScroll(new double[] {xoffset, yoffset}));
 		
 		if (newFormat.get(VISIBLE)) {
 			glfwShowWindow(windowPointer);

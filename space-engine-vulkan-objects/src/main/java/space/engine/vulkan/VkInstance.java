@@ -124,12 +124,15 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 		@Override
 		public int invoke(int messageSeverity, int messageTypes, long pCallbackData, long pUserData) {
 			LogLevel logLevel;
+			boolean crash = false;
 			switch (messageSeverity) {
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
 					logLevel = LogLevel.ERROR;
+					crash = true;
 					break;
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
 					logLevel = LogLevel.WARNING;
+					crash = true;
 					break;
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
 					logLevel = LogLevel.INFO;
@@ -142,7 +145,10 @@ public class VkInstance extends org.lwjgl.vulkan.VkInstance implements FreeableW
 			}
 			
 			VkDebugUtilsMessengerCallbackDataEXT message = LwjglStructAllocator.wrapStruct(VkDebugUtilsMessengerCallbackDataEXT::create, pCallbackData);
-			logger.log(logLevel, message.pMessageString());
+			String messageString = message.pMessageString();
+			logger.log(logLevel, messageString);
+			if (crash)
+				VkException.addError(new VkException(logLevel.toString() + ": " + messageString));
 			
 			return VK_FALSE;
 		}

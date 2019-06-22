@@ -1,90 +1,137 @@
 package space.engine.vulkan;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.vulkan.VK10;
-import org.lwjgl.vulkan.VkImageCreateInfo;
-import space.engine.buffer.Allocator;
-import space.engine.buffer.AllocatorStack.AllocatorFrame;
-import space.engine.buffer.pointer.PointerBufferPointer;
+import space.engine.buffer.Buffer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
-import space.engine.freeableStorage.FreeableStorage;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
 
-import static org.lwjgl.vulkan.VK10.nvkDestroyImage;
-import static space.engine.freeableStorage.Freeable.addIfNotContained;
-import static space.engine.vulkan.VkException.assertVk;
-
-public class VkImage implements FreeableWrapper {
+public interface VkImage extends FreeableWrapper {
 	
-	//alloc
-	public static @NotNull VkImage alloc(@NotNull VkImageCreateInfo info, @NotNull VkDevice device, @NotNull Object[] parents) {
-		try (AllocatorFrame frame = Allocator.frame()) {
-			PointerBufferPointer vkImagePtr = PointerBufferPointer.malloc(frame);
-			assertVk(VK10.nvkCreateImage(device, info.address(), 0, vkImagePtr.address()));
-			return new VkImage(vkImagePtr.getPointer(), device, Storage::new, parents);
-		}
-	}
-	
-	//create
-	public static @NotNull VkImage create(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkImage(address, device, Storage::new, parents);
-	}
-	
-	public static @NotNull VkImage wrap(long address, @NotNull VkDevice device, @NotNull Object[] parents) {
-		return new VkImage(address, device, Freeable::createDummy, parents);
-	}
-	
-	//const
-	public VkImage(long address, @NotNull VkDevice device, @NotNull BiFunction<VkImage, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
-		this.device = device;
-		this.address = address;
-		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
+	//wrap
+	static @NotNull VkImage wrap(long address, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull VkDevice device, @NotNull Object[] parents) {
+		return new VkImage.Default(address, imageType, imageFormat, width, height, depth, mipLevels, arrayLayers, samples, tiling, device, Freeable::createDummy, parents);
 	}
 	
 	//parents
-	private final @NotNull VkDevice device;
-	
-	public @NotNull VkDevice device() {
-		return device;
-	}
-	
-	public @NotNull VkInstance instance() {
-		return device.instance();
-	}
+	VkDevice device();
 	
 	//address
-	private final long address;
+	long address();
 	
-	public long address() {
-		return address;
-	}
+	int imageType();
 	
-	//storage
-	private final @NotNull Freeable storage;
+	int imageFormat();
 	
-	@Override
-	public @NotNull Freeable getStorage() {
-		return storage;
-	}
+	int width();
 	
-	public static class Storage extends FreeableStorage {
+	int height();
+	
+	int depth();
+	
+	int mipLevels();
+	
+	int arrayLayers();
+	
+	int samples();
+	
+	int tiling();
+	
+	Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount);
+	
+	class Default implements VkImage {
 		
-		private final @NotNull VkDevice device;
+		//const
+		public Default(long address, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull VkDevice device, @NotNull BiFunction<Default, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+			this.device = device;
+			this.address = address;
+			this.imageType = imageType;
+			this.imageFormat = imageFormat;
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
+			this.mipLevels = mipLevels;
+			this.arrayLayers = arrayLayers;
+			this.samples = samples;
+			this.tiling = tiling;
+			this.storage = storageCreator.apply(this, parents);
+		}
+		
+		//parents
+		private final VkDevice device;
+		
+		public VkDevice device() {
+			return device;
+		}
+		
+		//address
 		private final long address;
+		private final int imageType, imageFormat, width, height, depth, mipLevels, arrayLayers, samples, tiling;
 		
-		public Storage(@NotNull VkImage image, @NotNull Object[] parents) {
-			super(image, parents);
-			this.device = image.device();
-			this.address = image.address();
+		public long address() {
+			return address;
 		}
 		
 		@Override
-		protected @NotNull Barrier handleFree() {
-			nvkDestroyImage(device, address, 0);
-			return Barrier.ALWAYS_TRIGGERED_BARRIER;
+		public int imageType() {
+			return imageType;
+		}
+		
+		@Override
+		public int imageFormat() {
+			return imageFormat;
+		}
+		
+		@Override
+		public int width() {
+			return width;
+		}
+		
+		@Override
+		public int height() {
+			return height;
+		}
+		
+		@Override
+		public int depth() {
+			return depth;
+		}
+		
+		@Override
+		public int mipLevels() {
+			return mipLevels;
+		}
+		
+		@Override
+		public int arrayLayers() {
+			return arrayLayers;
+		}
+		
+		@Override
+		public int samples() {
+			return samples;
+		}
+		
+		@Override
+		public int tiling() {
+			return tiling;
+		}
+		
+		//storage
+		private final @NotNull Freeable storage;
+		
+		@Override
+		public @NotNull Freeable getStorage() {
+			return storage;
+		}
+		
+		//uploadData
+		@Override
+		public Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount) {
+			//we cannot resolve the memory (and offset) of a random buffer or image
+			throw new UnsupportedOperationException();
 		}
 	}
 }

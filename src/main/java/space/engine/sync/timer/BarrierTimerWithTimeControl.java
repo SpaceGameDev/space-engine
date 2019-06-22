@@ -11,21 +11,22 @@ public class BarrierTimerWithTimeControl extends BarrierTimer {
 	/**
 	 * Timer with normal speed starting at the point in time this Constructor is called
 	 */
-	public BarrierTimerWithTimeControl() {
-		this(1.0, -System.nanoTime());
+	public BarrierTimerWithTimeControl(Object[] parents) {
+		this(1.0, -System.nanoTime(), parents);
 	}
 	
 	/**
 	 * Timer with normal speed starting at a specified point in time
 	 */
-	public BarrierTimerWithTimeControl(long offsetNanos) {
-		this(1.0, offsetNanos);
+	public BarrierTimerWithTimeControl(long offsetNanos, Object[] parents) {
+		this(1.0, offsetNanos, parents);
 	}
 	
 	/**
 	 * Timer with variable speed starting at a point in time
 	 */
-	public BarrierTimerWithTimeControl(double speedNanos, long offsetNanos) {
+	public BarrierTimerWithTimeControl(double speedNanos, long offsetNanos, Object[] parents) {
+		super(parents);
 		this.speedNanos = speedNanos;
 		this.offsetNanos = offsetNanos;
 	}
@@ -33,12 +34,12 @@ public class BarrierTimerWithTimeControl extends BarrierTimer {
 	//override
 	@Override
 	public long timeFunction(long input) {
-		return (long) (input / speedNanos) - (System.nanoTime() + offsetNanos);
+		return (long) (input / speedNanos) - offsetNanos;
 	}
 	
 	@Override
 	public long currTime() {
-		return (long) ((System.nanoTime() + offsetNanos) / speedNanos);
+		return (long) ((System.nanoTime() + offsetNanos) * speedNanos);
 	}
 	
 	@Override
@@ -61,14 +62,22 @@ public class BarrierTimerWithTimeControl extends BarrierTimer {
 	}
 	
 	//offset
-	public void warpTo(long offsetNanos) {
+	public void warpTo(long offsetTime) {
+		warpToNanos(timeFunction(offsetTime));
+	}
+	
+	public void warpToNanos(long offsetNanos) {
 		if (offsetNanos < this.offsetNanos)
 			throw new IllegalStateException("warping to the past!");
 		this.offsetNanos = offsetNanos;
 		recalculateTimer();
 	}
 	
-	public void warpBy(long deltaNanos) {
-		warpTo(offsetNanos + deltaNanos);
+	public void warpBy(long deltaTime) {
+		warpToNanos(timeFunction(deltaTime) + offsetNanos);
+	}
+	
+	public void warpByNanos(long deltaNanos) {
+		warpToNanos(deltaNanos + offsetNanos);
 	}
 }

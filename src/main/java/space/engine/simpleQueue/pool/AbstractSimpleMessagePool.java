@@ -7,6 +7,7 @@ import space.engine.simpleQueue.SimpleQueue;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -25,10 +26,14 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 	private final BarrierImpl stopBarrier;
 	
 	public AbstractSimpleMessagePool(int threadCnt, @NotNull SimpleQueue<MSG> queue) {
-		this(threadCnt, queue, Executors.defaultThreadFactory());
+		this(threadCnt, queue, Executors.defaultThreadFactory(), true);
 	}
 	
 	public AbstractSimpleMessagePool(int threadCnt, @NotNull SimpleQueue<MSG> queue, ThreadFactory threadFactory) {
+		this(threadCnt, queue, threadFactory, true);
+	}
+	
+	protected AbstractSimpleMessagePool(int threadCnt, @NotNull SimpleQueue<MSG> queue, ThreadFactory threadFactory, boolean callinit) {
 		this.queue = queue;
 		this.exitCountdown = new AtomicInteger(threadCnt);
 		this.stopBarrier = new BarrierImpl();
@@ -65,8 +70,14 @@ public abstract class AbstractSimpleMessagePool<MSG> {
 		
 		this.threads = IntStream.range(0, threadCnt)
 								.mapToObj(i -> threadFactory.newThread(poolMain))
-								.peek(Thread::start)
 								.toArray(Thread[]::new);
+		
+		if (callinit)
+			init();
+	}
+	
+	public void init() {
+		Arrays.stream(threads).forEach(Thread::start);
 	}
 	
 	//handle

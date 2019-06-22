@@ -1,14 +1,10 @@
 package space.engine.vulkan.surface;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.vulkan.VkImageSubresourceRange;
-import org.lwjgl.vulkan.VkImageViewCreateInfo;
-import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
 import space.engine.buffer.array.ArrayBufferPointer;
 import space.engine.buffer.pointer.PointerBufferInt;
-import space.engine.buffer.pointer.PointerBufferPointer;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.freeableStorage.FreeableStorage;
@@ -24,34 +20,28 @@ import java.util.function.BiFunction;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.freeableStorage.Freeable.addIfNotContained;
-import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 	
-	//alloc
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> alloc(VkSwapchainCreateInfoKHR info, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, @NotNull Object[] parents) {
-		try (AllocatorFrame frame = Allocator.frame()) {
-			PointerBufferPointer swapChainPtr = PointerBufferPointer.malloc(frame);
-			assertVk(nvkCreateSwapchainKHR(device, info.address(), 0, swapChainPtr.address()));
-			return create(swapChainPtr.getPointer(), device, surface, info.imageFormat(), parents);
-		}
-	}
-	
 	//create
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> create(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull Object[] parents) {
-		return new VkSwapchain<>(address, device, surface, imageFormat, Storage::new, parents);
+	public static <WINDOW extends Window> VkSwapchain<WINDOW> create(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, int width, int height, int layers, @NotNull Object[] parents) {
+		return new VkSwapchain<>(address, device, surface, imageFormat, width, height, layers, Storage::new, parents);
 	}
 	
-	public static <WINDOW extends Window> VkSwapchain<WINDOW> wrap(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull Object[] parents) {
-		return new VkSwapchain<>(address, device, surface, imageFormat, Freeable::createDummy, parents);
+	public static <WINDOW extends Window> VkSwapchain<WINDOW> wrap(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, int width, int height, int layers, @NotNull Object[] parents) {
+		return new VkSwapchain<>(address, device, surface, imageFormat, width, height, layers, Freeable::createDummy, parents);
 	}
 	
 	//const
-	public VkSwapchain(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, @NotNull BiFunction<VkSwapchain, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+	public VkSwapchain(long address, @NotNull VkDevice device, @NotNull VkSurface<WINDOW> surface, int imageFormat, int width, int height, int layers, @NotNull BiFunction<VkSwapchain, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 		this.device = device;
 		this.surface = surface;
 		this.address = address;
+		this.imageFormat = imageFormat;
+		this.width = width;
+		this.height = height;
+		this.layers = layers;
 		this.storage = storageCreator.apply(this, addIfNotContained(parents, device));
 		
 		//images
@@ -66,23 +56,14 @@ public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 				Freeable.freeObject(imagesBuffer);
 			}
 			
-			this.images = imagesBuffer.stream().mapToObj(ptr -> VkImage.wrap(ptr, device, new Object[] {this})).toArray(VkImage[]::new);
+			this.images = imagesBuffer.stream().mapToObj(ptr -> VkImage.wrap(ptr, VK_IMAGE_TYPE_2D, imageFormat, width, height, 1, 1, layers, 1, VK_IMAGE_TILING_LINEAR, device, new Object[] {this})).toArray(VkImage[]::new);
 			this.imageViews = Arrays.stream(images).map(image -> VkImageView.alloc(
-					mallocStruct(frame, VkImageViewCreateInfo::create, VkImageViewCreateInfo.SIZEOF).set(
-							VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-							0,
-							0,
-							image.address(),
-							VK_IMAGE_VIEW_TYPE_2D,
-							imageFormat,
-							VkImageView.SWIZZLE_MASK_IDENTITY,
-							mallocStruct(frame, VkImageSubresourceRange::create, VkImageSubresourceRange.SIZEOF).set(
-									VK_IMAGE_ASPECT_COLOR_BIT,
-									0, 1,
-									0, 1
-							)
-					),
 					image,
+					0,
+					VK_IMAGE_VIEW_TYPE_2D,
+					VK_IMAGE_ASPECT_COLOR_BIT,
+					0, 1,
+					0, 1,
 					new Object[] {this}
 			)).toArray(VkImageView[]::new);
 		}
@@ -131,6 +112,25 @@ public class VkSwapchain<WINDOW extends Window> implements FreeableWrapper {
 			nvkDestroySwapchainKHR(device, address, 0);
 			return Barrier.ALWAYS_TRIGGERED_BARRIER;
 		}
+	}
+	
+	//parameters
+	private final int imageFormat, width, height, layers;
+	
+	public int imageFormat() {
+		return imageFormat;
+	}
+	
+	public int width() {
+		return width;
+	}
+	
+	public int height() {
+		return height;
+	}
+	
+	public int layers() {
+		return layers;
 	}
 	
 	//images
