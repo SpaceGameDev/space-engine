@@ -2,7 +2,6 @@ package space.engine.logger.prefix;
 
 import space.engine.logger.LogMessage;
 import space.engine.logger.Logger;
-import space.engine.string.builder.CharBufferBuilder1DBackwards;
 
 public class SubLoggerPrefix extends AbstractPrefix {
 	
@@ -19,13 +18,13 @@ public class SubLoggerPrefix extends AbstractPrefix {
 		if (logger == null)
 			return;
 		
-		CharBufferBuilder1DBackwards<?> b = new CharBufferBuilder1DBackwards<>();
+		StringBuilder b = new StringBuilder();
 		while (true) {
 			String name = logger.name();
 			logger = logger.parentLogger();
 			if (logger == null)
 				break;
-			b.append(endChar).append(name).append(startChar);
+			b.insert(0, endChar).insert(0, name).insert(0, startChar);
 		}
 		logMessage.prefix.append(b);
 	}

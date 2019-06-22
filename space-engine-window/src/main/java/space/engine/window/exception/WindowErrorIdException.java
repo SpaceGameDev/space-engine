@@ -2,7 +2,6 @@ package space.engine.window.exception;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.engine.string.builder.CharBufferBuilder1D;
 
 public class WindowErrorIdException extends WindowException {
 	
@@ -25,7 +24,7 @@ public class WindowErrorIdException extends WindowException {
 	
 	@NotNull
 	private static String generateMessage(int errorId, @Nullable String errorName, @Nullable String desc) {
-		CharBufferBuilder1D b = new CharBufferBuilder1D<>();
+		StringBuilder b = new StringBuilder();
 		b.append(errorName != null ? errorName : UNKNOWN_ERROR_ID);
 		b.append("[0x").append(Integer.toHexString(errorId)).append(']');
 		if (desc != null)

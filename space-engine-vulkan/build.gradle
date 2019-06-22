@@ -5,11 +5,7 @@ plugins {
 
 dependencies {
     api parent
-    api parent.project(':space-engine-lwjgl')
-    api parent.project(':space-engine-window')
-
-    api "org.lwjgl:lwjgl-vulkan:$parent.lwjglVersion"
-//    implementation "org.lwjgl:lwjgl-vulkan:$parent.lwjglVersion:natives-XXX" //there is no native version
+    api parent.project(':space-engine-vulkan-objects')
     
     testImplementation 'junit:junit:4.12'
 }

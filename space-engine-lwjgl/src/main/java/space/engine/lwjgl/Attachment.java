@@ -5,9 +5,10 @@ import org.lwjgl.system.CustomBuffer;
 import org.lwjgl.system.Struct;
 import space.engine.event.EventEntry;
 import space.engine.freeableStorage.Freeable;
-import space.engine.sync.Tasks.FunctionWithDelay;
 import space.engine.unsafe.UnsafeInstance;
 import sun.misc.Unsafe;
+
+import java.util.function.Function;
 
 import static space.engine.freeableStorage.Freeable.GET_SUBLIST_EVENT;
 
@@ -18,8 +19,8 @@ class Attachment {
 	private static final long OFFSET_STRUCT_CONTAINER;
 	private static final long OFFSET_CUSTOM_BUFFER_CONTAINER;
 	
-	public static final EventEntry<FunctionWithDelay<Object, Freeable>> FUNCTION_LWJGL_STRUCT;
-	public static final EventEntry<FunctionWithDelay<Object, Freeable>> FUNCTION_LWJGL_CUSTOM_BUFFER;
+	public static final EventEntry<Function<Object, Freeable>> FUNCTION_LWJGL_STRUCT;
+	public static final EventEntry<Function<Object, Freeable>> FUNCTION_LWJGL_CUSTOM_BUFFER;
 	
 	static {
 		try {

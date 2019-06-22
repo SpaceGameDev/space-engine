@@ -17,6 +17,48 @@ public interface Future<R> extends BaseFuture<R>, Barrier {
 	
 	R awaitGet(long time, TimeUnit unit) throws InterruptedException, TimeoutException;
 	
+	/**
+	 * Waits until event is triggered and doesn't return when interrupted.
+	 * The interrupt status of this {@link Thread} will be restored.
+	 */
+	default R awaitGetUninterrupted() {
+		boolean interrupted = false;
+		try {
+			while (true) {
+				try {
+					return awaitGet();
+				} catch (InterruptedException e) {
+					interrupted = true;
+				}
+			}
+		} finally {
+			if (interrupted)
+				Thread.currentThread().interrupt();
+		}
+	}
+	
+	/**
+	 * Waits until event is triggered with a timeout and doesn't return when interrupted.
+	 * The interrupt status of this {@link Thread} will be restored.
+	 *
+	 * @throws TimeoutException thrown if waiting takes longer than the specified timeout
+	 */
+	default R awaitGetUninterrupted(long time, TimeUnit unit) throws TimeoutException {
+		boolean interrupted = false;
+		try {
+			while (true) {
+				try {
+					return awaitGet(time, unit);
+				} catch (InterruptedException e) {
+					interrupted = true;
+				}
+			}
+		} finally {
+			if (interrupted)
+				Thread.currentThread().interrupt();
+		}
+	}
+	
 	R assertGet() throws FutureNotFinishedException;
 	
 	//anyException
@@ -33,6 +75,14 @@ public interface Future<R> extends BaseFuture<R>, Barrier {
 	@Override
 	default R assertGetAnyException() {
 		return assertGet();
+	}
+	
+	//default
+	@Override
+	default Future<R> dereference() {
+		CompletableFuture<R> future = new CompletableFuture<>();
+		this.addHook(() -> future.complete(this.assertGet()));
+		return future;
 	}
 	
 	//static

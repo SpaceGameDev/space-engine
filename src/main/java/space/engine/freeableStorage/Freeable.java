@@ -8,10 +8,10 @@ import space.engine.event.typehandler.TypeHandlerFirstFunction;
 import space.engine.freeableStorage.stack.FreeableStack;
 import space.engine.freeableStorage.stack.FreeableStack.Frame;
 import space.engine.freeableStorage.stack.FreeableStackImpl;
-import space.engine.sync.Tasks.FunctionWithDelay;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
@@ -44,7 +44,7 @@ import java.util.stream.Stream.Builder;
 public interface Freeable {
 	
 	FreeableList ROOT_LIST = new FreeableList();
-	SequentialEventBuilder<FunctionWithDelay<Object, Freeable>> GET_SUBLIST_EVENT = new SequentialEventBuilder<>();
+	SequentialEventBuilder<Function<Object, Freeable>> GET_SUBLIST_EVENT = new SequentialEventBuilder<>();
 	
 	/**
 	 * Frees the resource
@@ -89,7 +89,7 @@ public interface Freeable {
 			return (Freeable) object;
 		
 		TypeHandlerFirstFunction<Object, Freeable> handler = new TypeHandlerFirstFunction<>(object);
-		GET_SUBLIST_EVENT.runImmediately(handler);
+		GET_SUBLIST_EVENT.runImmediatelyThrowIfWait(handler);
 		Freeable result = handler.result();
 		if (result != null)
 			return result;

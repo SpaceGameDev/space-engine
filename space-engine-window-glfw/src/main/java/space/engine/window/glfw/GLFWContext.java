@@ -18,6 +18,7 @@ import space.engine.window.InputDevice.KeyInputDevice.CharacterInputEvent;
 import space.engine.window.InputDevice.KeyInputDevice.KeyInputEvent;
 import space.engine.window.InputDevice.Keyboard;
 import space.engine.window.InputDevice.Mouse;
+import space.engine.window.InputDevice.PointerInputDevice.MouseMovementEvent;
 import space.engine.window.Window;
 import space.engine.window.WindowContext;
 import space.engine.window.WindowThread;
@@ -79,8 +80,10 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 	private final @NotNull Event<KeyInputEvent> eventKeyInputKeyboard = new SequentialEventBuilder<>();
 	private final @NotNull Event<CharacterInputEvent> eventCharacterInputKeyboard = new SequentialEventBuilder<>();
 	private final @NotNull Event<KeyInputEvent> eventKeyInputMouse = new SequentialEventBuilder<>();
+	private final @NotNull Event<MouseMovementEvent> eventMouseMovement = new SequentialEventBuilder<>();
 	private final @NotNull Set<Integer> pressedKeysKeyboard = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
 	private final @NotNull Set<Integer> pressedKeysMouse = new ConcurrentHashMap<Integer, Boolean>().keySet(Boolean.TRUE);
+	private @Nullable double[] mousePosition = null;
 	
 	private final @NotNull ObservableCollection<InputDevice> inputDevices = new ObservableCollection<>(List.of(new Keyboard() {
 		@Override
@@ -134,11 +137,13 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 		}
 		
 		@Override
-		public double[] getPosition() {
-			double[] x = new double[1];
-			double[] y = new double[1];
-			glfwGetCursorPos(getWindowPointer(), x, y);
-			return new double[] {x[0], y[0]};
+		public @Nullable double[] getCursorPosition() {
+			return mousePosition;
+		}
+		
+		@Override
+		public Event<@WindowThread MouseMovementEvent> getMouseMovementEvent() {
+			return eventMouseMovement;
 		}
 	}));
 	
@@ -169,6 +174,16 @@ public class GLFWContext implements WindowContext, FreeableWrapper {
 		}
 		
 		eventKeyInputMouse.submit((TypeHandlerParallel<KeyInputEvent>) callback -> callback.onKeyInput(key, pressed));
+	}
+	
+	public void triggerMouseMovement(double[] absolute) {
+		double[] relative = new double[2];
+		if (mousePosition != null) {
+			relative[0] = absolute[0] - mousePosition[0];
+			relative[1] = absolute[1] - mousePosition[1];
+		}
+		mousePosition = absolute;
+		eventMouseMovement.submit((TypeHandlerParallel<MouseMovementEvent>) callback -> callback.onMouseMovement(absolute, relative));
 	}
 	
 	//windowThread init

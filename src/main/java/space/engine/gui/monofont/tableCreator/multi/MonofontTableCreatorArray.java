@@ -6,7 +6,7 @@ import space.engine.indexmap.multi.IndexMultiMap;
 import space.engine.indexmap.multi.IndexMultiMap.IndexMultiMapEntry;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 import static space.engine.ArrayUtils.getSafeO;
 
@@ -44,7 +44,7 @@ public class MonofontTableCreatorArray implements MonofontTableCreator {
 				axis.put(new int[] {getSafeO(elem.getIndex(), 0, 0), getSafeO(elem.getIndex(), 1, 0)}, new int[] {elem.getValue().height(), elem.getValue().maxLength()});
 		
 		//buffer building content
-		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
+		StringBuilder2D buffer = new StringBuilder2D().setNoFillMissingSpaces();
 		buffer.startEdit();
 		for (IndexMultiMapEntry<CharSequence2D> elem : valueTable.table()) {
 			int indexy = getSafeO(elem.getIndex(), 0, 0);

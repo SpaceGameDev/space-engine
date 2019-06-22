@@ -6,7 +6,7 @@ import space.engine.indexmap.axis.IndexAxisMapInt;
 import space.engine.math.MathUtils;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 import space.engine.string.toStringHelper.AbstractToStringHelperObjectsInstance;
 import space.engine.string.toStringHelper.AbstractToStringHelperObjectsInstance.Entry;
 
@@ -55,7 +55,7 @@ public class MonofontTSHObjectsCreatorImpl implements MonofontTSHObjectsCreator 
 		int valueEnd = MathUtils.max(axis.getIndex(1, 2) + separatorLength + 1, className.length() + 1);
 		
 		//buffer creation
-		CharBufferBuilder2D<?> buffer = new CharBufferBuilder2D<>().setNoFillMissingSpaces();
+		StringBuilder2D buffer = new StringBuilder2D().setNoFillMissingSpaces();
 		buffer.startEdit();
 		
 		//class name
@@ -95,7 +95,7 @@ public class MonofontTSHObjectsCreatorImpl implements MonofontTSHObjectsCreator 
 	}
 	
 	@SuppressWarnings("SameParameterValue")
-	protected static void fillDown(CharBufferBuilder2D<?> buffer, int x, int fromy, int toy, char c) {
+	protected static void fillDown(StringBuilder2D buffer, int x, int fromy, int toy, char c) {
 		for (int y = fromy; y < toy; y++) {
 			buffer.setY(y);
 			buffer.setX(x);

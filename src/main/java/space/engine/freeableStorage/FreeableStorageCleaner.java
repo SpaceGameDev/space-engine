@@ -6,8 +6,10 @@ import space.engine.event.EventEntry;
 import space.engine.logger.LogLevel;
 import space.engine.logger.Logger;
 import space.engine.logger.NullLogger;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
+import space.engine.sync.DelayTask;
 import space.engine.sync.Tasks.RunnableWithDelay;
+import space.engine.sync.barrier.BarrierImpl;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -51,30 +53,35 @@ public final class FreeableStorageCleaner {
 		startCleanupThread();
 		
 		Side.EVENT_EXIT.addHook(EXIT_EVENT_ENTRY_FREEABLE_ROOT_LIST_FREE = new EventEntry<>(() -> {
-			Logger logger = cleanupLogger.subLogger("final");
-			logger.log(INFO, "Final cleanup...");
-			logger.log(INFO, "1. Stopping cleanup thread");
-			try {
-				stopAndJoinCleanupThread();
-			} catch (InterruptedException ignore) {
-			
-			}
-			
-			logger.log(INFO, "2. ROOT_LIST free");
-			Freeable.ROOT_LIST.free().awaitUninterrupted();
-			
-			logger.log(INFO, "3. gc free");
-			System.gc();
-			System.runFinalization();
-			while (true) {
+			BarrierImpl finishBarrier = new BarrierImpl();
+			new Thread(() -> {
+				Logger logger = cleanupLogger.subLogger("final");
+				logger.log(INFO, "Final cleanup...");
+				logger.log(INFO, "1. Stopping cleanup thread");
 				try {
-					handle(100);
-					break;
-				} catch (InterruptedException ignored) {
+					stopAndJoinCleanupThread();
+				} catch (InterruptedException ignore) {
+				
 				}
-			}
-			
-			logger.log(INFO, "Final cleanup complete!");
+				
+				logger.log(INFO, "2. ROOT_LIST free");
+				Freeable.ROOT_LIST.free().awaitUninterrupted();
+				
+				logger.log(INFO, "3. gc free");
+				System.gc();
+				System.runFinalization();
+				while (true) {
+					try {
+						handle(100);
+						break;
+					} catch (InterruptedException ignored) {
+					}
+				}
+				
+				logger.log(INFO, "Final cleanup complete!");
+				finishBarrier.triggerNow();
+			}, "FreeableStorageCleaner-Final").start();
+			throw new DelayTask(finishBarrier);
 		}, new EventEntry<?>[] {Side.EXIT_EVENT_ENTRY_POOL_EXIT}, new EventEntry<?>[] {Side.EXIT_EVENT_ENTRY_BEFORE_APPLICATION_SHUTDOWN}));
 	}
 	
@@ -118,7 +125,7 @@ public final class FreeableStorageCleaner {
 		}
 		
 		//log object count
-		cleanupLogger.log(INFO, new CharBufferBuilder2D<>().append("Cleaning up ").append(count).append(" Objects via GC").toString());
+		cleanupLogger.log(INFO, new StringBuilder2D().append("Cleaning up ").append(count).append(" Objects via GC").toString());
 	}
 	
 	private static void handle(Reference<?> ref) {

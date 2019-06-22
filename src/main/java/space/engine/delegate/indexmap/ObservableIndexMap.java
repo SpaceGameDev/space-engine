@@ -6,8 +6,11 @@ import space.engine.event.Event;
 import space.engine.event.EventEntry;
 import space.engine.event.SequentialEventBuilder;
 import space.engine.indexmap.IndexMap;
+import space.engine.sync.barrier.Barrier;
+import space.engine.sync.barrier.BarrierImpl;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -17,12 +20,13 @@ import java.util.stream.IntStream.Builder;
  * An {@link ObservableIndexMap} allows you to be notified when index got changed form the {@link IndexMap}.
  * Add a Callback to the {@link #getChangeEvent()} to get notified with a {@link Change} happening to this {@link IndexMap}.
  * <p>
- * The implementation is threadsafe if the {@link #delegate} {@link IndexMap} given to the constructor is threadsafe.
+ * The implementation is threadsafe if the {@link #delegate} {@link IndexMap} given to the constructor is threadsafe. It also guarantees that Event callbacks are called in order.
  */
 public class ObservableIndexMap<VALUE> implements IndexMap<VALUE> {
 	
 	private final IndexMap<VALUE> delegate;
-	private final Event<Consumer<Change<VALUE>>> changeEvent = new SequentialEventBuilder<>();
+	private final SequentialEventBuilder<Consumer<Change<VALUE>>> changeEvent = new SequentialEventBuilder<>();
+	private AtomicReference<Barrier> lastBarrier = new AtomicReference<>(Barrier.ALWAYS_TRIGGERED_BARRIER);
 	
 	public ObservableIndexMap(IndexMap<VALUE> delegate) {
 		this.delegate = delegate;
@@ -332,7 +336,10 @@ public class ObservableIndexMap<VALUE> implements IndexMap<VALUE> {
 				return indexes;
 			}
 		};
-		changeEvent.submit(changeConsumer -> changeConsumer.accept(change));
+		
+		BarrierImpl newBarrier = new BarrierImpl();
+		Barrier prevBarrier = lastBarrier.getAndSet(newBarrier);
+		changeEvent.runImmediatelyIfPossible(changeConsumer -> changeConsumer.accept(change), prevBarrier).addHook(newBarrier::triggerNow);
 	}
 	
 	public interface Change<E> {

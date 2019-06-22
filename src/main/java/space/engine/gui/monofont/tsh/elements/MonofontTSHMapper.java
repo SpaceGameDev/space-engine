@@ -13,7 +13,7 @@ import space.engine.indexmap.IndexMapArray;
 import space.engine.indexmap.multi.IndexMultiMap;
 import space.engine.indexmap.multi.IndexMultiMap2D;
 import space.engine.string.CharSequence2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiToStringHelperMapper {
 	
@@ -73,7 +73,7 @@ public class MonofontTSHMapper extends MonofontGuiElementCaching implements GuiT
 				charTable.put(new int[] {index, 1}, separator);
 				charTable.put(new int[] {index, 2}, value.value.buildSequence2D());
 			} else {
-				charTable.put(new int[] {index, 0}, new CharBufferBuilder2D<>().append(value.key.buildSequence2D()).append(separator));
+				charTable.put(new int[] {index, 0}, new StringBuilder2D().append(value.key.buildSequence2D()).append(separator));
 				charTable.put(new int[] {index, 1}, value.value.buildSequence2D());
 			}
 		}

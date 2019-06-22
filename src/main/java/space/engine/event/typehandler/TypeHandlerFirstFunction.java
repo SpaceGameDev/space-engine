@@ -1,8 +1,6 @@
 package space.engine.event.typehandler;
 
 import org.jetbrains.annotations.NotNull;
-import space.engine.sync.DelayTask;
-import space.engine.sync.Tasks.FunctionWithDelay;
 
 import java.util.function.Function;
 
@@ -10,7 +8,7 @@ import java.util.function.Function;
  * The {@link #result()} will be the first {@link Function} returning something != null.
  * Sequential only.
  */
-public class TypeHandlerFirstFunction<T, R> implements TypeHandler<FunctionWithDelay<T, R>> {
+public class TypeHandlerFirstFunction<T, R> implements TypeHandler<Function<T, R>> {
 	
 	private final T input;
 	private R result;
@@ -20,7 +18,7 @@ public class TypeHandlerFirstFunction<T, R> implements TypeHandler<FunctionWithD
 	}
 	
 	@Override
-	public void accept(@NotNull FunctionWithDelay<T, R> task) throws DelayTask {
+	public void accept(@NotNull Function<T, R> task) {
 		if (result == null)
 			result = task.apply(input);
 	}

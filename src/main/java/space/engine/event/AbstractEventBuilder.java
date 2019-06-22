@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>, Cache {
 	
-	protected Set<EventEntry<FUNCTION>> list = new ModificationAwareSet<>(new HashSet<>(), this::clearCache);
+	protected Set<EventEntry<? extends FUNCTION>> list = new ModificationAwareSet<>(new HashSet<>(), this::clearCache);
 	
 	//hooks
 	@Override
-	public synchronized void addHook(@NotNull EventEntry<FUNCTION> task) {
+	public synchronized void addHook(@NotNull EventEntry<? extends FUNCTION> task) {
 		list.add(task);
 	}
 	
@@ -47,7 +47,7 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 		
 		//adding Dependencies
 		allNodes.values().forEach(node -> {
-			EventEntry<FUNCTION> entry = node.entry;
+			EventEntry<? extends FUNCTION> entry = node.entry;
 			for (EventEntry<?> require : entry.requires) {
 				Node other = allNodes.get(require);
 				if (other != null)
@@ -102,11 +102,11 @@ public abstract class AbstractEventBuilder<FUNCTION> implements Event<FUNCTION>,
 	 */
 	protected class Node implements ToString {
 		
-		public final EventEntry<FUNCTION> entry;
+		public final EventEntry<? extends FUNCTION> entry;
 		public final List<Node> next = new ArrayList<>(1);
 		public final List<Node> prev = new ArrayList<>(1);
 		
-		public Node(EventEntry<FUNCTION> entry) {
+		public Node(EventEntry<? extends FUNCTION> entry) {
 			this.entry = entry;
 		}
 		

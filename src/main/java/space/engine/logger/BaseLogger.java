@@ -13,7 +13,7 @@ import space.engine.logger.printer.SeparatedPrinter;
 import space.engine.logger.printer.SimpleStringPrinter;
 import space.engine.string.CharSequence2D;
 import space.engine.string.String2D;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 import java.text.SimpleDateFormat;
 import java.util.function.BiConsumer;
@@ -62,9 +62,9 @@ public class BaseLogger extends AbstractLogger {
 	//log
 	@Override
 	public void logDirect0(LogMessage msg) {
-		handler.runImmediately(consumer -> consumer.accept(msg));
-		String2D str = new CharBufferBuilder2D<>().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
-		printer.runImmediately(new TypeBiConsumer<>(msg, str));
+		handler.runImmediatelyThrowIfWait(consumer -> consumer.accept(msg));
+		String2D str = new StringBuilder2D().append(msg.prefix).append(prefixMessageSeparator).append(msg.msg).toString2D();
+		printer.runImmediatelyThrowIfWait(new TypeBiConsumer<>(msg, str));
 	}
 	
 	//utility

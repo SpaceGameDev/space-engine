@@ -10,7 +10,7 @@ import space.engine.gui.elements.text.GuiText1DCreator;
 import space.engine.gui.elements.text.GuiText2DCreator;
 import space.engine.gui.monofont.MonofontGuiApi;
 import space.engine.gui.monofont.MonofontGuiElement;
-import space.engine.string.builder.CharBufferBuilder2D;
+import space.engine.string.StringBuilder2D;
 
 public class GuiTestManual {
 	
@@ -24,7 +24,7 @@ public class GuiTestManual {
 		
 		GuiRow row = api.get(GuiRowCreator.class).create();
 		row.put(0,
-				api.get(GuiText2DCreator.class).create(new CharBufferBuilder2D<>().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append(
+				api.get(GuiText2DCreator.class).create(new StringBuilder2D().append("First!").nextLine().append("Secound").nextLine().append("Third.").nextLine().append("Forth").nextLine().append(
 						"Last...").nextLine().append("...").nextLine().append(".").nextLine().append("I really don't").nextLine().append("know where I'm").nextLine().append("going with this :)")));
 		
 		GuiColumn column = api.get(GuiColumnCreator.class).create();

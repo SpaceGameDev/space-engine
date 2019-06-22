@@ -1,7 +1,9 @@
 package space.engine.sync;
 
+import space.engine.baseobject.CanceledCheck;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
+import space.engine.sync.barrier.CancelableBarrier;
 import space.engine.sync.future.Future;
 import space.engine.sync.future.FutureWithException;
 import space.engine.sync.future.FutureWithException.FutureWith2Exception;
@@ -16,6 +18,7 @@ import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith3Excepti
 import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith4Exception;
 import space.engine.sync.taskImpl.FutureTaskWithException.FutureTaskWith5Exception;
 import space.engine.sync.taskImpl.MultiTask;
+import space.engine.sync.taskImpl.RunnableCancelableTask;
 import space.engine.sync.taskImpl.RunnableTask;
 
 import java.util.Collection;
@@ -414,5 +417,86 @@ public class Tasks {
 	public interface FunctionWithDelay<T, R> {
 		
 		R apply(T t) throws DelayTask;
+	}
+	
+	//RunnableCancelable using explicit cancel handling
+	@FunctionalInterface
+	public interface RunnableCancelableWithDelay {
+		
+		void run(CanceledCheck cancelCheck) throws DelayTask;
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(RunnableCancelableWithDelay run) {
+		return runnableCancelable(pool(), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(Barrier[] staticBarriers, RunnableCancelableWithDelay run) {
+		return runnableCancelable(pool(), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableCancelableWithDelay run) {
+		return runnableCancelable(pool(), staticLocks, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(Executor exec, Barrier[] staticBarriers, RunnableCancelableWithDelay run) {
+		return runnableCancelable(exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(Executor exec, RunnableCancelableWithDelay run) {
+		return runnableCancelable(exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelable(Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableCancelableWithDelay run) {
+		return (locks, barriers) -> new RunnableCancelableTask(mergeIfNeeded(SyncLock[]::new, staticLocks, locks), mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				exec.execute(toRun);
+			}
+			
+			@Override
+			protected void execute() throws DelayTask {
+				run.run(this);
+			}
+		};
+	}
+	
+	//RunnableCancelableAutomatic using noop cancel handling
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(RunnableWithDelay run) {
+		return runnableCancelableAutomatic(pool(), EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(Barrier[] staticBarriers, RunnableWithDelay run) {
+		return runnableCancelableAutomatic(pool(), EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableWithDelay run) {
+		return runnableCancelableAutomatic(pool(), staticLocks, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(Executor exec, Barrier[] staticBarriers, RunnableWithDelay run) {
+		return runnableCancelableAutomatic(exec, EMPTY_SYNCLOCK_ARRAY, staticBarriers, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(Executor exec, RunnableWithDelay run) {
+		return runnableCancelableAutomatic(exec, EMPTY_SYNCLOCK_ARRAY, EMPTY_BARRIER_ARRAY, run);
+	}
+	
+	public static TaskCreator<? extends CancelableBarrier> runnableCancelableAutomatic(Executor exec, SyncLock[] staticLocks, Barrier[] staticBarriers, RunnableWithDelay run) {
+		return (locks, barriers) -> new RunnableCancelableTask(mergeIfNeeded(SyncLock[]::new, staticLocks, locks), mergeIfNeeded(Barrier[]::new, staticBarriers, barriers)) {
+			@Override
+			protected synchronized void submit1(Runnable toRun) {
+				if (!isCanceled())
+					exec.execute(toRun);
+				else
+					//the Runnable must be called, but is it's canceled it won't do anything and we save the overhead of submitting it into a queue
+					toRun.run();
+			}
+			
+			@Override
+			protected void execute() throws DelayTask {
+				if (!isCanceled())
+					run.run();
+			}
+		};
 	}
 }

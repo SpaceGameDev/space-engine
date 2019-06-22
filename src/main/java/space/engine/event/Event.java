@@ -21,7 +21,7 @@ public interface Event<FUNCTION> {
 	 *
 	 * @param hook the hook to add
 	 */
-	void addHook(@NotNull EventEntry<FUNCTION> hook);
+	void addHook(@NotNull EventEntry<? extends FUNCTION> hook);
 	
 	/**
 	 * creates a {@link EventEntry} and adds it as a hook.
@@ -94,7 +94,7 @@ public interface Event<FUNCTION> {
 	static <FUNCTION> Event<FUNCTION> voidEvent() {
 		return new Event<>() {
 			@Override
-			public void addHook(@NotNull EventEntry<FUNCTION> hook) {
+			public void addHook(@NotNull EventEntry<? extends FUNCTION> hook) {
 			
 			}
 			

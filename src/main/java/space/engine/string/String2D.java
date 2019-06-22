@@ -88,4 +88,12 @@ public class String2D implements CharSequence2D {
 	public String toString() {
 		return toString0();
 	}
+	
+	//modification
+	public String2D concat(String2D append) {
+		char[][] b = new char[this.buffer.length + append.buffer.length][];
+		System.arraycopy(this.buffer, 0, b, 0, this.buffer.length);
+		System.arraycopy(append.buffer, 0, b, this.buffer.length, append.buffer.length);
+		return new String2D(b);
+	}
 }
