@@ -27,7 +27,7 @@ public class BarrierImpl implements Barrier {
 		}
 	}
 	
-	public volatile @Nullable List<Runnable> hookList;
+	private volatile @Nullable List<Runnable> hookList;
 	
 	public BarrierImpl() {
 		this(false);

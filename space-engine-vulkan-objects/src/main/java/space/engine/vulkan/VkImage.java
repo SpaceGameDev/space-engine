@@ -3,12 +3,11 @@ package space.engine.vulkan;
 import org.jetbrains.annotations.NotNull;
 import space.engine.buffer.Buffer;
 import space.engine.freeableStorage.Freeable;
-import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.sync.barrier.Barrier;
 
 import java.util.function.BiFunction;
 
-public interface VkImage extends FreeableWrapper {
+public interface VkImage extends Freeable {
 	
 	//wrap
 	static @NotNull VkImage wrap(long address, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull VkDevice device, @NotNull Object[] parents) {
@@ -16,7 +15,7 @@ public interface VkImage extends FreeableWrapper {
 	}
 	
 	//parents
-	VkDevice device();
+	@NotNull VkDevice device();
 	
 	//address
 	long address();
@@ -39,12 +38,12 @@ public interface VkImage extends FreeableWrapper {
 	
 	int tiling();
 	
-	Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount);
+	@NotNull Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount);
 	
-	class Default implements VkImage {
+	class Default implements VkImage, FreeableWrapper {
 		
 		//const
-		public Default(long address, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull VkDevice device, @NotNull BiFunction<Default, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+		public Default(long address, int imageType, int imageFormat, int width, int height, int depth, int mipLevels, int arrayLayers, int samples, int tiling, @NotNull VkDevice device, @NotNull BiFunction<? super Default, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
 			this.device = device;
 			this.address = address;
 			this.imageType = imageType;
@@ -62,7 +61,7 @@ public interface VkImage extends FreeableWrapper {
 		//parents
 		private final VkDevice device;
 		
-		public VkDevice device() {
+		public @NotNull VkDevice device() {
 			return device;
 		}
 		
@@ -129,7 +128,7 @@ public interface VkImage extends FreeableWrapper {
 		
 		//uploadData
 		@Override
-		public Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount) {
+		public @NotNull Barrier uploadData(@NotNull Buffer data, int bufferRowLength, int bufferImageHeight, int dstImageLayout, int aspectMask, int mipLevel, int baseArrayLayer, int layerCount) {
 			//we cannot resolve the memory (and offset) of a random buffer or image
 			throw new UnsupportedOperationException();
 		}

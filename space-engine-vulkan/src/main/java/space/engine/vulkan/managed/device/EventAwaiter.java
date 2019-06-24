@@ -8,7 +8,7 @@ import space.engine.buffer.array.ArrayBufferLong;
 import space.engine.freeableStorage.Freeable;
 import space.engine.freeableStorage.Freeable.FreeableWrapper;
 import space.engine.simpleQueue.SimpleQueue;
-import space.engine.simpleQueue.pool.AbstractSimpleMessagePool;
+import space.engine.simpleQueue.pool.SimpleMessagePool;
 import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 import space.engine.vulkan.VkFence;
@@ -16,14 +16,13 @@ import space.engine.vulkan.VkFence;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.LockSupport;
 
 import static org.lwjgl.vulkan.VK10.*;
 import static space.engine.vulkan.VkException.assertVk;
 
 public class EventAwaiter implements FreeableWrapper {
 	
-	public static final long TIMEOUT_NANOS = 100_000L;
+	public static final long TIMEOUT_NANOS = 20_000_000L;
 	
 	public static final ThreadFactory DEFAULT_THREAD_FACTORY = new ThreadFactory() {
 		private AtomicInteger COUNTER = new AtomicInteger();
@@ -43,20 +42,18 @@ public class EventAwaiter implements FreeableWrapper {
 		this.storage = Freeable.createDummy(this, parents);
 		
 		//pool
-		this.pool = new AbstractSimpleMessagePool<>(1, queue, threadFactory) {
+		this.pool = new SimpleMessagePool<>(1, queue, threadFactory) {
 			
 			private ArrayList<Entry> accumulator = new ArrayList<>();
 			
 			@Override
-			protected void handle(Entry vkDevice) {
-				accumulator.add(vkDevice);
+			protected void handle(Entry entry) {
+				accumulator.add(entry);
 			}
 			
 			@Override
-			protected void park() {
-				if (accumulator.size() == 0) {
-					LockSupport.parkNanos(TIMEOUT_NANOS);
-				} else {
+			protected boolean handleDone() {
+				if (accumulator.size() != 0) {
 					try (AllocatorFrame frame = Allocator.frame()) {
 						ArrayBufferLong fenceBuffer = ArrayBufferLong.alloc(frame, accumulator.stream().mapToLong(e -> e.fence.address()).toArray());
 						int result = assertVk(nvkWaitForFences(device, (int) fenceBuffer.length(), fenceBuffer.address(), VK_FALSE, TIMEOUT_NANOS));
@@ -70,13 +67,10 @@ public class EventAwaiter implements FreeableWrapper {
 								}
 							});
 						}
+						return accumulator.isEmpty();
 					}
 				}
-			}
-			
-			@Override
-			protected void unparkThreads() {
-				//noop
+				return true;
 			}
 		};
 		this.pool.createStopFreeable(new Object[] {this});
@@ -98,7 +92,7 @@ public class EventAwaiter implements FreeableWrapper {
 	}
 	
 	//pool
-	private final AbstractSimpleMessagePool<Entry> pool;
+	private final SimpleMessagePool<Entry> pool;
 	
 	public Barrier add(@NotNull VkFence fence, @Nullable Object container) {
 		Entry entry = new Entry(fence, container);

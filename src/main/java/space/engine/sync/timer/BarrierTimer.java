@@ -9,6 +9,7 @@ import space.engine.sync.barrier.Barrier;
 import space.engine.sync.barrier.BarrierImpl;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * A {@link BarrierTimer} allows you to {@link #create(long)} a Barrier triggering when this reached the supplied point in time.
@@ -32,6 +33,11 @@ public abstract class BarrierTimer implements FreeableWrapper {
 			@Override
 			public long currTime() {
 				return (long) ((System.nanoTime() + offsetNanos) * speedNanos);
+			}
+			
+			@Override
+			public double currTimeFraction() {
+				return (System.nanoTime() + offsetNanos) * speedNanos;
 			}
 			
 			@Override
@@ -67,11 +73,18 @@ public abstract class BarrierTimer implements FreeableWrapper {
 	public abstract long timeFunction(long input);
 	
 	/**
-	 * The current time this Timer has (in nanos)
+	 * The current time this Timer has
 	 *
-	 * @return the time (in nanos)
+	 * @return the time
 	 */
 	public abstract long currTime();
+	
+	/**
+	 * The current time this Timer has with fraction
+	 *
+	 * @return the time with fraction
+	 */
+	public abstract double currTimeFraction();
 	
 	/**
 	 * @return The current speed of the timer (as a multiplier, normal speed is 1.0)
@@ -219,11 +232,9 @@ public abstract class BarrierTimer implements FreeableWrapper {
 					}
 				}
 				
-				try {
-					Thread.sleep(Integer.MAX_VALUE);
-				} catch (InterruptedException ignored) {
-				
-				}
+				LockSupport.park();
+				//noinspection ResultOfMethodCallIgnored
+				Thread.interrupted();
 			}
 			threadExitBarrier.triggerNow();
 		}

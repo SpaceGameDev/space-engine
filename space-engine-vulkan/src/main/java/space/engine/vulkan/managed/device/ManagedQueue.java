@@ -2,7 +2,6 @@ package space.engine.vulkan.managed.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.vulkan.VkFenceCreateInfo;
 import org.lwjgl.vulkan.VkSubmitInfo;
 import space.engine.buffer.Allocator;
 import space.engine.buffer.AllocatorStack.AllocatorFrame;
@@ -37,11 +36,6 @@ import static space.engine.sync.barrier.Barrier.innerBarrier;
 public class ManagedQueue extends VkQueue {
 	
 	private static final AtomicInteger MANAGED_QUEUE_THREAD_COUNTER = new AtomicInteger();
-	private static final VkFenceCreateInfo VK_FENCE_CREATE_INFO = mallocStruct(Allocator.heap(), VkFenceCreateInfo::create, VkFenceCreateInfo.SIZEOF, new Object[] {ROOT_LIST}).set(
-			VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-			0,
-			0
-	);
 	
 	//alloc
 	public static @NotNull ManagedQueue alloc(@NotNull ManagedDevice device, @NotNull VkQueueFamilyProperties family, int queueIndex, @NotNull Object[] parents) {
@@ -131,7 +125,7 @@ public class ManagedQueue extends VkQueue {
 		@Override
 		public Barrier run(ManagedQueue queue) {
 			try (AllocatorFrame frame = Allocator.frame()) {
-				VkFence fence = VkFence.alloc(VK_FENCE_CREATE_INFO, queue.device(), EMPTY_OBJECT_ARRAY);
+				VkFence fence = queue.device().vkFencePool().allocate(EMPTY_OBJECT_ARRAY);
 				nvkQueueSubmit(queue, 1, mallocStruct(frame, VkSubmitInfo::create, VkSubmitInfo.SIZEOF).set(
 						VK_STRUCTURE_TYPE_SUBMIT_INFO,
 						0,

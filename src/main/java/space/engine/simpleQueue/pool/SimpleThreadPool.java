@@ -5,7 +5,6 @@ import space.engine.simpleQueue.SimpleQueue;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadFactory;
-import java.util.stream.Stream;
 
 public class SimpleThreadPool extends SimpleMessagePool<Runnable> implements Executor {
 	
@@ -34,10 +33,6 @@ public class SimpleThreadPool extends SimpleMessagePool<Runnable> implements Exe
 	}
 	
 	public void executeAll(@NotNull Runnable[] commands) {
-		addAll(commands);
-	}
-	
-	public void executeAll(@NotNull Stream<@NotNull Runnable> commands) {
 		addAll(commands);
 	}
 }

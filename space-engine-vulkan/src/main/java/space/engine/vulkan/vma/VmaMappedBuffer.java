@@ -71,8 +71,8 @@ public class VmaMappedBuffer extends VmaBuffer implements VkMappedBuffer {
 	}
 	
 	//object
-	protected VmaMappedBuffer(long address, long vmaAllocation, long sizeOf, @NotNull ManagedDevice device, @NotNull BiFunction<VmaBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
-		super(address, vmaAllocation, sizeOf, device, storageCreator, parents);
+	protected VmaMappedBuffer(long address, long vmaAllocation, long sizeOf, @NotNull ManagedDevice device, @NotNull BiFunction<? super VmaMappedBuffer, Object[], Freeable> storageCreator, @NotNull Object[] parents) {
+		super(address, vmaAllocation, sizeOf, device, (vmaBuffer, objects) -> storageCreator.apply((VmaMappedBuffer) vmaBuffer, objects), parents);
 	}
 	
 	//uploadData
@@ -81,7 +81,7 @@ public class VmaMappedBuffer extends VmaBuffer implements VkMappedBuffer {
 	 * Upload will be completed as soon as this method returns. Always returns {@link Barrier#ALWAYS_TRIGGERED_BARRIER}.
 	 */
 	@Override
-	public Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
+	public @NotNull Barrier uploadData(Buffer src, long srcOffset, long dstOffset, long length) {
 		try (Frame frame = Freeable.frame()) {
 			MappedBuffer dst = mapMemory(new Object[] {frame});
 			Buffer.copyMemory(src, srcOffset, dst, dstOffset, length);

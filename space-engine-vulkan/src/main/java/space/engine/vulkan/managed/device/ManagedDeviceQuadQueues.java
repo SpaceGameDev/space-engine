@@ -27,6 +27,10 @@ import static space.engine.lwjgl.LwjglStructAllocator.mallocStruct;
 import static space.engine.lwjgl.PointerBufferWrapper.wrapPointer;
 import static space.engine.vulkan.VkException.assertVk;
 
+/**
+ * Not working. Use {@link ManagedDeviceSingleQueue} for now.
+ */
+@Deprecated
 public class ManagedDeviceQuadQueues extends ManagedDevice {
 	
 	private static final int QUEUE_TYPE_MAX = 0x3;
@@ -187,6 +191,7 @@ public class ManagedDeviceQuadQueues extends ManagedDevice {
 		super(handle, physicalDevice, ci, parents);
 		this.queueFamilies = queueFamilies;
 		this.queues = queues.apply(this);
+		init();
 	}
 	
 	@Override
